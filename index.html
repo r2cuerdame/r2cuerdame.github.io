@@ -1,1 +1,98 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>React App</title><script defer="defer" src="/static/js/main.9828a313.js"></script><link href="/static/css/main.b2daf34b.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <link href="main.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <div class="pi-container">
+        <h1 class="contents-text" id="digits"></h1>
+    </div>
+
+    <script src=https://cdn.JsDelivr.net/npm/p5></script>
+    <script src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
+    <script src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script>
+
+    <script defer>
+        let position = 0n;
+
+        let poly = new p5.PolySynth();
+        let notes = ["C", "D", "E", "F", "G", "A", "B", "C", "D", "E"]
+
+
+        function doSomeCalcs() {
+            position = position + 1n;
+
+            let i = 1n;
+            let x = 3n * (10n ** (BigInt(position) + 20n));
+            let pi = x;
+            let startTime = new Date();
+
+            for (let j = 0; j < 100; ++j) {
+                x = x * i / ((i + 1n) * 4n);
+                pi += x / (i + 2n);
+                i += 2n;
+            }
+
+            const pistr10 = (pi / (10n ** 20n)).toString(10);
+
+            var pos = 1;
+            var output = [pistr10.slice(0, pos), pistr10.slice(pos)].join('.');
+
+            let count = (pistr10.length - 1).toFixed(0);
+            let calcTime = ((new Date() - startTime) / 1000).toFixed(3); // "second"
+
+            $('#digits').html(output);
+
+            if (output.length > 2) {
+                const octave = "5";
+                let last = Number.parseInt(output[output.length - 1]);
+                //poly.play(notes[last] + "4", .15, 0, 0.25);
+
+                setTimeout(() => {
+                    poly.noteAttack(notes[last] + octave, 0);
+                }, 0);
+
+                setTimeout(() => {
+                    poly.noteAttack(notes[(last + 2) % 10] + octave, 0);
+                }, 300);
+
+                setTimeout(() => {
+                    poly.noteAttack(notes[(last + 5) % 10] + octave, 0);
+                }, 600);
+
+                setTimeout(() => {
+                    poly.noteAttack(notes[(last + 6) % 10] + octave, 0);
+                }, 900);
+
+                setTimeout(() => {
+                    poly.noteRelease();
+                }, 1490);
+
+                console.log(last);
+            }
+
+
+            startCalcs();
+        }
+
+        function startCalcs() {
+            setTimeout(doSomeCalcs, 1500);
+        }
+
+        $('document').ready(function() {
+            startCalcs();
+        });
+
+    </script>
+
+</body>
+
+</html>
