@@ -1,10 +1,21 @@
 {
   "lookback_days": 30,
   "measurement_configured": true,
-  "pages": {},
+  "pages": {
+    "/": {
+      "active_users": 1,
+      "views": 1
+    }
+  },
   "property_configured": true,
   "source": "ga4",
   "status": "ok",
-  "top_pages": [],
-  "updated_at": "2026-04-30T03:39:46+09:00"
+  "top_pages": [
+    {
+      "active_users": 1,
+      "path": "/",
+      "views": 1
+    }
+  ],
+  "updated_at": "2026-04-30T03:59:45+09:00"
 }
