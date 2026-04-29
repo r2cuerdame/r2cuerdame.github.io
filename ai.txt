@@ -1,7 +1,11 @@
 Recuerdame Lab allows AI search crawlers and answer engines to discover, index, summarize, and cite public pages on this site.
 
 Canonical: https://r2cuerdame.github.io/
+Radar: https://r2cuerdame.github.io/radar/
+Deals: https://r2cuerdame.github.io/deals/
+Guides: https://r2cuerdame.github.io/guides/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
+Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
 Language: ko-KR
-Updated: 2026-04-29T22:32:36+09:00
+Updated: 2026-04-29T22:59:35+09:00

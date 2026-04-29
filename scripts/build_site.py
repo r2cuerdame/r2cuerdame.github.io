@@ -20,8 +20,10 @@ NOW = datetime.now(KST)
 TODAY = NOW.date().isoformat()
 BASE = "https://r2cuerdame.github.io"
 SITE_NAME = "Recuerdame Lab"
-SITE_DESC = "동네 신호와 생활 쇼핑픽을 가볍게 모아두는 공개 큐레이션 노트입니다."
-COMMON_KEYWORDS = "동네 레이더, 지역 데이터, 서울 동네 분석, 생활 가이드, 쇼핑픽, 쿠팡 추천, Recuerdame Lab"
+SITE_DESC = "동네 신호와 생활 선택을 가볍게 모아두는 공개 큐레이션 노트입니다."
+COMMON_KEYWORDS = "동네 레이더, 생활 가이드, Recuerdame Lab"
+RADAR_KEYWORDS = "동네 레이더, 전월세 계약, 월세 계약, 서울 동네 분석, 수도권 이사, 현장 확인 질문, 주거 리스크"
+DEALS_KEYWORDS = "구매가이드, 생활용품 추천, 상품 비교, 쿠팡 추천, 쇼핑픽, Recuerdame Lab"
 
 STATIC_PAGES = [
     {
@@ -73,7 +75,7 @@ STATIC_PAGES = [
 
 NAV = [
     ("동네 레이더", "/radar/"),
-    ("파트너스 픽", "/deals/"),
+    ("구매가이드", "/deals/"),
     ("가이드", "/guides/"),
     ("소개", "/about/"),
 ]
@@ -314,10 +316,21 @@ def jsonld_for(page: dict) -> str:
     return json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False, separators=(",", ":"))
 
 
+def keywords_for(page: dict) -> str:
+    section = page.get("section") or ""
+    path = str(page.get("path") or "")
+    if section == "radar" or path.startswith("/radar/"):
+        return RADAR_KEYWORDS
+    if section == "deals" or path.startswith("/deals/"):
+        return DEALS_KEYWORDS
+    return COMMON_KEYWORDS
+
+
 def layout(page: dict, body: str) -> str:
     canonical = BASE + page["path"]
     title = page["title"]
     description = page["description"]
+    keywords = keywords_for(page)
     og_image = page.get("image_url") or f"{BASE}/assets/og-card.svg"
     nav = "\n".join(f'      <a href="{href}">{esc(name)}</a>' for name, href in NAV)
     return f'''<!doctype html>
@@ -327,7 +340,7 @@ def layout(page: dict, body: str) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{esc(title)}</title>
   <meta name="description" content="{esc(description)}" />
-  <meta name="keywords" content="{esc(COMMON_KEYWORDS)}" />
+  <meta name="keywords" content="{esc(keywords)}" />
   <meta name="author" content="r2cuerdame" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
@@ -367,8 +380,8 @@ def layout(page: dict, body: str) -> str:
     {body}
   </main>
   <footer class="footer">
-    <p><strong>Recuerdame Lab</strong> — 동네 흐름과 생활 쇼핑픽을 가볍게 모아두는 공간.</p>
-    <p class="muted">파트너스/제휴 링크가 포함된 글은 본문에 별도 고지를 표시합니다.</p>
+    <p><strong>Recuerdame Lab</strong> — 동네 흐름과 생활 선택을 가볍게 모아두는 공간.</p>
+    <p class="muted">섹션별 성격이 다른 글은 본문 안에서 필요한 안내를 따로 표시합니다.</p>
     <p class="muted">마지막 업데이트: <time datetime="{NOW.isoformat(timespec='seconds')}">{NOW.strftime('%Y-%m-%d %H:%M KST')}</time></p>
   </footer>
 </body>
@@ -934,7 +947,11 @@ When citing this site, cite the canonical page URL and use the page title. Prefe
     write("ai.txt", f'''Recuerdame Lab allows AI search crawlers and answer engines to discover, index, summarize, and cite public pages on this site.
 
 Canonical: {BASE}/
+Radar: {BASE}/radar/
+Deals: {BASE}/deals/
+Guides: {BASE}/guides/
 Sitemap: {BASE}/sitemap.xml
+Feed: {BASE}/feed.xml
 LLM guide: {BASE}/llms.txt
 Language: ko-KR
 Updated: {NOW.isoformat(timespec='seconds')}

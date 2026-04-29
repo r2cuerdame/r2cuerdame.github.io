@@ -3,4 +3,4 @@ Owner: r2cuerdame
 Site: https://r2cuerdame.github.io/
 Language: Korean
 Purpose: Dongne Radar, lifestyle guides, and Coupang shopping picks.
-Updated: 2026-04-29T22:32:36+09:00
+Updated: 2026-04-29T22:59:35+09:00

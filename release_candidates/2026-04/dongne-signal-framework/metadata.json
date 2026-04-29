@@ -1,0 +1,30 @@
+{
+  "slug": "dongne-signal-framework",
+  "title": "월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지",
+  "section": "dongne-radar",
+  "status": "published_revision",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-04-29T21:44:43+09:00",
+  "publish_ready_at": "2026-05-06T21:44:43+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "reader_qa": {
+    "target_score": 90,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "external_publish": {
+    "hourly_job": "dry_run_only",
+    "manual_blockers": [
+      "login",
+      "captcha",
+      "category",
+      "skin",
+      "account_permission",
+      "ad_settings"
+    ]
+  },
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "updated_at": "2026-04-29T22:48:33+09:00",
+  "revision_note": "공개 글을 이사·전월세 계약 예정 25~39세 1차 타겟 기준으로 제목/도입/본문 재작성",
+  "date": "2026-04-29T22:48:33+09:00"
+}

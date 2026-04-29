@@ -4,7 +4,7 @@
 
 Base URL: https://r2cuerdame.github.io/
 Language: ko-KR
-Last updated: 2026-04-29T22:32:36+09:00
+Last updated: 2026-04-29T22:59:35+09:00
 
 ## Sections
 
@@ -30,7 +30,7 @@ Last updated: 2026-04-29T22:32:36+09:00
 - 2026 모니터암 추천 TOP 5, 책상 공간 확실히 넓어지는 모델: https://r2cuerdame.github.io/deals/2026-monitor-arm-top5/
 - 2026 로봇청소기 추천 BEST 4 – 가격대별 완벽 비교: https://r2cuerdame.github.io/deals/2026-robot-vacuum-best4/
 - 2026 기계식 키보드 추천 TOP 5 – 게이밍·개발자 필수템: https://r2cuerdame.github.io/deals/2026-mechanical-keyboard-top5/
-- 동네 신호 읽기 기본 프레임: 숫자가 먼저 말하지 않는 것들: https://r2cuerdame.github.io/radar/dongne-signal-framework/
+- 월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지: https://r2cuerdame.github.io/radar/dongne-signal-framework/
 
 ## Crawl hints
 
