@@ -1333,12 +1333,22 @@ SEARCH_JS = '''(() => {
     const tags = normalize((item.tags || []).join(' '));
     const text = normalize(item.text);
     let score = 0;
+    let matched = false;
+    let matchedCount = 0;
     for (const token of tokens) {
-      if (title.includes(token)) score += 9;
-      if (tags.includes(token)) score += 6;
-      if (desc.includes(token)) score += 4;
-      if (text.includes(token)) score += 1;
+      let tokenScore = 0;
+      if (title.includes(token)) tokenScore += 12;
+      if (tags.includes(token)) tokenScore += 7;
+      if (desc.includes(token)) tokenScore += 4;
+      if (text.includes(token)) tokenScore += 1;
+      if (tokenScore > 0) {
+        matched = true;
+        matchedCount += 1;
+      }
+      score += tokenScore;
     }
+    if (!matched) return 0;
+    if (tokens.length > 1 && matchedCount < tokens.length) return 0;
     if (item.section === 'deals') score += 0.5;
     const views = Number(item.views || 0);
     if (views > 0) score += Math.min(3, Math.log10(views + 1));
