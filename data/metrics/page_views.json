@@ -1,11 +1,10 @@
 {
   "lookback_days": 30,
   "measurement_configured": true,
-  "next_action": "grant_ga4_read_access",
   "pages": {},
   "property_configured": true,
   "source": "ga4",
-  "status": "api_credentials_missing",
+  "status": "ok",
   "top_pages": [],
-  "updated_at": "2026-04-30T02:55:16+09:00"
+  "updated_at": "2026-04-30T03:39:46+09:00"
 }

@@ -1,7 +1,7 @@
 {
   "site": "Recuerdame Lab",
   "base_url": "https://r2cuerdame.github.io",
-  "built_at": "2026-04-30T03:31:06+09:00",
+  "built_at": "2026-04-30T03:39:48+09:00",
   "timezone": "Asia/Seoul",
   "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
   "sections": [
@@ -23,8 +23,8 @@
   ],
   "analytics": {
     "tracking_ready": true,
-    "metrics_status": "api_credentials_missing",
-    "metrics_updated_at": "2026-04-30T02:55:16+09:00"
+    "metrics_status": "ok",
+    "metrics_updated_at": "2026-04-30T03:39:46+09:00"
   },
   "sitemap": "https://r2cuerdame.github.io/sitemap.xml",
   "rss": "https://r2cuerdame.github.io/feed.xml",
