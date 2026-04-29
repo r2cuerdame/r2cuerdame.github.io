@@ -1,0 +1,21 @@
+:root {
+    --font-Size: 200px;
+}
+
+.pi-container {
+    background: #eee;
+    width: 100vw;
+    height: 100vh;
+    margin: auto;
+}
+
+.contents-text {
+    font-size: 60px;
+    margin: auto;
+    word-wrap: break-word;
+}
+
+.contents-text::after {
+    content: "■";
+    color: purple;
+}

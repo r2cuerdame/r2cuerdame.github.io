@@ -1,98 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!doctype html>
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-
-    <link href="main.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recuerdame Lab — 동네 데이터와 생활 구매가이드</title>
+  <meta name="description" content="동네 데이터와 생활 구매가이드를 쌓는 공개 노트. 동네 레이더와 파트너스 픽을 분리 운영합니다." />
+  <link rel="canonical" href="https://r2cuerdame.github.io/" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Recuerdame Lab" />
+  <meta property="og:title" content="Recuerdame Lab — 동네 데이터와 생활 구매가이드" />
+  <meta property="og:description" content="동네 데이터와 생활 구매가이드를 쌓는 공개 노트. 동네 레이더와 파트너스 픽을 분리 운영합니다." />
+  <meta property="og:url" content="https://r2cuerdame.github.io/" />
+  <meta property="og:image" content="https://r2cuerdame.github.io/assets/og-card.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#101828" />
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml" />
+  <link rel="alternate" type="application/rss+xml" title="Recuerdame Lab RSS" href="/feed.xml" />
+  <link rel="stylesheet" href="/main.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Recuerdame Lab","url":"https://r2cuerdame.github.io/","description":"동네 데이터와 생활 구매가이드를 쌓는 공개 노트. 동네 레이더와 파트너스 픽을 분리 운영합니다."}</script>
+  
 </head>
-
 <body>
-    <div class="pi-container">
-        <h1 class="contents-text" id="digits"></h1>
-    </div>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Recuerdame Lab home">
+      <span class="brand-mark">R</span>
+      <span><strong>Recuerdame Lab</strong><small>동네 데이터 · 생활 가이드</small></span>
+    </a>
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="/radar/">동네 레이더</a>
+      <a href="/deals/">파트너스 픽</a>
+      <a href="/guides/">가이드</a>
+      <a href="/about/">소개</a>
+    </nav>
+  </header>
+  <main>
+    
+<section class="hero">
+  <p class="eyebrow">GitHub Pages 파일럿</p>
+  <h1>동네 데이터와 생활 구매가이드를 한 곳에 쌓습니다.</h1>
+  <p class="lead">Tistory/블로그 보안확인에 묶이지 않도록, 원본 콘텐츠는 GitHub Pages에 자동 배포하고 네이버·Tistory·쿠팡 파트너스 채널은 보조 배포면으로 분리합니다.</p>
+  <div class="hero-actions">
+    <a class="button primary" href="/radar/">동네 레이더 보기</a>
+    <a class="button" href="/deals/">파트너스 픽 준비 현황</a>
+  </div>
+</section>
+<section class="grid three">
+  <article class="card accent-blue">
+    <span class="tag">Radar</span>
+    <h2>동네 레이더</h2>
+    <p>지역·상권·주거 흐름을 짧고 재사용 가능한 판단 문장으로 정리합니다.</p>
+    <a href="/radar/">섹션 열기 →</a>
+  </article>
+  <article class="card accent-amber">
+    <span class="tag">Partners</span>
+    <h2>파트너스 픽</h2>
+    <p>쿠팡 파트너스용 추천·비교·구매가이드를 별도 카테고리로 분리합니다.</p>
+    <a href="/deals/">섹션 열기 →</a>
+  </article>
+  <article class="card accent-green">
+    <span class="tag">Guides</span>
+    <h2>생활 가이드</h2>
+    <p>광고성 글과 분리된 생활/부동산/동네 사용법 가이드를 보관합니다.</p>
+    <a href="/guides/">섹션 열기 →</a>
+  </article>
+</section>
+<section class="panel">
+  <h2>운영 원칙</h2>
+  <ul class="checklist">
+    <li>원본은 GitHub Pages에 공개하고, 외부 채널은 미러/요약/유입용으로 사용합니다.</li>
+    <li>제휴 글은 일반 동네 데이터 글과 URL·디자인·고지를 분리합니다.</li>
+    <li>sitemap, robots, RSS, schema, canonical을 기본 탑재해 색인부터 챙깁니다.</li>
+    <li>발행 장애가 나도 글/검수/시각자료 제작은 멈추지 않습니다.</li>
+  </ul>
+</section>
+<section class="status-strip" aria-label="현재 상태">
+  <div><strong>배포</strong><span>GitHub Pages</span></div>
+  <div><strong>원본 URL</strong><span>r2cuerdame.github.io</span></div>
+  <div><strong>상태</strong><span>파일럿 시작</span></div>
+</section>
 
-    <script src=https://cdn.JsDelivr.net/npm/p5></script>
-    <script src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
-    <script src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script>
-
-    <script defer>
-        let position = 0n;
-
-        let poly = new p5.PolySynth();
-        let notes = ["C", "D", "E", "F", "G", "A", "B", "C", "D", "E"]
-
-
-        function doSomeCalcs() {
-            position = position + 1n;
-
-            let i = 1n;
-            let x = 3n * (10n ** (BigInt(position) + 20n));
-            let pi = x;
-            let startTime = new Date();
-
-            for (let j = 0; j < 100; ++j) {
-                x = x * i / ((i + 1n) * 4n);
-                pi += x / (i + 2n);
-                i += 2n;
-            }
-
-            const pistr10 = (pi / (10n ** 20n)).toString(10);
-
-            var pos = 1;
-            var output = [pistr10.slice(0, pos), pistr10.slice(pos)].join('.');
-
-            let count = (pistr10.length - 1).toFixed(0);
-            let calcTime = ((new Date() - startTime) / 1000).toFixed(3); // "second"
-
-            $('#digits').html(output);
-
-            if (output.length > 2) {
-                const octave = "5";
-                let last = Number.parseInt(output[output.length - 1]);
-                //poly.play(notes[last] + "4", .15, 0, 0.25);
-
-                setTimeout(() => {
-                    poly.noteAttack(notes[last] + octave, 0);
-                }, 0);
-
-                setTimeout(() => {
-                    poly.noteAttack(notes[(last + 2) % 10] + octave, 0);
-                }, 300);
-
-                setTimeout(() => {
-                    poly.noteAttack(notes[(last + 5) % 10] + octave, 0);
-                }, 600);
-
-                setTimeout(() => {
-                    poly.noteAttack(notes[(last + 6) % 10] + octave, 0);
-                }, 900);
-
-                setTimeout(() => {
-                    poly.noteRelease();
-                }, 1490);
-
-                console.log(last);
-            }
-
-
-            startCalcs();
-        }
-
-        function startCalcs() {
-            setTimeout(doSomeCalcs, 1500);
-        }
-
-        $('document').ready(function() {
-            startCalcs();
-        });
-
-    </script>
-
+  </main>
+  <footer class="footer">
+    <p><strong>Recuerdame Lab</strong> — 자체 데이터/편집 기준으로 운영하는 공개 콘텐츠 허브.</p>
+    <p class="muted">파트너스/제휴 링크가 포함된 글은 본문에 별도 고지를 표시합니다. 게시 전 품질·정책 검수를 통과한 글만 공개합니다.</p>
+  </footer>
 </body>
-
 </html>
