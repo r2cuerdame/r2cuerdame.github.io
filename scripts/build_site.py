@@ -11,6 +11,7 @@ from email.utils import format_datetime
 from pathlib import Path
 import html
 import json
+import os
 import re
 from typing import Any
 
@@ -24,6 +25,114 @@ SITE_DESC = "동네 신호와 생활 선택을 가볍게 모아두는 공개 큐
 COMMON_KEYWORDS = "동네 레이더, 생활 가이드, Recuerdame Lab"
 RADAR_KEYWORDS = "동네 레이더, 전월세 계약, 월세 계약, 서울 동네 분석, 수도권 이사, 현장 확인 질문, 주거 리스크"
 DEALS_KEYWORDS = "구매가이드, 생활용품 추천, 상품 비교, 쿠팡 추천, 쇼핑픽, Recuerdame Lab"
+
+METRICS_PATH = ROOT / "data" / "metrics" / "page_views.json"
+ANALYTICS_CONFIG_PATHS = [
+    Path("/root/.hermes/secrets/deals_google_metrics.json"),
+    ROOT / "data" / "metrics" / "analytics_config.json",
+]
+
+
+def normalize_public_path(value: str) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return "/"
+    if raw.startswith(BASE):
+        raw = raw[len(BASE):]
+    raw = raw.split("#", 1)[0].split("?", 1)[0]
+    if not raw.startswith("/"):
+        raw = "/" + raw
+    if raw.endswith("index.html"):
+        raw = raw[: -len("index.html")]
+    if raw != "/" and not raw.endswith("/"):
+        raw += "/"
+    return raw
+
+
+def load_page_metrics() -> dict[str, Any]:
+    if not METRICS_PATH.exists():
+        return {"status": "not_configured", "pages": {}}
+    try:
+        data = json.loads(METRICS_PATH.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return {"status": "invalid", "pages": {}}
+    pages = data.get("pages") if isinstance(data, dict) else {}
+    normalized: dict[str, dict[str, Any]] = {}
+    if isinstance(pages, dict):
+        for key, value in pages.items():
+            if isinstance(value, dict):
+                normalized[normalize_public_path(key)] = value
+    data["pages"] = normalized
+    return data
+
+
+PAGE_METRICS_DATA = load_page_metrics()
+PAGE_METRICS = PAGE_METRICS_DATA.get("pages") if isinstance(PAGE_METRICS_DATA.get("pages"), dict) else {}
+
+
+def metric_for(path: str) -> dict[str, Any]:
+    return PAGE_METRICS.get(normalize_public_path(path), {}) if isinstance(PAGE_METRICS, dict) else {}
+
+
+def format_count(value: Any) -> str:
+    try:
+        n = int(value)
+    except Exception:
+        return ""
+    if n <= 0:
+        return ""
+    return f"{n:,}"
+
+
+def traffic_badge(path: str, label: str = "최근 30일") -> str:
+    metric = metric_for(path)
+    views = format_count(metric.get("views") or metric.get("screenPageViews") or metric.get("page_views"))
+    if not views:
+        return ""
+    users = format_count(metric.get("active_users") or metric.get("activeUsers") or metric.get("users"))
+    suffix = f" · 방문 {users}" if users else ""
+    return f'<span class="traffic-badge" title="{esc(label)} 조회 데이터">👁 {esc(label)} {esc(views)}회{esc(suffix)}</span>'
+
+
+def configured_analytics_id() -> str:
+    candidates: list[str] = []
+    env_mid = os.environ.get("GA_MEASUREMENT_ID") or os.environ.get("GTAG_MEASUREMENT_ID")
+    if env_mid:
+        candidates.append(env_mid)
+    config_env = os.environ.get("DEALS_ANALYTICS_CONFIG")
+    paths = ([Path(config_env)] if config_env else []) + ANALYTICS_CONFIG_PATHS
+    for path in paths:
+        if not path or not path.exists():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
+        except Exception:
+            continue
+        if isinstance(data, dict):
+            for key in ("measurement_id", "ga_measurement_id", "ga4_measurement_id"):
+                if data.get(key):
+                    candidates.append(str(data[key]))
+    for raw in candidates:
+        mid = str(raw or "").strip().upper()
+        if re.fullmatch(r"(?:G|GT)-[A-Z0-9-]+", mid):
+            return mid
+    return ""
+
+
+ANALYTICS_ID = configured_analytics_id()
+
+
+def analytics_snippet() -> str:
+    if not ANALYTICS_ID:
+        return ""
+    mid = esc(ANALYTICS_ID)
+    return f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', '{mid}', {{ anonymize_ip: true }});
+  </script>'''
 
 STATIC_PAGES = [
     {
@@ -333,6 +442,7 @@ def layout(page: dict, body: str) -> str:
     keywords = keywords_for(page)
     og_image = page.get("image_url") or f"{BASE}/assets/og-card.svg"
     nav = "\n".join(f'      <a href="{href}">{esc(name)}</a>' for name, href in NAV)
+    analytics = analytics_snippet()
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -364,6 +474,7 @@ def layout(page: dict, body: str) -> str:
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#101828" />
   <link rel="stylesheet" href="/main.css" />
+{analytics}
   <script type="application/ld+json">{jsonld_for(page)}</script>
 </head>
 <body>
@@ -392,8 +503,9 @@ def layout(page: dict, body: str) -> str:
 def plain_article_card(a: dict) -> str:
     tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
     date = parse_dt(a.get("date")).strftime("%Y-%m-%d")
+    metric = traffic_badge(a["path"])
     return f'''<article class="list-card">
-  <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time></div>
+  <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
   <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
   <p>{esc(short_text(a['description'], 115))}</p>
   <div class="tag-row">{tags}</div>
@@ -404,6 +516,7 @@ def plain_article_card(a: dict) -> str:
 def deal_card(a: dict) -> str:
     img = a.get("image_url") or "/assets/og-card.svg"
     date = parse_dt(a.get("date")).strftime("%m.%d")
+    metric = traffic_badge(a["path"])
     deal_url = a.get("primary_deal_url") or ""
     external = ""
     if deal_url:
@@ -414,7 +527,7 @@ def deal_card(a: dict) -> str:
     <span class="deal-count">{esc(a.get('item_count_hint'))}</span>
   </a>
   <div class="deal-body">
-    <div class="deal-meta"><span>{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time></div>
+    <div class="deal-meta"><span>{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
     <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
     <p>{esc(short_text(a.get('description') or '', 78))}</p>
     <div class="deal-price">{esc(a.get('price_hint'))}</div>
@@ -581,6 +694,7 @@ def article_body(article: dict) -> str:
     section_name = "쇼핑픽" if article["section"] == "deals" else "동네 레이더"
     section_href = f"/{article['section']}/"
     dt = parse_dt(article.get("date"))
+    metric = traffic_badge(article["path"])
     tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (article.get("tags") or [])[:8])
     notice = ""
     if article.get("is_affiliate"):
@@ -606,7 +720,7 @@ def article_body(article: dict) -> str:
     <p class="eyebrow">{esc(section_name)}</p>
     <h1>{esc(article['title'])}</h1>
     <p class="lead">{esc(article['description'])}</p>
-    <div class="article-meta"><span>{esc(article.get('category'))}</span><time datetime="{esc(article.get('date'))}">{dt.strftime('%Y-%m-%d %H:%M KST')}</time></div>
+    <div class="article-meta"><span>{esc(article.get('category'))}</span><time datetime="{esc(article.get('date'))}">{dt.strftime('%Y-%m-%d %H:%M KST')}</time>{metric}</div>
     <div class="tag-row">{tags}</div>
   </header>
   {notice}
@@ -721,6 +835,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .section-title p { margin-top: 0; color: var(--muted); }
 .list-card h2 { margin-bottom: 8px; }
 .card-meta, .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 800; }
+.traffic-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-weight: 950; font-size: 12px; white-space: nowrap; }
 .text-link { color: var(--orange-dark); font-weight: 950; }
 .shop-hero {
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: clamp(24px, 6vw, 72px);
@@ -975,6 +1090,7 @@ Updated: {NOW.isoformat(timespec='seconds')}
         "sections": [p["path"] for p in STATIC_PAGES],
         "article_counts": {"deals": len(deals), "radar": len(radar)},
         "search_ready": ["google", "naver", "daum", "ai_search"],
+        "analytics": {"tracking_ready": bool(ANALYTICS_ID), "metrics_status": PAGE_METRICS_DATA.get("status"), "metrics_updated_at": PAGE_METRICS_DATA.get("updated_at")},
         "sitemap": f"{BASE}/sitemap.xml",
         "rss": f"{BASE}/feed.xml",
         "llms": f"{BASE}/llms.txt",

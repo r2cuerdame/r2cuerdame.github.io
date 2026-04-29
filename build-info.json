@@ -1,7 +1,7 @@
 {
   "site": "Recuerdame Lab",
   "base_url": "https://r2cuerdame.github.io",
-  "built_at": "2026-04-29T23:20:20+09:00",
+  "built_at": "2026-04-29T23:54:04+09:00",
   "timezone": "Asia/Seoul",
   "sections": [
     "/",
@@ -20,6 +20,11 @@
     "daum",
     "ai_search"
   ],
+  "analytics": {
+    "tracking_ready": false,
+    "metrics_status": "not_configured",
+    "metrics_updated_at": "2026-04-29T23:52:49+09:00"
+  },
   "sitemap": "https://r2cuerdame.github.io/sitemap.xml",
   "rss": "https://r2cuerdame.github.io/feed.xml",
   "llms": "https://r2cuerdame.github.io/llms.txt"

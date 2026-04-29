@@ -1,0 +1,11 @@
+{
+  "lookback_days": 30,
+  "measurement_configured": false,
+  "next_action": "connect_google_analytics",
+  "pages": {},
+  "property_configured": false,
+  "source": "ga4",
+  "status": "not_configured",
+  "top_pages": [],
+  "updated_at": "2026-04-29T23:52:49+09:00"
+}
