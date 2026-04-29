@@ -1,0 +1,42 @@
+name: Daily Pages Refresh
+
+on:
+  schedule:
+    # 08:20 KST every day. Keeps sitemap/RSS/llms metadata fresh and triggers Pages rebuild.
+    - cron: '20 23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-pages-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build static site metadata
+        run: python scripts/build_site.py
+
+      - name: Commit daily refresh
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .
+            git commit -m "Daily Pages refresh $(date -u +%F)"
+            git push
+          else
+            echo "No changes to commit"
+          fi

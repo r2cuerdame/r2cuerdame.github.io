@@ -1,0 +1,7 @@
+Recuerdame Lab allows AI search crawlers and answer engines to discover, index, summarize, and cite public pages on this site.
+
+Canonical: https://r2cuerdame.github.io/
+Sitemap: https://r2cuerdame.github.io/sitemap.xml
+LLM guide: https://r2cuerdame.github.io/llms.txt
+Language: ko-KR
+Updated: 2026-04-29T21:34:53+09:00

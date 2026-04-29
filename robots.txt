@@ -1,3 +1,35 @@
 User-agent: *
 Allow: /
+
+# Korean/search crawlers
+User-agent: Googlebot
+Allow: /
+User-agent: Yeti
+Allow: /
+User-agent: NaverBot
+Allow: /
+User-agent: Daumoa
+Allow: /
+User-agent: Bingbot
+Allow: /
+
+# AI/search assistants: allow discovery and citation
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
+Host: r2cuerdame.github.io

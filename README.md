@@ -2,21 +2,24 @@
 
 GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupang Partners content.
 
-## Sections
+## Live URLs
 
-- `/radar/` — 동네 레이더 원본/공개 글
-- `/deals/` — 쿠팡 파트너스/구매가이드 분리 섹션
-- `/guides/` — 생활/지역 가이드
-- `/about/` — 소개
+- Home: https://r2cuerdame.github.io/
+- Dongne Radar: https://r2cuerdame.github.io/radar/
+- Partners Pick: https://r2cuerdame.github.io/deals/
+- Guides: https://r2cuerdame.github.io/guides/
 
-## SEO basics
+## Search/AI files
 
-- `sitemap.xml`
-- `robots.txt`
-- `feed.xml`
-- canonical URLs
-- OpenGraph card
-- JSON-LD WebSite schema
+- `https://r2cuerdame.github.io/sitemap.xml`
+- `https://r2cuerdame.github.io/robots.txt`
+- `https://r2cuerdame.github.io/feed.xml`
+- `https://r2cuerdame.github.io/llms.txt`
+- `https://r2cuerdame.github.io/ai.txt`
+
+## Daily deploy
+
+`.github/workflows/daily-pages-refresh.yml` runs daily and refreshes sitemap/RSS/LLM metadata, then pushes changes to `main` so GitHub Pages rebuilds.
 
 ## Affiliate rule
 

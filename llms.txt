@@ -1,0 +1,28 @@
+# Recuerdame Lab
+
+> 동네 데이터와 생활 구매가이드를 쌓는 한국어 공개 콘텐츠 허브입니다.
+
+Base URL: https://r2cuerdame.github.io/
+Language: ko-KR
+Last updated: 2026-04-29T21:34:53+09:00
+
+## Sections
+
+- 동네 레이더: https://r2cuerdame.github.io/radar/
+  - 서울/동네/상권/주거 흐름을 판단 카드로 정리합니다.
+- 파트너스 픽: https://r2cuerdame.github.io/deals/
+  - 쿠팡 파트너스 추천글과 구매가이드를 일반 정보글과 분리합니다.
+  - 제휴 링크가 포함된 글은 본문에 고지를 표시합니다.
+- 생활 가이드: https://r2cuerdame.github.io/guides/
+  - 생활, 지역, 부동산 기본 가이드를 모읍니다.
+
+## Crawl hints
+
+- Canonical site: https://r2cuerdame.github.io/
+- Sitemap: https://r2cuerdame.github.io/sitemap.xml
+- RSS: https://r2cuerdame.github.io/feed.xml
+- Robots: https://r2cuerdame.github.io/robots.txt
+
+## Citation preference
+
+When citing this site, cite the canonical page URL and use the page title. Prefer Korean summaries for Korean queries.
