@@ -1,7 +1,7 @@
 {
   "site": "Recuerdame Lab",
   "base_url": "https://r2cuerdame.github.io",
-  "built_at": "2026-04-29T22:59:35+09:00",
+  "built_at": "2026-04-29T23:20:20+09:00",
   "timezone": "Asia/Seoul",
   "sections": [
     "/",
@@ -12,7 +12,7 @@
   ],
   "article_counts": {
     "deals": 12,
-    "radar": 1
+    "radar": 2
   },
   "search_ready": [
     "google",

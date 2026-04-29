@@ -7,5 +7,11 @@ Guides: https://r2cuerdame.github.io/guides/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
+Article: https://r2cuerdame.github.io/radar/dongne-signal-framework/ — 월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지
+Article: https://r2cuerdame.github.io/radar/cafe-contract-risk/ — 카페 계약 전, 이 상권은 먼저 의심하세요
+Article: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/ — 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교
+Article: https://r2cuerdame.github.io/deals/공기청정기-뭐-살까-lg-삼성-샤오미-인기-5종-비교-070c8834/ — 공기청정기 뭐 살까, LG·삼성·샤오미 인기 5종 비교
+Article: https://r2cuerdame.github.io/deals/재택근무-사무용-의자-추천-best-5-허리-편한-모델-위주-ac5c9f75/ — 재택근무 사무용 의자 추천 BEST 5, 허리 편한 모델 위주
+Article: https://r2cuerdame.github.io/deals/주방가전-쿠팡-딜-best-5-실사용-만족도-높은-인기-제품-위주-67ac40f4/ — 주방가전 쿠팡 딜 BEST 5, 실사용 만족도 높은 인기 제품 위주
 Language: ko-KR
-Updated: 2026-04-29T22:59:35+09:00
+Updated: 2026-04-29T23:20:20+09:00

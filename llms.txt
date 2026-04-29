@@ -1,10 +1,10 @@
 # Recuerdame Lab
 
-> 동네 신호와 생활 쇼핑픽을 모아두는 한국어 공개 큐레이션 노트입니다.
+> 동네 신호와 생활 선택을 모아두는 한국어 공개 큐레이션 노트입니다.
 
 Base URL: https://r2cuerdame.github.io/
 Language: ko-KR
-Last updated: 2026-04-29T22:59:35+09:00
+Last updated: 2026-04-29T23:20:20+09:00
 
 ## Sections
 
@@ -31,6 +31,7 @@ Last updated: 2026-04-29T22:59:35+09:00
 - 2026 로봇청소기 추천 BEST 4 – 가격대별 완벽 비교: https://r2cuerdame.github.io/deals/2026-robot-vacuum-best4/
 - 2026 기계식 키보드 추천 TOP 5 – 게이밍·개발자 필수템: https://r2cuerdame.github.io/deals/2026-mechanical-keyboard-top5/
 - 월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지: https://r2cuerdame.github.io/radar/dongne-signal-framework/
+- 카페 계약 전, 이 상권은 먼저 의심하세요: https://r2cuerdame.github.io/radar/cafe-contract-risk/
 
 ## Crawl hints
 

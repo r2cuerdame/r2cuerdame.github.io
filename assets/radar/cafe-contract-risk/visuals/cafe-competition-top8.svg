@@ -1,0 +1,28 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 980 600' role='img' aria-label='경쟁밀도 압력 TOP 8'>
+<style>.title{font:900 32px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#102033}.desc{font:600 16px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#475569}.rank{font:900 16px system-ui;fill:#0f766e}.name{font:900 18px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#172033}.val{font:900 16px system-ui;fill:#b91c1c}.sub{font:650 13px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#64748b}</style>
+<rect width='980' height='600' rx='28' fill='#f8fafc'/><rect x='26' y='26' width='928' height='548' rx='24' fill='#fff' stroke='#dbe3ee'/>
+<text x='42' y='72' class='title'>경쟁밀도 압력 TOP 8</text><text x='42' y='104' class='desc'>점포당 보정 유동, 10만 보정 유동당 카페 수, 프랜차이즈 압력을 함께 봅니다.</text>
+<text x='44' y='156' class='rank'>1</text><text x='82' y='156' class='name'>금천구</text>
+<rect x='172' y='138' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='138' width='520.0' height='24' rx='12' fill='#ef4444'/>
+<text x='712' y='156' class='val'>74점</text><text x='812' y='156' class='sub'>경쟁밀도 높음 · 생활수요 약화 · 프랜차이즈 압력</text>
+<text x='44' y='198' class='rank'>2</text><text x='82' y='198' class='name'>중구</text>
+<rect x='172' y='180' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='180' width='491.9' height='24' rx='12' fill='#ef4444'/>
+<text x='712' y='198' class='val'>70점</text><text x='812' y='198' class='sub'>경쟁밀도 높음 · 폐업·교체 압력 · 생활수요 약화</text>
+<text x='44' y='240' class='rank'>3</text><text x='82' y='240' class='name'>마포구</text>
+<rect x='172' y='222' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='222' width='470.8' height='24' rx='12' fill='#ef4444'/>
+<text x='712' y='240' class='val'>67점</text><text x='812' y='240' class='sub'>경쟁밀도 높음 · 젊은 유동 강함</text>
+<text x='44' y='282' class='rank'>4</text><text x='82' y='282' class='name'>강남구</text>
+<rect x='172' y='264' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='264' width='449.7' height='24' rx='12' fill='#f59e0b'/>
+<text x='712' y='282' class='val'>64점</text><text x='812' y='282' class='sub'>경쟁밀도 높음</text>
+<text x='44' y='324' class='rank'>5</text><text x='82' y='324' class='name'>종로구</text>
+<rect x='172' y='306' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='306' width='421.6' height='24' rx='12' fill='#f59e0b'/>
+<text x='712' y='324' class='val'>60점</text><text x='812' y='324' class='sub'>경쟁밀도 높음 · 생활수요 약화</text>
+<text x='44' y='366' class='rank'>6</text><text x='82' y='366' class='name'>서초구</text>
+<rect x='172' y='348' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='348' width='407.6' height='24' rx='12' fill='#f59e0b'/>
+<text x='712' y='366' class='val'>58점</text><text x='812' y='366' class='sub'>생활수요 약화</text>
+<text x='44' y='408' class='rank'>7</text><text x='82' y='408' class='name'>송파구</text>
+<rect x='172' y='390' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='390' width='400.5' height='24' rx='12' fill='#94a3b8'/>
+<text x='712' y='408' class='val'>57점</text><text x='812' y='408' class='sub'>생활수요 약화</text>
+<text x='44' y='450' class='rank'>8</text><text x='82' y='450' class='name'>용산구</text>
+<rect x='172' y='432' width='520' height='24' rx='12' fill='#eef2f7'/><rect x='172' y='432' width='393.5' height='24' rx='12' fill='#94a3b8'/>
+<text x='712' y='450' class='val'>56점</text><text x='812' y='450' class='sub'>생활수요 약화 · 주말형 가능</text></svg>

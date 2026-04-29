@@ -12,7 +12,7 @@ Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
 ## Current content
 
 - Shopping pick articles: 12
-- Dongne Radar articles: 1
+- Dongne Radar articles: 2
 
 ## Search/AI files
 

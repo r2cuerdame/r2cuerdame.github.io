@@ -911,9 +911,12 @@ Host: r2cuerdame.github.io
     article_lines = "\n".join(
         f"- {a['title']}: {BASE}{a['path']}" for a in (deals + radar)[:30]
     ) or "- 아직 공개 글 없음"
+    ai_article_lines = "\n".join(
+        f"Article: {BASE}{a['path']} — {a['title']}" for a in (radar[:8] + deals[:4])
+    ) or "Article: none"
     write("llms.txt", f'''# Recuerdame Lab
 
-> 동네 신호와 생활 쇼핑픽을 모아두는 한국어 공개 큐레이션 노트입니다.
+> 동네 신호와 생활 선택을 모아두는 한국어 공개 큐레이션 노트입니다.
 
 Base URL: {BASE}/
 Language: ko-KR
@@ -953,6 +956,7 @@ Guides: {BASE}/guides/
 Sitemap: {BASE}/sitemap.xml
 Feed: {BASE}/feed.xml
 LLM guide: {BASE}/llms.txt
+{ai_article_lines}
 Language: ko-KR
 Updated: {NOW.isoformat(timespec='seconds')}
 ''')

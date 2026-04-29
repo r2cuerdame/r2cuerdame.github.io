@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 420" role="img" aria-label="카페 후보지 계약 전 판단 흐름도">
+<style>.title{font:900 32px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#102033}.step{font:900 22px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#102033}.small{font:650 15px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#475569}.tag{font:900 14px system-ui,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;fill:#0f766e}</style>
+<rect width="980" height="420" rx="28" fill="#f8fafc"/>
+<text x="42" y="70" class="title">후보지를 바로 추천하지 않는 판단 흐름</text>
+<g transform="translate(42 122)"><rect width="190" height="190" rx="26" fill="#ecfeff" stroke="#99f6e4"/><text x="24" y="58" class="step">후보지</text><text x="24" y="96" class="small">유동인구·임대료·</text><text x="24" y="122" class="small">권리금만 먼저 보지 않음</text></g>
+<path d="M252 218 H322" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/><path d="M322 218 l-18 -13 v26z" fill="#94a3b8"/>
+<g transform="translate(342 122)"><rect width="250" height="190" rx="26" fill="#eff6ff" stroke="#bfdbfe"/><text x="24" y="58" class="step">5개 신호 점검</text><text x="24" y="96" class="small">보정 유동 · 경쟁밀도</text><text x="24" y="122" class="small">폐업압력 · 시간대</text><text x="24" y="148" class="small">2030/여성 · 현장동선</text></g>
+<path d="M612 218 H682" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/><path d="M682 218 l-18 -13 v26z" fill="#94a3b8"/>
+<g transform="translate(702 122)"><rect width="236" height="190" rx="26" fill="#fff7ed" stroke="#fed7aa"/><text x="24" y="58" class="step">보고 결론</text><text x="24" y="100" class="tag">보수검토</text><text x="128" y="100" class="tag">동선선별</text><text x="24" y="136" class="tag">후보유지</text><text x="128" y="136" class="tag">진입주의</text></g>
+<text x="42" y="366" class="small">핵심: 계약 가능성을 보장하지 않고, 재검증 우선순위와 협상 포인트를 남깁니다.</text>
+</svg>
