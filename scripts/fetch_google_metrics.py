@@ -8,9 +8,11 @@ status file with no page counts rather than inventing numbers.
 Local config options (not required):
 - env GA4_PROPERTY_ID=123456789
 - env GA_MEASUREMENT_ID=G-XXXX (for build-time gtag injection)
-- env GOOGLE_APPLICATION_CREDENTIALS=/path/service-account.json
+- env GOOGLE_APPLICATION_CREDENTIALS=/path/...json
+- env GOOGLE_ANALYTICS_TOKEN=/path/authorized_user_token.json
 - env DEALS_ANALYTICS_CONFIG=/path/deals_google_metrics.json
 - /root/.hermes/secrets/deals_google_metrics.json
+- /root/.hermes/secrets/google_analytics_token.json
 - data/metrics/analytics_config.json
 
 Example config JSON:
@@ -30,7 +32,9 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Any
 
@@ -42,6 +46,10 @@ CONFIG_PATHS = [
     Path(os.environ["DEALS_ANALYTICS_CONFIG"]) if os.environ.get("DEALS_ANALYTICS_CONFIG") else None,
     Path("/root/.hermes/secrets/deals_google_metrics.json"),
     ROOT / "data" / "metrics" / "analytics_config.json",
+]
+TOKEN_PATHS = [
+    Path(os.environ["GOOGLE_ANALYTICS_TOKEN"]) if os.environ.get("GOOGLE_ANALYTICS_TOKEN") else None,
+    Path("/root/.hermes/secrets/google_analytics_token.json"),
 ]
 
 
@@ -142,6 +150,58 @@ def service_account_token(credentials_path: str) -> str:
     return str(creds.token or "")
 
 
+def user_oauth_token() -> str:
+    """Return/refresh an OAuth access token saved as authorized-user JSON.
+
+    The token file is local-only and must contain client_id, client_secret, and
+    refresh_token. This lets the hourly cron read GA4 without requiring gcloud.
+    """
+    token_path = next((p for p in TOKEN_PATHS if p and p.exists()), None)
+    if not token_path:
+        return ""
+    data = load_json(token_path)
+    access_token = str(data.get("access_token") or data.get("token") or "")
+    try:
+        expires_at = float(data.get("expires_at") or 0)
+    except Exception:
+        expires_at = 0
+    if access_token and expires_at > time.time() + 120:
+        return access_token
+    refresh_token = str(data.get("refresh_token") or "")
+    client_id = str(data.get("client_id") or "")
+    client_secret = str(data.get("client_secret") or "")
+    if not (refresh_token and client_id and client_secret):
+        return ""
+    body = urllib.parse.urlencode({
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "refresh_token": refresh_token,
+        "grant_type": "refresh_token",
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        "https://oauth2.googleapis.com/token",
+        data=body,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as res:
+            refreshed = json.loads(res.read().decode("utf-8"))
+    except Exception:
+        return ""
+    access_token = str(refreshed.get("access_token") or "")
+    if not access_token:
+        return ""
+    data["access_token"] = access_token
+    data["expires_at"] = time.time() + int(refreshed.get("expires_in") or 3600)
+    try:
+        token_path.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+        token_path.chmod(0o600)
+    except Exception:
+        pass
+    return access_token
+
+
 def run_ga4_rest(property_id: str, token: str, lookback_days: int) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     endpoint = f"https://analyticsdata.googleapis.com/v1beta/properties/{property_id}:runReport"
     body = {
@@ -208,7 +268,7 @@ def collect(lookback_days: int) -> dict[str, Any]:
         base["next_action"] = "connect_google_analytics"
         return base
 
-    token = service_account_token(credentials_path) or gcloud_access_token()
+    token = service_account_token(credentials_path) or user_oauth_token() or gcloud_access_token()
     if not token:
         base["status"] = "api_credentials_missing"
         base["next_action"] = "grant_ga4_read_access"
