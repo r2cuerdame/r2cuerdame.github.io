@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /ai.txt
 
 # Korean/search crawlers
 User-agent: Googlebot

@@ -1,18 +1,19 @@
 # Recuerdame Lab — r2cuerdame.github.io
 
-Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
+Public site for Dongne Radar, guides, and a clearly separated deals section.
 
 ## Live URLs
 
 - Home: https://r2cuerdame.github.io/
 - Dongne Radar: https://r2cuerdame.github.io/radar/
-- Shopping Picks: https://r2cuerdame.github.io/deals/
 - Guides: https://r2cuerdame.github.io/guides/
+- About: https://r2cuerdame.github.io/about/
+- Separate Shopping Picks: https://r2cuerdame.github.io/deals/
 
 ## Current content
 
-- Shopping pick articles: 12
 - Dongne Radar articles: 2
+- Shopping pick articles: 12
 
 ## Search/AI files
 
@@ -21,11 +22,12 @@ Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
 - `https://r2cuerdame.github.io/feed.xml`
 - `https://r2cuerdame.github.io/llms.txt`
 - `https://r2cuerdame.github.io/ai.txt`
+- `https://r2cuerdame.github.io/humans.txt`
 
-## Daily deploy
+## Operating scope
 
-새 쇼핑픽은 `content/deals/`에 추가되고 정적 페이지로 공개됩니다.
+Dongne Radar is the primary editorial scope: 이사, 월세·전세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 
 ## Affiliate rule
 
-제휴 링크가 포함된 글에는 본문 상단에 쿠팡 파트너스 고지를 표시한다.
+제휴 링크가 포함된 구매가이드 글에는 본문 상단에 쿠팡 파트너스 고지를 표시한다. 동네 레이더 글에는 제휴 문맥을 섞지 않는다.

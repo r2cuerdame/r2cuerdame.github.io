@@ -21,9 +21,9 @@ NOW = datetime.now(KST)
 TODAY = NOW.date().isoformat()
 BASE = "https://r2cuerdame.github.io"
 SITE_NAME = "Recuerdame Lab"
-SITE_DESC = "동네 신호와 생활 선택을 가볍게 모아두는 공개 큐레이션 노트입니다."
-COMMON_KEYWORDS = "동네 레이더, 생활 가이드, Recuerdame Lab"
-RADAR_KEYWORDS = "동네 레이더, 전월세 계약, 월세 계약, 서울 동네 분석, 수도권 이사, 현장 확인 질문, 주거 리스크"
+SITE_DESC = "이사·월세·전세·상가 계약 전, 동네와 상권 리스크를 먼저 걸러내는 Dongne Radar 공개 노트입니다."
+COMMON_KEYWORDS = "동네 레이더, 계약 전 체크리스트, 이사 준비, 월세 계약, 전세 계약, 통근, 생활권, 현장 확인, Recuerdame Lab"
+RADAR_KEYWORDS = "동네 레이더, 전월세 계약, 월세 계약, 전세 계약, 서울 동네 분석, 수도권 이사, 통근, 생활권, 현장 확인 질문, 관리비, 소음, 상권 분석, 상가 임대차, 카페 창업, 권리금, 주거 리스크"
 DEALS_KEYWORDS = "구매가이드, 생활용품 추천, 상품 비교, 쿠팡 추천, 쇼핑픽, Recuerdame Lab"
 
 METRICS_PATH = ROOT / "data" / "metrics" / "page_views.json"
@@ -138,7 +138,7 @@ STATIC_PAGES = [
     {
         "path": "/",
         "file": "index.html",
-        "title": "Recuerdame Lab — 동네 데이터와 생활 구매가이드",
+        "title": "Recuerdame Lab — 동네 레이더와 계약 전 체크리스트",
         "description": SITE_DESC,
         "priority": "1.0",
         "type": "WebPage",
@@ -147,46 +147,46 @@ STATIC_PAGES = [
     {
         "path": "/radar/",
         "file": "radar/index.html",
-        "title": "동네 레이더 — Recuerdame Lab",
-        "description": "서울과 동네 흐름을 짧고 재사용 가능한 판단 카드로 정리합니다.",
-        "priority": "0.8",
+        "title": "동네 레이더 — 이사·월세·상가 계약 전 리스크 체크",
+        "description": "이사, 월세·전세, 통근, 생활권, 상가 계약 전에 걸러야 할 동네·상권 리스크와 현장 확인 질문을 정리합니다.",
+        "priority": "0.95",
         "type": "CollectionPage",
         "section": "radar",
     },
     {
-        "path": "/deals/",
-        "file": "deals/index.html",
-        "title": "쇼핑픽 — Recuerdame Lab",
-        "description": "사진으로 먼저 훑어보는 생활 쇼핑픽과 쿠팡 추천 비교글입니다.",
-        "priority": "0.8",
-        "type": "CollectionPage",
-        "section": "deals",
-    },
-    {
         "path": "/guides/",
         "file": "guides/index.html",
-        "title": "처음 온 사람을 위한 읽는 순서 — Recuerdame Lab",
-        "description": "이사·상가 계약·구매가이드를 목적별로 분리해 읽는 첫 방문용 안내입니다.",
-        "priority": "0.7",
+        "title": "동네 레이더 읽는 순서 — 계약 전 체크 가이드",
+        "description": "이사·월세·전세·상가 계약 전에 동네 레이더 글을 어떤 순서로 읽고 무엇을 현장에서 확인할지 정리합니다.",
+        "priority": "0.86",
         "type": "CollectionPage",
         "section": "guides",
     },
     {
         "path": "/about/",
         "file": "about/index.html",
-        "title": "소개 — Recuerdame Lab",
-        "description": "이사, 상가 계약, 생활 구매처럼 돈과 시간을 잡아먹는 결정을 더 빨리 걸러내기 위한 공개 노트입니다.",
-        "priority": "0.4",
+        "title": "소개 — Dongne Radar by Recuerdame Lab",
+        "description": "동네 레이더는 이사·월세·전세·상가 계약 전 돈과 시간을 잡아먹는 리스크를 더 빨리 걸러내기 위한 공개 노트입니다.",
+        "priority": "0.55",
         "type": "AboutPage",
         "section": "about",
+    },
+    {
+        "path": "/deals/",
+        "file": "deals/index.html",
+        "title": "구매가이드 — Recuerdame Lab",
+        "description": "동네 레이더와 분리해 운영하는 생활 구매가이드와 쿠팡 추천 비교글입니다.",
+        "priority": "0.55",
+        "type": "CollectionPage",
+        "section": "deals",
     },
 ]
 
 NAV = [
     ("동네 레이더", "/radar/"),
-    ("구매가이드", "/deals/"),
-    ("가이드", "/guides/"),
+    ("읽는 순서", "/guides/"),
     ("소개", "/about/"),
+    ("구매가이드", "/deals/"),
 ]
 
 
@@ -333,7 +333,7 @@ def validate_article(section: str, data: dict, path: Path) -> dict:
             "primary_deal_url": str(data.get("primary_deal_url") or data.get("deal_url") or coupang_url_from_body(body)),
             "price_hint": str(data.get("price_hint") or price_hint_from_body(body)),
             "item_count_hint": str(data.get("item_count_hint") or item_count_hint(title, body)),
-            "priority": str(data.get("priority") or "0.64"),
+            "priority": str(data.get("priority") or ("0.72" if section == "radar" else "0.54")),
             "type": "BlogPosting",
             "is_affiliate": bool(data.get("is_affiliate", section == "deals")),
         }
@@ -425,11 +425,33 @@ def jsonld_for(page: dict) -> str:
     return json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False, separators=(",", ":"))
 
 
+def keyword_join(*chunks: Any) -> str:
+    terms: list[str] = []
+    for chunk in chunks:
+        if isinstance(chunk, (list, tuple, set)):
+            raw_terms = [str(x) for x in chunk]
+        else:
+            raw_terms = str(chunk or "").split(",")
+        for raw in raw_terms:
+            term = re.sub(r"\s+", " ", str(raw).strip())
+            if term and term not in terms:
+                terms.append(term)
+    return ", ".join(terms)
+
+
 def keywords_for(page: dict) -> str:
     section = page.get("section") or ""
     path = str(page.get("path") or "")
+    title_desc = f"{page.get('title', '')} {page.get('description', '')} {' '.join(page.get('tags') or [])}"
     if section == "radar" or path.startswith("/radar/"):
-        return RADAR_KEYWORDS
+        extras = []
+        if any(token in title_desc for token in ("카페", "상가", "권리금", "창업", "상권")):
+            extras.extend(["상가 계약", "상가 임대차", "카페 창업", "권리금 리스크", "상권 리스크"])
+        if any(token in title_desc for token in ("월세", "전세", "이사", "통근", "생활권", "관리비")):
+            extras.extend(["이사 준비", "월세 압박", "전세 체크리스트", "통근 피로", "생활권 비교"])
+        return keyword_join(RADAR_KEYWORDS, page.get("tags") or [], extras)
+    if section in {"home", "guides", "about"}:
+        return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS)
     if section == "deals" or path.startswith("/deals/"):
         return DEALS_KEYWORDS
     return COMMON_KEYWORDS
@@ -463,6 +485,7 @@ def layout(page: dict, body: str) -> str:
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
   <link rel="alternate" type="application/rss+xml" title="Recuerdame Lab RSS" href="/feed.xml" />
   <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+  <link rel="alternate" type="text/plain" title="AI crawler guide" href="/ai.txt" />
   <link rel="icon" href="/assets/logo.svg" type="image/svg+xml" />
   <meta property="og:type" content="{'article' if page.get('type') == 'BlogPosting' else 'website'}" />
   <meta property="og:locale" content="ko_KR" />
@@ -481,7 +504,7 @@ def layout(page: dict, body: str) -> str:
   <header class="site-header">
     <a class="brand" href="/" aria-label="Recuerdame Lab home">
       <span class="brand-mark">R</span>
-      <span><strong>Recuerdame Lab</strong><small>동네 데이터 · 생활 가이드</small></span>
+      <span><strong>Recuerdame Lab</strong><small>계약 전 동네 레이더</small></span>
     </a>
     <nav class="nav" aria-label="주요 메뉴">
 {nav}
@@ -491,8 +514,8 @@ def layout(page: dict, body: str) -> str:
     {body}
   </main>
   <footer class="footer">
-    <p><strong>Recuerdame Lab</strong> — 동네 흐름과 생활 선택을 가볍게 모아두는 공간.</p>
-    <p class="muted">섹션별 성격이 다른 글은 본문 안에서 필요한 안내를 따로 표시합니다.</p>
+    <p><strong>Recuerdame Lab</strong> — 이사·월세·전세·상가 계약 전, 동네 리스크를 먼저 거르는 공개 노트.</p>
+    <p class="muted">/radar/는 동네 레이더, /deals/는 별도 구매가이드로 분리해 운영합니다.</p>
     <p class="muted">마지막 업데이트: <time datetime="{NOW.isoformat(timespec='seconds')}">{NOW.strftime('%Y-%m-%d %H:%M KST')}</time></p>
   </footer>
 </body>
@@ -576,41 +599,52 @@ def hero_pins(articles: list[dict]) -> str:
     return "\n".join(pins)
 
 def home_body(deals: list[dict], radar: list[dict]) -> str:
-    latest = (deals + radar)[:6]
-    latest_html = article_cards(latest, "첫 공개 글 준비중") if latest else ""
+    radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
+    deal_html = article_cards(deals[:3], "구매가이드 글 준비중") if deals else ""
     return f'''
 <section class="hero home-hero">
-  <p class="eyebrow">Recuerdame Lab</p>
-  <h1>오늘 살 만한 것과 동네 신호를 가볍게 모읍니다.</h1>
-  <p class="lead">쇼핑픽은 사진 카드로 빠르게 훑고, 동네 레이더는 짧은 판단 카드로 읽을 수 있게 정리합니다.</p>
+  <p class="eyebrow">Dongne Radar · Recuerdame Lab</p>
+  <h1>이사·월세·상가 계약 전, 동네 리스크부터 걸러냅니다.</h1>
+  <p class="lead">동네 레이더는 “여기가 좋다”가 아니라 내 계약 조건에서 피해야 할 신호와 현장에서 다시 물어볼 질문을 먼저 정리합니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="/deals/">쇼핑픽 보기</a>
-    <a class="button" href="/radar/">동네 레이더 보기</a>
+    <a class="button primary" href="/radar/">동네 레이더 먼저 보기</a>
+    <a class="button" href="/guides/">읽는 순서 보기</a>
+    <a class="button" href="/deals/">구매가이드 별도 보기</a>
   </div>
 </section>
 <section class="grid three">
-  <article class="card accent-orange">
-    <span class="tag">Shopping</span>
-    <h2>이미지로 보는 쇼핑픽</h2>
-    <p>대표 사진, 가격대 힌트, 비교글을 한 카드에서 먼저 확인합니다.</p>
-    <a href="/deals/">섹션 열기 →</a>
-  </article>
   <article class="card accent-blue">
-    <span class="tag">Radar</span>
+    <span class="tag">Primary</span>
     <h2>동네 레이더</h2>
-    <p>지역·상권·주거 흐름을 바로 써먹기 좋은 판단 문장으로 정리합니다.</p>
-    <a href="/radar/">섹션 열기 →</a>
+    <p>월세·전세 계약, 통근 피로, 생활권, 밤길·소음·관리비, 상가 권리금 리스크를 계약 전 질문으로 바꿉니다.</p>
+    <a href="/radar/">/radar/ 열기 →</a>
   </article>
   <article class="card accent-green">
     <span class="tag">Guide</span>
-    <h2>생활 가이드</h2>
-    <p>광고성 추천과 분리해서 읽을 생활/부동산/동네 기본기를 모읍니다.</p>
-    <a href="/guides/">섹션 열기 →</a>
+    <h2>처음 읽는 순서</h2>
+    <p>이사 준비, 상가 계약, 생활 구매를 섞지 않고 목적별로 어떤 글을 먼저 볼지 정리합니다.</p>
+    <a href="/guides/">가이드 보기 →</a>
+  </article>
+  <article class="card accent-orange">
+    <span class="tag">Separate</span>
+    <h2>구매가이드는 분리</h2>
+    <p>생활 상품 비교는 /deals/에서만 다룹니다. 동네 레이더 글에는 제휴 문맥을 섞지 않습니다.</p>
+    <a href="/deals/">구매가이드 보기 →</a>
   </article>
 </section>
+<section class="panel soft">
+  <h2>동네 레이더가 보는 범위</h2>
+  <div class="category-strip">
+    <span class="category-chip">이사 준비</span><span class="category-chip">월세·전세 계약</span><span class="category-chip">통근 피로</span><span class="category-chip">생활권</span><span class="category-chip">밤길·소음·관리비</span><span class="category-chip">상가·권리금</span><span class="category-chip">현장 확인 질문</span>
+  </div>
+</section>
 <section class="article-list mixed-list">
-  <div class="section-title"><h2>최근 올라온 글</h2><p>사진 카드와 짧은 설명으로 먼저 훑어보세요.</p></div>
-  {latest_html}
+  <div class="section-title"><h2>동네 레이더 최신 글</h2><p>계약 전 리스크와 현장 질문을 먼저 확인하세요.</p></div>
+  {radar_html}
+</section>
+<section class="article-list mixed-list">
+  <div class="section-title"><h2>분리 운영 중인 구매가이드</h2><p>상품 비교가 필요할 때만 별도 섹션에서 확인합니다.</p></div>
+  {deal_html}
 </section>
 '''
 
@@ -645,11 +679,23 @@ def radar_body(radar: list[dict]) -> str:
     return f'''
 <section class="page-hero compact">
   <p class="eyebrow">Dongne Radar</p>
-  <h1>동네 레이더</h1>
-  <p class="lead">서울/동네/상권 신호를 바로 써먹을 수 있는 판단 카드로 정리하는 섹션입니다.</p>
+  <h1>동네 레이더: 계약 전 리스크 체크</h1>
+  <p class="lead">이사, 월세·전세, 통근, 생활권, 상가 계약 전에 “좋아 보이는 동네”보다 먼저 걸러야 할 신호와 현장 확인 질문을 정리합니다.</p>
+  <div class="hero-actions">
+    <a class="button primary" href="/guides/">처음 읽는 순서</a>
+    <a class="button" href="/radar/dongne-signal-framework/">전월세 체크</a>
+    <a class="button" href="/radar/cafe-contract-risk/">상가 계약 체크</a>
+  </div>
+</section>
+<section class="panel soft">
+  <h2>현재 레이더 범위</h2>
+  <div class="category-strip">
+    <span class="category-chip">예산·보증금·월세</span><span class="category-chip">관리비·교통비</span><span class="category-chip">통근·대체 생활권</span><span class="category-chip">생활 상권</span><span class="category-chip">밤길·소음</span><span class="category-chip">상가 임대차·권리금</span>
+  </div>
 </section>
 <section class="article-list">
-  {article_cards(radar, "서울에서 2030 여성이 빠지는 구 TOP 10")}
+  <div class="section-title"><h2>공개된 동네 레이더 글</h2><p>각 글은 결론보다 “계약 전 무엇을 다시 확인할지”에 맞춰 읽으면 됩니다.</p></div>
+  {article_cards(radar, "첫 동네 레이더 글 준비중")}
 </section>
 '''
 
@@ -657,37 +703,37 @@ def guides_body() -> str:
     return '''
 <section class="page-hero compact">
   <p class="eyebrow">Guides</p>
-  <h1>처음 온 사람을 위한 읽는 순서</h1>
-  <p class="lead">동네 레이더와 구매가이드를 섞어 읽지 않도록, 목적별로 먼저 볼 글과 확인 질문을 정리했습니다.</p>
+  <h1>동네 레이더 읽는 순서</h1>
+  <p class="lead">이사·월세·전세·상가 계약 전에는 글을 많이 읽는 것보다, 내 조건에서 먼저 지워야 할 리스크를 순서대로 보는 게 중요합니다.</p>
 </section>
 <section class="grid three">
   <article class="card accent-blue">
-    <span class="tag">이사·전월세</span>
+    <span class="tag">1 · 이사·전월세</span>
     <h2>집 보기 전</h2>
-    <p>예산 상한, 통근 피로, 생활 상권, 밤길·소음·관리비를 먼저 걸러봅니다.</p>
+    <p>예산 상한, 보증금·월세·관리비, 통근 피로, 생활 상권, 밤길·소음을 먼저 걸러봅니다.</p>
     <a href="/radar/dongne-signal-framework/">계약 전 체크리스트 보기 →</a>
   </article>
   <article class="card accent-green">
-    <span class="tag">상가·창업</span>
+    <span class="tag">2 · 상가·창업</span>
     <h2>계약서 쓰기 전</h2>
     <p>유동인구 착시, 경쟁밀도, 폐업 압력, 권리금 회수 리스크를 먼저 의심합니다.</p>
     <a href="/radar/cafe-contract-risk/">카페 상권 리스크 보기 →</a>
   </article>
   <article class="card accent-orange">
-    <span class="tag">구매</span>
-    <h2>쇼핑픽 읽기</h2>
-    <p>사진·가격대·후기 흐름을 빠르게 보고, 최종 가격과 옵션은 상품 페이지에서 다시 확인합니다.</p>
+    <span class="tag">3 · 별도 구매</span>
+    <h2>생활 구매는 분리</h2>
+    <p>상품 비교가 필요할 때만 구매가이드로 이동합니다. 동네 레이더 판단과 제휴 문맥은 섞지 않습니다.</p>
     <a href="/deals/">구매가이드 보기 →</a>
   </article>
 </section>
 <section class="panel">
-  <h2>동네 레이더 글을 읽는 기준</h2>
-  <p>동네 레이더는 “무조건 좋은 곳”을 찍지 않습니다. 내 계약 조건에서 위험 신호를 먼저 지우고, 현장에서 다시 물어볼 질문을 남기는 방식으로 읽으면 됩니다.</p>
-  <ul>
-    <li><strong>첫째:</strong> 내 예산·보증금·월세·관리비·교통비 상한을 정합니다.</li>
-    <li><strong>둘째:</strong> 출퇴근, 장보기, 병원, 운동처럼 반복되는 생활 동선을 확인합니다.</li>
-    <li><strong>셋째:</strong> 데이터가 좋아 보여도 밤길, 소음, 공실, 관리비, 권리금 회수기간은 현장에서 다시 묻습니다.</li>
-  </ul>
+  <h2>이사·월세 계약 루트</h2>
+  <ol>
+    <li><strong>돈:</strong> 보증금, 월세, 관리비, 교통비를 한 달 고정비로 합쳐 상한선을 잡습니다.</li>
+    <li><strong>시간:</strong> 출퇴근, 장보기, 병원, 운동처럼 반복되는 생활 동선을 지도 밖 현장감으로 확인합니다.</li>
+    <li><strong>리스크:</strong> 밤길, 소음, 공실, 관리 상태, 관리비 항목, 계약 특약을 현장에서 다시 묻습니다.</li>
+    <li><strong>대안:</strong> 같은 예산으로 갈 수 있는 대체 생활권을 한 곳 이상 남겨 협상 여지를 만듭니다.</li>
+  </ol>
 </section>
 <section class="notice compact-notice">
   <strong>섹션 구분</strong>
@@ -696,43 +742,52 @@ def guides_body() -> str:
 '''
 
 
+
 def about_body(deals_count: int, radar_count: int) -> str:
     return f'''
 <section class="page-hero compact">
   <p class="eyebrow">About</p>
-  <h1>Recuerdame Lab</h1>
-  <p class="lead">이사, 상가 계약, 생활 구매처럼 작은 실수가 돈과 시간을 잡아먹는 결정을 더 빨리 걸러내기 위한 공개 노트입니다.</p>
+  <h1>Dongne Radar by Recuerdame Lab</h1>
+  <p class="lead">동네 레이더는 이사, 월세·전세, 상가 계약처럼 작은 착각이 돈과 시간을 잡아먹는 결정을 더 빨리 걸러내기 위한 공개 노트입니다.</p>
 </section>
 <section class="grid three">
   <article class="card accent-blue">
-    <span class="tag">Radar</span>
+    <span class="tag">Primary</span>
     <h2>동네 레이더</h2>
     <p>서울·수도권의 주거·상권 신호를 계약 전 체크리스트와 현장 질문으로 바꿉니다.</p>
     <a href="/radar/">동네 레이더 보기 →</a>
   </article>
+  <article class="card accent-green">
+    <span class="tag">Reader path</span>
+    <h2>처음 읽는 법</h2>
+    <p>이사 준비, 상가 계약, 생활 구매를 목적별로 나눠 첫 방문자가 헤매지 않게 합니다.</p>
+    <a href="/guides/">읽는 순서 보기 →</a>
+  </article>
   <article class="card accent-orange">
-    <span class="tag">Deals</span>
+    <span class="tag">Separate</span>
     <h2>구매가이드</h2>
-    <p>생활에 바로 쓰는 상품 후보를 사진, 가격대, 비교 포인트 중심으로 정리합니다.</p>
+    <p>상품 비교와 제휴 가능 글은 /deals/에서만 별도 운영합니다.</p>
     <a href="/deals/">구매가이드 보기 →</a>
   </article>
-  <article class="card accent-green">
-    <span class="tag">Guide</span>
-    <h2>읽는 법</h2>
-    <p>동네 글과 쇼핑 글을 목적별로 분리해서 볼 수 있도록 첫 방문용 안내를 둡니다.</p>
-    <a href="/guides/">가이드 보기 →</a>
-  </article>
+</section>
+<section class="panel soft">
+  <h2>바로 볼 수 있는 동네 레이더</h2>
+  <ul>
+    <li><a href="/radar/dongne-signal-framework/">전월세·이사 계약 전 동네 신호 체크</a></li>
+    <li><a href="/radar/cafe-contract-risk/">카페·상가 계약 전 상권 리스크 체크</a></li>
+  </ul>
 </section>
 <section class="panel">
   <h2>운영 원칙</h2>
   <ul>
     <li><strong>판단 중심:</strong> 단순 순위보다 “계약 전 무엇을 걸러야 하는지”를 먼저 씁니다.</li>
+    <li><strong>현장 질문:</strong> 데이터가 좋아 보여도 밤길, 소음, 관리비, 공실, 권리금 회수는 다시 묻습니다.</li>
     <li><strong>섹션 분리:</strong> 동네 레이더와 구매가이드는 URL, 고지, 독자 의도를 분리합니다.</li>
     <li><strong>검색 친화:</strong> sitemap, RSS, llms.txt, ai.txt를 유지해 검색엔진과 AI가 읽기 쉽게 둡니다.</li>
     <li><strong>계속 갱신:</strong> 공개 글은 KPI와 독자 의도에 맞춰 제목, 도입부, 체크리스트를 계속 다듬습니다.</li>
   </ul>
   <h2>현재 공개 수</h2>
-  <p>구매가이드 {deals_count}개, 동네 레이더 {radar_count}개를 공개 중입니다.</p>
+  <p>동네 레이더 {radar_count}개, 구매가이드 {deals_count}개를 공개 중입니다.</p>
 </section>
 <section class="notice compact-notice">
   <strong>투명성</strong>
@@ -740,7 +795,7 @@ def about_body(deals_count: int, radar_count: int) -> str:
 </section>
 '''
 
-def article_body(article: dict) -> str:
+def article_body(article: dict, related_articles: list[dict] | None = None) -> str:
     section_name = "쇼핑픽" if article["section"] == "deals" else "동네 레이더"
     section_href = f"/{article['section']}/"
     dt = parse_dt(article.get("date"))
@@ -763,6 +818,16 @@ def article_body(article: dict) -> str:
     <div class="deal-actions"><a class="deal-button primary" href="#article-body">본문 비교 보기</a>{external}</div>
   </div>
 </section>'''
+    related_block = ""
+    if article.get("section") == "radar":
+        related = related_articles or []
+        links = "".join(f'<li><a href="{esc(a["path"])}">{esc(a["title"])}</a></li>' for a in related[:3])
+        if not links:
+            links = '<li><a href="/guides/">동네 레이더 읽는 순서</a></li>'
+        related_block = f'''<section class="related-radar">
+  <h2>다음에 같이 볼 글</h2>
+  <ul>{links}<li><a href="/guides/">처음 온 사람을 위한 읽는 순서</a></li></ul>
+</section>'''
     return f'''
 <article class="article-page">
   <nav class="breadcrumb" aria-label="breadcrumb"><a href="/">홈</a><span>›</span><a href="{section_href}">{esc(section_name)}</a></nav>
@@ -778,8 +843,10 @@ def article_body(article: dict) -> str:
   <section id="article-body" class="article-content">
     {article['body_html']}
   </section>
+  {related_block}
   <footer class="article-tail">
     <a class="button" href="{section_href}">목록으로</a>
+    <a class="button" href="/guides/">읽는 순서</a>
   </footer>
 </article>
 '''
@@ -942,7 +1009,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .article-content table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
 .article-content th, .article-content td { border: 1px solid var(--line); padding: 10px; }
-.article-tail { margin: 28px 0 70px; }
+.related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
+.related-radar h2 { margin-top: 0; }
+.related-radar ul { margin-bottom: 0; }
+.article-tail { margin: 28px 0 70px; display: flex; gap: 12px; flex-wrap: wrap; }
 .footer {
   width: min(1240px, calc(100% - 32px)); margin: 56px auto 0; padding: 28px 0 40px;
   border-top: 1px solid var(--line); color: #5f5652;
@@ -955,7 +1025,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin-stack { min-height: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; width: 100%; transform: none; border-width: 5px; border-radius: 20px; }
   .hero-pin span { display: none; }
-  .card, .panel, .notice, .list-card, .article-content { border-radius: 22px; padding: 22px; }
+  .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
   .article-page { max-width: 100%; }
 }
 @media (max-width: 560px) {
@@ -968,7 +1038,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 
 LOGO = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Recuerdame Lab"><rect width="128" height="128" rx="34" fill="#101828"/><path d="M38 91V31h32c13 0 22 8 22 20 0 9-5 16-13 19l17 21H76L62 72h-8v19H38Zm16-33h14c6 0 10-3 10-8s-4-8-10-8H54v16Z" fill="#fff"/><circle cx="93" cy="36" r="8" fill="#60a5fa"/></svg>'''
 
-OG = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#101828"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1030" cy="120" r="210" fill="#60a5fa" opacity=".22"/><circle cx="170" cy="520" r="190" fill="#f59e0b" opacity=".22"/><text x="80" y="220" fill="#fff" font-family="Arial, sans-serif" font-size="72" font-weight="800">Recuerdame Lab</text><text x="80" y="315" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="38">동네 데이터 · 생활 구매가이드</text><text x="80" y="405" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="30">Search and AI ready public hub</text></svg>'''
+OG = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#101828"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1030" cy="120" r="210" fill="#60a5fa" opacity=".22"/><circle cx="170" cy="520" r="190" fill="#f59e0b" opacity=".22"/><text x="80" y="220" fill="#fff" font-family="Arial, sans-serif" font-size="72" font-weight="800">Recuerdame Lab</text><text x="80" y="315" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="38">계약 전 동네 레이더</text><text x="80" y="405" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="30">Search and AI ready public hub</text></svg>'''
 
 
 def write(rel: str, content: str) -> None:
@@ -1002,7 +1072,8 @@ def build() -> None:
         write(page["file"], layout(page, bodies[page["section"]]))
 
     for article in deals + radar:
-        write(article["file"], layout(article, article_body(article)))
+        related = [a for a in radar if a["path"] != article["path"]][:3] if article.get("section") == "radar" else []
+        write(article["file"], layout(article, article_body(article, related)))
 
     write("404.html", layout({
         "path": "/404.html",
@@ -1018,6 +1089,8 @@ def build() -> None:
     write(".nojekyll", "")
     write("robots.txt", f'''User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /ai.txt
 
 # Korean/search crawlers
 User-agent: Googlebot
@@ -1053,7 +1126,7 @@ Sitemap: {BASE}/sitemap.xml
 Host: r2cuerdame.github.io
 ''')
 
-    all_pages = list(STATIC_PAGES) + deals + radar
+    all_pages = list(STATIC_PAGES) + radar + deals
     sitemap_items = "\n".join(
         f'  <url><loc>{BASE}{p["path"]}</loc><lastmod>{parse_dt(p.get("date")).date().isoformat() if p.get("type") == "BlogPosting" else TODAY}</lastmod><changefreq>{"weekly" if p.get("type") == "BlogPosting" else "daily"}</changefreq><priority>{p.get("priority", "0.64")}</priority></url>'
         for p in all_pages
@@ -1064,42 +1137,58 @@ Host: r2cuerdame.github.io
 </urlset>
 ''')
 
-    rss_source = (deals + radar)[:20] or STATIC_PAGES[:4]
+    rss_source = (radar + deals)[:20] or STATIC_PAGES[:4]
     rss_items = "\n".join(
         f'''<item><title>{esc(p["title"])}</title><link>{BASE}{p["path"]}</link><guid>{BASE}{p["path"]}</guid><pubDate>{format_datetime(parse_dt(p.get("date")))}</pubDate><description>{esc(p["description"])}</description></item>'''
         for p in rss_source
     )
     write("feed.xml", f'''<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"><channel><title>Recuerdame Lab</title><link>{BASE}/</link><description>{esc(SITE_DESC)}</description><language>ko-KR</language><lastBuildDate>{format_datetime(NOW)}</lastBuildDate>{rss_items}</channel></rss>
+<rss version="2.0"><channel><title>Dongne Radar — Recuerdame Lab</title><link>{BASE}/radar/</link><description>{esc(SITE_DESC)}</description><language>ko-KR</language><lastBuildDate>{format_datetime(NOW)}</lastBuildDate>{rss_items}</channel></rss>
 ''')
 
-    article_lines = "\n".join(
-        f"- {a['title']}: {BASE}{a['path']}" for a in (deals + radar)[:30]
-    ) or "- 아직 공개 글 없음"
-    ai_article_lines = "\n".join(
-        f"Article: {BASE}{a['path']} — {a['title']}" for a in (radar[:8] + deals[:4])
-    ) or "Article: none"
-    write("llms.txt", f'''# Recuerdame Lab
+    radar_article_lines = "\n".join(
+        f"- {a['title']}: {BASE}{a['path']}" for a in radar[:20]
+    ) or "- 아직 공개된 동네 레이더 글 없음"
+    deals_article_lines = "\n".join(
+        f"- {a['title']}: {BASE}{a['path']}" for a in deals[:8]
+    ) or "- 공개된 구매가이드 없음"
+    ai_radar_lines = "\n".join(
+        f"Radar Article: {BASE}{a['path']} — {a['title']}" for a in radar[:12]
+    ) or "Radar Article: none"
+    ai_deals_lines = "\n".join(
+        f"Separate Deals Article: {BASE}{a['path']} — {a['title']}" for a in deals[:4]
+    ) or "Separate Deals Article: none"
+    write("llms.txt", f'''# Recuerdame Lab / Dongne Radar
 
-> 동네 신호와 생활 선택을 모아두는 한국어 공개 큐레이션 노트입니다.
+> 이사·월세·전세·상가 계약 전, 동네와 상권 리스크를 먼저 걸러내는 한국어 공개 노트입니다.
 
 Base URL: {BASE}/
+Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
 Last updated: {NOW.isoformat(timespec='seconds')}
 
-## Sections
+## Primary sections
 
 - 동네 레이더: {BASE}/radar/
-  - 서울/동네/상권/주거 흐름을 판단 카드로 정리합니다.
-- 쇼핑픽: {BASE}/deals/
-  - 생활에 바로 쓰는 쿠팡 추천과 상품 비교글을 사진 카드로 모읍니다.
+  - 계약 전 리스크, 생활권, 통근, 관리비, 소음, 상권·권리금 리스크를 판단 카드와 현장 질문으로 정리합니다.
+- 읽는 순서: {BASE}/guides/
+  - 첫 방문자가 이사·월세·상가 계약 전 어떤 글을 먼저 읽을지 안내합니다.
+- 소개: {BASE}/about/
+  - 운영 원칙, 섹션 분리, 검색/AI 공개 원칙을 설명합니다.
+
+## Separate commercial section
+
+- 구매가이드: {BASE}/deals/
+  - 동네 레이더와 분리된 생활 상품 비교 섹션입니다.
   - 제휴 링크가 포함된 글은 본문에 고지를 표시합니다.
-- 생활 가이드: {BASE}/guides/
-  - 생활, 지역, 부동산 기본 가이드를 모읍니다.
 
-## Latest public articles
+## Dongne Radar articles
 
-{article_lines}
+{radar_article_lines}
+
+## Separate deals articles
+
+{deals_article_lines}
 
 ## Crawl hints
 
@@ -1107,21 +1196,25 @@ Last updated: {NOW.isoformat(timespec='seconds')}
 - Sitemap: {BASE}/sitemap.xml
 - RSS: {BASE}/feed.xml
 - Robots: {BASE}/robots.txt
+- AI guide: {BASE}/ai.txt
 
 ## Citation preference
 
-When citing this site, cite the canonical page URL and use the page title. Prefer Korean summaries for Korean queries.
+When citing this site, prefer Dongne Radar pages for neighborhood, moving, rent, commute, living-area, on-site-check, commercial-lease, and store-location-risk queries. Cite the canonical page URL and use Korean summaries for Korean queries.
 ''')
     write("ai.txt", f'''Recuerdame Lab allows AI search crawlers and answer engines to discover, index, summarize, and cite public pages on this site.
 
 Canonical: {BASE}/
+Primary scope: Dongne Radar for moving, monthly rent, jeonse, commute, living area, on-site checks, commercial lease, cafe/store location, key money risk.
 Radar: {BASE}/radar/
-Deals: {BASE}/deals/
 Guides: {BASE}/guides/
+About: {BASE}/about/
+Separate deals section: {BASE}/deals/
 Sitemap: {BASE}/sitemap.xml
 Feed: {BASE}/feed.xml
 LLM guide: {BASE}/llms.txt
-{ai_article_lines}
+{ai_radar_lines}
+{ai_deals_lines}
 Language: ko-KR
 Updated: {NOW.isoformat(timespec='seconds')}
 ''')
@@ -1129,7 +1222,8 @@ Updated: {NOW.isoformat(timespec='seconds')}
 Owner: r2cuerdame
 Site: {BASE}/
 Language: Korean
-Purpose: Dongne Radar, lifestyle guides, and Coupang shopping picks.
+Primary purpose: Dongne Radar — moving, rent, commute, living-area, on-site-check, and commercial-lease risk notes.
+Separate section: /deals/ for lifestyle shopping picks and affiliate-disclosed comparisons.
 Updated: {NOW.isoformat(timespec='seconds')}
 ''')
     write("build-info.json", json.dumps({
@@ -1137,29 +1231,33 @@ Updated: {NOW.isoformat(timespec='seconds')}
         "base_url": BASE,
         "built_at": NOW.isoformat(timespec="seconds"),
         "timezone": "Asia/Seoul",
+        "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
         "sections": [p["path"] for p in STATIC_PAGES],
-        "article_counts": {"deals": len(deals), "radar": len(radar)},
+        "article_counts": {"radar": len(radar), "deals": len(deals)},
         "search_ready": ["google", "naver", "daum", "ai_search"],
         "analytics": {"tracking_ready": bool(ANALYTICS_ID), "metrics_status": PAGE_METRICS_DATA.get("status"), "metrics_updated_at": PAGE_METRICS_DATA.get("updated_at")},
         "sitemap": f"{BASE}/sitemap.xml",
         "rss": f"{BASE}/feed.xml",
         "llms": f"{BASE}/llms.txt",
+        "ai": f"{BASE}/ai.txt",
+        "humans": f"{BASE}/humans.txt",
     }, ensure_ascii=False, indent=2) + "\n")
     write("README.md", f'''# Recuerdame Lab — r2cuerdame.github.io
 
-Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
+Public site for Dongne Radar, guides, and a clearly separated deals section.
 
 ## Live URLs
 
 - Home: {BASE}/
 - Dongne Radar: {BASE}/radar/
-- Shopping Picks: {BASE}/deals/
 - Guides: {BASE}/guides/
+- About: {BASE}/about/
+- Separate Shopping Picks: {BASE}/deals/
 
 ## Current content
 
-- Shopping pick articles: {len(deals)}
 - Dongne Radar articles: {len(radar)}
+- Shopping pick articles: {len(deals)}
 
 ## Search/AI files
 
@@ -1168,14 +1266,15 @@ Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
 - `{BASE}/feed.xml`
 - `{BASE}/llms.txt`
 - `{BASE}/ai.txt`
+- `{BASE}/humans.txt`
 
-## Daily deploy
+## Operating scope
 
-새 쇼핑픽은 `content/deals/`에 추가되고 정적 페이지로 공개됩니다.
+Dongne Radar is the primary editorial scope: 이사, 월세·전세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 
 ## Affiliate rule
 
-제휴 링크가 포함된 글에는 본문 상단에 쿠팡 파트너스 고지를 표시한다.
+제휴 링크가 포함된 구매가이드 글에는 본문 상단에 쿠팡 파트너스 고지를 표시한다. 동네 레이더 글에는 제휴 문맥을 섞지 않는다.
 ''')
     write("docs/search-indexing.md", f'''# Search indexing checklist
 
