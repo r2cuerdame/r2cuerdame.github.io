@@ -643,6 +643,8 @@ OG = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBo
 def write(rel: str, content: str) -> None:
     path = ROOT / rel
     path.parent.mkdir(parents=True, exist_ok=True)
+    if content:
+        content = "\n".join(line.rstrip() for line in content.splitlines()) + ("\n" if content.endswith("\n") else "")
     path.write_text(content, encoding="utf-8", newline="\n")
 
 
@@ -843,16 +845,15 @@ LLM guide: {BASE}/llms.txt
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
 - daily automation keeps metadata current and can add clean article candidates.
 
-## Manual one-time registrations still needed
+## Registration status
 
-Search engines usually require owner verification before manual sitemap submission.
-Do not store verification tokens in docs. Add verification meta/file only after the owner provides the token.
+Search engines require owner verification before manual sitemap submission. Verification tokens are kept only as site meta tags, not as account credentials.
 
-- Google Search Console: add property for `{BASE}/`, verify, submit `/sitemap.xml`.
-- Naver Search Advisor: add site, verify, submit `/sitemap.xml` and `/robots.txt` check.
+- Google Search Console: property verified and `/sitemap.xml` submitted.
+- Naver Search Advisor: site ownership accepted; sitemap/robots are ready for crawl checks.
 - Daum search/webmaster registration: register site URL and sitemap if the tool asks for it.
 
-After verification, keep publishing complete reader-facing pages. Empty daily rebuilds help freshness but do not replace real content.
+Keep publishing complete reader-facing pages. Empty daily rebuilds help freshness but do not replace real content.
 ''')
 
 

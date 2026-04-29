@@ -11,8 +11,8 @@ GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupan
 
 ## Current content
 
-- Partners Pick articles: 11
-- Dongne Radar articles: 0
+- Partners Pick articles: 12
+- Dongne Radar articles: 1
 
 ## Search/AI files
 

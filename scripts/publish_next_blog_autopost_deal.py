@@ -42,6 +42,22 @@ def windows_git(args: list[str], check: bool = True) -> subprocess.CompletedProc
     )
 
 
+def sync_remote_before_publish() -> dict[str, str]:
+    """Fast-forward/rebase local main before creating a daily publish commit.
+
+    GitHub Actions may refresh metadata shortly before the Hermes daily publisher.
+    Sync first so the final push stays fast-forward without committing over stale
+    generated files. Untracked local working files are ignored, but tracked edits
+    fail closed.
+    """
+    dirty = run(['git', 'status', '--porcelain', '--untracked-files=no'], check=True).stdout.strip()
+    if dirty:
+        raise RuntimeError('tracked_worktree_dirty_before_publish')
+    fetch = windows_git(['fetch', 'origin', 'main'], check=True)
+    rebase = run(['git', 'rebase', 'origin/main'], check=True)
+    return {'fetch_stderr': fetch.stderr.strip()[-500:], 'rebase_stdout': rebase.stdout.strip()[-500:], 'rebase_stderr': rebase.stderr.strip()[-500:]}
+
+
 def strip_tags(value: str) -> str:
     value = re.sub(r'<script\b[^>]*>.*?</script>', ' ', value or '', flags=re.I | re.S)
     value = re.sub(r'<style\b[^>]*>.*?</style>', ' ', value, flags=re.I | re.S)
@@ -243,9 +259,10 @@ def main() -> int:
     ap.add_argument('--no-push', action='store_true')
     args = ap.parse_args()
     try:
+        sync = {'skipped': bool(args.dry_run)} if args.dry_run else sync_remote_before_publish()
         result = import_next(dry_run=args.dry_run)
         git_result = git_publish(result, dry_run=args.dry_run, no_push=args.no_push)
-        out = {'ok': True, 'checked_at': datetime.now(KST).isoformat(timespec='seconds'), **result, 'git': git_result}
+        out = {'ok': True, 'checked_at': datetime.now(KST).isoformat(timespec='seconds'), **result, 'git': git_result, 'sync': sync}
         if result.get('article'):
             article = result['article']
             out['url'] = f"{BASE}/deals/{article['slug']}/"
