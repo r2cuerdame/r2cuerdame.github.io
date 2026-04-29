@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone, timedelta
 from email.utils import format_datetime
 from pathlib import Path
+import hashlib
 import html
 import json
 import os
@@ -206,6 +207,10 @@ class BuildError(RuntimeError):
 
 def esc(value: Any) -> str:
     return html.escape(str(value or ""), quote=True)
+
+
+def asset_version(value: str) -> str:
+    return hashlib.sha1(str(value or "").encode("utf-8")).hexdigest()[:10]
 
 
 def strip_tags(value: str) -> str:
@@ -692,7 +697,7 @@ def search_body(deals: list[dict], radar: list[dict]) -> str:
   <h2>많이 찾는 시작점</h2>
   <ul class="quick-links">{popular_links}</ul>
 </section>
-<script src="/assets/search.js" defer></script>
+<script src="/assets/search.js?v={asset_version(SEARCH_JS)}" defer></script>
 '''
 
 

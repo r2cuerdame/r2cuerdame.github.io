@@ -109,7 +109,7 @@ def visible_titles(results: list[dict[str, Any]]) -> list[str]:
 def run_smoke(search_page: str, search_js: str, data: dict[str, Any], *, mode: str) -> dict[str, Any]:
     items = data.get("items")
     assert_true(isinstance(items, list) and len(items) >= 5, "search_index_items_missing")
-    assert_true('class="site-search"' in search_page and "/assets/search.js" in search_page, "search_page_form_or_js_missing")
+    assert_true('class="site-search"' in search_page and "/assets/search.js?v=" in search_page, "search_page_form_or_versioned_js_missing")
     assert_true("if (!matched) return 0;" in search_js, "search_js_relevance_guard_missing")
     assert_true("matchedCount < tokens.length" in search_js, "search_js_multi_token_guard_missing")
     assert_true("score += 0.5" in search_js, "search_js_deals_tiebreak_missing")
