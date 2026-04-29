@@ -128,6 +128,8 @@ def layout(page: dict, body: str) -> str:
   <meta name="author" content="r2cuerdame" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="google-site-verification" content="ILhLytZTybOA7bvoSNjVcGxz7XrbDHaB9Bma0MZ3BsU" />
+  <meta name="naver-site-verification" content="bb83dff028cd4b034e752644078b8cea69499c9a" />
   <meta name="Yeti" content="index,follow" />
   <meta name="Daumoa" content="index,follow" />
   <meta name="date" content="{TODAY}" />

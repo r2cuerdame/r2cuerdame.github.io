@@ -4,4 +4,4 @@ Canonical: https://r2cuerdame.github.io/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
 Language: ko-KR
-Updated: 2026-04-29T21:36:39+09:00
+Updated: 2026-04-29T21:51:12+09:00

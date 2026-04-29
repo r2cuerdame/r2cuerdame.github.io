@@ -4,7 +4,7 @@
 
 Base URL: https://r2cuerdame.github.io/
 Language: ko-KR
-Last updated: 2026-04-29T21:36:39+09:00
+Last updated: 2026-04-29T21:51:12+09:00
 
 ## Sections
 
