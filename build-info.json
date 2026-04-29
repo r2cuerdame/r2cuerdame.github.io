@@ -1,7 +1,7 @@
 {
   "site": "Recuerdame Lab",
   "base_url": "https://r2cuerdame.github.io",
-  "built_at": "2026-04-30T05:54:20+09:00",
+  "built_at": "2026-04-30T08:31:00+09:00",
   "timezone": "Asia/Seoul",
   "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
   "sections": [
@@ -14,7 +14,7 @@
   ],
   "article_counts": {
     "radar": 2,
-    "deals": 12
+    "deals": 13
   },
   "search_ready": [
     "google",
