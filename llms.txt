@@ -4,7 +4,7 @@
 
 Base URL: https://r2cuerdame.github.io/
 Language: ko-KR
-Last updated: 2026-04-29T21:51:12+09:00
+Last updated: 2026-04-29T21:55:13+09:00
 
 ## Sections
 
@@ -15,6 +15,19 @@ Last updated: 2026-04-29T21:51:12+09:00
   - 제휴 링크가 포함된 글은 본문에 고지를 표시합니다.
 - 생활 가이드: https://r2cuerdame.github.io/guides/
   - 생활, 지역, 부동산 기본 가이드를 모읍니다.
+
+## Latest public articles
+
+- 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/
+- 주방가전 쿠팡 딜 BEST 5, 실사용 만족도 높은 인기 제품 위주: https://r2cuerdame.github.io/deals/주방가전-쿠팡-딜-best-5-실사용-만족도-높은-인기-제품-위주-67ac40f4/
+- 2026 ANC 헤드폰 추천 5종 가격대별 비교: https://r2cuerdame.github.io/deals/2026-anc-headphones-top5/
+- 제습기 추천 BEST 5, 장마철 전에 많이 찾는 실속 모델: https://r2cuerdame.github.io/deals/dehumidifier-best5/
+- 오늘의 쿠팡 핫딜, 개발자 책상 위에서 바로 체감되는 가젯 5선: https://r2cuerdame.github.io/deals/today-desk-gadget-deals/
+- 게이밍 헤드셋 추천 BEST 5, FPS부터 무선까지 만족도 높은 모델: https://r2cuerdame.github.io/deals/gaming-headset-best5/
+- 공기청정기 추천 TOP 5, 거실부터 방까지 많이 찾는 모델 정리: https://r2cuerdame.github.io/deals/air-purifier-top5/
+- 2026 모니터암 추천 TOP 5, 책상 공간 확실히 넓어지는 모델: https://r2cuerdame.github.io/deals/2026-monitor-arm-top5/
+- 2026 로봇청소기 추천 BEST 4 – 가격대별 완벽 비교: https://r2cuerdame.github.io/deals/2026-robot-vacuum-best4/
+- 2026 기계식 키보드 추천 TOP 5 – 게이밍·개발자 필수템: https://r2cuerdame.github.io/deals/2026-mechanical-keyboard-top5/
 
 ## Crawl hints
 

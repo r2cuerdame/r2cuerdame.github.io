@@ -8,10 +8,10 @@ LLM guide: https://r2cuerdame.github.io/llms.txt
 ## Already handled in repo
 
 - robots allows Google, Naver/Yeti, Daumoa, Bing, and major AI/search crawlers.
-- sitemap has daily `lastmod`.
+- sitemap includes static sections and generated article URLs.
 - every HTML page has canonical, description, OG, RSS, sitemap link, and JSON-LD.
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
-- daily GitHub Actions refresh keeps metadata current.
+- daily automation keeps metadata current and can add clean article candidates.
 
 ## Manual one-time registrations still needed
 

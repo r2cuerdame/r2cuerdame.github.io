@@ -9,6 +9,11 @@ GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupan
 - Partners Pick: https://r2cuerdame.github.io/deals/
 - Guides: https://r2cuerdame.github.io/guides/
 
+## Current content
+
+- Partners Pick articles: 10
+- Dongne Radar articles: 0
+
 ## Search/AI files
 
 - `https://r2cuerdame.github.io/sitemap.xml`
@@ -19,7 +24,7 @@ GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupan
 
 ## Daily deploy
 
-`.github/workflows/daily-pages-refresh.yml` runs daily and refreshes sitemap/RSS/LLM metadata, then pushes changes to `main` so GitHub Pages rebuilds.
+`.github/workflows/daily-pages-refresh.yml` refreshes metadata. Hermes daily publisher imports one quality-passed Coupang draft into `content/deals/` and pushes the regenerated static site.
 
 ## Affiliate rule
 
