@@ -165,8 +165,8 @@ STATIC_PAGES = [
     {
         "path": "/guides/",
         "file": "guides/index.html",
-        "title": "생활 가이드 — Recuerdame Lab",
-        "description": "생활, 지역, 부동산 기본 가이드를 모으는 섹션입니다.",
+        "title": "처음 온 사람을 위한 읽는 순서 — Recuerdame Lab",
+        "description": "이사·상가 계약·구매가이드를 목적별로 분리해 읽는 첫 방문용 안내입니다.",
         "priority": "0.7",
         "type": "CollectionPage",
         "section": "guides",
@@ -175,7 +175,7 @@ STATIC_PAGES = [
         "path": "/about/",
         "file": "about/index.html",
         "title": "소개 — Recuerdame Lab",
-        "description": "동네 신호와 생활 쇼핑픽을 모아두는 개인 큐레이션 노트입니다.",
+        "description": "이사, 상가 계약, 생활 구매처럼 돈과 시간을 잡아먹는 결정을 더 빨리 걸러내기 위한 공개 노트입니다.",
         "priority": "0.4",
         "type": "AboutPage",
         "section": "about",
@@ -657,20 +657,41 @@ def guides_body() -> str:
     return '''
 <section class="page-hero compact">
   <p class="eyebrow">Guides</p>
-  <h1>생활 가이드</h1>
-  <p class="lead">광고성 추천과 분리된 생활/지역/부동산 기본 가이드를 모읍니다.</p>
+  <h1>처음 온 사람을 위한 읽는 순서</h1>
+  <p class="lead">동네 레이더와 구매가이드를 섞어 읽지 않도록, 목적별로 먼저 볼 글과 확인 질문을 정리했습니다.</p>
 </section>
-<section class="article-list">
-  <article class="list-card">
-    <span class="tag">준비중</span>
-    <h2>동네를 볼 때 먼저 확인할 5가지</h2>
-    <p>인구, 교통, 상권, 전세, 학교/생활 인프라를 빠르게 보는 체크리스트.</p>
+<section class="grid three">
+  <article class="card accent-blue">
+    <span class="tag">이사·전월세</span>
+    <h2>집 보기 전</h2>
+    <p>예산 상한, 통근 피로, 생활 상권, 밤길·소음·관리비를 먼저 걸러봅니다.</p>
+    <a href="/radar/dongne-signal-framework/">계약 전 체크리스트 보기 →</a>
   </article>
-  <article class="list-card">
-    <span class="tag">준비중</span>
-    <h2>구매가이드 읽는 법</h2>
-    <p>파트너스 글에서 광고와 실제 판단 기준을 분리해 읽는 방법.</p>
+  <article class="card accent-green">
+    <span class="tag">상가·창업</span>
+    <h2>계약서 쓰기 전</h2>
+    <p>유동인구 착시, 경쟁밀도, 폐업 압력, 권리금 회수 리스크를 먼저 의심합니다.</p>
+    <a href="/radar/cafe-contract-risk/">카페 상권 리스크 보기 →</a>
   </article>
+  <article class="card accent-orange">
+    <span class="tag">구매</span>
+    <h2>쇼핑픽 읽기</h2>
+    <p>사진·가격대·후기 흐름을 빠르게 보고, 최종 가격과 옵션은 상품 페이지에서 다시 확인합니다.</p>
+    <a href="/deals/">구매가이드 보기 →</a>
+  </article>
+</section>
+<section class="panel">
+  <h2>동네 레이더 글을 읽는 기준</h2>
+  <p>동네 레이더는 “무조건 좋은 곳”을 찍지 않습니다. 내 계약 조건에서 위험 신호를 먼저 지우고, 현장에서 다시 물어볼 질문을 남기는 방식으로 읽으면 됩니다.</p>
+  <ul>
+    <li><strong>첫째:</strong> 내 예산·보증금·월세·관리비·교통비 상한을 정합니다.</li>
+    <li><strong>둘째:</strong> 출퇴근, 장보기, 병원, 운동처럼 반복되는 생활 동선을 확인합니다.</li>
+    <li><strong>셋째:</strong> 데이터가 좋아 보여도 밤길, 소음, 공실, 관리비, 권리금 회수기간은 현장에서 다시 묻습니다.</li>
+  </ul>
+</section>
+<section class="notice compact-notice">
+  <strong>섹션 구분</strong>
+  <p><a href="/radar/">/radar/</a>는 동네·상권 판단 글, <a href="/deals/">/deals/</a>는 구매가이드 글입니다. 제휴 링크가 있는 글은 해당 본문 안에서 따로 고지합니다.</p>
 </section>
 '''
 
@@ -680,13 +701,42 @@ def about_body(deals_count: int, radar_count: int) -> str:
 <section class="page-hero compact">
   <p class="eyebrow">About</p>
   <h1>Recuerdame Lab</h1>
-  <p class="lead">동네를 볼 때 필요한 신호와 생활 속 구매 후보를 가볍게 모아두는 개인 큐레이션 공간입니다.</p>
+  <p class="lead">이사, 상가 계약, 생활 구매처럼 작은 실수가 돈과 시간을 잡아먹는 결정을 더 빨리 걸러내기 위한 공개 노트입니다.</p>
+</section>
+<section class="grid three">
+  <article class="card accent-blue">
+    <span class="tag">Radar</span>
+    <h2>동네 레이더</h2>
+    <p>서울·수도권의 주거·상권 신호를 계약 전 체크리스트와 현장 질문으로 바꿉니다.</p>
+    <a href="/radar/">동네 레이더 보기 →</a>
+  </article>
+  <article class="card accent-orange">
+    <span class="tag">Deals</span>
+    <h2>구매가이드</h2>
+    <p>생활에 바로 쓰는 상품 후보를 사진, 가격대, 비교 포인트 중심으로 정리합니다.</p>
+    <a href="/deals/">구매가이드 보기 →</a>
+  </article>
+  <article class="card accent-green">
+    <span class="tag">Guide</span>
+    <h2>읽는 법</h2>
+    <p>동네 글과 쇼핑 글을 목적별로 분리해서 볼 수 있도록 첫 방문용 안내를 둡니다.</p>
+    <a href="/guides/">가이드 보기 →</a>
+  </article>
 </section>
 <section class="panel">
-  <h2>무엇을 올리나</h2>
-  <p>동네 레이더는 지역 흐름을 짧게 정리하고, 쇼핑픽은 생활에 바로 쓰는 상품 비교글을 사진 중심으로 모읍니다.</p>
+  <h2>운영 원칙</h2>
+  <ul>
+    <li><strong>판단 중심:</strong> 단순 순위보다 “계약 전 무엇을 걸러야 하는지”를 먼저 씁니다.</li>
+    <li><strong>섹션 분리:</strong> 동네 레이더와 구매가이드는 URL, 고지, 독자 의도를 분리합니다.</li>
+    <li><strong>검색 친화:</strong> sitemap, RSS, llms.txt, ai.txt를 유지해 검색엔진과 AI가 읽기 쉽게 둡니다.</li>
+    <li><strong>계속 갱신:</strong> 공개 글은 KPI와 독자 의도에 맞춰 제목, 도입부, 체크리스트를 계속 다듬습니다.</li>
+  </ul>
   <h2>현재 공개 수</h2>
-  <p>쇼핑픽 {deals_count}개, 동네 레이더 {radar_count}개를 공개 중입니다.</p>
+  <p>구매가이드 {deals_count}개, 동네 레이더 {radar_count}개를 공개 중입니다.</p>
+</section>
+<section class="notice compact-notice">
+  <strong>투명성</strong>
+  <p>구매가이드의 일부 링크는 제휴 링크일 수 있으며, 그런 글은 본문에 별도 고지를 표시합니다. 동네 레이더 글에는 제휴 문맥을 섞지 않습니다.</p>
 </section>
 '''
 
