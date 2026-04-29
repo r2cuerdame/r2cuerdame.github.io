@@ -176,9 +176,18 @@ STATIC_PAGES = [
         "file": "deals/index.html",
         "title": "구매가이드 — Recuerdame Lab",
         "description": "동네 레이더와 분리해 운영하는 생활 구매가이드와 쿠팡 추천 비교글입니다.",
-        "priority": "0.55",
+        "priority": "0.72",
         "type": "CollectionPage",
         "section": "deals",
+    },
+    {
+        "path": "/search/",
+        "file": "search/index.html",
+        "title": "사이트 검색 — Recuerdame Lab",
+        "description": "동네 레이더와 구매가이드 글을 키워드로 빠르게 찾는 사이트 검색입니다.",
+        "priority": "0.64",
+        "type": "SearchResultsPage",
+        "section": "search",
     },
 ]
 
@@ -187,6 +196,7 @@ NAV = [
     ("읽는 순서", "/guides/"),
     ("소개", "/about/"),
     ("구매가이드", "/deals/"),
+    ("검색", "/search/"),
 ]
 
 
@@ -365,6 +375,11 @@ def jsonld_for(page: dict) -> str:
             "inLanguage": "ko-KR",
             "description": SITE_DESC,
             "publisher": {"@id": f"{BASE}/#publisher"},
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": f"{BASE}/search/?q={{search_term_string}}",
+                "query-input": "required name=search_term_string",
+            },
         },
         {
             "@type": ["Organization", "Person"],
@@ -378,6 +393,16 @@ def jsonld_for(page: dict) -> str:
             "url": [f"{BASE}{href}" for _, href in NAV],
         },
     ]
+    if path != "/":
+        section_label = "구매가이드" if path.startswith("/deals/") else "동네 레이더" if path.startswith("/radar/") else page.get("title", SITE_NAME)
+        section_path = "/deals/" if path.startswith("/deals/") else "/radar/" if path.startswith("/radar/") else path
+        items = [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{BASE}/"},
+            {"@type": "ListItem", "position": 2, "name": section_label, "item": f"{BASE}{section_path}"},
+        ]
+        if page.get("type") == "BlogPosting" and section_path != path:
+            items.append({"@type": "ListItem", "position": 3, "name": page["title"], "item": url})
+        graph.append({"@type": "BreadcrumbList", "@id": f"{url}#breadcrumb", "itemListElement": items})
     if page.get("type") == "BlogPosting":
         graph.append(
             {
@@ -395,6 +420,7 @@ def jsonld_for(page: dict) -> str:
                 "dateModified": page.get("updated_at") or NOW.isoformat(timespec="seconds"),
                 "articleSection": page.get("category"),
                 "keywords": page.get("tags") or [],
+                "image": page.get("image_url") or f"{BASE}/assets/og-card.svg",
             }
         )
         graph.append(
@@ -452,8 +478,13 @@ def keywords_for(page: dict) -> str:
         return keyword_join(RADAR_KEYWORDS, page.get("tags") or [], extras)
     if section in {"home", "guides", "about"}:
         return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS)
+    if section == "search":
+        return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS, DEALS_KEYWORDS, "사이트 검색, 상품 검색, 구매가이드 검색")
     if section == "deals" or path.startswith("/deals/"):
-        return DEALS_KEYWORDS
+        extras = []
+        if any(token in title_desc for token in ("공기청정기", "제습기", "청소기", "로봇", "헤드셋", "키보드", "모니터")):
+            extras.extend(["생활가전 추천", "가전 비교", "재택근무 장비", "인기 상품"])
+        return keyword_join(DEALS_KEYWORDS, page.get("tags") or [], extras)
     return COMMON_KEYWORDS
 
 
@@ -589,6 +620,43 @@ def category_chips(articles: list[dict]) -> str:
     return "".join(f'<span class="category-chip">{esc(c)}</span>' for c in cats[:6])
 
 
+def search_form(placeholder: str = "상품명, 용도, 예산, 동네 키워드로 검색") -> str:
+    return f'''<form class="site-search" action="/search/" method="get" role="search">
+  <label for="search-query">사이트 검색</label>
+  <div class="search-row">
+    <input id="search-query" name="q" type="search" placeholder="{esc(placeholder)}" autocomplete="off" />
+    <button type="submit">검색</button>
+  </div>
+  <p class="muted">구매가이드 상품명, 생활용품 용도, 동네·계약 키워드를 같이 찾습니다.</p>
+</form>'''
+
+
+def search_body(deals: list[dict], radar: list[dict]) -> str:
+    popular_links = "\n".join(
+        f'<li><a href="{esc(a["path"])}">{esc(a["title"])}</a><span>{esc(a.get("category"))}</span></li>'
+        for a in (deals[:5] + radar[:5])
+    )
+    return f'''
+<section class="page-hero compact">
+  <p class="eyebrow">Site Search</p>
+  <h1>상품·동네·계약 키워드로 바로 찾기</h1>
+  <p class="lead">구매가이드 상품 비교글과 동네 레이더 글을 한 번에 검색합니다. 검색 결과는 브라우저에서만 처리됩니다.</p>
+</section>
+<section class="panel soft search-panel">
+  {search_form("예: 공기청정기, 제습기, 헤드셋, 월세, 통근, 상가")}
+</section>
+<section class="search-results" aria-live="polite">
+  <div class="section-title"><h2>검색 결과</h2><p id="search-summary">검색어를 입력하면 관련 글을 보여줍니다.</p></div>
+  <div id="search-results" class="article-list mixed-list"></div>
+</section>
+<section class="panel">
+  <h2>많이 찾는 시작점</h2>
+  <ul class="quick-links">{popular_links}</ul>
+</section>
+<script src="/assets/search.js" defer></script>
+'''
+
+
 def hero_pins(articles: list[dict]) -> str:
     pins = []
     for idx, a in enumerate([x for x in articles if x.get("image_url")][:3], start=1):
@@ -660,6 +728,9 @@ def deals_body(deals: list[dict]) -> str:
   <div class="hero-pin-stack" aria-label="추천 상품 미리보기">
     {hero_pins(deals)}
   </div>
+</section>
+<section class="panel soft search-panel">
+  {search_form("예: 공기청정기, 제습기, 로봇청소기, 헤드셋")}
 </section>
 <section class="notice affiliate compact-notice">
   <strong>제휴 고지</strong>
@@ -819,7 +890,12 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
   </div>
 </section>'''
     related_block = ""
-    if article.get("section") == "radar":
+    if article.get("section") == "deals":
+        related_block = f'''<section class="related-radar">
+  <h2>비슷한 구매가이드 찾기</h2>
+  {search_form("예: 같은 용도, 예산, 브랜드, 생활가전")}
+</section>'''
+    elif article.get("section") == "radar":
         related = related_articles or []
         links = "".join(f'<li><a href="{esc(a["path"])}">{esc(a["title"])}</a></li>' for a in related[:3])
         if not links:
@@ -850,6 +926,58 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
   </footer>
 </article>
 '''
+
+
+def search_index_item(article: dict) -> dict[str, Any]:
+    metric = metric_for(article["path"])
+    return {
+        "title": article["title"],
+        "description": short_text(article.get("description") or article.get("body_html") or "", 180),
+        "path": article["path"],
+        "section": article.get("section"),
+        "category": article.get("category"),
+        "tags": article.get("tags") or [],
+        "date": article.get("date"),
+        "image_url": article.get("image_url") or "",
+        "price_hint": article.get("price_hint") or "",
+        "item_count_hint": article.get("item_count_hint") or "",
+        "views": metric.get("views") or metric.get("screenPageViews") or metric.get("page_views") or 0,
+        "text": short_text(" ".join([
+            article.get("title") or "",
+            article.get("description") or "",
+            " ".join(article.get("tags") or []),
+            strip_tags(article.get("body_html") or ""),
+        ]), 1200),
+    }
+
+
+def build_search_index(deals: list[dict], radar: list[dict]) -> dict[str, Any]:
+    items = [search_index_item(a) for a in deals + radar]
+    static_items = [
+        {
+            "title": p["title"],
+            "description": p["description"],
+            "path": p["path"],
+            "section": p.get("section"),
+            "category": "사이트",
+            "tags": [],
+            "date": TODAY,
+            "image_url": "",
+            "price_hint": "",
+            "item_count_hint": "",
+            "views": 0,
+            "text": f"{p['title']} {p['description']}",
+        }
+        for p in STATIC_PAGES
+        if p.get("section") != "search"
+    ]
+    return {
+        "version": 1,
+        "base_url": BASE,
+        "language": "ko-KR",
+        "item_count": len(items) + len(static_items),
+        "items": items + static_items,
+    }
 
 
 CSS = '''
@@ -1012,6 +1140,15 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
 .related-radar h2 { margin-top: 0; }
 .related-radar ul { margin-bottom: 0; }
+.site-search label { display: block; font-weight: 950; margin-bottom: 8px; }
+.search-row { display: flex; gap: 10px; align-items: stretch; }
+.search-row input { flex: 1; min-width: 0; min-height: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 0 14px; font: inherit; background: #fff; }
+.search-row button { min-height: 48px; border: 0; border-radius: 16px; padding: 0 18px; background: var(--ink); color: #fff; font-weight: 950; cursor: pointer; }
+.search-panel { margin-top: 12px; }
+.search-result-card mark { background: #fff0b8; border-radius: 6px; padding: 0 2px; }
+.quick-links { display: grid; gap: 10px; padding-left: 0; list-style: none; }
+.quick-links li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 10px 0; }
+.quick-links span { color: var(--muted); font-size: 13px; font-weight: 800; }
 .article-tail { margin: 28px 0 70px; display: flex; gap: 12px; flex-wrap: wrap; }
 .footer {
   width: min(1240px, calc(100% - 32px)); margin: 56px auto 0; padding: 28px 0 40px;
@@ -1026,6 +1163,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; width: 100%; transform: none; border-width: 5px; border-radius: 20px; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
+  .search-row { flex-direction: column; }
   .article-page { max-width: 100%; }
 }
 @media (max-width: 560px) {
@@ -1039,6 +1177,82 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 LOGO = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Recuerdame Lab"><rect width="128" height="128" rx="34" fill="#101828"/><path d="M38 91V31h32c13 0 22 8 22 20 0 9-5 16-13 19l17 21H76L62 72h-8v19H38Zm16-33h14c6 0 10-3 10-8s-4-8-10-8H54v16Z" fill="#fff"/><circle cx="93" cy="36" r="8" fill="#60a5fa"/></svg>'''
 
 OG = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#101828"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1030" cy="120" r="210" fill="#60a5fa" opacity=".22"/><circle cx="170" cy="520" r="190" fill="#f59e0b" opacity=".22"/><text x="80" y="220" fill="#fff" font-family="Arial, sans-serif" font-size="72" font-weight="800">Recuerdame Lab</text><text x="80" y="315" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="38">계약 전 동네 레이더</text><text x="80" y="405" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="30">Search and AI ready public hub</text></svg>'''
+
+SEARCH_JS = '''(() => {
+  const form = document.querySelector('.site-search');
+  const input = document.querySelector('#search-query');
+  const results = document.querySelector('#search-results');
+  const summary = document.querySelector('#search-summary');
+  if (!form || !input || !results || !summary) return;
+
+  const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get('q') || '';
+  input.value = initial;
+
+  let indexItems = [];
+  const normalize = (value) => String(value || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const tokensOf = (query) => normalize(query).split(' ').filter(Boolean).slice(0, 8);
+  const scoreItem = (item, tokens) => {
+    const title = normalize(item.title);
+    const desc = normalize(item.description);
+    const tags = normalize((item.tags || []).join(' '));
+    const text = normalize(item.text);
+    let score = 0;
+    for (const token of tokens) {
+      if (title.includes(token)) score += 9;
+      if (tags.includes(token)) score += 6;
+      if (desc.includes(token)) score += 4;
+      if (text.includes(token)) score += 1;
+    }
+    if (item.section === 'deals') score += 0.5;
+    const views = Number(item.views || 0);
+    if (views > 0) score += Math.min(3, Math.log10(views + 1));
+    return score;
+  };
+  const render = (query) => {
+    const tokens = tokensOf(query);
+    if (!tokens.length) {
+      results.innerHTML = '';
+      summary.textContent = '검색어를 입력하면 관련 글을 보여줍니다.';
+      return;
+    }
+    const matches = indexItems.map((item) => ({item, score: scoreItem(item, tokens)}))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 24);
+    summary.textContent = matches.length ? `${matches.length}개 결과를 찾았습니다.` : '관련 결과가 아직 없습니다. 다른 키워드로 검색해보세요.';
+    results.innerHTML = matches.map(({item}) => {
+      const meta = [item.category, item.item_count_hint, item.price_hint].filter(Boolean).slice(0, 3).join(' · ');
+      const image = item.image_url ? `<img src="${esc(item.image_url)}" alt="${esc(item.title)}" loading="lazy" decoding="async" />` : '';
+      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '구매가이드' : item.section === 'radar' ? '동네 레이더' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
+    }).join('');
+  };
+  const updateUrl = (query) => {
+    const url = new URL(window.location.href);
+    if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+    window.history.replaceState({}, '', url);
+  };
+
+  fetch('/data/search-index.json', {cache: 'no-store'})
+    .then((res) => res.ok ? res.json() : Promise.reject(new Error('search index missing')))
+    .then((data) => {
+      indexItems = Array.isArray(data.items) ? data.items : [];
+      render(input.value);
+    })
+    .catch(() => {
+      summary.textContent = '검색 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+    });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const query = input.value.trim();
+    updateUrl(query);
+    render(query);
+  });
+  input.addEventListener('input', () => render(input.value));
+})();
+'''
 
 
 def write(rel: str, content: str) -> None:
@@ -1064,6 +1278,7 @@ def build() -> None:
         "home": home_body(deals, radar),
         "radar": radar_body(radar),
         "deals": deals_body(deals),
+        "search": search_body(deals, radar),
         "guides": guides_body(),
         "about": about_body(len(deals), len(radar)),
     }
@@ -1086,6 +1301,8 @@ def build() -> None:
     write("main.css", CSS)
     write("assets/logo.svg", LOGO)
     write("assets/og-card.svg", OG)
+    write("assets/search.js", SEARCH_JS)
+    write("data/search-index.json", json.dumps(build_search_index(deals, radar), ensure_ascii=False, indent=2) + "\n")
     write(".nojekyll", "")
     write("robots.txt", f'''User-agent: *
 Allow: /
@@ -1181,6 +1398,8 @@ Last updated: {NOW.isoformat(timespec='seconds')}
 - 구매가이드: {BASE}/deals/
   - 동네 레이더와 분리된 생활 상품 비교 섹션입니다.
   - 제휴 링크가 포함된 글은 본문에 고지를 표시합니다.
+- 사이트 검색: {BASE}/search/
+  - 동네 레이더와 구매가이드 글을 키워드로 빠르게 찾습니다.
 
 ## Dongne Radar articles
 
@@ -1210,6 +1429,7 @@ Radar: {BASE}/radar/
 Guides: {BASE}/guides/
 About: {BASE}/about/
 Separate deals section: {BASE}/deals/
+Search: {BASE}/search/
 Sitemap: {BASE}/sitemap.xml
 Feed: {BASE}/feed.xml
 LLM guide: {BASE}/llms.txt
@@ -1234,7 +1454,8 @@ Updated: {NOW.isoformat(timespec='seconds')}
         "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
         "sections": [p["path"] for p in STATIC_PAGES],
         "article_counts": {"radar": len(radar), "deals": len(deals)},
-        "search_ready": ["google", "naver", "daum", "ai_search"],
+        "search_ready": ["google", "naver", "daum", "ai_search", "site_search"],
+        "search_index": f"{BASE}/data/search-index.json",
         "analytics": {"tracking_ready": bool(ANALYTICS_ID), "metrics_status": PAGE_METRICS_DATA.get("status"), "metrics_updated_at": PAGE_METRICS_DATA.get("updated_at")},
         "sitemap": f"{BASE}/sitemap.xml",
         "rss": f"{BASE}/feed.xml",
@@ -1253,6 +1474,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - Guides: {BASE}/guides/
 - About: {BASE}/about/
 - Separate Shopping Picks: {BASE}/deals/
+- Site Search: {BASE}/search/
 
 ## Current content
 
@@ -1267,6 +1489,8 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - `{BASE}/llms.txt`
 - `{BASE}/ai.txt`
 - `{BASE}/humans.txt`
+- `{BASE}/search/`
+- `{BASE}/data/search-index.json`
 
 ## Operating scope
 
@@ -1287,7 +1511,8 @@ LLM guide: {BASE}/llms.txt
 
 - robots allows Google, Naver/Yeti, Daumoa, Bing, and major AI/search crawlers.
 - sitemap includes static sections and generated article URLs.
-- every HTML page has canonical, description, OG, RSS, sitemap link, and JSON-LD.
+- every HTML page has canonical, description, OG, RSS, sitemap link, SearchAction JSON-LD, breadcrumb JSON-LD, and page/article JSON-LD.
+- `/search/` and `data/search-index.json` give users a fast site/product search surface.
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
 - new public articles update the related feed and sitemap.
 

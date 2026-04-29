@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-04-30T03:39:48+09:00
+Last updated: 2026-04-30T03:58:00+09:00
 
 ## Primary sections
 
@@ -21,6 +21,8 @@ Last updated: 2026-04-30T03:39:48+09:00
 - 구매가이드: https://r2cuerdame.github.io/deals/
   - 동네 레이더와 분리된 생활 상품 비교 섹션입니다.
   - 제휴 링크가 포함된 글은 본문에 고지를 표시합니다.
+- 사이트 검색: https://r2cuerdame.github.io/search/
+  - 동네 레이더와 구매가이드 글을 키워드로 빠르게 찾습니다.
 
 ## Dongne Radar articles
 

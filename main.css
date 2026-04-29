@@ -158,6 +158,15 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
 .related-radar h2 { margin-top: 0; }
 .related-radar ul { margin-bottom: 0; }
+.site-search label { display: block; font-weight: 950; margin-bottom: 8px; }
+.search-row { display: flex; gap: 10px; align-items: stretch; }
+.search-row input { flex: 1; min-width: 0; min-height: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 0 14px; font: inherit; background: #fff; }
+.search-row button { min-height: 48px; border: 0; border-radius: 16px; padding: 0 18px; background: var(--ink); color: #fff; font-weight: 950; cursor: pointer; }
+.search-panel { margin-top: 12px; }
+.search-result-card mark { background: #fff0b8; border-radius: 6px; padding: 0 2px; }
+.quick-links { display: grid; gap: 10px; padding-left: 0; list-style: none; }
+.quick-links li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 10px 0; }
+.quick-links span { color: var(--muted); font-size: 13px; font-weight: 800; }
 .article-tail { margin: 28px 0 70px; display: flex; gap: 12px; flex-wrap: wrap; }
 .footer {
   width: min(1240px, calc(100% - 32px)); margin: 56px auto 0; padding: 28px 0 40px;
@@ -172,6 +181,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; width: 100%; transform: none; border-width: 5px; border-radius: 20px; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
+  .search-row { flex-direction: column; }
   .article-page { max-width: 100%; }
 }
 @media (max-width: 560px) {

@@ -9,7 +9,8 @@ LLM guide: https://r2cuerdame.github.io/llms.txt
 
 - robots allows Google, Naver/Yeti, Daumoa, Bing, and major AI/search crawlers.
 - sitemap includes static sections and generated article URLs.
-- every HTML page has canonical, description, OG, RSS, sitemap link, and JSON-LD.
+- every HTML page has canonical, description, OG, RSS, sitemap link, SearchAction JSON-LD, breadcrumb JSON-LD, and page/article JSON-LD.
+- `/search/` and `data/search-index.json` give users a fast site/product search surface.
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
 - new public articles update the related feed and sitemap.
 
