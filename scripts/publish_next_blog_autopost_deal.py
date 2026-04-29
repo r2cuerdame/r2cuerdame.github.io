@@ -29,6 +29,19 @@ def run(cmd: list[str], cwd: Path = ROOT, check: bool = True) -> subprocess.Comp
     return subprocess.run(cmd, cwd=str(cwd), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=check)
 
 
+def windows_git(args: list[str], check: bool = True) -> subprocess.CompletedProcess:
+    """Run Windows Git inside the repo so the scheduled job can use Windows credentials."""
+    win_root = str(ROOT).replace('/mnt/c/', 'C:\\').replace('/', '\\')
+    return subprocess.run(
+        ['/mnt/c/Windows/System32/cmd.exe', '/c', 'cd', '/d', win_root, '&&', 'git', *args],
+        cwd=str(ROOT),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=check,
+    )
+
+
 def strip_tags(value: str) -> str:
     value = re.sub(r'<script\b[^>]*>.*?</script>', ' ', value or '', flags=re.I | re.S)
     value = re.sub(r'<style\b[^>]*>.*?</style>', ' ', value, flags=re.I | re.S)
@@ -199,14 +212,25 @@ def git_publish(result: dict[str, Any], dry_run: bool = False, no_push: bool = F
     if not status:
         return {'built': True, 'build_stdout': build.stdout.strip(), 'committed': False, 'pushed': False}
     title = result['article']['title']
-    run(['git', 'add', '.'], check=True)
+    run(['git', 'add', '-u'], check=True)
+    content_path = ROOT / str(result.get('path', ''))
+    slug = result['article'].get('slug')
+    paths_to_add = []
+    if content_path.exists():
+        paths_to_add.append(str(content_path.relative_to(ROOT)))
+    if slug:
+        page_dir = ROOT / 'deals' / str(slug)
+        if page_dir.exists():
+            paths_to_add.append(str(page_dir.relative_to(ROOT)))
+    if paths_to_add:
+        run(['git', 'add', *paths_to_add], check=True)
     commit_msg = f"Publish deal article: {title[:48]}"
     run(['git', 'commit', '-m', commit_msg], check=True)
     pushed = False
     push_stdout = ''
     push_stderr = ''
     if not no_push:
-        push = run(['git', 'push', 'origin', 'main'], check=True)
+        push = windows_git(['push', 'origin', 'main'], check=True)
         pushed = True
         push_stdout = push.stdout.strip()
         push_stderr = push.stderr.strip()
