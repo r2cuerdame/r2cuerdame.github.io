@@ -11,7 +11,7 @@ LLM guide: https://r2cuerdame.github.io/llms.txt
 - sitemap includes static sections and generated article URLs.
 - every HTML page has canonical, description, OG, RSS, sitemap link, and JSON-LD.
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
-- daily automation keeps metadata current and can add clean article candidates.
+- new public articles update the related feed and sitemap.
 
 ## Registration status
 

@@ -20,8 +20,8 @@ NOW = datetime.now(KST)
 TODAY = NOW.date().isoformat()
 BASE = "https://r2cuerdame.github.io"
 SITE_NAME = "Recuerdame Lab"
-SITE_DESC = "동네 데이터와 생활 구매가이드를 쌓는 공개 노트. 동네 레이더와 파트너스 픽을 분리 운영합니다."
-COMMON_KEYWORDS = "동네 레이더, 지역 데이터, 서울 동네 분석, 생활 가이드, 구매가이드, 쿠팡 파트너스, Recuerdame Lab"
+SITE_DESC = "동네 신호와 생활 쇼핑픽을 가볍게 모아두는 공개 큐레이션 노트입니다."
+COMMON_KEYWORDS = "동네 레이더, 지역 데이터, 서울 동네 분석, 생활 가이드, 쇼핑픽, 쿠팡 추천, Recuerdame Lab"
 
 STATIC_PAGES = [
     {
@@ -45,8 +45,8 @@ STATIC_PAGES = [
     {
         "path": "/deals/",
         "file": "deals/index.html",
-        "title": "파트너스 픽 — Recuerdame Lab",
-        "description": "쿠팡 파트너스 추천글과 구매가이드를 일반 정보글과 분리해 운영합니다.",
+        "title": "쇼핑픽 — Recuerdame Lab",
+        "description": "사진으로 먼저 훑어보는 생활 쇼핑픽과 쿠팡 추천 비교글입니다.",
         "priority": "0.8",
         "type": "CollectionPage",
         "section": "deals",
@@ -64,7 +64,7 @@ STATIC_PAGES = [
         "path": "/about/",
         "file": "about/index.html",
         "title": "소개 — Recuerdame Lab",
-        "description": "r2cuerdame 개인 GitHub Pages 공개 허브 소개입니다.",
+        "description": "동네 신호와 생활 쇼핑픽을 모아두는 개인 큐레이션 노트입니다.",
         "priority": "0.4",
         "type": "AboutPage",
         "section": "about",
@@ -100,6 +100,68 @@ def short_text(value: str, limit: int = 170) -> str:
     if len(text) <= limit:
         return text
     return text[: limit - 1].rstrip() + "…"
+
+
+IMG_SRC_RE = re.compile(r'<img\b[^>]*(?:src|data-src)=["\']([^"\']+)["\']', re.I)
+HREF_RE = re.compile(r'<a\b[^>]*href=["\']([^"\']+)["\']', re.I)
+PRICE_HINT_RE = re.compile(r'가격대는\s*([^<.。]+?수준)', re.I)
+COUNT_HINT_RE = re.compile(r'(?:BEST|TOP)\s*(\d+)|(\d+)선', re.I)
+SOURCE_URL_TO_PATH: dict[str, str] = {}
+
+
+def clean_url(value: str) -> str:
+    url = html.unescape(str(value or "").strip())
+    if url.startswith(("http://", "https://", "/")):
+        return url
+    return ""
+
+
+def image_from_body(body: str) -> str:
+    for url in IMG_SRC_RE.findall(body or ""):
+        url = clean_url(url)
+        if url:
+            return url
+    return ""
+
+
+def coupang_url_from_body(body: str) -> str:
+    links = [clean_url(url) for url in HREF_RE.findall(body or "")]
+    links = [url for url in links if url]
+    for url in links:
+        if "coupang.com" in url and "lptag=" in url:
+            return url
+    for url in links:
+        if "coupang.com" in url:
+            return url
+    return ""
+
+
+def price_hint_from_body(body: str) -> str:
+    text = strip_tags(body or "")
+    m = PRICE_HINT_RE.search(text)
+    if not m:
+        return "상세가는 상품 페이지에서 확인"
+    return re.sub(r"\s+", " ", m.group(1)).strip()
+
+
+def item_count_hint(title: str, body: str) -> str:
+    joined = f"{title} {strip_tags(body or '')[:1200]}"
+    m = COUNT_HINT_RE.search(joined)
+    if m:
+        count = m.group(1) or m.group(2)
+        return f"{count}개 후보 비교"
+    product_ids = set(re.findall(r'/products/(\d+)', body or ""))
+    if product_ids:
+        return f"{min(len(product_ids), 5)}개 후보 비교"
+    return "추천 후보 비교"
+
+
+def localize_public_body(body: str) -> str:
+    out = str(body or "")
+    for source_url, path in SOURCE_URL_TO_PATH.items():
+        if source_url:
+            out = out.replace(source_url, path)
+    return out
 
 
 def parse_dt(value: str | None) -> datetime:
@@ -156,6 +218,10 @@ def validate_article(section: str, data: dict, path: Path) -> dict:
             "date_obj": dt,
             "category": str(data.get("category") or ("파트너스 픽" if section == "deals" else "동네 레이더")),
             "tags": tags,
+            "image_url": str(data.get("image_url") or data.get("thumbnail_url") or data.get("hero_image") or image_from_body(body)),
+            "primary_deal_url": str(data.get("primary_deal_url") or data.get("deal_url") or coupang_url_from_body(body)),
+            "price_hint": str(data.get("price_hint") or price_hint_from_body(body)),
+            "item_count_hint": str(data.get("item_count_hint") or item_count_hint(title, body)),
             "priority": str(data.get("priority") or "0.64"),
             "type": "BlogPosting",
             "is_affiliate": bool(data.get("is_affiliate", section == "deals")),
@@ -252,6 +318,7 @@ def layout(page: dict, body: str) -> str:
     canonical = BASE + page["path"]
     title = page["title"]
     description = page["description"]
+    og_image = page.get("image_url") or f"{BASE}/assets/og-card.svg"
     nav = "\n".join(f'      <a href="{href}">{esc(name)}</a>' for name, href in NAV)
     return f'''<!doctype html>
 <html lang="ko">
@@ -280,7 +347,7 @@ def layout(page: dict, body: str) -> str:
   <meta property="og:title" content="{esc(title)}" />
   <meta property="og:description" content="{esc(description)}" />
   <meta property="og:url" content="{canonical}" />
-  <meta property="og:image" content="{BASE}/assets/og-card.svg" />
+  <meta property="og:image" content="{esc(og_image)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#101828" />
   <link rel="stylesheet" href="/main.css" />
@@ -300,135 +367,165 @@ def layout(page: dict, body: str) -> str:
     {body}
   </main>
   <footer class="footer">
-    <p><strong>Recuerdame Lab</strong> — 자체 데이터/편집 기준으로 운영하는 공개 콘텐츠 허브.</p>
-    <p class="muted">파트너스/제휴 링크가 포함된 글은 본문에 별도 고지를 표시합니다. 게시 전 품질·정책 검수를 통과한 글만 공개합니다.</p>
-    <p class="muted">마지막 사이트 갱신: <time datetime="{NOW.isoformat(timespec='seconds')}">{NOW.strftime('%Y-%m-%d %H:%M KST')}</time></p>
+    <p><strong>Recuerdame Lab</strong> — 동네 흐름과 생활 쇼핑픽을 가볍게 모아두는 공간.</p>
+    <p class="muted">파트너스/제휴 링크가 포함된 글은 본문에 별도 고지를 표시합니다.</p>
+    <p class="muted">마지막 업데이트: <time datetime="{NOW.isoformat(timespec='seconds')}">{NOW.strftime('%Y-%m-%d %H:%M KST')}</time></p>
   </footer>
 </body>
 </html>
 '''
 
 
-def article_cards(articles: list[dict], empty: str) -> str:
-    if not articles:
-        return f'<article class="list-card"><span class="tag">준비중</span><h2>{esc(empty)}</h2><p>검수 통과 콘텐츠가 생기면 이곳에 정식 글 URL로 공개합니다.</p></article>'
-    cards = []
-    for a in articles:
-        tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
-        date = parse_dt(a.get("date")).strftime("%Y-%m-%d")
-        cards.append(
-            f'''<article class="list-card">
+def plain_article_card(a: dict) -> str:
+    tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
+    date = parse_dt(a.get("date")).strftime("%Y-%m-%d")
+    return f'''<article class="list-card">
   <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time></div>
   <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
-  <p>{esc(a['description'])}</p>
+  <p>{esc(short_text(a['description'], 115))}</p>
   <div class="tag-row">{tags}</div>
-  <a class="text-link" href="{esc(a['path'])}">글 열기 →</a>
+  <a class="text-link" href="{esc(a['path'])}">읽어보기 →</a>
 </article>'''
-        )
+
+
+def deal_card(a: dict) -> str:
+    img = a.get("image_url") or "/assets/og-card.svg"
+    date = parse_dt(a.get("date")).strftime("%m.%d")
+    deal_url = a.get("primary_deal_url") or ""
+    external = ""
+    if deal_url:
+        external = f'<a class="deal-button ghost" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">쿠팡에서 보기</a>'
+    return f'''<article class="deal-card">
+  <a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+    <img src="{esc(img)}" alt="{esc(a['title'])} 대표 상품 이미지" loading="lazy" decoding="async" />
+    <span class="deal-count">{esc(a.get('item_count_hint'))}</span>
+  </a>
+  <div class="deal-body">
+    <div class="deal-meta"><span>{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time></div>
+    <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
+    <p>{esc(short_text(a.get('description') or '', 78))}</p>
+    <div class="deal-price">{esc(a.get('price_hint'))}</div>
+    <div class="deal-actions">
+      <a class="deal-button primary" href="{esc(a['path'])}">비교글 보기</a>
+      {external}
+    </div>
+  </div>
+</article>'''
+
+
+def deal_cards(articles: list[dict]) -> str:
+    if not articles:
+        return '<article class="list-card"><span class="tag">준비중</span><h2>곧 새로운 쇼핑픽을 올릴게요.</h2><p>사진과 핵심 비교 포인트를 같이 볼 수 있게 준비 중입니다.</p></article>'
+    return "\n".join(deal_card(a) for a in articles)
+
+
+def article_cards(articles: list[dict], empty: str) -> str:
+    if not articles:
+        return f'<article class="list-card"><span class="tag">준비중</span><h2>{esc(empty)}</h2><p>새 글이 올라오면 이곳에서 바로 볼 수 있습니다.</p></article>'
+    cards = []
+    for a in articles:
+        if a.get("section") == "deals" and a.get("image_url"):
+            cards.append(deal_card(a))
+        else:
+            cards.append(plain_article_card(a))
     return "\n".join(cards)
 
+
+def category_chips(articles: list[dict]) -> str:
+    cats = []
+    for a in articles:
+        cat = str(a.get("category") or "").strip()
+        if cat and cat not in cats:
+            cats.append(cat)
+    return "".join(f'<span class="category-chip">{esc(c)}</span>' for c in cats[:6])
+
+
+def hero_pins(articles: list[dict]) -> str:
+    pins = []
+    for idx, a in enumerate([x for x in articles if x.get("image_url")][:3], start=1):
+        pins.append(f'''<a class="hero-pin pin-{idx}" href="{esc(a['path'])}">
+  <img src="{esc(a['image_url'])}" alt="{esc(a['title'])}" loading="eager" decoding="async" />
+  <span>{esc(a.get('category'))}</span>
+</a>''')
+    return "\n".join(pins)
 
 def home_body(deals: list[dict], radar: list[dict]) -> str:
     latest = (deals + radar)[:6]
     latest_html = article_cards(latest, "첫 공개 글 준비중") if latest else ""
     return f'''
-<section class="hero">
-  <p class="eyebrow">GitHub Pages Hub</p>
-  <h1>동네 데이터와 생활 구매가이드를 한 곳에 쌓습니다.</h1>
-  <p class="lead">Tistory/블로그 보안확인에 묶이지 않도록, 원본 콘텐츠는 GitHub Pages에 자동 배포하고 네이버·Tistory·쿠팡 파트너스 채널은 보조 배포면으로 분리합니다.</p>
+<section class="hero home-hero">
+  <p class="eyebrow">Recuerdame Lab</p>
+  <h1>오늘 살 만한 것과 동네 신호를 가볍게 모읍니다.</h1>
+  <p class="lead">쇼핑픽은 사진 카드로 빠르게 훑고, 동네 레이더는 짧은 판단 카드로 읽을 수 있게 정리합니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="/deals/">파트너스 픽 보기</a>
+    <a class="button primary" href="/deals/">쇼핑픽 보기</a>
     <a class="button" href="/radar/">동네 레이더 보기</a>
   </div>
 </section>
 <section class="grid three">
+  <article class="card accent-orange">
+    <span class="tag">Shopping</span>
+    <h2>이미지로 보는 쇼핑픽</h2>
+    <p>대표 사진, 가격대 힌트, 비교글을 한 카드에서 먼저 확인합니다.</p>
+    <a href="/deals/">섹션 열기 →</a>
+  </article>
   <article class="card accent-blue">
     <span class="tag">Radar</span>
     <h2>동네 레이더</h2>
-    <p>지역·상권·주거 흐름을 짧고 재사용 가능한 판단 문장으로 정리합니다.</p>
+    <p>지역·상권·주거 흐름을 바로 써먹기 좋은 판단 문장으로 정리합니다.</p>
     <a href="/radar/">섹션 열기 →</a>
   </article>
-  <article class="card accent-amber">
-    <span class="tag">Partners</span>
-    <h2>파트너스 픽</h2>
-    <p>쿠팡 파트너스용 추천·비교·구매가이드를 별도 카테고리로 분리합니다. 현재 {len(deals)}개 글을 공개 중입니다.</p>
-    <a href="/deals/">섹션 열기 →</a>
-  </article>
   <article class="card accent-green">
-    <span class="tag">Guides</span>
+    <span class="tag">Guide</span>
     <h2>생활 가이드</h2>
-    <p>광고성 글과 분리된 생활/부동산/동네 사용법 가이드를 보관합니다.</p>
+    <p>광고성 추천과 분리해서 읽을 생활/부동산/동네 기본기를 모읍니다.</p>
     <a href="/guides/">섹션 열기 →</a>
   </article>
 </section>
-<section class="panel">
-  <h2>검색 노출 기본 세팅</h2>
-  <ul class="checklist">
-    <li>Google, Naver, Daum 크롤러가 읽을 수 있게 robots와 sitemap을 공개합니다.</li>
-    <li>AI 검색/요약 도구가 구조를 이해하도록 llms.txt와 JSON-LD를 제공합니다.</li>
-    <li>제휴 글은 일반 동네 데이터 글과 URL·디자인·고지를 분리합니다.</li>
-    <li>매일 자동 갱신으로 sitemap, RSS, article URL이 살아있게 유지됩니다.</li>
-  </ul>
-</section>
-<section class="article-list">
-  <h2>최근 공개 글</h2>
+<section class="article-list mixed-list">
+  <div class="section-title"><h2>최근 올라온 글</h2><p>사진 카드와 짧은 설명으로 먼저 훑어보세요.</p></div>
   {latest_html}
 </section>
-<section class="status-strip" aria-label="현재 상태">
-  <div><strong>배포</strong><span>GitHub Pages</span></div>
-  <div><strong>파트너스 글</strong><span>{len(deals)}개 공개</span></div>
-  <div><strong>상태</strong><span>매일 자동 발행 라인</span></div>
-</section>
 '''
-
 
 def deals_body(deals: list[dict]) -> str:
     return f'''
-<section class="page-hero compact">
-  <p class="eyebrow">Partners Pick</p>
-  <h1>파트너스 픽</h1>
-  <p class="lead">Tistory에 먼저 연재했던 쿠팡 파트너스 상품글을 이곳으로 이관했고, 앞으로 검수 통과 글은 이 섹션에 매일 누적합니다.</p>
+<section class="shop-hero">
+  <div class="shop-hero-copy">
+    <p class="eyebrow">Shopping Picks</p>
+    <h1>사진으로 먼저 보는 오늘의 쇼핑픽</h1>
+    <p class="lead">인기 상품을 이미지 카드로 훑고, 마음에 드는 글에서 후보별 장단점과 쿠팡 상품 링크를 바로 확인하세요.</p>
+    <div class="category-strip">{category_chips(deals)}</div>
+  </div>
+  <div class="hero-pin-stack" aria-label="추천 상품 미리보기">
+    {hero_pins(deals)}
+  </div>
 </section>
-<section class="notice affiliate">
-  <h2>제휴 고지</h2>
-  <p>이 섹션의 일부 글은 쿠팡 파트너스 활동의 일환으로 작성될 수 있으며, 이에 따른 일정액의 수수료를 제공받을 수 있습니다. 실제 제휴 링크가 포함된 글에는 본문 상단에 별도 고지를 다시 표시합니다.</p>
+<section class="notice affiliate compact-notice">
+  <strong>제휴 고지</strong>
+  <p>이 페이지의 일부 링크는 쿠팡 파트너스 링크이며, 구매 시 일정액의 수수료를 받을 수 있습니다.</p>
 </section>
-<section class="status-strip compact-strip" aria-label="파트너스 픽 상태">
-  <div><strong>{len(deals)}개</strong><span>공개 글</span></div>
-  <div><strong>분리 운영</strong><span>동네 레이더와 제휴 글 URL 분리</span></div>
-  <div><strong>Daily</strong><span>검수 통과 후보만 자동 누적</span></div>
+<section class="shop-summary" aria-label="쇼핑픽 요약">
+  <div><strong>{len(deals)}개</strong><span>추천글</span></div>
+  <div><strong>이미지 카드</strong><span>대표 상품 먼저 보기</span></div>
+  <div><strong>가격대 힌트</strong><span>상세가는 상품 페이지 확인</span></div>
 </section>
-<section class="article-list">
-  {article_cards(deals, "파트너스 글 준비중")}
-</section>
-<section class="panel soft">
-  <h2>발행 기준</h2>
-  <ul class="checklist">
-    <li>제휴 고지 포함</li>
-    <li>실제 상품 링크와 가격/재고 변동 주의문 포함</li>
-    <li>모바일 가독성 검수</li>
-    <li>일반 정보글과 제휴 CTA 분리</li>
-  </ul>
+<section class="deal-grid">
+  {deal_cards(deals)}
 </section>
 '''
-
 
 def radar_body(radar: list[dict]) -> str:
     return f'''
 <section class="page-hero compact">
   <p class="eyebrow">Dongne Radar</p>
   <h1>동네 레이더</h1>
-  <p class="lead">서울/동네/상권 신호를 사람이 바로 써먹을 수 있는 판단 카드로 정리하는 섹션입니다.</p>
+  <p class="lead">서울/동네/상권 신호를 바로 써먹을 수 있는 판단 카드로 정리하는 섹션입니다.</p>
 </section>
 <section class="article-list">
   {article_cards(radar, "서울에서 2030 여성이 빠지는 구 TOP 10")}
 </section>
-<section class="panel soft">
-  <h2>검색 세팅</h2>
-  <p>sitemap/RSS/canonical/schema 기반으로 네이버 Search Advisor, Google Search Console, Daum 검색 등록을 전제로 구성했습니다.</p>
-</section>
 '''
-
 
 def guides_body() -> str:
     return '''
@@ -457,30 +554,38 @@ def about_body(deals_count: int, radar_count: int) -> str:
 <section class="page-hero compact">
   <p class="eyebrow">About</p>
   <h1>Recuerdame Lab</h1>
-  <p class="lead">반복 발행 플랫폼에 묶이지 않기 위해 만든 개인 GitHub Pages 공개 허브입니다.</p>
+  <p class="lead">동네를 볼 때 필요한 신호와 생활 속 구매 후보를 가볍게 모아두는 개인 큐레이션 공간입니다.</p>
 </section>
 <section class="panel">
   <h2>무엇을 올리나</h2>
-  <p>동네 레이더의 지역 데이터 글, 생활 가이드, 검수된 파트너스 추천글을 분리된 섹션에 공개합니다.</p>
+  <p>동네 레이더는 지역 흐름을 짧게 정리하고, 쇼핑픽은 생활에 바로 쓰는 상품 비교글을 사진 중심으로 모읍니다.</p>
   <h2>현재 공개 수</h2>
-  <p>파트너스 픽 {deals_count}개, 동네 레이더 {radar_count}개를 기준으로 sitemap/RSS에 반영합니다.</p>
-  <h2>왜 GitHub Pages인가</h2>
-  <p>새 도메인 없이 빠르게 열 수 있고, 원본 파일/배포 이력이 GitHub에 남으며, SEO 기본 파일을 직접 제어할 수 있기 때문입니다.</p>
+  <p>쇼핑픽 {deals_count}개, 동네 레이더 {radar_count}개를 공개 중입니다.</p>
 </section>
 '''
 
-
 def article_body(article: dict) -> str:
-    section_name = "파트너스 픽" if article["section"] == "deals" else "동네 레이더"
+    section_name = "쇼핑픽" if article["section"] == "deals" else "동네 레이더"
     section_href = f"/{article['section']}/"
     dt = parse_dt(article.get("date"))
     tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (article.get("tags") or [])[:8])
-    source = ""
-    if article.get("source_url"):
-        source = f'<p class="muted">이 글은 기존 발행본을 GitHub Pages용으로 이관한 글입니다. 기존 URL: <a href="{esc(article["source_url"])}" rel="nofollow noopener">{esc(article["source_url"])} </a></p>'
     notice = ""
     if article.get("is_affiliate"):
         notice = '<section class="notice affiliate compact-notice"><strong>제휴 고지</strong><p>이 글은 쿠팡 파트너스 활동의 일환으로 작성될 수 있으며, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.</p></section>'
+    image_block = ""
+    if article.get("section") == "deals" and article.get("image_url"):
+        external = ""
+        if article.get("primary_deal_url"):
+            external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">대표 상품 보기</a>'
+        image_block = f'''<section class="article-product-hero">
+  <img src="{esc(article['image_url'])}" alt="{esc(article['title'])} 대표 상품 이미지" loading="eager" decoding="async" />
+  <div>
+    <span class="tag">{esc(article.get('item_count_hint'))}</span>
+    <h2>사진으로 먼저 보고, 아래에서 후보별로 비교하세요.</h2>
+    <p>{esc(article.get('price_hint'))}</p>
+    <div class="deal-actions"><a class="deal-button primary" href="#article-body">본문 비교 보기</a>{external}</div>
+  </div>
+</section>'''
     return f'''
 <article class="article-page">
   <nav class="breadcrumb" aria-label="breadcrumb"><a href="/">홈</a><span>›</span><a href="{section_href}">{esc(section_name)}</a></nav>
@@ -492,11 +597,11 @@ def article_body(article: dict) -> str:
     <div class="tag-row">{tags}</div>
   </header>
   {notice}
-  <section class="article-content">
+  {image_block}
+  <section id="article-body" class="article-content">
     {article['body_html']}
   </section>
   <footer class="article-tail">
-    {source}
     <a class="button" href="{section_href}">목록으로</a>
   </footer>
 </article>
@@ -505,116 +610,155 @@ def article_body(article: dict) -> str:
 
 CSS = '''
 :root {
-  --bg: #f6f7fb;
-  --ink: #101828;
-  --muted: #667085;
-  --line: #d8dee9;
+  --bg: #fff8f1;
+  --ink: #211922;
+  --muted: #6b625f;
+  --line: #eadfd4;
   --card: #ffffff;
   --blue: #2563eb;
-  --green: #059669;
-  --amber: #d97706;
-  --shadow: 0 22px 70px rgba(16, 24, 40, 0.10);
+  --green: #0f8b57;
+  --orange: #ff5a1f;
+  --orange-dark: #d84315;
+  --sand: #f4ebe2;
+  --cream: #fffaf4;
+  --shadow: 0 18px 45px rgba(58, 37, 20, 0.10);
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top left, #e0ecff 0, transparent 35%), var(--bg);
+  background: radial-gradient(circle at top left, #ffe4d2 0, transparent 30%), radial-gradient(circle at 85% 8%, #fff0b8 0, transparent 25%), var(--bg);
   color: var(--ink);
-  line-height: 1.65;
+  line-height: 1.6;
 }
 a { color: inherit; text-decoration: none; }
-a:hover { color: var(--blue); }
+a:hover { color: var(--orange-dark); }
 .site-header {
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  padding: 18px clamp(18px, 5vw, 64px);
-  background: rgba(246, 247, 251, 0.82);
+  padding: 16px clamp(18px, 5vw, 64px);
+  background: rgba(255, 250, 244, 0.88);
   backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(216, 222, 233, 0.8);
+  border-bottom: 1px solid rgba(234, 223, 212, 0.85);
 }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand-mark {
   display: grid; place-items: center;
   width: 42px; height: 42px; border-radius: 14px;
-  background: #101828; color: #fff; font-weight: 900;
+  background: var(--ink); color: #fff; font-weight: 900;
 }
 .brand strong, .brand small { display: block; }
 .brand small { color: var(--muted); font-size: 12px; }
-.nav { display: flex; gap: 16px; flex-wrap: wrap; color: #344054; font-weight: 700; }
-main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
-.hero { padding: clamp(56px, 10vw, 110px) 0 48px; }
-.page-hero { padding: 64px 0 32px; }
-.compact { max-width: 820px; }
-.eyebrow { color: var(--blue); font-weight: 900; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; }
-h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.05em; margin: 10px 0 18px; }
-.compact h1, .article-hero h1 { font-size: clamp(36px, 5.6vw, 62px); }
-h2 { letter-spacing: -0.03em; line-height: 1.2; }
-.lead { color: #475467; font-size: clamp(18px, 2.1vw, 23px); max-width: 860px; }
-.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
-.button {
+.nav { display: flex; gap: 16px; flex-wrap: wrap; color: #4b423f; font-weight: 800; }
+main { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
+.hero { padding: clamp(50px, 9vw, 96px) 0 40px; }
+.page-hero { padding: 58px 0 28px; }
+.compact { max-width: 860px; }
+.eyebrow { color: var(--orange-dark); font-weight: 950; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; }
+h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.055em; margin: 10px 0 18px; }
+.compact h1, .article-hero h1 { font-size: clamp(34px, 5.4vw, 60px); }
+h2 { letter-spacing: -0.035em; line-height: 1.18; }
+.lead { color: #5f5652; font-size: clamp(18px, 2.1vw, 23px); max-width: 850px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.button, .deal-button {
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: 48px; padding: 0 18px; border-radius: 999px;
-  border: 1px solid var(--line); background: #fff; font-weight: 900;
+  min-height: 46px; padding: 0 18px; border-radius: 16px;
+  border: 1px solid var(--line); background: #fff; font-weight: 950;
 }
-.button.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+.button.primary, .deal-button.primary { background: var(--orange); color: #fff; border-color: var(--orange); box-shadow: 0 10px 22px rgba(255, 90, 31, .22); }
+.deal-button.ghost { background: #fff7ed; color: var(--orange-dark); border-color: #ffd2b8; }
 .grid { display: grid; gap: 18px; margin: 28px 0; }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .card, .panel, .notice, .list-card {
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(216, 222, 233, .9);
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(234, 223, 212, .95);
   border-radius: 28px;
   padding: 26px;
-  box-shadow: 0 10px 35px rgba(16, 24, 40, .06);
+  box-shadow: 0 10px 30px rgba(58, 37, 20, .06);
 }
-.card { min-height: 230px; display: flex; flex-direction: column; justify-content: space-between; }
-.tag { display: inline-flex; align-self: flex-start; border-radius: 999px; padding: 4px 10px; background: #eef4ff; color: #1d4ed8; font-size: 12px; font-weight: 900; }
-.tag.pale { background: #f2f4f7; color: #475467; }
+.card { min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
+.tag { display: inline-flex; align-self: flex-start; border-radius: 999px; padding: 5px 11px; background: #fff0e5; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
+.tag.pale { background: #f4ebe2; color: #6b625f; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.card p, .list-card p, .panel p, .notice p { color: #475467; }
+.card p, .list-card p, .panel p, .notice p { color: #5f5652; }
 .accent-blue { border-top: 5px solid var(--blue); }
-.accent-amber { border-top: 5px solid var(--amber); }
+.accent-orange, .accent-amber { border-top: 5px solid var(--orange); }
 .accent-green { border-top: 5px solid var(--green); }
 .panel, .notice { margin: 28px 0; }
-.panel.soft { background: #f9fafb; }
-.notice.affiliate { border-color: #fed7aa; background: #fff7ed; }
+.panel.soft { background: #fffaf4; }
+.notice.affiliate { border-color: #ffd2b8; background: linear-gradient(135deg, #fff7ed, #fff); }
 .compact-notice { padding: 18px 22px; }
 .compact-notice p { margin: 4px 0 0; }
 .checklist { padding-left: 0; list-style: none; }
 .checklist li { position: relative; padding-left: 28px; margin: 10px 0; }
 .checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 900; }
-.status-strip {
+.status-strip, .shop-summary {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-  margin: 32px 0 64px;
+  margin: 24px 0 34px;
 }
-.status-strip.compact-strip { margin: 24px 0 28px; }
-.status-strip div { background: #101828; color: #fff; border-radius: 22px; padding: 18px; }
-.status-strip strong, .status-strip span { display: block; }
-.status-strip span { color: #cbd5e1; }
+.status-strip div, .shop-summary div { background: var(--ink); color: #fff; border-radius: 22px; padding: 18px; }
+.status-strip strong, .status-strip span, .shop-summary strong, .shop-summary span { display: block; }
+.status-strip span, .shop-summary span { color: #ecd9cd; }
 .article-list { display: grid; gap: 16px; margin: 24px 0 56px; }
+.mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.section-title { grid-column: 1 / -1; }
+.section-title h2 { margin-bottom: 4px; }
+.section-title p { margin-top: 0; color: var(--muted); }
 .list-card h2 { margin-bottom: 8px; }
-.card-meta, .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 700; }
-.text-link { color: var(--blue); font-weight: 900; }
+.card-meta, .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 800; }
+.text-link { color: var(--orange-dark); font-weight: 950; }
+.shop-hero {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: clamp(24px, 6vw, 72px);
+  align-items: center; padding: clamp(44px, 8vw, 88px) 0 28px;
+}
+.shop-hero-copy h1 { max-width: 760px; }
+.category-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.category-chip { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: #4b423f; font-weight: 900; font-size: 13px; }
+.hero-pin-stack { position: relative; min-height: 380px; }
+.hero-pin { position: absolute; display: block; width: 58%; overflow: hidden; border-radius: 30px; background: #fff; box-shadow: var(--shadow); border: 8px solid #fff; }
+.hero-pin img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fff; }
+.hero-pin span { position: absolute; left: 12px; bottom: 12px; padding: 7px 10px; border-radius: 999px; background: rgba(33, 25, 34, .78); color: #fff; font-size: 12px; font-weight: 950; }
+.hero-pin.pin-1 { right: 18%; top: 0; z-index: 3; }
+.hero-pin.pin-2 { left: 0; bottom: 0; width: 48%; z-index: 2; transform: rotate(-5deg); }
+.hero-pin.pin-3 { right: 0; bottom: 24px; width: 46%; z-index: 1; transform: rotate(5deg); }
+.deal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin: 22px 0 68px; align-items: stretch; }
+.deal-card { background: #fff; border: 1px solid var(--line); border-radius: 28px; overflow: hidden; box-shadow: 0 12px 35px rgba(58, 37, 20, .08); display: flex; flex-direction: column; min-height: 100%; transition: transform .18s ease, box-shadow .18s ease; }
+.deal-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(58, 37, 20, .14); }
+.deal-thumb { position: relative; display: block; background: #fffaf4; }
+.deal-thumb img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.deal-count { position: absolute; left: 12px; top: 12px; padding: 7px 10px; border-radius: 999px; background: rgba(255, 90, 31, .94); color: #fff; font-size: 12px; font-weight: 950; }
+.deal-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.deal-meta { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12px; font-weight: 900; }
+.deal-card h2 { margin: 0; font-size: clamp(19px, 2vw, 23px); letter-spacing: -0.045em; }
+.deal-card p { margin: 0; color: #6b625f; font-size: 14px; }
+.deal-price { margin-top: auto; color: var(--orange-dark); font-weight: 950; font-size: 15px; }
+.deal-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.deal-actions .deal-button { min-height: 42px; padding: 0 13px; font-size: 13px; flex: 1 1 auto; }
 .breadcrumb { display: flex; gap: 8px; color: var(--muted); font-size: 14px; margin-top: 32px; }
-.article-page { max-width: 860px; margin: 0 auto; }
+.article-page { max-width: 940px; margin: 0 auto; }
 .article-hero { padding: 44px 0 18px; }
+.article-product-hero { display: grid; grid-template-columns: minmax(220px, 330px) 1fr; gap: 24px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 30px; padding: clamp(16px, 3vw, 28px); box-shadow: var(--shadow); margin: 22px 0; }
+.article-product-hero img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 24px; background: #fffaf4; }
+.article-product-hero h2 { margin: 12px 0 8px; }
+.article-product-hero p { color: #5f5652; }
 .article-content {
-  background: rgba(255, 255, 255, 0.90);
-  border: 1px solid rgba(216, 222, 233, .9);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(234, 223, 212, .95);
   border-radius: 28px;
   padding: clamp(22px, 4vw, 42px);
-  box-shadow: 0 10px 35px rgba(16, 24, 40, .06);
+  box-shadow: 0 10px 32px rgba(58, 37, 20, .07);
   overflow-wrap: anywhere;
   word-break: keep-all;
 }
 .article-content h2 { margin-top: 34px; font-size: clamp(24px, 3.4vw, 32px); }
 .article-content h3 { margin-top: 26px; font-size: 22px; }
-.article-content p { color: #344054; }
-.article-content img { max-width: 100%; height: auto; border-radius: 14px; }
+.article-content p { color: #3f3733; }
+.article-content img { max-width: 100%; height: auto; border-radius: 18px; box-shadow: 0 8px 24px rgba(58, 37, 20, .08); }
 .article-content a {
-  color: #1d4ed8;
-  font-weight: 900;
+  color: var(--orange-dark);
+  font-weight: 950;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -622,16 +766,25 @@ h2 { letter-spacing: -0.03em; line-height: 1.2; }
 .article-content th, .article-content td { border: 1px solid var(--line); padding: 10px; }
 .article-tail { margin: 28px 0 70px; }
 .footer {
-  width: min(1120px, calc(100% - 32px)); margin: 56px auto 0; padding: 28px 0 40px;
-  border-top: 1px solid var(--line); color: #475467;
+  width: min(1240px, calc(100% - 32px)); margin: 56px auto 0; padding: 28px 0 40px;
+  border-top: 1px solid var(--line); color: #5f5652;
 }
 .muted { color: var(--muted); font-size: 14px; }
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .site-header { position: static; align-items: flex-start; flex-direction: column; }
   .nav { gap: 10px; font-size: 14px; }
-  .grid.three, .grid.two, .status-strip { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .article-product-hero { grid-template-columns: 1fr; }
+  .hero-pin-stack { min-height: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; width: 100%; transform: none; border-width: 5px; border-radius: 20px; }
+  .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content { border-radius: 22px; padding: 22px; }
   .article-page { max-width: 100%; }
+}
+@media (max-width: 560px) {
+  main { width: min(100% - 24px, 1240px); }
+  .deal-grid, .mixed-list { grid-template-columns: 1fr; }
+  .hero-pin-stack { grid-template-columns: repeat(2, 1fr); }
+  .hero-pin.pin-3 { display: none; }
 }
 '''
 
@@ -651,6 +804,13 @@ def write(rel: str, content: str) -> None:
 def build() -> None:
     deals = load_articles("deals")
     radar = load_articles("radar")
+    SOURCE_URL_TO_PATH.clear()
+    for article in deals:
+        source_url = str(article.get("source_url") or "").strip()
+        if source_url:
+            SOURCE_URL_TO_PATH[source_url] = article["path"]
+    for article in deals + radar:
+        article["body_html"] = localize_public_body(article["body_html"])
 
     bodies = {
         "home": home_body(deals, radar),
@@ -740,7 +900,7 @@ Host: r2cuerdame.github.io
     ) or "- 아직 공개 글 없음"
     write("llms.txt", f'''# Recuerdame Lab
 
-> 동네 데이터와 생활 구매가이드를 쌓는 한국어 공개 콘텐츠 허브입니다.
+> 동네 신호와 생활 쇼핑픽을 모아두는 한국어 공개 큐레이션 노트입니다.
 
 Base URL: {BASE}/
 Language: ko-KR
@@ -750,8 +910,8 @@ Last updated: {NOW.isoformat(timespec='seconds')}
 
 - 동네 레이더: {BASE}/radar/
   - 서울/동네/상권/주거 흐름을 판단 카드로 정리합니다.
-- 파트너스 픽: {BASE}/deals/
-  - 쿠팡 파트너스 추천글과 구매가이드를 일반 정보글과 분리합니다.
+- 쇼핑픽: {BASE}/deals/
+  - 생활에 바로 쓰는 쿠팡 추천과 상품 비교글을 사진 카드로 모읍니다.
   - 제휴 링크가 포함된 글은 본문에 고지를 표시합니다.
 - 생활 가이드: {BASE}/guides/
   - 생활, 지역, 부동산 기본 가이드를 모읍니다.
@@ -783,7 +943,7 @@ Updated: {NOW.isoformat(timespec='seconds')}
 Owner: r2cuerdame
 Site: {BASE}/
 Language: Korean
-Purpose: Dongne Radar, lifestyle guides, and separated Coupang Partners content.
+Purpose: Dongne Radar, lifestyle guides, and Coupang shopping picks.
 Updated: {NOW.isoformat(timespec='seconds')}
 ''')
     write("build-info.json", json.dumps({
@@ -800,18 +960,18 @@ Updated: {NOW.isoformat(timespec='seconds')}
     }, ensure_ascii=False, indent=2) + "\n")
     write("README.md", f'''# Recuerdame Lab — r2cuerdame.github.io
 
-GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupang Partners content.
+Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
 
 ## Live URLs
 
 - Home: {BASE}/
 - Dongne Radar: {BASE}/radar/
-- Partners Pick: {BASE}/deals/
+- Shopping Picks: {BASE}/deals/
 - Guides: {BASE}/guides/
 
 ## Current content
 
-- Partners Pick articles: {len(deals)}
+- Shopping pick articles: {len(deals)}
 - Dongne Radar articles: {len(radar)}
 
 ## Search/AI files
@@ -824,7 +984,7 @@ GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupan
 
 ## Daily deploy
 
-`.github/workflows/daily-pages-refresh.yml` refreshes metadata. Hermes daily publisher imports one quality-passed Coupang draft into `content/deals/` and pushes the regenerated static site.
+새 쇼핑픽은 `content/deals/`에 추가되고 정적 페이지로 공개됩니다.
 
 ## Affiliate rule
 
@@ -843,7 +1003,7 @@ LLM guide: {BASE}/llms.txt
 - sitemap includes static sections and generated article URLs.
 - every HTML page has canonical, description, OG, RSS, sitemap link, and JSON-LD.
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
-- daily automation keeps metadata current and can add clean article candidates.
+- new public articles update the related feed and sitemap.
 
 ## Registration status
 

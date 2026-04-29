@@ -1,17 +1,17 @@
 # Recuerdame Lab — r2cuerdame.github.io
 
-GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupang Partners content.
+Public note for Dongne Radar, 생활 가이드, and Coupang shopping picks.
 
 ## Live URLs
 
 - Home: https://r2cuerdame.github.io/
 - Dongne Radar: https://r2cuerdame.github.io/radar/
-- Partners Pick: https://r2cuerdame.github.io/deals/
+- Shopping Picks: https://r2cuerdame.github.io/deals/
 - Guides: https://r2cuerdame.github.io/guides/
 
 ## Current content
 
-- Partners Pick articles: 12
+- Shopping pick articles: 12
 - Dongne Radar articles: 1
 
 ## Search/AI files
@@ -24,7 +24,7 @@ GitHub Pages public hub for Dongne Radar, 생활 가이드, and separated Coupan
 
 ## Daily deploy
 
-`.github/workflows/daily-pages-refresh.yml` refreshes metadata. Hermes daily publisher imports one quality-passed Coupang draft into `content/deals/` and pushes the regenerated static site.
+새 쇼핑픽은 `content/deals/`에 추가되고 정적 페이지로 공개됩니다.
 
 ## Affiliate rule
 
