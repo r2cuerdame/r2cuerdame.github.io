@@ -227,6 +227,10 @@ IMG_SRC_RE = re.compile(r'<img\b[^>]*(?:src|data-src)=["\']([^"\']+)["\']', re.I
 HREF_RE = re.compile(r'<a\b[^>]*href=["\']([^"\']+)["\']', re.I)
 PRICE_HINT_RE = re.compile(r'가격대는\s*([^<.。]+?수준)', re.I)
 COUNT_HINT_RE = re.compile(r'(?:BEST|TOP)\s*(\d+)|(\d+)선', re.I)
+TABLE_RE = re.compile(r'(<table\b[\s\S]*?</table>)', re.I)
+TABLE_ROW_RE = re.compile(r'<tr\b[^>]*>[\s\S]*?</tr>', re.I)
+TABLE_HEAD_CELL_RE = re.compile(r'<th\b[^>]*>([\s\S]*?)</th>', re.I)
+TABLE_DATA_OPEN_RE = re.compile(r'<td\b([^>]*)>', re.I)
 SOURCE_URL_TO_PATH: dict[str, str] = {}
 
 
@@ -277,11 +281,46 @@ def item_count_hint(title: str, body: str) -> str:
     return "추천 후보 비교"
 
 
+def mobile_labeled_table(table_html: str) -> str:
+    labels = [short_text(strip_tags(cell), 28) for cell in TABLE_HEAD_CELL_RE.findall(table_html or "")]
+    labels = [label for label in labels if label]
+    if not labels:
+        return table_html
+
+    def add_row_labels(row_match: re.Match[str]) -> str:
+        row = row_match.group(0)
+        if re.search(r'<th\b', row, re.I):
+            return row
+        index = 0
+
+        def add_cell_label(cell_match: re.Match[str]) -> str:
+            nonlocal index
+            attrs = cell_match.group(1) or ""
+            label = labels[index] if index < len(labels) else ""
+            index += 1
+            if not label or re.search(r'\bdata-label\s*=', attrs, re.I):
+                return cell_match.group(0)
+            return f'<td{attrs} data-label="{esc(label)}">'
+
+        return TABLE_DATA_OPEN_RE.sub(add_cell_label, row)
+
+    return TABLE_ROW_RE.sub(add_row_labels, table_html)
+
+
 def localize_public_body(body: str) -> str:
     out = str(body or "")
     for source_url, path in SOURCE_URL_TO_PATH.items():
         if source_url:
             out = out.replace(source_url, path)
+
+    def wrap_table(match: re.Match[str]) -> str:
+        table = mobile_labeled_table(match.group(1))
+        before = out[max(0, match.start() - 80):match.start()]
+        if 'class="table-scroll"' in before:
+            return table
+        return f'<div class="table-scroll" role="region" aria-label="비교표는 모바일에서 카드로 표시됩니다">{table}</div>'
+
+    out = TABLE_RE.sub(wrap_table, out)
     return out
 
 
@@ -995,10 +1034,12 @@ CSS = '''
   --cream: #fffaf4;
   --shadow: 0 18px 45px rgba(58, 37, 20, 0.10);
 }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; width: 100%; overflow-x: clip; }
 body {
+  width: 100%;
   margin: 0;
+  overflow-x: clip;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
   background: radial-gradient(circle at top left, #ffe4d2 0, transparent 30%), radial-gradient(circle at 85% 8%, #fff0b8 0, transparent 25%), var(--bg);
   color: var(--ink);
@@ -1006,6 +1047,8 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--orange-dark); }
+img, svg, video { max-width: 100%; height: auto; }
+h1, h2, h3, p, li, a { overflow-wrap: anywhere; }
 .site-header {
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
@@ -1023,11 +1066,12 @@ a:hover { color: var(--orange-dark); }
 .brand strong, .brand small { display: block; }
 .brand small { color: var(--muted); font-size: 12px; }
 .nav { display: flex; gap: 16px; flex-wrap: wrap; color: #4b423f; font-weight: 800; }
+.nav a { min-height: 40px; display: inline-flex; align-items: center; }
 main { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
 .hero { padding: clamp(50px, 9vw, 96px) 0 40px; }
 .page-hero { padding: 58px 0 28px; }
 .compact { max-width: 860px; }
-.eyebrow { color: var(--orange-dark); font-weight: 950; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; }
+.eyebrow { color: var(--orange-dark); font-weight: 900; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; }
 h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.055em; margin: 10px 0 18px; }
 .compact h1, .article-hero h1 { font-size: clamp(34px, 5.4vw, 60px); }
 h2 { letter-spacing: -0.035em; line-height: 1.18; }
@@ -1035,7 +1079,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
 .button, .deal-button {
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: 46px; padding: 0 18px; border-radius: 16px;
+  min-height: 48px; padding: 0 18px; border-radius: 16px;
   border: 1px solid var(--line); background: #fff; font-weight: 950;
 }
 .button.primary, .deal-button.primary { background: var(--orange); color: #fff; border-color: var(--orange); box-shadow: 0 10px 22px rgba(255, 90, 31, .22); }
@@ -1055,6 +1099,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .tag.pale { background: #f4ebe2; color: #6b625f; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .card p, .list-card p, .panel p, .notice p { color: #5f5652; }
+.card > a:not(.button) { display: inline-flex; align-items: center; min-height: 44px; font-weight: 950; color: var(--orange-dark); }
+.list-card h2, .list-card h2 a, .deal-card h2, .article-hero h1 { max-width: 100%; overflow-wrap: anywhere; word-break: normal; }
+.list-card h2 a, .deal-card h2 a, .quick-links a, .related-radar a { display: inline-flex; align-items: center; min-height: 44px; }
+.list-card > img { width: 100%; max-height: 260px; object-fit: contain; background: #fffaf4; border-radius: 18px; margin-bottom: 14px; }
 .accent-blue { border-top: 5px solid var(--blue); }
 .accent-orange, .accent-amber { border-top: 5px solid var(--orange); }
 .accent-green { border-top: 5px solid var(--green); }
@@ -1062,7 +1110,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .panel.soft { background: #fffaf4; }
 .notice.affiliate { border-color: #ffd2b8; background: linear-gradient(135deg, #fff7ed, #fff); }
 .compact-notice { padding: 18px 22px; }
-.compact-notice p { margin: 4px 0 0; }
+.compact-notice p { margin: 4px 0 0; font-size: 15px; line-height: 1.65; }
 .checklist { padding-left: 0; list-style: none; }
 .checklist li { position: relative; padding-left: 28px; margin: 10px 0; }
 .checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 900; }
@@ -1081,7 +1129,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .list-card h2 { margin-bottom: 8px; }
 .card-meta, .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 800; }
 .traffic-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-weight: 950; font-size: 12px; white-space: nowrap; }
-.text-link { color: var(--orange-dark); font-weight: 950; }
+.text-link { color: var(--orange-dark); font-weight: 950; display: inline-flex; align-items: center; min-height: 44px; }
 .shop-hero {
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: clamp(24px, 6vw, 72px);
   align-items: center; padding: clamp(44px, 8vw, 88px) 0 28px;
@@ -1108,8 +1156,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-card p { margin: 0; color: #6b625f; font-size: 14px; }
 .deal-price { margin-top: auto; color: var(--orange-dark); font-weight: 950; font-size: 15px; }
 .deal-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-.deal-actions .deal-button { min-height: 42px; padding: 0 13px; font-size: 13px; flex: 1 1 auto; }
-.breadcrumb { display: flex; gap: 8px; color: var(--muted); font-size: 14px; margin-top: 32px; }
+.deal-actions .deal-button { min-height: 46px; padding: 0 13px; font-size: 13px; flex: 1 1 auto; }
+.breadcrumb { display: flex; gap: 8px; color: var(--muted); font-size: 14px; margin-top: 32px; flex-wrap: wrap; }
+.breadcrumb a { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
 .article-page { max-width: 940px; margin: 0 auto; }
 .article-hero { padding: 44px 0 18px; }
 .article-product-hero { display: grid; grid-template-columns: minmax(220px, 330px) 1fr; gap: 24px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 30px; padding: clamp(16px, 3vw, 28px); box-shadow: var(--shadow); margin: 22px 0; }
@@ -1123,20 +1172,55 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   padding: clamp(22px, 4vw, 42px);
   box-shadow: 0 10px 32px rgba(58, 37, 20, .07);
   overflow-wrap: anywhere;
-  word-break: keep-all;
+  word-break: normal;
+  font-size: clamp(16px, 2.4vw, 18px);
+  line-height: 1.75;
 }
 .article-content h2 { margin-top: 34px; font-size: clamp(24px, 3.4vw, 32px); }
 .article-content h3 { margin-top: 26px; font-size: 22px; }
-.article-content p { color: #3f3733; }
-.article-content img { max-width: 100%; height: auto; border-radius: 18px; box-shadow: 0 8px 24px rgba(58, 37, 20, .08); }
+.article-content p { color: #3f3733; margin: 0 0 18px; }
+.article-content p[style*="font-size"] { font-size: inherit !important; line-height: inherit !important; }
+.article-content ul, .article-content ol { padding-left: 1.25em; }
+.article-content li { margin: 9px 0; }
+.article-content li > a { display: inline-flex; align-items: center; min-height: 44px; }
+.article-content img { display: block; max-width: 100%; max-height: 420px; width: auto; height: auto; margin: 14px auto; border-radius: 18px; box-shadow: 0 8px 24px rgba(58, 37, 20, .08); object-fit: contain; background: #fffaf4; }
 .article-content a {
   color: var(--orange-dark);
   font-weight: 950;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.article-content table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
-.article-content th, .article-content td { border: 1px solid var(--line); padding: 10px; }
+.article-content a[href*="coupang.com"]:not(:has(img)), .article-content p > a:only-child:not(:has(img)) {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px !important;
+  width: 100% !important;
+  margin: 8px 0 14px !important;
+  padding: 12px 14px !important;
+  border-radius: 16px !important;
+  background: var(--orange) !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 16px !important;
+  line-height: 1.35;
+  box-shadow: 0 10px 22px rgba(255, 90, 31, .18);
+}
+.article-content a[href*="coupang.com"]:has(img) {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 18px;
+}
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 18px 0; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+.table-scroll::before { content: "좌우로 밀어 비교하세요 →"; display: block; padding: 10px 12px 0; color: var(--muted); font-size: 13px; font-weight: 900; }
+.table-scroll table { min-width: 680px; width: 100%; border-collapse: collapse; }
+.article-content table { width: 100%; border-collapse: collapse; }
+.article-content th, .article-content td { border: 1px solid var(--line); padding: 10px; vertical-align: top; }
 .related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
 .related-radar h2 { margin-top: 0; }
 .related-radar ul { margin-bottom: 0; }
@@ -1146,6 +1230,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .search-row button { min-height: 48px; border: 0; border-radius: 16px; padding: 0 18px; background: var(--ink); color: #fff; font-weight: 950; cursor: pointer; }
 .search-panel { margin-top: 12px; }
 .search-result-card mark { background: #fff0b8; border-radius: 6px; padding: 0 2px; }
+.search-result-card { min-width: 0; overflow: hidden; }
+.search-result-card h2 { font-size: clamp(18px, 4.7vw, 22px); line-height: 1.32; }
+.search-result-card h2 a { display: block; }
+.search-result-card p { font-size: 15px; line-height: 1.62; }
 .quick-links { display: grid; gap: 10px; padding-left: 0; list-style: none; }
 .quick-links li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 10px 0; }
 .quick-links span { color: var(--muted); font-size: 13px; font-weight: 800; }
@@ -1156,21 +1244,67 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .muted { color: var(--muted); font-size: 14px; }
 @media (max-width: 860px) {
-  .site-header { position: static; align-items: flex-start; flex-direction: column; }
-  .nav { gap: 10px; font-size: 14px; }
+  .site-header { position: static; align-items: flex-start; flex-direction: column; gap: 12px; padding: 12px 14px 10px; }
+  .brand { width: 100%; }
+  .brand-mark { width: 38px; height: 38px; border-radius: 13px; }
+  .nav { width: 100%; gap: 8px; font-size: 14px; flex-wrap: nowrap; overflow-x: auto; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { flex: 0 0 auto; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, .84); }
+  main { width: min(100% - 28px, 1240px); }
+  h1 { font-size: clamp(32px, 9.5vw, 46px); line-height: 1.08; letter-spacing: -0.048em; }
+  .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
+  .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
+  .lead { font-size: 17px; line-height: 1.62; }
   .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .article-product-hero { grid-template-columns: 1fr; }
-  .hero-pin-stack { min-height: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; width: 100%; transform: none; border-width: 5px; border-radius: 20px; }
+  .shop-hero { gap: 16px; padding-bottom: 16px; }
+  .category-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .category-chip { flex: 0 0 auto; }
+  .hero-pin-stack { min-height: auto; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; flex: 0 0 132px; width: 132px; transform: none; border-width: 5px; border-radius: 20px; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
   .search-row { flex-direction: column; }
+  .search-row input, .search-row button { width: 100%; }
   .article-page { max-width: 100%; }
+  .article-product-hero img { max-height: 320px; object-fit: contain; margin: 0 auto; }
 }
 @media (max-width: 560px) {
-  main { width: min(100% - 24px, 1240px); }
-  .deal-grid, .mixed-list { grid-template-columns: 1fr; }
-  .hero-pin-stack { grid-template-columns: repeat(2, 1fr); }
-  .hero-pin.pin-3 { display: none; }
+  main, .footer { width: min(100% - 24px, 1240px); }
+  .hero-actions, .article-tail { display: grid; grid-template-columns: 1fr; }
+  .button, .deal-button { width: 100%; }
+  .status-strip, .shop-summary { grid-template-columns: 1fr; gap: 8px; }
+  .status-strip div, .shop-summary div { padding: 15px 16px; border-radius: 18px; }
+  .deal-grid, .mixed-list { grid-template-columns: 1fr; gap: 12px; }
+  .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
+  .deal-thumb { min-height: 100%; display: flex; align-items: center; justify-content: center; }
+  .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
+  .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
+  .deal-body { min-width: 0; padding: 14px; gap: 8px; }
+  .deal-meta { align-items: flex-start; flex-direction: column; gap: 4px; font-size: 11px; }
+  .deal-card h2 { font-size: 18px; line-height: 1.32; }
+  .deal-card p { font-size: 15px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .deal-actions { display: grid; grid-template-columns: 1fr; }
+  .deal-actions .deal-button { width: 100%; min-height: 44px; }
+  .search-result-card { padding: 16px; }
+  .search-result-card:has(> img) { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px 12px; align-items: start; }
+  .search-result-card:has(> img) > img { grid-row: 1 / span 5; width: 92px; height: 92px; object-fit: contain; margin: 0; border-radius: 14px; }
+  .search-result-card h2 { font-size: 18px; }
+  .search-result-card p { font-size: 14.5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .search-result-card .muted { -webkit-line-clamp: 2; }
+  .quick-links li { display: block; }
+  .quick-links span { display: block; margin-top: 4px; }
+  .article-content { padding: 20px 18px; font-size: 16.5px; line-height: 1.78; }
+  .article-content h2 { font-size: 24px; line-height: 1.25; }
+  .article-content h3 { font-size: 20px; line-height: 1.32; }
+  .article-content img { max-height: 330px; }
+  .table-scroll { margin-left: 0; margin-right: 0; width: 100%; overflow-x: visible; padding: 0 0 8px; }
+  .table-scroll::before { content: "핵심만 카드로 비교합니다"; padding: 10px 12px 8px; }
+  .table-scroll table, .table-scroll thead, .table-scroll tbody, .table-scroll tr, .table-scroll th, .table-scroll td { display: block; width: 100%; min-width: 0; }
+  .table-scroll thead { display: none; }
+  .table-scroll tr { margin: 0 10px 12px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; }
+  .table-scroll td { border: 0; border-bottom: 1px solid var(--line); padding: 10px 12px; }
+  .table-scroll td:last-child { border-bottom: 0; }
+  .table-scroll td::before { content: attr(data-label); display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; font-weight: 950; }
 }
 '''
 
