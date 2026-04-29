@@ -3,6 +3,18 @@
   "measurement_configured": true,
   "pages": {
     "/": {
+      "active_users": 2,
+      "views": 2
+    },
+    "/guides/": {
+      "active_users": 1,
+      "views": 1
+    },
+    "/radar/": {
+      "active_users": 1,
+      "views": 1
+    },
+    "/search/": {
       "active_users": 1,
       "views": 1
     }
@@ -12,10 +24,25 @@
   "status": "ok",
   "top_pages": [
     {
-      "active_users": 1,
+      "active_users": 2,
       "path": "/",
+      "views": 2
+    },
+    {
+      "active_users": 1,
+      "path": "/guides/",
+      "views": 1
+    },
+    {
+      "active_users": 1,
+      "path": "/radar/",
+      "views": 1
+    },
+    {
+      "active_users": 1,
+      "path": "/search/",
       "views": 1
     }
   ],
-  "updated_at": "2026-04-30T03:59:45+09:00"
+  "updated_at": "2026-04-30T05:54:19+09:00"
 }
