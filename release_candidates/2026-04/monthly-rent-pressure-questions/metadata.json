@@ -1,0 +1,42 @@
+{
+  "slug": "monthly-rent-pressure-questions",
+  "title": "월세가 낮아 보여도 답이 흐리면 위험합니다: 계약 전 확인할 5개 질문",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-04-30T10:17:00+09:00",
+  "publish_ready_at": "2026-05-07T10:17:00+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-04/monthly-rent-pressure-questions/50-copy.md",
+  "reader_qa_stage": "articles/2026-04/monthly-rent-pressure-questions/60-reader-qa.md",
+  "reader_qa": {
+    "score": 92,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 4558,
+    "reader_visual_count": 9,
+    "reviewed_at": "2026-04-30T10:21:25+09:00"
+  },
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-04-30T10:17:00+09:00",
+  "updated_at": "2026-05-01T08:41:53+09:00",
+  "pages_published_at": "2026-05-01T08:41:53+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/"
+}

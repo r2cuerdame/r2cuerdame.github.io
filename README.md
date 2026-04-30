@@ -13,7 +13,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 
 ## Current content
 
-- Dongne Radar articles: 2
+- Dongne Radar articles: 3
 - Shopping pick articles: 15
 
 ## Search/AI files
