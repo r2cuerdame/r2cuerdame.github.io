@@ -587,7 +587,7 @@ def layout(page: dict, body: str) -> str:
   <meta property="og:image" content="{esc(og_image)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#101828" />
-  <link rel="stylesheet" href="/main.css" />
+  <link rel="stylesheet" href="/main.css?v={asset_version(CSS)}" />
 {analytics}
   <script type="application/ld+json">{jsonld_for(page)}</script>
 </head>
