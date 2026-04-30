@@ -193,11 +193,10 @@ STATIC_PAGES = [
 ]
 
 NAV = [
-    ("동네 레이더", "/radar/"),
-    ("읽는 순서", "/guides/"),
-    ("소개", "/about/"),
-    ("구매가이드", "/deals/"),
-    ("검색", "/search/"),
+    ("동네 레이더", "/radar/", "nav-primary"),
+    ("구매가이드", "/deals/", "nav-primary"),
+    ("검색", "/search/", "nav-action"),
+    ("읽는 순서", "/guides/", "nav-secondary"),
 ]
 
 
@@ -211,6 +210,23 @@ def esc(value: Any) -> str:
 
 def asset_version(value: str) -> str:
     return hashlib.sha1(str(value or "").encode("utf-8")).hexdigest()[:10]
+
+
+def nav_item_current(page_path: str, href: str) -> bool:
+    if href == "/":
+        return page_path == "/"
+    return page_path == href or page_path.startswith(href)
+
+
+def nav_html(page_path: str) -> str:
+    items = []
+    for index, (name, href, tone) in enumerate(NAV, start=1):
+        current = ' aria-current="page"' if nav_item_current(page_path, href) else ""
+        items.append(
+            f'      <a class="{tone}" data-nav-order="{index}" href="{href}"{current}>'
+            f'<span>{esc(name)}</span></a>'
+        )
+    return "\n".join(items)
 
 
 def strip_tags(value: str) -> str:
@@ -433,8 +449,8 @@ def jsonld_for(page: dict) -> str:
         },
         {
             "@type": "SiteNavigationElement",
-            "name": [name for name, _ in NAV],
-            "url": [f"{BASE}{href}" for _, href in NAV],
+            "name": [name for name, _, _ in NAV],
+            "url": [f"{BASE}{href}" for _, href, _ in NAV],
         },
     ]
     if path != "/":
@@ -538,7 +554,7 @@ def layout(page: dict, body: str) -> str:
     description = page["description"]
     keywords = keywords_for(page)
     og_image = page.get("image_url") or f"{BASE}/assets/og-card.svg"
-    nav = "\n".join(f'      <a href="{href}">{esc(name)}</a>' for name, href in NAV)
+    nav = nav_html(page["path"])
     analytics = analytics_snippet()
     return f'''<!doctype html>
 <html lang="ko">
@@ -576,16 +592,17 @@ def layout(page: dict, body: str) -> str:
   <script type="application/ld+json">{jsonld_for(page)}</script>
 </head>
 <body>
+  <a class="skip-link" href="#content">본문 바로가기</a>
   <header class="site-header">
     <a class="brand" href="/" aria-label="Recuerdame Lab home">
       <span class="brand-mark">R</span>
-      <span><strong>Recuerdame Lab</strong><small>계약 전 동네 레이더</small></span>
+      <span class="brand-copy"><strong>Recuerdame Lab</strong><small>계약 전 동네 레이더</small></span>
     </a>
     <nav class="nav" aria-label="주요 메뉴">
 {nav}
     </nav>
   </header>
-  <main>
+  <main id="content">
     {body}
   </main>
   <footer class="footer">
@@ -1054,24 +1071,47 @@ a { color: inherit; text-decoration: none; }
 a:hover { color: var(--orange-dark); }
 img, svg, video { max-width: 100%; height: auto; }
 h1, h2, h3, p, li, a { overflow-wrap: anywhere; }
+.skip-link {
+  position: fixed; left: 16px; top: 12px; z-index: 100;
+  transform: translateY(-140%); padding: 10px 14px; border-radius: 12px;
+  background: var(--ink); color: #fff; font-weight: 950; box-shadow: var(--shadow);
+}
+.skip-link:focus { transform: translateY(0); outline: 3px solid rgba(37, 99, 235, .35); }
 .site-header {
   position: sticky; top: 0; z-index: 20;
-  display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  padding: 16px clamp(18px, 5vw, 64px);
-  background: rgba(255, 250, 244, 0.88);
+  display: grid; grid-template-columns: minmax(220px, 1fr) auto; align-items: center; gap: 18px;
+  padding: 14px clamp(18px, 5vw, 64px);
+  background: rgba(255, 250, 244, 0.92);
   backdrop-filter: blur(18px);
   border-bottom: 1px solid rgba(234, 223, 212, 0.85);
 }
-.brand { display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .brand-mark {
-  display: grid; place-items: center;
-  width: 42px; height: 42px; border-radius: 14px;
-  background: var(--ink); color: #fff; font-weight: 900;
+  display: grid; place-items: center; flex: 0 0 auto;
+  width: 44px; height: 44px; border-radius: 15px;
+  background: var(--ink); color: #fff; font-weight: 950; letter-spacing: -0.03em;
+  box-shadow: 0 8px 22px rgba(33, 25, 34, .12);
 }
+.brand-copy { display: block; min-width: 0; }
 .brand strong, .brand small { display: block; }
-.brand small { color: var(--muted); font-size: 12px; }
-.nav { display: flex; gap: 16px; flex-wrap: wrap; color: #4b423f; font-weight: 800; }
-.nav a { min-height: 40px; display: inline-flex; align-items: center; }
+.brand strong { font-size: clamp(18px, 2vw, 22px); line-height: 1.12; letter-spacing: -0.045em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand small { color: var(--muted); font-size: 12px; font-weight: 750; }
+.nav {
+  display: flex; align-items: center; gap: 4px; max-width: 100%;
+  padding: 5px; border: 1px solid rgba(234, 223, 212, .92); border-radius: 999px;
+  background: rgba(255, 255, 255, .72); color: #4b423f; font-weight: 900;
+  box-shadow: 0 10px 26px rgba(58, 37, 20, .06);
+}
+.nav a {
+  min-height: 38px; display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 13px; border-radius: 999px; color: #594e49; font-size: 14px; line-height: 1;
+  white-space: nowrap; transition: background .16s ease, color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.nav a:hover { background: #fff4ea; color: var(--orange-dark); }
+.nav a:focus-visible { outline: 3px solid rgba(37, 99, 235, .22); outline-offset: 2px; }
+.nav a[aria-current="page"] { background: var(--ink); color: #fff; box-shadow: 0 8px 18px rgba(33, 25, 34, .16); }
+.nav a.nav-action { background: #fff0e5; color: var(--orange-dark); }
+.nav a.nav-action[aria-current="page"] { background: var(--orange); color: #fff; }
 main { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
 .hero { padding: clamp(50px, 9vw, 96px) 0 40px; }
 .page-hero { padding: 58px 0 28px; }
@@ -1249,12 +1289,17 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .muted { color: var(--muted); font-size: 14px; }
 @media (max-width: 860px) {
-  .site-header { position: static; align-items: flex-start; flex-direction: column; gap: 12px; padding: 12px 14px 10px; }
-  .brand { width: 100%; }
-  .brand-mark { width: 38px; height: 38px; border-radius: 13px; }
-  .nav { width: 100%; gap: 8px; font-size: 14px; flex-wrap: nowrap; overflow-x: auto; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .nav::-webkit-scrollbar { display: none; }
-  .nav a { flex: 0 0 auto; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, .84); }
+  .site-header { position: static; align-items: stretch; grid-template-columns: 1fr; gap: 10px; padding: 10px 12px 12px; }
+  .brand { width: 100%; gap: 10px; }
+  .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
+  .brand strong { font-size: 19px; }
+  .brand small { font-size: 12px; }
+  .nav { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 6px; border-radius: 22px; overflow: visible; box-shadow: 0 8px 20px rgba(58, 37, 20, .055); }
+  .nav a { min-width: 0; min-height: 44px; padding: 0 8px; border: 1px solid rgba(234, 223, 212, .95); background: rgba(255, 255, 255, .88); font-size: 13px; }
+  .nav a span { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nav a.nav-primary { color: #312826; font-weight: 950; }
+  .nav a.nav-action { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .nav a[aria-current="page"] { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: none; }
   main { width: min(100% - 28px, 1240px); }
   h1 { font-size: clamp(32px, 9.5vw, 46px); line-height: 1.08; letter-spacing: -0.048em; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
@@ -1275,6 +1320,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 @media (max-width: 560px) {
   main, .footer { width: min(100% - 24px, 1240px); }
+  .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nav a { min-height: 44px; font-size: 12.5px; }
   .hero-actions, .article-tail { display: grid; grid-template-columns: 1fr; }
   .button, .deal-button { width: 100%; }
   .status-strip, .shop-summary { grid-template-columns: 1fr; gap: 8px; }
@@ -1310,6 +1357,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .table-scroll td { border: 0; border-bottom: 1px solid var(--line); padding: 10px 12px; }
   .table-scroll td:last-child { border-bottom: 0; }
   .table-scroll td::before { content: attr(data-label); display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; font-weight: 950; }
+}
+@media (max-width: 360px) {
+  .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 '''
 
