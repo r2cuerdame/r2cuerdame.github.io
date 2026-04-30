@@ -4,13 +4,25 @@
   "pages": {
     "/": {
       "active_users": 2,
-      "views": 2
+      "views": 3
     },
-    "/guides/": {
+    "/deals/beauty-personal-care-gadgets-top5/": {
       "active_users": 1,
       "views": 1
     },
+    "/guides/": {
+      "active_users": 1,
+      "views": 4
+    },
     "/radar/": {
+      "active_users": 1,
+      "views": 4
+    },
+    "/radar/cafe-contract-risk/": {
+      "active_users": 1,
+      "views": 1
+    },
+    "/radar/dongne-signal-framework/": {
       "active_users": 1,
       "views": 1
     },
@@ -24,18 +36,33 @@
   "status": "ok",
   "top_pages": [
     {
-      "active_users": 2,
-      "path": "/",
-      "views": 2
-    },
-    {
       "active_users": 1,
       "path": "/guides/",
-      "views": 1
+      "views": 4
     },
     {
       "active_users": 1,
       "path": "/radar/",
+      "views": 4
+    },
+    {
+      "active_users": 2,
+      "path": "/",
+      "views": 3
+    },
+    {
+      "active_users": 1,
+      "path": "/deals/beauty-personal-care-gadgets-top5/",
+      "views": 1
+    },
+    {
+      "active_users": 1,
+      "path": "/radar/cafe-contract-risk/",
+      "views": 1
+    },
+    {
+      "active_users": 1,
+      "path": "/radar/dongne-signal-framework/",
       "views": 1
     },
     {
@@ -44,5 +71,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-04-30T05:54:19+09:00"
+  "updated_at": "2026-04-30T09:09:15+09:00"
 }
