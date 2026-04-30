@@ -4,7 +4,7 @@
   "pages": {
     "/": {
       "active_users": 3,
-      "views": 6
+      "views": 7
     },
     "/deals/": {
       "active_users": 1,
@@ -20,7 +20,7 @@
     },
     "/radar/": {
       "active_users": 1,
-      "views": 5
+      "views": 6
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -42,12 +42,12 @@
     {
       "active_users": 3,
       "path": "/",
-      "views": 6
+      "views": 7
     },
     {
       "active_users": 1,
       "path": "/radar/",
-      "views": 5
+      "views": 6
     },
     {
       "active_users": 1,
@@ -80,5 +80,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-04-30T17:45:52+09:00"
+  "updated_at": "2026-04-30T18:45:21+09:00"
 }
