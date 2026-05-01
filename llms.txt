@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-05-02T07:49:56+09:00
+Last updated: 2026-05-02T08:28:45+09:00
 
 ## Primary sections
 
@@ -26,6 +26,7 @@ Last updated: 2026-05-02T07:49:56+09:00
 
 ## Dongne Radar articles
 
+- 관리비 총액만 보이는 월세 후보, 방문 전 이렇게 보류하세요: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/
 - 월세가 낮아 보여도 답이 흐리면 위험합니다: 계약 전 확인할 5개 질문: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/
 - 월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지: https://r2cuerdame.github.io/radar/dongne-signal-framework/
 - 카페 계약 전, 이 상권은 먼저 의심하세요: https://r2cuerdame.github.io/radar/cafe-contract-risk/
