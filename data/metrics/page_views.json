@@ -4,7 +4,7 @@
   "pages": {
     "/": {
       "active_users": 3,
-      "views": 8
+      "views": 9
     },
     "/about/": {
       "active_users": 1,
@@ -12,7 +12,11 @@
     },
     "/deals/": {
       "active_users": 1,
-      "views": 8
+      "views": 9
+    },
+    "/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/": {
+      "active_users": 0,
+      "views": 1
     },
     "/deals/beauty-personal-care-gadgets-top5/": {
       "active_users": 1,
@@ -28,11 +32,11 @@
     },
     "/guides/": {
       "active_users": 1,
-      "views": 6
+      "views": 7
     },
     "/radar/": {
       "active_users": 1,
-      "views": 10
+      "views": 11
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -48,7 +52,7 @@
     },
     "/search/": {
       "active_users": 1,
-      "views": 4
+      "views": 5
     }
   },
   "property_configured": true,
@@ -58,27 +62,27 @@
     {
       "active_users": 1,
       "path": "/radar/",
-      "views": 10
+      "views": 11
     },
     {
       "active_users": 3,
       "path": "/",
-      "views": 8
+      "views": 9
     },
     {
       "active_users": 1,
       "path": "/deals/",
-      "views": 8
+      "views": 9
     },
     {
       "active_users": 1,
       "path": "/guides/",
-      "views": 6
+      "views": 7
     },
     {
       "active_users": 1,
       "path": "/search/",
-      "views": 4
+      "views": 5
     },
     {
       "active_users": 1,
@@ -88,6 +92,11 @@
     {
       "active_users": 1,
       "path": "/about/",
+      "views": 1
+    },
+    {
+      "active_users": 0,
+      "path": "/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/",
       "views": 1
     },
     {
@@ -116,5 +125,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-01T20:45:51+09:00"
+  "updated_at": "2026-05-01T22:58:33+09:00"
 }
