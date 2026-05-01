@@ -8,7 +8,7 @@
     },
     "/deals/": {
       "active_users": 1,
-      "views": 4
+      "views": 5
     },
     "/deals/beauty-personal-care-gadgets-top5/": {
       "active_users": 1,
@@ -24,7 +24,7 @@
     },
     "/guides/": {
       "active_users": 1,
-      "views": 5
+      "views": 6
     },
     "/radar/": {
       "active_users": 1,
@@ -36,7 +36,7 @@
     },
     "/radar/dongne-signal-framework/": {
       "active_users": 1,
-      "views": 1
+      "views": 2
     },
     "/radar/monthly-rent-pressure-questions/": {
       "active_users": 1,
@@ -44,7 +44,7 @@
     },
     "/search/": {
       "active_users": 1,
-      "views": 2
+      "views": 3
     }
   },
   "property_configured": true,
@@ -64,16 +64,21 @@
     {
       "active_users": 1,
       "path": "/guides/",
-      "views": 5
+      "views": 6
     },
     {
       "active_users": 1,
       "path": "/deals/",
-      "views": 4
+      "views": 5
     },
     {
       "active_users": 1,
       "path": "/search/",
+      "views": 3
+    },
+    {
+      "active_users": 1,
+      "path": "/radar/dongne-signal-framework/",
       "views": 2
     },
     {
@@ -98,14 +103,9 @@
     },
     {
       "active_users": 1,
-      "path": "/radar/dongne-signal-framework/",
-      "views": 1
-    },
-    {
-      "active_users": 1,
       "path": "/radar/monthly-rent-pressure-questions/",
       "views": 1
     }
   ],
-  "updated_at": "2026-05-01T09:45:47+09:00"
+  "updated_at": "2026-05-01T11:02:37+09:00"
 }
