@@ -15,6 +15,7 @@ import json
 import os
 import re
 from typing import Any
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 KST = timezone(timedelta(hours=9))
@@ -175,8 +176,8 @@ STATIC_PAGES = [
     {
         "path": "/deals/",
         "file": "deals/index.html",
-        "title": "구매가이드 — Recuerdame Lab",
-        "description": "동네 레이더와 분리해 운영하는 생활 구매가이드와 쿠팡 추천 비교글입니다.",
+        "title": "생활가전·재택근무 구매가이드 — Recuerdame Lab",
+        "description": "계절가전, 책상 장비, 음향기기처럼 구매 직전 비교가 필요한 생활·재택 상품을 상황별로 모아 보는 쇼핑픽 랜딩입니다.",
         "priority": "0.72",
         "type": "CollectionPage",
         "section": "deals",
@@ -733,6 +734,127 @@ def hero_pins(articles: list[dict]) -> str:
 </a>''')
     return "\n".join(pins)
 
+
+def article_views(article: dict) -> int:
+    metric = metric_for(article.get("path") or "")
+    for key in ("views", "screenPageViews", "page_views"):
+        try:
+            return int(metric.get(key) or 0)
+        except Exception:
+            continue
+    return 0
+
+
+def deals_by_growth_priority(deals: list[dict]) -> list[dict]:
+    return sorted(
+        deals,
+        key=lambda a: (article_views(a), parse_dt(a.get("date")).timestamp(), str(a.get("title") or "")),
+        reverse=True,
+    )
+
+
+def search_chip(label: str) -> str:
+    return f'<a class="search-chip" href="/search/?q={quote(label)}">{esc(label)}</a>'
+
+
+def matches_deal_intent(article: dict, terms: list[str]) -> bool:
+    haystack = " ".join(
+        [
+            str(article.get("title") or ""),
+            str(article.get("description") or ""),
+            str(article.get("category") or ""),
+            " ".join(str(t) for t in (article.get("tags") or [])),
+        ]
+    ).lower()
+    return any(term.lower() in haystack for term in terms)
+
+
+def mini_deal_links(articles: list[dict], empty_label: str = "관련 비교글 준비중") -> str:
+    if not articles:
+        return f'<li class="muted">{esc(empty_label)}</li>'
+    return "\n".join(
+        f'<li><a href="{esc(a["path"])}">{esc(short_text(a.get("title") or "", 42))}</a></li>'
+        for a in articles[:3]
+    )
+
+
+def deal_intent_hubs(deals: list[dict]) -> str:
+    intents = [
+        {
+            "label": "장마·습기",
+            "title": "습기·공기부터 실패 줄이기",
+            "description": "제습기와 공기청정기는 방 크기, 물통 관리, 필터 비용을 먼저 보면 과소비를 줄일 수 있습니다.",
+            "terms": ["제습기", "공기청정기", "장마", "습기", "필터"],
+            "queries": ["원룸 제습기", "공기청정기", "장마 가전"],
+        },
+        {
+            "label": "재택·책상",
+            "title": "오래 앉는 사람의 책상 셋업",
+            "description": "모니터암, 모니터 조명, 의자, 키보드는 예쁜 것보다 자세·눈 피로·공간 효율 기준으로 골라야 합니다.",
+            "terms": ["모니터", "의자", "키보드", "재택", "책상", "개발자"],
+            "queries": ["모니터암", "사무용 의자", "모니터 조명"],
+        },
+        {
+            "label": "몰입·이동",
+            "title": "소리 장비는 사용 장소부터",
+            "description": "ANC 헤드폰, 게이밍 헤드셋, 블루투스 스피커는 출퇴근·회의·캠핑처럼 쓰는 장소가 다르면 정답도 달라집니다.",
+            "terms": ["헤드폰", "헤드셋", "스피커", "ANC", "블루투스", "마샬", "보스"],
+            "queries": ["ANC 헤드폰", "게이밍 헤드셋", "블루투스 스피커"],
+        },
+        {
+            "label": "선물·생활",
+            "title": "선물용은 관리 부담까지 보기",
+            "description": "뷰티·주방·퍼스널케어 가전은 가격보다 매일 쓰는지, 소모품과 세척 부담이 적은지를 같이 봐야 합니다.",
+            "terms": ["뷰티", "퍼스널", "주방", "전동", "드라이", "선물"],
+            "queries": ["전동칫솔", "드라이기", "주방가전"],
+        },
+    ]
+    cards = []
+    prioritized = deals_by_growth_priority(deals)
+    for intent in intents:
+        matched = [a for a in prioritized if matches_deal_intent(a, intent["terms"])]
+        chips = "".join(search_chip(q) for q in intent["queries"])
+        cards.append(f'''<article class="intent-card">
+  <span class="tag pale">{esc(intent['label'])}</span>
+  <h2>{esc(intent['title'])}</h2>
+  <p>{esc(intent['description'])}</p>
+  <div class="search-chip-row">{chips}</div>
+  <ul class="mini-link-list">{mini_deal_links(matched)}</ul>
+</article>''')
+    return "\n".join(cards)
+
+
+def popular_deal_list(deals: list[dict]) -> str:
+    rows = []
+    for index, article in enumerate(deals_by_growth_priority(deals)[:5], start=1):
+        views = article_views(article)
+        metric = f"최근 30일 {views}회" if views else "신규/색인 대기"
+        rows.append(f'''<li>
+  <span class="rank">{index}</span>
+  <a href="{esc(article['path'])}">{esc(article['title'])}</a>
+  <small>{esc(metric)} · {esc(article.get('category'))}</small>
+</li>''')
+    return "\n".join(rows) or '<li class="muted">조회 데이터 수집 중</li>'
+
+
+def deal_category_hubs(deals: list[dict]) -> str:
+    grouped: dict[str, list[dict]] = {}
+    for article in deals:
+        category = str(article.get("category") or "기타 구매가이드").strip() or "기타 구매가이드"
+        grouped.setdefault(category, []).append(article)
+    cards = []
+    for category in sorted(grouped, key=lambda c: (-len(grouped[c]), c)):
+        articles = deals_by_growth_priority(grouped[category])
+        cards.append(f'''<article class="category-hub">
+  <div>
+    <span class="tag">{esc(category)}</span>
+    <strong>{len(articles)}개 비교글</strong>
+  </div>
+  <ul class="mini-link-list">{mini_deal_links(articles)}</ul>
+</article>''')
+    return "\n".join(cards)
+
+
 def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
     deal_html = article_cards(deals[:3], "구매가이드 글 준비중") if deals else ""
@@ -787,9 +909,14 @@ def deals_body(deals: list[dict]) -> str:
     return f'''
 <section class="shop-hero">
   <div class="shop-hero-copy">
-    <p class="eyebrow">Shopping Picks</p>
-    <h1>사진으로 먼저 보는 오늘의 쇼핑픽</h1>
-    <p class="lead">인기 상품을 이미지 카드로 훑고, 마음에 드는 글에서 후보별 장단점과 쿠팡 상품 링크를 바로 확인하세요.</p>
+    <p class="eyebrow">Shopping Picks · 구매 직전 비교</p>
+    <h1>생활가전·재택근무 장비를 상황별로 고르는 구매가이드</h1>
+    <p class="lead">상품을 많이 나열하기보다 “내가 쓰는 상황”에 맞춰 실패 가능성을 먼저 줄입니다. 장마, 재택근무, 이동·몰입, 선물용처럼 구매 의도가 분명한 검색어부터 바로 비교하세요.</p>
+    <div class="hero-actions">
+      <a class="button primary" href="#buying-situations">상황별로 고르기</a>
+      <a class="button" href="#popular-deals">요즘 본 글</a>
+      <a class="button" href="#all-deals">전체 비교글</a>
+    </div>
     <div class="category-strip">{category_chips(deals)}</div>
   </div>
   <div class="hero-pin-stack" aria-label="추천 상품 미리보기">
@@ -797,18 +924,40 @@ def deals_body(deals: list[dict]) -> str:
   </div>
 </section>
 <section class="panel soft search-panel">
-  {search_form("예: 공기청정기, 제습기, 로봇청소기, 헤드셋")}
+  {search_form("예: 원룸 제습기, 모니터암, 사무용 의자, 블루투스 스피커")}
 </section>
 <section class="notice affiliate compact-notice">
   <strong>제휴 고지</strong>
-  <p>이 페이지의 일부 링크는 쿠팡 파트너스 링크이며, 구매 시 일정액의 수수료를 받을 수 있습니다.</p>
+  <p>이 페이지의 일부 링크는 쿠팡 파트너스 링크이며, 구매 시 일정액의 수수료를 받을 수 있습니다. 가격·배송·재고는 상품 페이지에서 다시 확인하세요.</p>
 </section>
 <section class="shop-summary" aria-label="쇼핑픽 요약">
-  <div><strong>{len(deals)}개</strong><span>추천글</span></div>
-  <div><strong>이미지 카드</strong><span>대표 상품 먼저 보기</span></div>
-  <div><strong>가격대 힌트</strong><span>상세가는 상품 페이지 확인</span></div>
+  <div><strong>{len(deals)}개</strong><span>비교글 운영 중</span></div>
+  <div><strong>상황별 허브</strong><span>장마·재택·몰입·선물</span></div>
+  <div><strong>중복 억제</strong><span>같은 상품군 반복 발행 금지</span></div>
 </section>
-<section class="deal-grid">
+<section id="buying-situations" class="landing-section">
+  <div class="section-title"><h2>무엇을 사야 할지보다, 어디에 쓸지부터</h2><p>검색 유입을 노리는 구매상황별 시작점입니다. 이미 있는 비교글은 연결하고, 없는 상품군은 다음 후보로 남깁니다.</p></div>
+  <div class="intent-grid">{deal_intent_hubs(deals)}</div>
+</section>
+<section id="popular-deals" class="grid two landing-section">
+  <article class="panel popular-panel">
+    <div class="section-title"><h2>최근 반응 있는 쇼핑픽</h2><p>GA4 조회가 잡힌 글을 우선 보여주고, 데이터가 없는 글은 색인 대기 상태로 둡니다.</p></div>
+    <ol class="popular-deal-list">{popular_deal_list(deals)}</ol>
+  </article>
+  <article class="panel decision-panel">
+    <div class="section-title"><h2>구매 전 30초 체크</h2><p>본문으로 들어가기 전 이 세 가지만 정하면 비교가 빨라집니다.</p></div>
+    <ul class="checklist">
+      <li><strong>사용 장소:</strong> 원룸, 거실, 재택 책상, 출퇴근, 캠핑처럼 실제 사용 위치를 먼저 정합니다.</li>
+      <li><strong>불편 기준:</strong> 소음, 공간, 눈 피로, 허리 부담, 세척·필터 비용 중 가장 싫은 실패를 고릅니다.</li>
+      <li><strong>가격 확인:</strong> 상세 가격·배송·옵션은 쿠팡 상품 페이지에서 마지막으로 다시 확인합니다.</li>
+    </ul>
+  </article>
+</section>
+<section class="landing-section">
+  <div class="section-title"><h2>카테고리별 비교글 묶음</h2><p>같은 상품군을 반복 발행하지 않고, 기존 글을 먼저 업데이트하거나 내부 링크로 확장합니다.</p></div>
+  <div class="category-hubs">{deal_category_hubs(deals)}</div>
+</section>
+<section id="all-deals" class="deal-grid">
   {deal_cards(deals)}
 </section>
 '''
@@ -1160,7 +1309,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .panel, .notice { margin: 28px 0; }
 .panel.soft { background: #fffaf4; }
 .notice.affiliate { border-color: #ffd2b8; background: linear-gradient(135deg, #fff7ed, #fff); }
-.compact-notice { padding: 18px 22px; }
+.compact-notice { padding: 14px 18px; }
 .compact-notice p { margin: 4px 0 0; font-size: 15px; line-height: 1.65; }
 .checklist { padding-left: 0; list-style: none; }
 .checklist li { position: relative; padding-left: 28px; margin: 10px 0; }
@@ -1182,8 +1331,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .traffic-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-weight: 950; font-size: 12px; white-space: nowrap; }
 .text-link { color: var(--orange-dark); font-weight: 950; display: inline-flex; align-items: center; min-height: 44px; }
 .shop-hero {
-  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: clamp(24px, 6vw, 72px);
-  align-items: center; padding: clamp(44px, 8vw, 88px) 0 28px;
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: clamp(20px, 5vw, 56px);
+  align-items: center; padding: clamp(34px, 6vw, 66px) 0 22px;
 }
 .shop-hero-copy h1 { max-width: 760px; }
 .category-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
@@ -1195,6 +1344,23 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .hero-pin.pin-1 { right: 18%; top: 0; z-index: 3; }
 .hero-pin.pin-2 { left: 0; bottom: 0; width: 48%; z-index: 2; transform: rotate(-5deg); }
 .hero-pin.pin-3 { right: 0; bottom: 24px; width: 46%; z-index: 1; transform: rotate(5deg); }
+.landing-section { margin: 34px 0 58px; scroll-margin-top: 96px; }
+.intent-grid, .category-hubs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.intent-card, .category-hub { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(58, 37, 20, .065); }
+.intent-card h2 { margin: 8px 0 8px; font-size: clamp(21px, 2.2vw, 26px); }
+.intent-card p { color: #5f5652; margin: 0 0 14px; line-height: 1.65; }
+.search-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+.search-chip { display: inline-flex; align-items: center; min-height: 34px; padding: 0 11px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 13px; font-weight: 950; }
+.mini-link-list { display: grid; gap: 8px; margin: 12px 0 0; padding-left: 18px; }
+.mini-link-list a { color: #2f2724; font-weight: 900; }
+.category-hub > div { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 10px; }
+.category-hub strong { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.popular-panel, .decision-panel { margin: 0; }
+.popular-deal-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 10px; }
+.popular-deal-list li { display: grid; grid-template-columns: 34px 1fr; gap: 2px 10px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.popular-deal-list .rank { grid-row: 1 / span 2; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 950; font-size: 13px; }
+.popular-deal-list a { color: #2f2724; font-weight: 950; }
+.popular-deal-list small { color: var(--muted); font-weight: 800; }
 .deal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin: 22px 0 68px; align-items: stretch; }
 .deal-card { background: #fff; border: 1px solid var(--line); border-radius: 28px; overflow: hidden; box-shadow: 0 12px 35px rgba(58, 37, 20, .08); display: flex; flex-direction: column; min-height: 100%; transition: transform .18s ease, box-shadow .18s ease; }
 .deal-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(58, 37, 20, .14); }
