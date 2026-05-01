@@ -8,7 +8,7 @@
     },
     "/deals/": {
       "active_users": 1,
-      "views": 3
+      "views": 4
     },
     "/deals/beauty-personal-care-gadgets-top5/": {
       "active_users": 1,
@@ -18,19 +18,27 @@
       "active_users": 1,
       "views": 1
     },
+    "/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/": {
+      "active_users": 1,
+      "views": 1
+    },
     "/guides/": {
       "active_users": 1,
-      "views": 4
+      "views": 5
     },
     "/radar/": {
       "active_users": 1,
-      "views": 7
+      "views": 9
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
       "views": 1
     },
     "/radar/dongne-signal-framework/": {
+      "active_users": 1,
+      "views": 1
+    },
+    "/radar/monthly-rent-pressure-questions/": {
       "active_users": 1,
       "views": 1
     },
@@ -44,24 +52,24 @@
   "status": "ok",
   "top_pages": [
     {
+      "active_users": 1,
+      "path": "/radar/",
+      "views": 9
+    },
+    {
       "active_users": 3,
       "path": "/",
       "views": 7
     },
     {
       "active_users": 1,
-      "path": "/radar/",
-      "views": 7
-    },
-    {
-      "active_users": 1,
       "path": "/guides/",
-      "views": 4
+      "views": 5
     },
     {
       "active_users": 1,
       "path": "/deals/",
-      "views": 3
+      "views": 4
     },
     {
       "active_users": 1,
@@ -80,6 +88,11 @@
     },
     {
       "active_users": 1,
+      "path": "/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/",
+      "views": 1
+    },
+    {
+      "active_users": 1,
       "path": "/radar/cafe-contract-risk/",
       "views": 1
     },
@@ -87,7 +100,12 @@
       "active_users": 1,
       "path": "/radar/dongne-signal-framework/",
       "views": 1
+    },
+    {
+      "active_users": 1,
+      "path": "/radar/monthly-rent-pressure-questions/",
+      "views": 1
     }
   ],
-  "updated_at": "2026-04-30T20:51:32+09:00"
+  "updated_at": "2026-05-01T09:45:47+09:00"
 }
