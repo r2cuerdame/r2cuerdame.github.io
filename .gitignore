@@ -2,5 +2,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 reports/
+tmp/
+social/
 data/metrics/analytics_config.json
 data/metrics/*.local.json
