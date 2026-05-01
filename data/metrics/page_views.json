@@ -4,11 +4,15 @@
   "pages": {
     "/": {
       "active_users": 3,
-      "views": 7
+      "views": 8
+    },
+    "/about/": {
+      "active_users": 1,
+      "views": 1
     },
     "/deals/": {
       "active_users": 1,
-      "views": 5
+      "views": 7
     },
     "/deals/beauty-personal-care-gadgets-top5/": {
       "active_users": 1,
@@ -44,7 +48,7 @@
     },
     "/search/": {
       "active_users": 1,
-      "views": 3
+      "views": 4
     }
   },
   "property_configured": true,
@@ -59,6 +63,11 @@
     {
       "active_users": 3,
       "path": "/",
+      "views": 8
+    },
+    {
+      "active_users": 1,
+      "path": "/deals/",
       "views": 7
     },
     {
@@ -68,18 +77,18 @@
     },
     {
       "active_users": 1,
-      "path": "/deals/",
-      "views": 5
-    },
-    {
-      "active_users": 1,
       "path": "/search/",
-      "views": 3
+      "views": 4
     },
     {
       "active_users": 1,
       "path": "/radar/dongne-signal-framework/",
       "views": 2
+    },
+    {
+      "active_users": 1,
+      "path": "/about/",
+      "views": 1
     },
     {
       "active_users": 1,
@@ -107,5 +116,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-01T11:02:37+09:00"
+  "updated_at": "2026-05-01T13:49:44+09:00"
 }
