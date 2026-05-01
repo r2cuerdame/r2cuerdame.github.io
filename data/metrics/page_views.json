@@ -14,6 +14,10 @@
       "active_users": 1,
       "views": 10
     },
+    "/deals/2026-robot-vacuum-best4/": {
+      "active_users": 1,
+      "views": 1
+    },
     "/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/": {
       "active_users": 0,
       "views": 1
@@ -95,6 +99,11 @@
       "views": 1
     },
     {
+      "active_users": 1,
+      "path": "/deals/2026-robot-vacuum-best4/",
+      "views": 1
+    },
+    {
       "active_users": 0,
       "path": "/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/",
       "views": 1
@@ -125,5 +134,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-01T23:45:38+09:00"
+  "updated_at": "2026-05-02T03:45:44+09:00"
 }
