@@ -299,6 +299,8 @@ def validate_post(post: dict[str, Any], post_file: str) -> tuple[bool, list[str]
         errors.append(f'too_few_anchors:{anchors}')
     if re.search(r'관련\s*제품|placeholder|임시', body, flags=re.I):
         errors.append('placeholder_text')
+    if re.search(r'Config warnings|model\.run via gateway|plugins\.entries|provider:\s*anthropic|outputs:\s*\d+', body, flags=re.I):
+        errors.append('model_gateway_log_leak')
     if post.get('retired_at') or post.get('source_status') == 'retired':
         errors.append('retired_source')
     return not errors, errors
