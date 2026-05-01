@@ -24,6 +24,65 @@ BLOG_ROOT = Path('/mnt/c/Users/recue/.openclaw/workspace/blog-autopost')
 KST = timezone(timedelta(hours=9))
 BASE = 'https://r2cuerdame.github.io'
 
+PRODUCT_TOPIC_RULES = {
+    'air_purifier': {
+        'pools': {'products_air_purifiers.json'},
+        'phrases': {'공기청정기', '공기 청정기'},
+    },
+    'dehumidifier': {
+        'pools': {'products_dehumidifiers.json'},
+        'phrases': {'제습기'},
+    },
+    'robot_vacuum': {
+        'pools': {'products_robot_vacuum.json'},
+        'phrases': {'로봇청소기', '로봇 청소기'},
+    },
+    'stick_vacuum': {
+        'pools': {'products_stick_vacuums.json'},
+        'phrases': {'무선청소기', '스틱청소기', '스틱 청소기'},
+    },
+    'monitor_arm': {
+        'pools': {'products_monitor_arms.json'},
+        'phrases': {'모니터암', '모니터 암'},
+    },
+    'monitor_light': {
+        'pools': {'products_monitor_lights.json'},
+        'phrases': {'모니터 조명', '모니터조명', '스크린바'},
+    },
+    'office_chair': {
+        'pools': {'products_office_chairs.json'},
+        'phrases': {'사무용 의자', '오피스 의자', '허리 편한 의자'},
+    },
+    'keyboard': {
+        'pools': {'products_keyboard.json'},
+        'phrases': {'기계식 키보드', '키보드'},
+    },
+    'gaming_headset': {
+        'pools': {'products_gaming_headsets.json'},
+        'phrases': {'게이밍 헤드셋', '게임 헤드셋'},
+    },
+    'noise_cancel_headphones': {
+        'pools': {'products_noise_cancel_headphones.json'},
+        'phrases': {'anc 헤드폰', '노이즈캔슬링 헤드폰', '노캔 헤드폰'},
+    },
+    'wireless_earbuds': {
+        'pools': {'products_wireless_earbuds.json'},
+        'phrases': {'무선 이어버드', '무선이어버드', '무선 이어폰', '무선이어폰'},
+    },
+    'bluetooth_speaker': {
+        'pools': {'products_bluetooth_speakers.json'},
+        'phrases': {'블루투스 스피커'},
+    },
+    'kitchen_appliance': {
+        'pools': {'products_kitchen_appliance_deals.json'},
+        'phrases': {'주방가전'},
+    },
+    'personal_care_gadget': {
+        'pools': {'products_personal_care_deals.json'},
+        'phrases': {'뷰티 디바이스', '퍼스널 케어', '개인관리 기기'},
+    },
+}
+
 
 def run(cmd: list[str], cwd: Path = ROOT, check: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, cwd=str(cwd), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=check)
@@ -71,6 +130,80 @@ def short(value: str, limit: int = 170) -> str:
     return value if len(value) <= limit else value[: limit - 1].rstrip() + '…'
 
 
+def normalized_pool(record: dict[str, Any]) -> str:
+    return Path(str(record.get('products_pool') or '')).name.strip().lower()
+
+
+def topic_scan_text(record: dict[str, Any]) -> str:
+    """Text used to infer product topic without broad category tag false positives."""
+    body = str(record.get('html') or record.get('body_html') or '')
+    # Title/body catch the actual product. Category/tags can contain broad buckets
+    # like "로봇청소기-가전" even for air purifier or dehumidifier posts.
+    return f"{record.get('title') or ''} {strip_tags(body)[:2500]}".lower()
+
+
+def infer_product_topics(record: dict[str, Any]) -> set[str]:
+    pool = normalized_pool(record)
+    scan = topic_scan_text(record)
+    topics: set[str] = set()
+    for topic, rule in PRODUCT_TOPIC_RULES.items():
+        if pool and pool in rule['pools']:
+            topics.add(topic)
+            continue
+        if any(phrase.lower() in scan for phrase in rule['phrases']):
+            topics.add(topic)
+    return topics
+
+
+def extract_coupang_product_ids(record: dict[str, Any]) -> set[str]:
+    body = str(record.get('html') or record.get('body_html') or '')
+    return set(re.findall(r'coupang\.com/vp/products/(\d+)', body, flags=re.I))
+
+
+def product_signature(record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        'products_pool': normalized_pool(record),
+        'topics': sorted(infer_product_topics(record)),
+        'coupang_product_ids': sorted(extract_coupang_product_ids(record)),
+    }
+
+
+def find_similar_existing_article(candidate: dict[str, Any], existing_articles: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Return the first public deal that is too similar to publish beside candidate."""
+    candidate_pool = normalized_pool(candidate)
+    candidate_topics = infer_product_topics(candidate)
+    candidate_product_ids = extract_coupang_product_ids(candidate)
+    for existing in existing_articles:
+        existing_title = str(existing.get('title') or '').strip()
+        existing_pool = normalized_pool(existing)
+        if candidate_pool and existing_pool and candidate_pool == existing_pool:
+            return {
+                'reason': 'same_product_pool',
+                'existing_title': existing_title,
+                'existing_slug': existing.get('slug'),
+                'products_pool': candidate_pool,
+            }
+        existing_topics = infer_product_topics(existing)
+        common_topics = sorted(candidate_topics & existing_topics)
+        if common_topics:
+            return {
+                'reason': 'same_product_topic',
+                'existing_title': existing_title,
+                'existing_slug': existing.get('slug'),
+                'topics': common_topics,
+            }
+        existing_product_ids = extract_coupang_product_ids(existing)
+        common_product_ids = sorted(candidate_product_ids & existing_product_ids)
+        if common_product_ids:
+            return {
+                'reason': 'same_coupang_product',
+                'existing_title': existing_title,
+                'existing_slug': existing.get('slug'),
+                'product_ids': common_product_ids[:5],
+            }
+    return None
+
+
 def slugify(title: str, seed: str) -> str:
     base = re.sub(r'[^0-9A-Za-z가-힣]+', '-', title).strip('-').lower()
     base = re.sub(r'-{2,}', '-', base)
@@ -95,6 +228,18 @@ def existing_keys() -> tuple[set[str], set[str]]:
         if data.get('source_post_file'):
             by_source.add(str(data['source_post_file']).replace('\\', '/'))
     return by_title, by_source
+
+
+def load_existing_deal_articles() -> list[dict[str, Any]]:
+    articles: list[dict[str, Any]] = []
+    for path in (ROOT / 'content' / 'deals').glob('*.json'):
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))
+        except Exception:
+            continue
+        if isinstance(data, dict):
+            articles.append(data)
+    return articles
 
 
 def load_review_candidates() -> list[dict[str, Any]]:
@@ -169,7 +314,7 @@ def article_from_post(post: dict[str, Any], post_file: str, score: float) -> dic
     if category not in tags:
         tags = [category] + tags
     slug = slugify(title, post_file)
-    return {
+    article = {
         'slug': slug,
         'title': title,
         'description': short(body, 180),
@@ -183,10 +328,13 @@ def article_from_post(post: dict[str, Any], post_file: str, score: float) -> dic
         'products_pool': post.get('products_pool'),
         'body_html': body,
     }
+    article['product_signature'] = product_signature(article)
+    return article
 
 
 def import_next(dry_run: bool = False) -> dict[str, Any]:
     by_title, by_source = existing_keys()
+    existing_articles = load_existing_deal_articles()
     candidates = load_review_candidates()
     skipped = []
     for c in candidates:
@@ -202,6 +350,10 @@ def import_next(dry_run: bool = False) -> dict[str, Any]:
         title = str(post.get('title') or c.get('title') or '').strip()
         if title in by_title:
             skipped.append({'post_file': post_file, 'reason': 'already_imported_title', 'title': title})
+            continue
+        similar = find_similar_existing_article(post, existing_articles)
+        if similar:
+            skipped.append({'post_file': post_file, 'reason': 'similar_existing_deal', 'title': title, 'match': similar})
             continue
         ok, errors = validate_post(post, post_file)
         if not ok:
