@@ -12,7 +12,7 @@
     },
     "/deals/": {
       "active_users": 1,
-      "views": 7
+      "views": 8
     },
     "/deals/beauty-personal-care-gadgets-top5/": {
       "active_users": 1,
@@ -32,7 +32,7 @@
     },
     "/radar/": {
       "active_users": 1,
-      "views": 9
+      "views": 10
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -58,7 +58,7 @@
     {
       "active_users": 1,
       "path": "/radar/",
-      "views": 9
+      "views": 10
     },
     {
       "active_users": 3,
@@ -68,7 +68,7 @@
     {
       "active_users": 1,
       "path": "/deals/",
-      "views": 7
+      "views": 8
     },
     {
       "active_users": 1,
@@ -116,5 +116,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-01T13:49:44+09:00"
+  "updated_at": "2026-05-01T20:45:51+09:00"
 }
