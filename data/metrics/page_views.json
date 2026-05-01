@@ -12,7 +12,7 @@
     },
     "/deals/": {
       "active_users": 1,
-      "views": 9
+      "views": 10
     },
     "/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/": {
       "active_users": 0,
@@ -36,7 +36,7 @@
     },
     "/radar/": {
       "active_users": 1,
-      "views": 11
+      "views": 12
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -62,16 +62,16 @@
     {
       "active_users": 1,
       "path": "/radar/",
-      "views": 11
-    },
-    {
-      "active_users": 3,
-      "path": "/",
-      "views": 9
+      "views": 12
     },
     {
       "active_users": 1,
       "path": "/deals/",
+      "views": 10
+    },
+    {
+      "active_users": 3,
+      "path": "/",
       "views": 9
     },
     {
@@ -125,5 +125,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-01T22:58:33+09:00"
+  "updated_at": "2026-05-01T23:45:38+09:00"
 }
