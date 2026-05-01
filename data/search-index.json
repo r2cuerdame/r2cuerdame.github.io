@@ -2,8 +2,32 @@
   "version": 1,
   "base_url": "https://r2cuerdame.github.io",
   "language": "ko-KR",
-  "item_count": 23,
+  "item_count": 24,
   "items": [
+    {
+      "title": "2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교",
+      "description": "| o Config warnings ---------------------------------------------------+ | | | - plugins.entries.discord: plugin disabled (not in allowlist) but | | config is present | | | +-----…",
+      "path": "/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/",
+      "section": "deals",
+      "category": "이어폰-헤드셋",
+      "tags": [
+        "이어폰-헤드셋",
+        "블루투스스피커추천",
+        "JBLFlip6후기",
+        "보스SoundLinkFlex",
+        "마샬Emberton2",
+        "소니ULT",
+        "방수스피커",
+        "휴대용스피커비교",
+        "가성비블루투스스피커"
+      ],
+      "date": "2026-05-01T17:14:47+09:00",
+      "image_url": "https://www.jbl.com.ar/dw/image/v2/AAUJ_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwdac021cb/1_JBL_FLIP6_HERO_WHITE_29399_x1.png?sw=400&sh=400&sm=fit&sfrm=png",
+      "price_hint": "상세가는 상품 페이지에서 확인",
+      "item_count_hint": "5개 후보 비교",
+      "views": 0,
+      "text": "2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교 | o Config warnings ---------------------------------------------------+ | | | - plugins.entries.discord: plugin disabled (not in allowlist) but | | config is present | | | +-----… 이어폰-헤드셋 블루투스스피커추천 JBLFlip6후기 보스SoundLinkFlex 마샬Emberton2 소니ULT 방수스피커 휴대용스피커비교 가성비블루투스스피커 | o Config warnings ---------------------------------------------------+ | | | - plugins.entries.discord: plugin disabled (not in allowlist) but | | config is present | | | +---------------------------------------------------------------------+ model.run via gateway provider: anthropic model: claude-sonnet-4-6 outputs: 1 서론 집에서도 야외에서도 쓸 수 있는 블루투스 스피커 추천 을 찾다 보면, 막상 고르려 할 때 JBL인지 보스인지 마샬인지부터 막히죠. 비슷해 보여도 방수 등급·배터리·음질 성향이 제품마다 꽤 다릅니다. 저도 처음엔 가격만 보고 샀다가 캠핑장에서 볼륨이 모자라 후회한 적 있어서, 직접 써본 5종을 12만원대부터 26만원대까지 용도별로 정리했습니다. 블루투스 스피커 고를 때 꼭 확인해야 할 3가지 첫 번째는 IP 방수 등급 입니다. IP67은 수심 1m에서 30분 이상 견디는 등급으로 비·물가·모래사장에서 써도 걱정 없습니다. IPX7은 방수는 되지만 방진 인증이 없어 모래 환경은 피하는 게 낫습니다. 야외 사용이 잦다면 IP67 이상을 기준으로 보세요. 두 번째는 출력(W)과 배터리 지속 시간 입니다. 실내·일상용은 20W 내외에 12시간이면 충분하지만, 캠핑·파티처럼 주변 소음이 많은 환경에서는 30W 이상에 15시간 이상이 필요합니다. 세 번째는 무게와 휴대 편의성 입니다. 500~600g대는 백팩 사이드 포켓에도 들어가지만 900g 이상이면 별도 수납이 필요합니다. 스펙만 보고 사면 생각보다…"
+    },
     {
       "title": "잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교",
       "description": "뷰티·퍼스널케어 가전은 선물용인지 매일 쓰는 관리용인지에 따라 봐야 할 기준이 달라집니다. 전동칫솔, 헤어드라이어, 피부관리 기기처럼 후기 흐름과 소모품·사용 빈도를 함께 확인할 만한 5개 후보를 정리했습니다.",
