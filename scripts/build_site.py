@@ -232,7 +232,13 @@ def nav_html(page_path: str) -> str:
 def strip_tags(value: str) -> str:
     value = re.sub(r"<script\b[^>]*>.*?</script>", " ", value or "", flags=re.I | re.S)
     value = re.sub(r"<style\b[^>]*>.*?</style>", " ", value, flags=re.I | re.S)
-    value = re.sub(r"<[^>]+>", " ", value)
+    value = re.sub(
+        r"</?(?:p|div|section|article|header|footer|h[1-6]|li|ul|ol|br|table|thead|tbody|tr|td|th|blockquote)\b[^>]*>",
+        " ",
+        value,
+        flags=re.I,
+    )
+    value = re.sub(r"<[^>]+>", "", value)
     value = html.unescape(value)
     return re.sub(r"\s+", " ", value).strip()
 
