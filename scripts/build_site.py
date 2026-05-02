@@ -679,41 +679,143 @@ def plain_article_card(a: dict) -> str:
 </article>'''
 
 
-def radar_card_theme(a: dict) -> tuple[str, str, tuple[str, str, str]]:
+RADAR_CARD_VISUALS = {
+    "commute-fatigue-neighborhood-check": {
+        "theme": "theme-commute",
+        "scene": "commute",
+        "badge": "출근길 함정",
+        "label": "CASE 01",
+        "headline": "35분→50분",
+        "subline": "앱 시간 말고 몸이 기억하는 시간",
+        "chips": ("앱", "환승", "마지막 도보"),
+    },
+    "after-work-neighborhood-check": {
+        "theme": "theme-night",
+        "scene": "night",
+        "badge": "밤길 수사",
+        "label": "CASE 02",
+        "headline": "낮사진 사기",
+        "subline": "방보다 귀가 장면을 먼저 본다",
+        "chips": ("출구", "골목", "소음"),
+    },
+    "maintenance-fee-opaque-rent": {
+        "theme": "theme-fee",
+        "scene": "fee",
+        "badge": "관리비 블랙박스",
+        "label": "CASE 03",
+        "headline": "+α 고정비",
+        "subline": "월세 옆 빈칸을 열어 본다",
+        "chips": ("월세", "공용", "계절비"),
+    },
+    "monthly-rent-pressure-questions": {
+        "theme": "theme-pressure",
+        "scene": "pressure",
+        "badge": "월세 착시",
+        "label": "CASE 04",
+        "headline": "5만↓ 손실↑",
+        "subline": "싼 숫자 뒤 생활비를 꺼낸다",
+        "chips": ("보증금", "통근", "생활비"),
+    },
+    "dongne-signal-framework": {
+        "theme": "theme-filter",
+        "scene": "filter",
+        "badge": "후보 필터",
+        "label": "CASE 05",
+        "headline": "저장 말고 삭제",
+        "subline": "후보 과잉을 3곳으로 줄인다",
+        "chips": ("예산", "통근", "생활권"),
+    },
+    "cafe-contract-risk": {
+        "theme": "theme-cafe",
+        "scene": "cafe",
+        "badge": "상권 현장",
+        "label": "CASE 06",
+        "headline": "사람≠손님",
+        "subline": "유동인구가 매출로 바뀌는지 본다",
+        "chips": ("유동", "컵", "경쟁점"),
+    },
+}
+
+
+def radar_card_visual(a: dict) -> dict:
+    slug = a.get("slug") or (a.get("path") or "").strip("/").split("/")[-1]
+    if slug in RADAR_CARD_VISUALS:
+        return RADAR_CARD_VISUALS[slug]
     joined = " ".join([a.get("title") or "", a.get("description") or "", " ".join(a.get("tags") or [])])
     if any(token in joined for token in ("관리비", "교통비", "총액")):
-        return "theme-cost", "관리비 체크", ("월세", "관리비", "총액")
+        return {"theme": "theme-fee", "scene": "fee", "badge": "비용 추적", "label": "CASE", "headline": "숨은 고정비", "subline": "계약 전 빈칸을 확인", "chips": ("월세", "관리비", "총액")}
     if any(token in joined for token in ("카페", "상가", "권리금", "상권")):
-        return "theme-shop", "상권 리스크", ("상권", "유동", "권리")
+        return {"theme": "theme-cafe", "scene": "cafe", "badge": "상권 현장", "label": "CASE", "headline": "사람≠손님", "subline": "발길이 돈이 되는지 확인", "chips": ("상권", "유동", "권리")}
     if any(token in joined for token in ("퇴근", "밤", "소음", "골목")):
-        return "theme-night", "퇴근길 루프", ("출구", "골목", "입구")
-    if any(token in joined for token in ("월세", "전세", "보증금")):
-        return "theme-rent", "전월세 판단", ("예산", "동선", "보류")
-    return "theme-signal", "계약 전 신호", ("신호", "질문", "판단")
+        return {"theme": "theme-night", "scene": "night", "badge": "밤길 수사", "label": "CASE", "headline": "밤에 다시 보기", "subline": "낮사진을 의심", "chips": ("출구", "골목", "소음")}
+    return {"theme": "theme-filter", "scene": "filter", "badge": "계약 전 신호", "label": "CASE", "headline": "후보 줄이기", "subline": "좋은 집보다 위험 신호 먼저", "chips": ("신호", "질문", "판단")}
+
+
+def radar_scene_markup(scene: str, chips: tuple[str, str, str]) -> str:
+    c0, c1, c2 = (esc(chip) for chip in chips)
+    if scene == "commute":
+        return f'''<span class="scene-art commute-art">
+      <span class="time-card">35→50</span>
+      <span class="rail-line"></span>
+      <span class="station station-a">{c0}</span><span class="station station-b">{c1}</span><span class="station station-c">{c2}</span>
+      <span class="rain-mark"></span>
+    </span>'''
+    if scene == "night":
+        return f'''<span class="scene-art night-art">
+      <span class="lamp-post"></span><span class="lamp-light"></span><span class="alley-road"></span>
+      <span class="window-stack"></span><span class="noise-wave wave-one"></span><span class="noise-wave wave-two"></span>
+      <span class="street-chip chip-a">{c0}</span><span class="street-chip chip-b">{c1}</span><span class="street-chip chip-c">{c2}</span>
+    </span>'''
+    if scene == "fee":
+        return f'''<span class="scene-art fee-art">
+      <span class="receipt"><b>관리비</b><i>{c0}</i><i>{c1}</i><i>{c2}</i></span>
+      <span class="stamp">빈칸?</span><span class="coin coin-a"></span><span class="coin coin-b"></span>
+    </span>'''
+    if scene == "pressure":
+        return f'''<span class="scene-art pressure-art">
+      <span class="calc"><b>월세</b><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="loss-line">5만↓</span><span class="cost-chip chip-a">{c0}</span><span class="cost-chip chip-b">{c1}</span><span class="cost-chip chip-c">{c2}</span>
+    </span>'''
+    if scene == "cafe":
+        return f'''<span class="scene-art cafe-art">
+      <span class="awning"></span><span class="storefront"><b>CAFE?</b></span><span class="cup"></span>
+      <span class="footfall dot-a"></span><span class="footfall dot-b"></span><span class="footfall dot-c"></span>
+      <span class="rival-sign">경쟁</span>
+    </span>'''
+    return f'''<span class="scene-art filter-art">
+      <span class="funnel"></span><span class="checklist"><i>{c0}</i><i>{c1}</i><i>{c2}</i></span>
+      <span class="reject-card">삭제</span><span class="keep-card">보류</span>
+    </span>'''
 
 
 def radar_article_card(a: dict) -> str:
     tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
     date = parse_dt(a.get("date")).strftime("%m.%d")
     metric = traffic_badge(a["path"])
-    desc = short_text(a.get("description") or "", 96)
-    theme, badge, pins = radar_card_theme(a)
+    desc = short_text(a.get("description") or "", 84)
+    suspicion = short_text(a.get("radar_suspicion") or "", 58)
+    visual = radar_card_visual(a)
+    theme = visual["theme"]
+    scene = visual["scene"]
+    chips = visual["chips"]
+    hook = f'<p class="radar-card-hook">오늘의 의심 · {esc(suspicion)}</p>' if suspicion else ""
     return f'''<article class="list-card radar-card {theme}">
-  <a class="radar-card-visual" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
-    <span class="radar-scan-ring ring-one"></span><span class="radar-scan-ring ring-two"></span>
-    <svg class="radar-route-map" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path class="route-glow" d="M22 42 L52 56 L80 68"></path>
-      <path class="route-core" d="M22 42 L52 56 L80 68"></path>
-    </svg>
-    <span class="radar-pin pin-a">{esc(pins[0])}</span><span class="radar-pin pin-b">{esc(pins[1])}</span><span class="radar-pin pin-c">{esc(pins[2])}</span>
-    <span class="radar-card-badge">{esc(badge)}</span>
+  <a class="radar-card-visual scene-{esc(scene)}" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+    <span class="radar-thumb-label">{esc(visual['label'])}</span>
+    <strong class="radar-thumb-title">{esc(visual['headline'])}</strong>
+    <span class="radar-thumb-subline">{esc(visual['subline'])}</span>
+    <span class="radar-thumb-art" aria-hidden="true">
+      {radar_scene_markup(scene, chips)}
+    </span>
+    <span class="radar-card-badge">{esc(visual['badge'])}</span>
   </a>
   <div class="radar-card-body">
     <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
     <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
+    {hook}
     <p>{esc(desc)}</p>
     <div class="tag-row">{tags}</div>
-    <div class="radar-card-actions"><span>핵심 신호</span><span>현장 질문</span><span>보류 기준</span></div>
+    <div class="radar-card-actions"><span>오늘의 의심</span><span>현장 미션</span><span>판정 기준</span></div>
     <a class="text-link" href="{esc(a['path'])}">레이더 열기 →</a>
   </div>
 </article>'''
@@ -1572,25 +1674,57 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .article-list { display: grid; gap: 16px; margin: 24px 0 56px; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; }
-.radar-card-visual { position: relative; min-height: 250px; overflow: hidden; background: radial-gradient(circle at 20% 20%, #fff6d5 0 0, transparent 26%), linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); color: #fff; }
-.radar-card.theme-cost .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.26) 0 0, transparent 26%), linear-gradient(135deg, #2b2118, #775113 58%, #ffb020); }
-.radar-card.theme-shop .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #17152b, #3b2f74 58%, #0f8b57); }
-.radar-card.theme-rent .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
-.radar-card.theme-signal .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #211922, #3b3b2f 58%, #0f8b57); }
-.radar-card-visual::before { content: ""; position: absolute; inset: 18px; z-index: 0; border-radius: 28px; border: 1px solid rgba(255,255,255,.22); background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 34px 34px; pointer-events: none; }
-.radar-scan-ring { position: absolute; width: 170px; height: 170px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; left: 24px; top: 26px; z-index: 1; pointer-events: none; }
-.radar-scan-ring.ring-two { width: 250px; height: 250px; left: 70px; top: 62px; opacity: .55; }
-.radar-route-map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; overflow: visible; pointer-events: none; }
-.radar-route-map path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.radar-route-map .route-glow { stroke: rgba(255,255,255,.26); stroke-width: 10; filter: drop-shadow(0 0 12px rgba(255,255,255,.28)); }
-.radar-route-map .route-core { stroke: #ffd2b8; stroke-width: 4; filter: drop-shadow(0 0 8px rgba(255,176,32,.32)); }
-.radar-pin { position: absolute; left: var(--pin-x); top: var(--pin-y); transform: translate(-50%, -50%); z-index: 3; display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; padding: 6px; box-sizing: border-box; border-radius: 999px; background: #fff; color: #211922; font-size: 12px; line-height: 1.08; text-align: center; font-weight: 950; box-shadow: 0 18px 36px rgba(0,0,0,.24); }
-.radar-pin::before { content: ""; position: absolute; inset: -7px; border-radius: inherit; border: 1px solid rgba(255,255,255,.52); }
-.pin-a { --pin-x: 22%; --pin-y: 42%; } .pin-b { --pin-x: 52%; --pin-y: 56%; } .pin-c { --pin-x: 80%; --pin-y: 68%; }
-.radar-card-badge { position: absolute; z-index: 4; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.26); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
+.radar-card, .radar-card * { overflow-wrap: break-word; word-break: keep-all; }
+.radar-card-visual { position: relative; display: block; min-height: 250px; overflow: hidden; isolation: isolate; padding: 22px; color: #fff; background: linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); }
+.radar-card.theme-commute .radar-card-visual { background: radial-gradient(circle at 18% 18%, rgba(147,197,253,.35), transparent 24%), linear-gradient(135deg, #0f172a, #1d4ed8 58%, #38bdf8); }
+.radar-card.theme-night .radar-card-visual { background: radial-gradient(circle at 74% 18%, rgba(255,214,165,.28), transparent 25%), linear-gradient(135deg, #160f1d, #3b1f2b 55%, #ff6b2b); }
+.radar-card.theme-fee .radar-card-visual { background: radial-gradient(circle at 18% 22%, rgba(255,255,255,.24), transparent 23%), linear-gradient(135deg, #2b2118, #7a4f12 56%, #ffb020); }
+.radar-card.theme-pressure .radar-card-visual { background: radial-gradient(circle at 75% 18%, rgba(186,230,253,.24), transparent 24%), linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
+.radar-card.theme-filter .radar-card-visual { background: radial-gradient(circle at 22% 18%, rgba(187,247,208,.22), transparent 23%), linear-gradient(135deg, #15251d, #22543d 55%, #0f8b57); }
+.radar-card.theme-cafe .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(254,240,138,.23), transparent 23%), linear-gradient(135deg, #17152b, #3b2f74 55%, #0f8b57); }
+.radar-card-visual::before { content: ""; position: absolute; inset: 16px; z-index: -2; border-radius: 28px; border: 1px solid rgba(255,255,255,.18); background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
+.radar-card-visual::after { content: ""; position: absolute; right: -54px; bottom: -70px; z-index: -1; width: 230px; height: 230px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.24), rgba(255,255,255,.05) 48%, transparent 68%); pointer-events: none; }
+.radar-thumb-label { position: relative; z-index: 3; display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); font-size: 11px; font-weight: 950; letter-spacing: .08em; }
+.radar-thumb-title { position: relative; z-index: 3; display: block; max-width: 205px; margin-top: 14px; font-size: clamp(29px, 4vw, 44px); line-height: .98; letter-spacing: -.06em; text-shadow: 0 14px 34px rgba(0,0,0,.28); }
+.radar-thumb-subline { position: relative; z-index: 3; display: block; max-width: 220px; margin-top: 9px; color: rgba(255,255,255,.84); font-size: 13px; line-height: 1.35; font-weight: 850; }
+.radar-thumb-art { position: absolute; z-index: 2; right: 16px; bottom: 18px; width: min(58%, 220px); height: 58%; min-height: 132px; pointer-events: none; }
+.scene-art, .scene-art > * { position: absolute; display: block; box-sizing: border-box; }
+.scene-art { inset: 0; }
+.radar-card-badge { position: absolute; z-index: 4; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
+.time-card { left: 8px; top: 4px; padding: 10px 12px; border-radius: 18px; background: #fff; color: #0f172a; font-weight: 950; font-size: 26px; box-shadow: 0 18px 34px rgba(0,0,0,.25); }
+.rail-line { left: 12px; right: 10px; top: 78px; height: 7px; border-radius: 999px; background: linear-gradient(90deg, #fff, #93c5fd); box-shadow: 0 0 20px rgba(147,197,253,.7); }
+.station { top: 62px; min-width: 48px; padding: 7px 8px; border-radius: 999px; background: rgba(15,23,42,.78); border: 1px solid rgba(255,255,255,.28); color: #fff; font-size: 11px; text-align: center; font-weight: 950; }
+.station-a { left: 0; } .station-b { left: 47%; transform: translateX(-50%); } .station-c { right: 0; }
+.rain-mark { right: 18px; top: 12px; width: 46px; height: 72px; transform: rotate(18deg); background: repeating-linear-gradient(90deg, rgba(255,255,255,.82) 0 3px, transparent 3px 12px); opacity: .55; }
+.lamp-post { left: 22px; top: 18px; width: 10px; height: 92px; border-radius: 999px; background: rgba(255,255,255,.8); }
+.lamp-post::before { content: ""; position: absolute; left: -16px; top: -8px; width: 46px; height: 16px; border-radius: 999px; background: #ffe2a8; box-shadow: 0 0 24px rgba(255,226,168,.9); }
+.lamp-light { left: -18px; top: 18px; width: 96px; height: 104px; transform: skewX(-12deg); background: linear-gradient(120deg, rgba(255,226,168,.38), transparent 72%); clip-path: polygon(38% 0, 72% 0, 100% 100%, 0 100%); }
+.alley-road { left: 42px; right: 8px; bottom: 2px; height: 56px; transform: skewX(-20deg); border-radius: 18px; background: linear-gradient(90deg, rgba(20,16,24,.92), rgba(255,255,255,.14)); }
+.window-stack { right: 12px; top: 15px; width: 54px; height: 72px; border-radius: 16px; background: repeating-linear-gradient(180deg, rgba(255,238,190,.95) 0 9px, transparent 9px 20px), rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2); }
+.noise-wave { right: 70px; top: 42px; width: 42px; height: 42px; border: 2px solid rgba(255,255,255,.7); border-left-color: transparent; border-bottom-color: transparent; border-radius: 50%; transform: rotate(45deg); } .wave-two { right: 60px; top: 32px; width: 66px; height: 66px; opacity: .45; }
+.street-chip, .cost-chip { padding: 6px 9px; border-radius: 999px; background: rgba(255,255,255,.9); color: #211922; font-size: 11px; font-weight: 950; box-shadow: 0 10px 20px rgba(0,0,0,.18); }
+.street-chip.chip-a { left: 4px; bottom: 12px; } .street-chip.chip-b { left: 68px; bottom: 42px; } .street-chip.chip-c { right: 2px; bottom: 14px; }
+.receipt { left: 16px; top: 4px; width: 126px; min-height: 132px; padding: 14px 12px 16px; border-radius: 18px 18px 8px 8px; background: #fffaf4; color: #2b2118; box-shadow: 0 18px 32px rgba(0,0,0,.22); }
+.receipt::after { content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 12px; background: repeating-linear-gradient(90deg, #fffaf4 0 12px, transparent 12px 24px); }
+.receipt b, .receipt i { display: block; font-style: normal; } .receipt b { margin-bottom: 10px; font-size: 16px; } .receipt i { padding: 5px 0; border-top: 1px dashed rgba(43,33,24,.22); color: #705036; font-size: 12px; font-weight: 900; }
+.stamp { right: 8px; bottom: 28px; width: 76px; height: 76px; display: grid; place-items: center; border: 4px solid rgba(255,255,255,.9); border-radius: 50%; color: #fff; font-size: 17px; font-weight: 950; transform: rotate(-13deg); }
+.coin { right: 26px; top: 20px; width: 46px; height: 46px; border-radius: 50%; background: #ffd166; box-shadow: inset 0 0 0 7px rgba(255,255,255,.25), 0 12px 22px rgba(0,0,0,.22); } .coin-b { right: 2px; top: 52px; transform: scale(.72); }
+.calc { left: 16px; top: 8px; width: 112px; height: 128px; padding: 13px; border-radius: 22px; background: #f8fbff; box-shadow: 0 18px 34px rgba(0,0,0,.22); display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.calc b { grid-column: 1 / -1; display: block; padding: 7px 8px; border-radius: 10px; background: #172033; color: #fff; font-size: 13px; } .calc i { border-radius: 9px; background: #c7d2fe; }
+.loss-line { right: 2px; top: 8px; padding: 10px 12px; border-radius: 18px; background: #fff; color: #1d4ed8; font-size: 24px; font-weight: 950; box-shadow: 0 16px 30px rgba(0,0,0,.2); }
+.cost-chip.chip-a { right: 66px; bottom: 54px; } .cost-chip.chip-b { right: 10px; bottom: 36px; } .cost-chip.chip-c { right: 46px; bottom: 2px; }
+.funnel { left: 18px; top: 5px; width: 112px; height: 122px; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(187,247,208,.9)); clip-path: polygon(0 0, 100% 0, 66% 52%, 66% 100%, 34% 100%, 34% 52%); filter: drop-shadow(0 18px 26px rgba(0,0,0,.22)); }
+.checklist { right: 4px; top: 12px; width: 94px; padding: 10px; border-radius: 18px; background: rgba(255,255,255,.92); color: #15251d; box-shadow: 0 16px 28px rgba(0,0,0,.18); } .checklist i { display: block; padding: 5px 0 5px 18px; position: relative; font-style: normal; font-size: 12px; font-weight: 950; } .checklist i::before { content: ""; position: absolute; left: 0; top: 10px; width: 9px; height: 5px; border-left: 2px solid #0f8b57; border-bottom: 2px solid #0f8b57; transform: rotate(-45deg); }
+.reject-card, .keep-card { bottom: 6px; padding: 8px 10px; border-radius: 14px; font-size: 13px; font-weight: 950; box-shadow: 0 12px 22px rgba(0,0,0,.2); } .reject-card { left: 4px; background: #2f2724; color: #fff; transform: rotate(-8deg); } .keep-card { right: 12px; background: #fff; color: #0f8b57; transform: rotate(7deg); }
+.awning { left: 14px; top: 12px; width: 132px; height: 36px; border-radius: 16px 16px 6px 6px; background: repeating-linear-gradient(90deg, #fff 0 18px, #ff6b2b 18px 36px); box-shadow: 0 14px 28px rgba(0,0,0,.2); }
+.storefront { left: 22px; top: 46px; width: 116px; height: 82px; border-radius: 12px 12px 20px 20px; background: rgba(255,255,255,.92); color: #17152b; display: grid; place-items: center; font-size: 17px; box-shadow: 0 16px 28px rgba(0,0,0,.18); }
+.cup { right: 10px; bottom: 6px; width: 64px; height: 68px; border-radius: 12px 12px 26px 26px; background: #fffaf4; box-shadow: inset -10px 0 rgba(15,139,87,.16), 0 16px 28px rgba(0,0,0,.2); } .cup::after { content: ""; position: absolute; right: -15px; top: 18px; width: 24px; height: 24px; border: 7px solid #fffaf4; border-left: 0; border-radius: 0 18px 18px 0; }
+.footfall { width: 12px; height: 12px; border-radius: 50%; background: #bbf7d0; box-shadow: 0 0 0 5px rgba(187,247,208,.18); } .dot-a { left: 0; bottom: 26px; } .dot-b { left: 26px; bottom: 2px; } .dot-c { left: 58px; bottom: 20px; }
+.rival-sign { right: 4px; top: 26px; padding: 6px 8px; border-radius: 999px; background: #17152b; color: #fff; font-size: 11px; font-weight: 950; border: 1px solid rgba(255,255,255,.28); }
 .radar-card-body { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
 .radar-card h2 { margin: 2px 0 0; font-size: clamp(22px, 3vw, 31px); }
 .radar-card p { margin: 0; }
+.radar-card-hook { padding: 9px 11px; border-radius: 16px; background: #fff7ed; border: 1px solid #ffd2b8; color: #9a3412; font-size: 14px; line-height: 1.45; font-weight: 950; }
 .radar-card-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
 .radar-card-actions span { display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
 .radar-card .text-link { width: fit-content; min-height: 40px; margin-top: auto; padding: 0 13px; border-radius: 14px; background: var(--ink); color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(33,25,34,.13); }
@@ -1876,7 +2010,23 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
   .radar-card { padding: 0; }
-  .radar-card-visual { min-height: 210px; }
+  .radar-card-visual { min-height: 236px; padding: 19px; }
+  .radar-thumb-title { max-width: 166px; font-size: clamp(27px, 8.1vw, 36px); }
+  .radar-thumb-subline { max-width: 152px; font-size: 12px; line-height: 1.32; }
+  .radar-thumb-art { width: min(45%, 168px); right: 10px; bottom: 22px; min-height: 126px; }
+  .time-card { font-size: 21px; padding: 8px 10px; }
+  .rail-line { top: 82px; }
+  .station { min-width: 42px; padding: 6px 7px; font-size: 10px; }
+  .station-c { max-width: 58px; }
+  .receipt { left: 8px; width: 108px; padding: 12px 10px 14px; }
+  .stamp { right: 0; bottom: 20px; width: 64px; height: 64px; font-size: 15px; }
+  .calc { left: 6px; width: 96px; }
+  .loss-line { right: 0; font-size: 20px; }
+  .funnel { left: 8px; width: 94px; }
+  .checklist { right: 0; width: 78px; }
+  .awning { left: 4px; width: 112px; }
+  .storefront { left: 10px; width: 102px; }
+  .cup { right: 0; width: 54px; }
   .radar-map-card { min-height: auto; }
   .radar-map { min-height: 260px; }
   .map-label { left: 12px; top: 12px; font-size: 11px; }
