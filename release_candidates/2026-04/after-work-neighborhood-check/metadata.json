@@ -1,0 +1,55 @@
+{
+  "slug": "after-work-neighborhood-check",
+  "title": "퇴근 후 20분, 살 동네를 다시 보는 법",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-04-30T14:43:16+09:00",
+  "publish_ready_at": "2026-05-07T14:43:16+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-04/after-work-neighborhood-check/50-copy.md",
+  "reader_qa_stage": "articles/2026-04/after-work-neighborhood-check/60-reader-qa.md",
+  "reader_qa": {
+    "score": 92,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 5081,
+    "reader_visual_count": 11,
+    "reviewed_at": "2026-05-02T11:44:06+09:00",
+    "hourly_internal_links_polish_at": "2026-05-01T17:39:51+09:00",
+    "hourly_internal_links_count": 3,
+    "hourly_context_polish_at": "2026-05-01T19:41:12+09:00",
+    "hourly_context_polish_note": "backlog_reduction: 지도앱 시간과 실제 야근 귀가 루프 차이를 분리하는 해석 단락을 추가",
+    "hourly_target_opening_polish_at": "2026-05-02T03:39:11+09:00",
+    "hourly_target_opening_polish_note": "backlog_reduction: 도입 첫 화면에 3~12개월 전월세·이사 비교, 계속 볼지·보류할지·무엇을 물을지 행동을 명시",
+    "hourly_internal_link_role_polish_at": "2026-05-02T11:44:06+09:00",
+    "hourly_internal_link_role_polish_note": "backlog_reduction: 새 후보 생성 없이 큰 프레임·월세 질문·관리 신호로 이어 보는 표를 추가해 퇴근 후 루프의 역할과 내부 연결을 분리함"
+  },
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-04-30T14:43:16+09:00",
+  "updated_at": "2026-05-02T12:03:10+09:00",
+  "last_hourly_polish": {
+    "at": "2026-05-02T11:44:06+09:00",
+    "type": "internal_link_role_backlog_reduction",
+    "note": "ready 후보 상한 초과로 새 후보 생성 없이 E 후보에 내부 연결/역할 분리 표를 추가하고 review 통과를 확인함"
+  },
+  "pages_published_at": "2026-05-02T12:03:10+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/after-work-neighborhood-check/"
+}
