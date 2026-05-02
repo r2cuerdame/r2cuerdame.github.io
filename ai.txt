@@ -10,6 +10,7 @@ Search: https://r2cuerdame.github.io/search/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
+Radar Article: https://r2cuerdame.github.io/radar/night-noise-walk-check/ — 밤 10시, 살 동네 소음을 확인하는 15분 산책
 Radar Article: https://r2cuerdame.github.io/radar/rainy-day-viewing-neighborhood-signals/ — 비 오는 날 집 보러 갈 때 놓치는 동네 신호
 Radar Article: https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/ — 지도앱 35분은 반쪽입니다: 출근길 피로 15분 체크
 Radar Article: https://r2cuerdame.github.io/radar/after-work-neighborhood-check/ — 낮에 본 집은 반쪽입니다: 퇴근 후 20분 동네 수사
@@ -22,4 +23,4 @@ Separate Deals Article: https://r2cuerdame.github.io/deals/beauty-personal-care-
 Separate Deals Article: https://r2cuerdame.github.io/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/ — 제습기 뭐 살까, 위닉스·LG·위니아 인기 5종 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/모니터-조명-추천-top-5-야간-작업-눈-피로-줄이는-제품-85cf2710/ — 모니터 조명 추천 TOP 5, 야간 작업 눈 피로 줄이는 제품
 Language: ko-KR
-Updated: 2026-05-02T19:30:33+09:00
+Updated: 2026-05-03T00:03:43+09:00
