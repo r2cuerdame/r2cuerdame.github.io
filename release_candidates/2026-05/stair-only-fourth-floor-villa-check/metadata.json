@@ -1,0 +1,55 @@
+{
+  "slug": "stair-only-fourth-floor-villa-check",
+  "title": "엘리베이터 없는 4층 빌라, 계속 볼지 보류할지 보는 12분",
+  "description": "서울·수도권 25~39세 전월세 독자가 엘리베이터 없는 4층 빌라를 볼 때 계단, 큰 짐, 택배, 분리수거, 밤 귀가를 12분 루프로 나눠 계속 보기·다시 보기·보류를 판단하는 동네 레이더 글.",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-05-01T02:45:22+09:00",
+  "publish_ready_at": "2026-05-08T02:45:22+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-05/stair-only-fourth-floor-villa-check/50-copy.md",
+  "reader_qa_stage": "articles/2026-05/stair-only-fourth-floor-villa-check/60-reader-qa.md",
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-05-01T02:45:22+09:00",
+  "updated_at": "2026-05-03T04:36:25+09:00",
+  "reader_qa": {
+    "score": 94,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 5976,
+    "reader_visual_count": 12,
+    "reviewed_at": "2026-05-03T03:41:33+09:00",
+    "hourly_internal_links_polish_at": "2026-05-01T17:39:51+09:00",
+    "hourly_internal_links_count": 5,
+    "target_fit": true,
+    "hourly_backlog_reduction_polish_at": "2026-05-03T03:41:33+09:00",
+    "hourly_backlog_reduction_focus": "visitor_repair_flow_and_night_internal_link"
+  },
+  "last_hourly_polish": {
+    "at": "2026-05-03T03:41:33+09:00",
+    "type": "backlog_reduction_visitor_repair_flow_and_internal_link",
+    "note": "ready 후보 상한 초과로 새 후보 생성 없이 엘리베이터 없는 4층 빌라 후보에 방문자·설치/수리 동선 보류 기준과 밤 소음 공개 내부링크를 보강함"
+  },
+  "revision_note": "backlog_reduction 턴에서 새 후보 생성 없이 계단형 후보의 방문자·수리 동선 판단 기준과 공개 내부링크를 보강",
+  "last_review": "ready=19 hard=0 soft=0 after backlog polish; this candidate chars=5976 visuals=12 target_fit=True",
+  "pages_published_at": "2026-05-03T04:36:25+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/stair-only-fourth-floor-villa-check/"
+}
