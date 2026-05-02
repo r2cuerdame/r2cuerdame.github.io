@@ -97,7 +97,7 @@ def import_one(item: dict) -> dict:
     desc = first_match(r'<meta\s+name="description"\s+content="([^"]*)"\s*/?>', page)
     if not desc:
         desc = item.get('hook') or short(body)
-    tags = [category, item.get('link_title', ''), '쿠팡 파트너스']
+    tags = [category, item.get('link_title', '')]
     tags.extend(str(item.get('category', '')).split('-'))
     tags = [t.strip() for t in tags if t and t.strip()]
     seen = set(); uniq_tags = []
