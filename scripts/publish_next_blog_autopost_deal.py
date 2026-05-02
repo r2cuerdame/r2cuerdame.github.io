@@ -378,9 +378,10 @@ def git_publish(result: dict[str, Any], dry_run: bool = False, no_push: bool = F
     status_before = run(['git', 'status', '--porcelain'], check=True).stdout.strip()
     # It is okay to have the newly written content file as a local change; pull only if clean before import is handled externally.
     build = run([sys.executable, 'scripts/build_site.py'], check=True)
+    quality_local = run([sys.executable, 'scripts/audit_public_site_quality.py'], check=True)
     status = run(['git', 'status', '--porcelain'], check=True).stdout.strip()
     if not status:
-        return {'built': True, 'build_stdout': build.stdout.strip(), 'committed': False, 'pushed': False}
+        return {'built': True, 'build_stdout': build.stdout.strip(), 'quality_local_stdout': quality_local.stdout.strip()[-1200:], 'committed': False, 'pushed': False}
     title = result['article']['title']
     run(['git', 'add', '-u'], check=True)
     content_path = ROOT / str(result.get('path', ''))
@@ -399,12 +400,25 @@ def git_publish(result: dict[str, Any], dry_run: bool = False, no_push: bool = F
     pushed = False
     push_stdout = ''
     push_stderr = ''
+    quality_live_stdout = ''
     if not no_push:
         push = windows_git(['push', 'origin', 'main'], check=True)
         pushed = True
         push_stdout = push.stdout.strip()
         push_stderr = push.stderr.strip()
-    return {'built': True, 'build_stdout': build.stdout.strip(), 'committed': True, 'pushed': pushed, 'push_stdout': push_stdout, 'push_stderr': push_stderr, 'status_before': status_before}
+        live = run([sys.executable, 'scripts/audit_public_site_quality.py', '--live'], check=True)
+        quality_live_stdout = live.stdout.strip()[-1200:]
+    return {
+        'built': True,
+        'build_stdout': build.stdout.strip(),
+        'quality_local_stdout': quality_local.stdout.strip()[-1200:],
+        'committed': True,
+        'pushed': pushed,
+        'push_stdout': push_stdout,
+        'push_stderr': push_stderr,
+        'quality_live_stdout': quality_live_stdout,
+        'status_before': status_before,
+    }
 
 
 def main() -> int:
