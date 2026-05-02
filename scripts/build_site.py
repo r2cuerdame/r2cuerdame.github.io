@@ -1913,6 +1913,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .article-content .bar::after { content: "재검토"; right: 0; }
 .article-content p[style*="font-size"] { font-size: inherit !important; line-height: inherit !important; }
 .article-content ul, .article-content ol { padding-left: 1.25em; }
+.article-content .checklist { width: 100%; max-width: none; box-sizing: border-box; }
+.article-content .checklist li { min-width: 0; overflow-wrap: break-word; word-break: keep-all; }
 .article-content li { margin: 9px 0; }
 .article-content li > a { display: inline-flex; align-items: center; min-height: 44px; }
 .article-content img { display: block; max-width: 100%; max-height: 420px; width: auto; height: auto; margin: 14px auto; border-radius: 18px; box-shadow: 0 8px 24px rgba(58, 37, 20, .08); object-fit: contain; background: #fffaf4; }
