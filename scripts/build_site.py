@@ -721,8 +721,8 @@ def radar_article_card(a: dict) -> str:
 def article_headings(body_html: str, limit: int = 5) -> list[str]:
     headings = []
     for raw in re.findall(r'<h2[^>]*>(.*?)</h2>', body_html or "", flags=re.I | re.S):
-        label = re.sub(r"^\s*\d+[.)]?\s*", "", strip_tags(raw))
-        label = short_text(label, 24)
+        label = re.sub(r"^\s*\d+(?:-\d+)?[.)]\s*", "", strip_tags(raw))
+        label = short_text(label, 42)
         if label and label not in headings:
             headings.append(label)
         if len(headings) >= limit:
@@ -732,16 +732,17 @@ def article_headings(body_html: str, limit: int = 5) -> list[str]:
 
 def radar_experience_block(article: dict) -> str:
     target = short_text(article.get("target_audience") or "계약 전 후보 동네를 빠르게 거르고 싶은 독자", 86)
-    decision = short_text(article.get("description") or "", 92)
+    suspicion = short_text(article.get("radar_suspicion") or article.get("description") or "", 96)
+    mission = short_text(article.get("field_mission") or "표를 외우지 말고 현장에서 의심할 장면과 질문을 먼저 잡습니다.", 96)
     headings = article_headings(article.get("body_html") or "")
     toc = "".join(f'<li><span>{i:02d}</span>{esc(label)}</li>' for i, label in enumerate(headings, start=1))
     if not toc:
-        toc = '<li><span>01</span>핵심 신호를 먼저 보고 본문으로 들어갑니다.</li>'
+        toc = '<li><span>01</span>오늘의 의심을 먼저 보고 본문으로 들어갑니다.</li>'
     return f'''<section class="radar-experience-grid" aria-label="본문 전 시각 요약">
   <div class="radar-map-card">
     <p class="eyebrow">Visual Scan</p>
-    <h2>글 읽기 전에 먼저 보는 현장 루프</h2>
-    <p>텍스트를 길게 읽기 전, 이 글이 실제로 확인하려는 동선을 먼저 잡습니다.</p>
+    <h2>계약 전 20분 수사 루프</h2>
+    <p>좋은 동네를 찾는 척하지 말고, 계약 뒤 매일 반복될 불편을 먼저 잡습니다.</p>
     <div class="radar-map" aria-hidden="true">
       <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none" role="presentation" focusable="false">
         <defs>
@@ -763,9 +764,9 @@ def radar_experience_block(article: dict) -> str:
     </div>
   </div>
   <div class="radar-brief-stack">
-    <article class="brief-card hot"><span>WHO</span><strong>누가 읽나</strong><p>{esc(target)}</p></article>
-    <article class="brief-card"><span>DECIDE</span><strong>결정 기준</strong><p>{esc(decision)}</p></article>
-    <article class="brief-card"><span>USE</span><strong>읽는 방식</strong><p>표는 보조 자료로 보고, 카드·루프·질문부터 훑은 뒤 필요한 단락만 깊게 봅니다.</p></article>
+    <article class="brief-card hot"><span>SUSPECT</span><strong>오늘의 의심</strong><p>{esc(suspicion)}</p></article>
+    <article class="brief-card"><span>WHO</span><strong>이런 사람용</strong><p>{esc(target)}</p></article>
+    <article class="brief-card"><span>MISSION</span><strong>현장 미션</strong><p>{esc(mission)}</p></article>
   </div>
   <div class="radar-toc-card">
     <strong>오늘 볼 순서</strong>
@@ -1692,7 +1693,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .brief-card.hot { background: linear-gradient(135deg, #211922, #4b2a1d 60%, #ff5a1f); color: #fff; border-color: rgba(255,255,255,.18); }
 .brief-card.hot p { color: #ffe9df; }
 .brief-card strong { display: block; font-size: 19px; letter-spacing: -.025em; }
-.brief-card p { margin: 6px 0 0; color: #5f5652; line-height: 1.6; }
+.brief-card p { margin: 6px 0 0; color: #5f5652; line-height: 1.6; overflow-wrap: break-word; word-break: keep-all; }
 .radar-toc-card { grid-column: 1 / -1; padding: 18px 20px; }
 .radar-toc-card strong { display: block; margin-bottom: 10px; font-size: 18px; }
 .radar-toc-card ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
@@ -1708,14 +1709,14 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   border-radius: 28px;
   padding: clamp(22px, 4vw, 42px);
   box-shadow: 0 10px 32px rgba(58, 37, 20, .07);
-  overflow-wrap: anywhere;
-  word-break: normal;
+  overflow-wrap: break-word;
+  word-break: keep-all;
   font-size: clamp(16px, 2.4vw, 18px);
   line-height: 1.75;
 }
 .article-content h2 { margin-top: 34px; font-size: clamp(24px, 3.4vw, 32px); }
 .article-content h3 { margin-top: 26px; font-size: 22px; }
-.article-content p { color: #3f3733; margin: 0 0 18px; }
+.article-content p { color: #3f3733; margin: 0 0 18px; overflow-wrap: break-word; word-break: keep-all; }
 .radar-article .article-content { counter-reset: section; }
 .radar-article .article-content > section > h2, .radar-article .article-content > h2 { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start; }
 .radar-article .article-content > section > h2::before, .radar-article .article-content > h2::before { counter-increment: section; content: counter(section); display: grid; place-items: center; width: 38px; height: 38px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 950; box-shadow: 0 10px 22px rgba(33,25,34,.14); }

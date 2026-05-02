@@ -1,6 +1,6 @@
 # 동네 레이더 Reader QA Scorecard
 
-_Last updated: 2026-05-02 12:31 KST_
+_Last updated: 2026-05-02 15:56 KST_
 
 ## Fail-closed gates
 
@@ -11,6 +11,7 @@ _Last updated: 2026-05-02 12:31 KST_
 | Visible body length | 4,500자 이상 | 3,200자 미만 hard block, 4,500자 미만 보강 |
 | Reader visuals | 8개 이상 | 6개 미만 hard block, 8개 미만 보강 |
 | visual rhythm | 상단 visual scan/요약카드 + 중간 callout/카드 + 표는 보조자료. 글+표만 연속되는 본문 금지 | table-only 느낌이면 편집부로 되돌려 카드·지도형·요약형 모듈 보강 |
+| Voice/differentiation | 첫 화면과 도입에 `오늘의 의심`/별명/현장 미션/판정문이 있고, 다른 부동산 정보글과 구분되는 동네 레이더 언어가 보임 | 정확하지만 밋밋하면 편집부로 되돌려 후킹·현장감·판정문 보강 |
 | 금칙어/내부어 | visible text 0건 | 즉시 보강/차단 |
 | 구조 | 발견→해석→반례/한계→현장 질문→사용법 | 빠진 축 보강 |
 | 데이터 안전 | 출처·기준월·단위·산식 caveat 명시 | 불명확하면 순위/강한 결론 금지 |

@@ -10,15 +10,15 @@ Search: https://r2cuerdame.github.io/search/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
-Radar Article: https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/ — 출근길 15분, 통근 피로를 확인하는 동네 체크
-Radar Article: https://r2cuerdame.github.io/radar/after-work-neighborhood-check/ — 퇴근 후 20분, 살 동네를 다시 보는 법
-Radar Article: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/ — 관리비 총액만 보이는 월세 후보, 방문 전 이렇게 보류하세요
-Radar Article: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/ — 월세가 낮아 보여도 답이 흐리면 위험합니다: 계약 전 확인할 5개 질문
-Radar Article: https://r2cuerdame.github.io/radar/dongne-signal-framework/ — 월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지
-Radar Article: https://r2cuerdame.github.io/radar/cafe-contract-risk/ — 카페 계약 전, 이 상권은 먼저 의심하세요
+Radar Article: https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/ — 지도앱 35분은 반쪽입니다: 출근길 피로 15분 체크
+Radar Article: https://r2cuerdame.github.io/radar/after-work-neighborhood-check/ — 낮에 본 집은 반쪽입니다: 퇴근 후 20분 동네 수사
+Radar Article: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/ — 월세는 싼데 관리비가 흐리다? ‘관리비 블랙박스’ 보류법
+Radar Article: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/ — 월세 5만 원 싼 집이 더 비쌀 때: 계약 전 5개 질문
+Radar Article: https://r2cuerdame.github.io/radar/dongne-signal-framework/ — 동네 후보를 줄이는 5개 신호: 월세·전세 계약 전 레이더
+Radar Article: https://r2cuerdame.github.io/radar/cafe-contract-risk/ — 사람 많은 상권이 꼭 좋은 자리는 아닙니다: 카페 계약 전 5개 의심
 Separate Deals Article: https://r2cuerdame.github.io/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/ — 2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/ — 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/ — 제습기 뭐 살까, 위닉스·LG·위니아 인기 5종 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/모니터-조명-추천-top-5-야간-작업-눈-피로-줄이는-제품-85cf2710/ — 모니터 조명 추천 TOP 5, 야간 작업 눈 피로 줄이는 제품
 Language: ko-KR
-Updated: 2026-05-02T15:50:04+09:00
+Updated: 2026-05-02T16:20:40+09:00
