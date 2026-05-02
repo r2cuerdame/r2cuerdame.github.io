@@ -131,14 +131,17 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-card.theme-shop .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #17152b, #3b2f74 58%, #0f8b57); }
 .radar-card.theme-rent .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
 .radar-card.theme-signal .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #211922, #3b3b2f 58%, #0f8b57); }
-.radar-card-visual::before { content: ""; position: absolute; inset: 18px; border-radius: 28px; border: 1px solid rgba(255,255,255,.22); background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 34px 34px; }
-.radar-scan-ring { position: absolute; width: 170px; height: 170px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; left: 24px; top: 26px; }
+.radar-card-visual::before { content: ""; position: absolute; inset: 18px; z-index: 0; border-radius: 28px; border: 1px solid rgba(255,255,255,.22); background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 34px 34px; pointer-events: none; }
+.radar-scan-ring { position: absolute; width: 170px; height: 170px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; left: 24px; top: 26px; z-index: 1; pointer-events: none; }
 .radar-scan-ring.ring-two { width: 250px; height: 250px; left: 70px; top: 62px; opacity: .55; }
-.radar-route-line { position: absolute; left: 62px; right: 50px; top: 50%; height: 4px; border-radius: 999px; background: linear-gradient(90deg, #fff, #ffd2b8, #ffb020); transform: rotate(-14deg); box-shadow: 0 0 22px rgba(255,255,255,.30); }
-.radar-pin { position: absolute; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; min-height: 54px; padding: 8px; border-radius: 999px; background: #fff; color: #211922; font-size: 12px; font-weight: 950; box-shadow: 0 18px 36px rgba(0,0,0,.24); }
+.radar-route-map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; overflow: visible; pointer-events: none; }
+.radar-route-map path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.radar-route-map .route-glow { stroke: rgba(255,255,255,.26); stroke-width: 10; filter: drop-shadow(0 0 12px rgba(255,255,255,.28)); }
+.radar-route-map .route-core { stroke: #ffd2b8; stroke-width: 4; filter: drop-shadow(0 0 8px rgba(255,176,32,.32)); }
+.radar-pin { position: absolute; left: var(--pin-x); top: var(--pin-y); transform: translate(-50%, -50%); z-index: 3; display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; padding: 6px; box-sizing: border-box; border-radius: 999px; background: #fff; color: #211922; font-size: 12px; line-height: 1.08; text-align: center; font-weight: 950; box-shadow: 0 18px 36px rgba(0,0,0,.24); }
 .radar-pin::before { content: ""; position: absolute; inset: -7px; border-radius: inherit; border: 1px solid rgba(255,255,255,.52); }
-.pin-a { left: 38px; top: 58px; } .pin-b { left: 44%; top: 44%; } .pin-c { right: 42px; bottom: 46px; }
-.radar-card-badge { position: absolute; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.26); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
+.pin-a { --pin-x: 22%; --pin-y: 42%; } .pin-b { --pin-x: 52%; --pin-y: 56%; } .pin-c { --pin-x: 80%; --pin-y: 68%; }
+.radar-card-badge { position: absolute; z-index: 4; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.26); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
 .radar-card-body { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
 .radar-card h2 { margin: 2px 0 0; font-size: clamp(22px, 3vw, 31px); }
 .radar-card p { margin: 0; }
