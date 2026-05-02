@@ -232,6 +232,7 @@ def nav_html(page_path: str) -> str:
 
 def deals_nav_html(page_path: str) -> str:
     items = [
+        ("동네 레이더", "/radar/", "nav-return"),
         ("쇼핑픽 홈", "/deals/", "nav-primary"),
         ("오늘 BEST", "/deals/#today-best", "nav-primary"),
         ("카테고리", "/deals/#category-blocks", "nav-secondary"),
@@ -1046,9 +1047,10 @@ def deal_article_quick_block(article: dict) -> str:
         external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
     return f'''<section class="deal-quick-box" aria-label="구매가이드 빠른 결론">
   <div class="quick-verdict">
-    <span class="tag">빠른 결론</span>
-    <h2>먼저 이렇게 판단하세요</h2>
+    <span class="tag">3분 컷 비교</span>
+    <h2>장바구니 넣기 전 이렇게 판단하세요</h2>
     <p>{esc(short_text(article.get('description') or '', 150))}</p>
+    <p class="quick-note">사지 말아야 할 이유가 먼저 보이면 오늘은 보류해도 괜찮습니다.</p>
   </div>
   <div class="quick-facts" aria-label="핵심 정보">
     <div><strong>{esc(article.get('item_count_hint') or '비교글')}</strong><span>후보 수</span></div>
@@ -1121,7 +1123,12 @@ def deals_body(deals: list[dict]) -> str:
   <div class="deal-hero-copy">
     <p class="eyebrow">Shopping Picks · 쇼핑픽</p>
     <h1>구매 직전 3분 안에 후보를 좁히는 생활상품 비교</h1>
-    <p class="lead">생활가전, 책상 장비, 음향기기를 화려하게 꾸미지 않고 가격대·사용환경·관리 부담 기준으로 정리합니다. 먼저 오늘의 추천을 보고, 필요하면 카테고리와 검색으로 좁히세요.</p>
+    <p class="lead">생활가전, 책상 장비, 음향기기를 화려하게 꾸미지 않고 가격대·사용환경·관리 부담 기준으로 정리합니다. 장바구니 앞에서 “이거 진짜 필요한가?” 하고 멈칫하는 시간을 줄이고, 필요하면 카테고리와 검색으로 바로 좁히세요.</p>
+    <div class="playful-badges" aria-label="쇼핑픽 사용법">
+      <span>장바구니 고민 줄이기</span>
+      <span>사지 말아야 할 이유도 같이 보기</span>
+      <span>3분 컷 비교</span>
+    </div>
     <aside class="affiliate-disclosure" aria-label="제휴 고지">
       <strong>제휴 고지</strong>
       <p>쿠팡 파트너스 활동의 일환으로, 구매 시 이에 따른 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·재고는 상품 페이지에서 다시 확인하세요.</p>
@@ -1134,13 +1141,25 @@ def deals_body(deals: list[dict]) -> str:
     <div class="category-strip" aria-label="카테고리 빠른 이동">{category_chips(deals)}</div>
   </div>
   <aside class="deal-hero-panel" aria-label="쇼핑픽 운영 기준">
-    <strong>쇼핑픽 기준</strong>
+    <strong>오늘의 장바구니 작전</strong>
     <ul class="checklist">
-      <li><strong>실사용 먼저:</strong> 방 크기, 책상 공간, 이동·회의처럼 실제 쓰는 상황을 기준으로 봅니다.</li>
-      <li><strong>가격 확인:</strong> 옵션·재고·배송 조건은 상품 페이지에서 마지막으로 확인합니다.</li>
-      <li><strong>중복 억제:</strong> 같은 상품군은 새 글보다 기존 비교글 업데이트를 우선합니다.</li>
+      <li><strong>쓸 장면 먼저:</strong> 방 크기, 책상 공간, 이동·회의처럼 실제 쓰는 상황을 기준으로 봅니다.</li>
+      <li><strong>사지 말아야 할 이유:</strong> 소음·공간·세척·필터처럼 싫은 포인트가 크면 과감히 보류합니다.</li>
+      <li><strong>마지막 확인:</strong> 옵션·가격·재고·배송 조건은 상품 페이지에서 한 번 더 확인합니다.</li>
     </ul>
+    <p class="microcopy">급할수록 “안 사도 되는 이유”를 먼저 한 줄 적어두면 장바구니가 차분해집니다.</p>
   </aside>
+</section>
+<section class="site-bridge-strip" aria-label="동네 레이더 이동">
+  <div>
+    <span class="tag pale">길 잃음 방지</span>
+    <h2>쇼핑은 쇼핑픽, 동네 판단은 동네 레이더</h2>
+    <p>상품 비교만 보러 온 게 아니라 이사·월세·상가 체크 중이었다면 여기서 바로 돌아가세요.</p>
+  </div>
+  <div class="bridge-actions">
+    <a class="button primary" href="/radar/">동네 레이더로 돌아가기</a>
+    <a class="button" href="/">Recuerdame Lab 홈</a>
+  </div>
 </section>
 <section id="today-best" class="landing-section above-fold-section">
   <div class="section-title"><p class="eyebrow">Today Best</p><h2>오늘의 추천 BEST</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
@@ -1155,10 +1174,10 @@ def deals_body(deals: list[dict]) -> str:
   <div class="category-hubs">{deal_category_hubs(deals)}</div>
 </section>
 <section class="landing-section decision-strip" aria-label="구매 전 체크">
-  <div class="section-title"><h2>구매 전 30초 체크</h2><p>본문으로 들어가기 전 이 세 가지만 정하면 비교가 빨라집니다.</p></div>
+  <div class="section-title"><h2>오늘의 장바구니 작전</h2><p>본문으로 들어가기 전 살 이유와 안 살 이유를 같이 적어두면 비교가 빨라집니다.</p></div>
   <div class="grid three">
-    <article class="card"><span class="tag">1</span><h2>사용 장소</h2><p>원룸, 거실, 재택 책상, 출퇴근, 캠핑처럼 실제 사용 위치를 먼저 정합니다.</p></article>
-    <article class="card"><span class="tag">2</span><h2>불편 기준</h2><p>소음, 공간, 눈 피로, 허리 부담, 세척·필터 비용 중 가장 싫은 실패를 고릅니다.</p></article>
+    <article class="card"><span class="tag">1</span><h2>쓸 장면 고정</h2><p>원룸, 거실, 재택 책상, 출퇴근, 캠핑처럼 실제 사용 위치를 먼저 정합니다.</p></article>
+    <article class="card"><span class="tag">2</span><h2>사지 말아야 할 이유</h2><p>소음, 공간, 눈 피로, 허리 부담, 세척·필터 비용 중 가장 싫은 실패를 고릅니다.</p></article>
     <article class="card"><span class="tag">3</span><h2>마지막 확인</h2><p>상세 가격·배송·옵션·최근 후기는 연결된 상품 페이지에서 다시 확인합니다.</p></article>
   </div>
 </section>
@@ -1321,6 +1340,12 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     related_block = ""
     if article.get("section") == "deals":
         related_block = f'''<section class="related-radar deal-related-search">
+  <div class="deal-radar-return">
+    <span class="tag pale">다시 동네 판단</span>
+    <h2>쇼핑은 여기까지, 동네 판단은 동네 레이더에서</h2>
+    <p>이사·월세·상가 체크가 목적이었다면 비교글에서 바로 빠져나갈 수 있어요.</p>
+    <a class="button" href="/radar/">동네 레이더로 돌아가기</a>
+  </div>
   <h2>다른 비교글 찾기</h2>
   {search_form("예: 같은 용도, 예산, 브랜드, 생활가전")}
 </section>'''
@@ -1333,6 +1358,13 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
   <h2>다음에 같이 볼 글</h2>
   <ul>{links}<li><a href="/guides/">처음 온 사람을 위한 읽는 순서</a></li></ul>
 </section>'''
+    if article.get("section") == "deals":
+        tail_links = f'''<a class="button" href="{section_href}">쇼핑픽 목록</a>
+    <a class="button primary" href="/radar/">동네 레이더로 돌아가기</a>
+    <a class="button" href="/search/">검색</a>'''
+    else:
+        tail_links = f'''<a class="button" href="{section_href}">목록으로</a>
+    <a class="button" href="/guides/">읽는 순서</a>'''
     return f'''
 <article class="{article_class}">
   <nav class="breadcrumb" aria-label="breadcrumb"><a href="/">홈</a><span>›</span><a href="{section_href}">{esc(section_name)}</a></nav>
@@ -1352,8 +1384,7 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
   </section>
   {related_block}
   <footer class="article-tail">
-    <a class="button" href="{section_href}">목록으로</a>
-    <a class="button" href="/guides/">읽는 순서</a>
+    {tail_links}
   </footer>
 </article>
 '''
@@ -1481,6 +1512,8 @@ h1, h2, h3, p, li, a { overflow-wrap: anywhere; }
 .nav a:focus-visible { outline: 3px solid rgba(37, 99, 235, .22); outline-offset: 2px; }
 .nav a[aria-current="page"] { background: var(--ink); color: #fff; box-shadow: 0 8px 18px rgba(33, 25, 34, .16); }
 .nav a.nav-action { background: #fff0e5; color: var(--orange-dark); }
+.nav a.nav-return { background: #eef6ff; color: #1d4ed8; }
+.nav a.nav-return:hover { background: #dbeafe; color: #1e40af; }
 .nav a.nav-action[aria-current="page"] { background: var(--orange); color: #fff; }
 main { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
 .hero { padding: clamp(50px, 9vw, 96px) 0 40px; }
@@ -1592,6 +1625,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-hero-copy h1 { max-width: 880px; font-size: clamp(36px, 5.6vw, 66px); }
 .deal-hero-panel { padding: 24px; align-self: end; }
 .deal-hero-panel > strong { display: block; font-size: 22px; letter-spacing: -.03em; margin-bottom: 12px; }
+.deal-hero-panel .microcopy { margin: 14px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; font-weight: 850; }
+.playful-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.playful-badges span { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 13px; font-weight: 950; }
+.site-bridge-strip { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; margin: 8px 0 24px; padding: 20px; background: #fff; border: 1px solid #dbeafe; border-radius: 24px; box-shadow: 0 12px 30px rgba(15, 23, 42, .06); }
+.site-bridge-strip h2 { margin: 8px 0 6px; font-size: clamp(24px, 3vw, 34px); }
+.site-bridge-strip p { margin: 0; color: #5f5652; }
+.bridge-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 .affiliate-disclosure { margin: 22px 0 0; padding: 14px 16px; background: #fff7ed; border-color: #fed7aa; }
 .affiliate-disclosure strong { color: var(--orange-dark); }
 .affiliate-disclosure p { margin: 4px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; }
@@ -1607,6 +1647,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-quick-box { margin: 20px 0; padding: clamp(20px, 3.5vw, 30px); display: grid; gap: 18px; }
 .deal-quick-box h2 { margin: 8px 0 8px; font-size: clamp(26px, 3.4vw, 36px); }
 .deal-quick-box p { margin: 0; color: #4b5563; }
+.quick-note { margin-top: 8px !important; color: #6b7280 !important; font-size: 14px; font-weight: 850; }
 .quick-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .quick-facts div { padding: 14px; border-radius: 18px; background: #f9fafb; border: 1px solid #e5e7eb; }
 .quick-facts strong, .quick-facts span { display: block; }
@@ -1782,6 +1823,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
 .related-radar h2 { margin-top: 0; }
 .related-radar ul { margin-bottom: 0; }
+.deal-radar-return { margin: 0 0 22px; padding: 18px; border-radius: 20px; background: linear-gradient(135deg, #eff6ff, #fff 70%); border: 1px solid #bfdbfe; }
+.deal-radar-return h2 { margin: 8px 0 6px; font-size: clamp(22px, 3vw, 30px); }
+.deal-radar-return p { margin: 0 0 12px; color: #5f5652; }
 .site-search label { display: block; font-weight: 950; margin-bottom: 8px; }
 .search-row { display: flex; gap: 10px; align-items: stretch; }
 .search-row input { flex: 1; min-width: 0; min-height: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 0 14px; font: inherit; background: #fff; }
@@ -1818,7 +1862,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
   .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
   .lead { font-size: 17px; line-height: 1.62; }
-  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid { grid-template-columns: 1fr; }
+  .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 14px; padding-top: 24px; }
   .deal-hero-copy, .deal-hero-panel, .deal-quick-box { border-radius: 22px; }
@@ -1854,6 +1899,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .deal-grid, .mixed-list { grid-template-columns: 1fr; gap: 12px; }
   .deal-grid.best-grid { grid-template-columns: 1fr; }
   .deal-hero-copy { padding: 20px; }
+  .playful-badges { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .playful-badges span { flex: 0 0 auto; }
+  .site-bridge-strip { padding: 18px; border-radius: 22px; }
+  .bridge-actions { display: grid; grid-template-columns: 1fr; }
   .affiliate-disclosure { margin-top: 16px; }
   .quick-facts { gap: 8px; }
   .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
