@@ -205,7 +205,7 @@ def write_reports(state: dict) -> None:
         "## Checks",
         f"- docs_policy_markers: {'pass' if state.get('docs', {}).get('ok') else 'fail'}",
     ]
-    for name in ["py_compile", "candidate_review", "local_site_smoke"]:
+    for name in ["py_compile", "candidate_review", "local_site_smoke", "public_site_quality_local", "public_site_quality_live"]:
         item = next((cmd for cmd in commands if cmd.get("name") == name), None)
         lines.append(f"- {name}: {'pass' if item and item.get('ok') else 'fail'}")
     lines.append(f"- live_url_reachability: {'pass' if live.get('ok') else 'warning'}")
@@ -237,6 +237,8 @@ def main() -> int:
     if not review.get("ok"):
         commands[-1]["ok"] = False
     commands.append(local_site_smoke())
+    commands.append(run_command("public_site_quality_local", [sys.executable, "scripts/audit_public_site_quality.py"], timeout=180))
+    commands.append(run_command("public_site_quality_live", [sys.executable, "scripts/audit_public_site_quality.py", "--live"], timeout=240))
     live = check_live_radar()
 
     failures: list[str] = []
