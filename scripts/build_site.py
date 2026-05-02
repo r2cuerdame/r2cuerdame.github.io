@@ -635,6 +635,90 @@ def plain_article_card(a: dict) -> str:
 </article>'''
 
 
+def radar_card_theme(a: dict) -> tuple[str, str, tuple[str, str, str]]:
+    joined = " ".join([a.get("title") or "", a.get("description") or "", " ".join(a.get("tags") or [])])
+    if any(token in joined for token in ("관리비", "교통비", "총액")):
+        return "theme-cost", "관리비 체크", ("월세", "관리비", "총액")
+    if any(token in joined for token in ("카페", "상가", "권리금", "상권")):
+        return "theme-shop", "상권 리스크", ("상권", "유동", "권리")
+    if any(token in joined for token in ("퇴근", "밤", "소음", "골목")):
+        return "theme-night", "퇴근길 루프", ("출구", "골목", "입구")
+    if any(token in joined for token in ("월세", "전세", "보증금")):
+        return "theme-rent", "전월세 판단", ("예산", "동선", "보류")
+    return "theme-signal", "계약 전 신호", ("신호", "질문", "판단")
+
+
+def radar_article_card(a: dict) -> str:
+    tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
+    date = parse_dt(a.get("date")).strftime("%m.%d")
+    metric = traffic_badge(a["path"])
+    desc = short_text(a.get("description") or "", 96)
+    theme, badge, pins = radar_card_theme(a)
+    return f'''<article class="list-card radar-card {theme}">
+  <a class="radar-card-visual" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+    <span class="radar-scan-ring ring-one"></span><span class="radar-scan-ring ring-two"></span>
+    <span class="radar-route-line"></span>
+    <span class="radar-pin pin-a">{esc(pins[0])}</span><span class="radar-pin pin-b">{esc(pins[1])}</span><span class="radar-pin pin-c">{esc(pins[2])}</span>
+    <span class="radar-card-badge">{esc(badge)}</span>
+  </a>
+  <div class="radar-card-body">
+    <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
+    <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
+    <p>{esc(desc)}</p>
+    <div class="tag-row">{tags}</div>
+    <div class="radar-card-actions"><span>핵심 신호</span><span>현장 질문</span><span>보류 기준</span></div>
+    <a class="text-link" href="{esc(a['path'])}">레이더 열기 →</a>
+  </div>
+</article>'''
+
+
+def article_headings(body_html: str, limit: int = 5) -> list[str]:
+    headings = []
+    for raw in re.findall(r'<h2[^>]*>(.*?)</h2>', body_html or "", flags=re.I | re.S):
+        label = re.sub(r"^\s*\d+[.)]?\s*", "", strip_tags(raw))
+        label = short_text(label, 24)
+        if label and label not in headings:
+            headings.append(label)
+        if len(headings) >= limit:
+            break
+    return headings
+
+
+def radar_experience_block(article: dict) -> str:
+    target = short_text(article.get("target_audience") or "계약 전 후보 동네를 빠르게 거르고 싶은 독자", 86)
+    decision = short_text(article.get("description") or "", 92)
+    headings = article_headings(article.get("body_html") or "")
+    toc = "".join(f'<li><span>{i:02d}</span>{esc(label)}</li>' for i, label in enumerate(headings, start=1))
+    if not toc:
+        toc = '<li><span>01</span>핵심 신호를 먼저 보고 본문으로 들어갑니다.</li>'
+    return f'''<section class="radar-experience-grid" aria-label="본문 전 시각 요약">
+  <div class="radar-map-card">
+    <p class="eyebrow">Visual Scan</p>
+    <h2>글 읽기 전에 먼저 보는 현장 루프</h2>
+    <p>텍스트를 길게 읽기 전, 이 글이 실제로 확인하려는 동선을 먼저 잡습니다.</p>
+    <div class="radar-map" aria-hidden="true">
+      <span class="map-line"></span>
+      <span class="map-label">20분 루프</span>
+      <span class="map-node node-1"><b>1</b><em>출구</em></span>
+      <span class="map-node node-2"><b>2</b><em>큰길</em></span>
+      <span class="map-node node-3"><b>3</b><em>골목</em></span>
+      <span class="map-node node-4"><b>4</b><em>입구</em></span>
+      <span class="map-node node-5"><b>5</b><em>소음</em></span>
+    </div>
+  </div>
+  <div class="radar-brief-stack">
+    <article class="brief-card hot"><span>WHO</span><strong>누가 읽나</strong><p>{esc(target)}</p></article>
+    <article class="brief-card"><span>DECIDE</span><strong>결정 기준</strong><p>{esc(decision)}</p></article>
+    <article class="brief-card"><span>USE</span><strong>읽는 방식</strong><p>표는 보조 자료로 보고, 카드·루프·질문부터 훑은 뒤 필요한 단락만 깊게 봅니다.</p></article>
+  </div>
+  <div class="radar-toc-card">
+    <strong>오늘 볼 순서</strong>
+    <ol>{toc}</ol>
+  </div>
+</section>
+'''
+
+
 def deal_card(a: dict) -> str:
     img = a.get("image_url") or "/assets/og-card.svg"
     date = parse_dt(a.get("date")).strftime("%m.%d")
@@ -674,6 +758,8 @@ def article_cards(articles: list[dict], empty: str) -> str:
     for a in articles:
         if a.get("section") == "deals" and a.get("image_url"):
             cards.append(deal_card(a))
+        elif a.get("section") == "radar":
+            cards.append(radar_article_card(a))
         else:
             cards.append(plain_article_card(a))
     return "\n".join(cards)
@@ -1105,6 +1191,12 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     <div class="deal-actions"><a class="deal-button primary" href="#article-body">본문 비교 보기</a>{external}</div>
   </div>
 </section>'''
+    visual_block = ""
+    article_class = "article-page"
+    if article.get("section") == "radar":
+        visual_block = radar_experience_block(article)
+        article_class += " radar-article"
+
     related_block = ""
     if article.get("section") == "deals":
         related_block = f'''<section class="related-radar">
@@ -1121,7 +1213,7 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
   <ul>{links}<li><a href="/guides/">처음 온 사람을 위한 읽는 순서</a></li></ul>
 </section>'''
     return f'''
-<article class="article-page">
+<article class="{article_class}">
   <nav class="breadcrumb" aria-label="breadcrumb"><a href="/">홈</a><span>›</span><a href="{section_href}">{esc(section_name)}</a></nav>
   <header class="article-hero">
     <p class="eyebrow">{esc(section_name)}</p>
@@ -1131,6 +1223,7 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     <div class="tag-row">{tags}</div>
   </header>
   {notice}
+  {visual_block}
   {image_block}
   <section id="article-body" class="article-content">
     {article['body_html']}
@@ -1323,6 +1416,27 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .status-strip span, .shop-summary span { color: #ecd9cd; }
 .article-list { display: grid; gap: 16px; margin: 24px 0 56px; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; }
+.radar-card-visual { position: relative; min-height: 250px; overflow: hidden; background: radial-gradient(circle at 20% 20%, #fff6d5 0 0, transparent 26%), linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); color: #fff; }
+.radar-card.theme-cost .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.26) 0 0, transparent 26%), linear-gradient(135deg, #2b2118, #775113 58%, #ffb020); }
+.radar-card.theme-shop .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #17152b, #3b2f74 58%, #0f8b57); }
+.radar-card.theme-rent .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
+.radar-card.theme-signal .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0 0, transparent 26%), linear-gradient(135deg, #211922, #3b3b2f 58%, #0f8b57); }
+.radar-card-visual::before { content: ""; position: absolute; inset: 18px; border-radius: 28px; border: 1px solid rgba(255,255,255,.22); background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 34px 34px; }
+.radar-scan-ring { position: absolute; width: 170px; height: 170px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; left: 24px; top: 26px; }
+.radar-scan-ring.ring-two { width: 250px; height: 250px; left: 70px; top: 62px; opacity: .55; }
+.radar-route-line { position: absolute; left: 62px; right: 50px; top: 50%; height: 4px; border-radius: 999px; background: linear-gradient(90deg, #fff, #ffd2b8, #ffb020); transform: rotate(-14deg); box-shadow: 0 0 22px rgba(255,255,255,.30); }
+.radar-pin { position: absolute; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; min-height: 54px; padding: 8px; border-radius: 999px; background: #fff; color: #211922; font-size: 12px; font-weight: 950; box-shadow: 0 18px 36px rgba(0,0,0,.24); }
+.radar-pin::before { content: ""; position: absolute; inset: -7px; border-radius: inherit; border: 1px solid rgba(255,255,255,.52); }
+.pin-a { left: 38px; top: 58px; } .pin-b { left: 44%; top: 44%; } .pin-c { right: 42px; bottom: 46px; }
+.radar-card-badge { position: absolute; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.26); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
+.radar-card-body { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+.radar-card h2 { margin: 2px 0 0; font-size: clamp(22px, 3vw, 31px); }
+.radar-card p { margin: 0; }
+.radar-card-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+.radar-card-actions span { display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
+.radar-card .text-link { width: fit-content; min-height: 40px; margin-top: auto; padding: 0 13px; border-radius: 14px; background: var(--ink); color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(33,25,34,.13); }
+.radar-card .text-link:hover { background: var(--orange); color: #fff; }
 .section-title { grid-column: 1 / -1; }
 .section-title h2 { margin-bottom: 4px; }
 .section-title p { margin-top: 0; color: var(--muted); }
@@ -1378,6 +1492,34 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .breadcrumb a { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
 .article-page { max-width: 940px; margin: 0 auto; }
 .article-hero { padding: 44px 0 18px; }
+.radar-article { max-width: 1120px; }
+.radar-article .breadcrumb, .radar-article .article-hero, .radar-article .article-content, .radar-article .related-radar, .radar-article .article-tail { max-width: 940px; margin-left: auto; margin-right: auto; }
+.radar-experience-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 18px; margin: 20px 0 26px; align-items: stretch; }
+.radar-map-card, .brief-card, .radar-toc-card { background: rgba(255,255,255,.94); border: 1px solid rgba(234,223,212,.95); border-radius: 30px; box-shadow: 0 16px 44px rgba(58,37,20,.09); }
+.radar-map-card { position: relative; overflow: hidden; padding: 24px; min-height: 430px; background: linear-gradient(145deg, #fffaf4 0%, #ffffff 52%, #fff1e7 100%); }
+.radar-map-card h2 { margin: 6px 0 8px; font-size: clamp(27px, 3.6vw, 42px); }
+.radar-map-card p:not(.eyebrow) { max-width: 560px; color: #5f5652; margin-bottom: 20px; }
+.radar-map { position: relative; min-height: 245px; margin-top: 12px; border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 22% 24%, rgba(255,90,31,.16), transparent 20%), radial-gradient(circle at 78% 72%, rgba(37,99,235,.14), transparent 22%), #241b20; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.radar-map::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 36px 36px; mask-image: radial-gradient(circle at center, #000 40%, transparent 88%); }
+.map-line { position: absolute; left: 12%; right: 12%; top: 18%; bottom: 17%; border: 5px solid rgba(255,255,255,.34); border-right-color: #ffd2b8; border-bottom-color: #ff5a1f; border-radius: 50%; background: transparent; transform: rotate(-10deg); box-shadow: 0 0 28px rgba(255,90,31,.32); }
+.map-line::after { content: ""; position: absolute; right: 13%; bottom: -10px; width: 0; height: 0; border-left: 13px solid #ff5a1f; border-top: 8px solid transparent; border-bottom: 8px solid transparent; transform: rotate(34deg); filter: drop-shadow(0 0 8px rgba(255,90,31,.45)); }
+.map-label { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; border: 1px solid rgba(255,255,255,.26); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); }
+.map-node { position: absolute; display: grid; gap: 4px; justify-items: center; color: #fff; font-size: 12px; font-weight: 950; }
+.map-node b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px; background: #fff; color: #211922; box-shadow: 0 12px 26px rgba(0,0,0,.28); }
+.map-node em { font-style: normal; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.16); backdrop-filter: blur(8px); }
+.node-1 { left: 8%; top: 54%; } .node-2 { left: 25%; top: 30%; } .node-3 { left: 48%; top: 48%; } .node-4 { right: 22%; top: 28%; } .node-5 { right: 7%; bottom: 18%; }
+.radar-brief-stack { display: grid; gap: 12px; }
+.brief-card { padding: 18px 20px; }
+.brief-card span { display: inline-flex; margin-bottom: 8px; padding: 4px 9px; border-radius: 999px; background: #f4ebe2; color: #6b625f; font-size: 11px; font-weight: 950; letter-spacing: .08em; }
+.brief-card.hot { background: linear-gradient(135deg, #211922, #4b2a1d 60%, #ff5a1f); color: #fff; border-color: rgba(255,255,255,.18); }
+.brief-card.hot p { color: #ffe9df; }
+.brief-card strong { display: block; font-size: 19px; letter-spacing: -.025em; }
+.brief-card p { margin: 6px 0 0; color: #5f5652; line-height: 1.6; }
+.radar-toc-card { grid-column: 1 / -1; padding: 18px 20px; }
+.radar-toc-card strong { display: block; margin-bottom: 10px; font-size: 18px; }
+.radar-toc-card ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.radar-toc-card li { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 8px; padding: 10px; border-radius: 16px; background: #fffaf4; color: #443a36; font-weight: 850; }
+.radar-toc-card li span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 950; }
 .article-product-hero { display: grid; grid-template-columns: minmax(220px, 330px) 1fr; gap: 24px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 30px; padding: clamp(16px, 3vw, 28px); box-shadow: var(--shadow); margin: 22px 0; }
 .article-product-hero img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 24px; background: #fffaf4; }
 .article-product-hero h2 { margin: 12px 0 8px; }
@@ -1396,6 +1538,23 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .article-content h2 { margin-top: 34px; font-size: clamp(24px, 3.4vw, 32px); }
 .article-content h3 { margin-top: 26px; font-size: 22px; }
 .article-content p { color: #3f3733; margin: 0 0 18px; }
+.radar-article .article-content { counter-reset: section; }
+.radar-article .article-content > section > h2, .radar-article .article-content > h2 { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start; }
+.radar-article .article-content > section > h2::before, .radar-article .article-content > h2::before { counter-increment: section; content: counter(section); display: grid; place-items: center; width: 38px; height: 38px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 950; box-shadow: 0 10px 22px rgba(33,25,34,.14); }
+.article-content figure { margin: 28px 0; padding: clamp(16px, 3vw, 24px); border-radius: 30px; border: 1px solid rgba(234,223,212,.96); background: linear-gradient(135deg, #fffaf4, #ffffff 52%, #fff0e5); box-shadow: 0 14px 38px rgba(58,37,20,.075); }
+.article-content figcaption { margin-top: 12px; color: #6b625f; font-size: 14px; font-weight: 850; text-align: center; }
+.article-content .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.article-content .cards .card { position: relative; min-height: auto; padding: 18px; border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 8px 24px rgba(58,37,20,.075); border: 1px solid rgba(234,223,212,.95); }
+.article-content .cards .card::before { content: ""; display: block; width: 34px; height: 5px; border-radius: 999px; margin-bottom: 12px; background: linear-gradient(90deg, var(--orange), #ffb020); }
+.article-content .cards .card strong { font-size: 16px; letter-spacing: -.02em; }
+.article-content .notice { background: #fffaf4; border-color: #ffd2b8; }
+.article-content .callout { margin: 30px 0; padding: clamp(20px, 3vw, 28px); border-radius: 28px; background: linear-gradient(135deg, #211922, #4b2a1d 58%, #ff5a1f); color: #fff; box-shadow: 0 18px 44px rgba(58,37,20,.18); }
+.article-content .callout strong { display: block; font-size: clamp(20px, 2.7vw, 28px); letter-spacing: -.03em; margin-bottom: 8px; }
+.article-content .callout p { color: #ffe9df; margin-bottom: 0; }
+.article-content .bar { position: relative; height: 22px; border-radius: 999px; margin: 8px 0 18px; background: linear-gradient(90deg, #0f8b57 0 34%, #ffb020 34% 68%, #ff5a1f 68% 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.65), 0 10px 24px rgba(58,37,20,.10); }
+.article-content .bar::before, .article-content .bar::after { position: absolute; top: calc(100% + 6px); color: var(--muted); font-size: 12px; font-weight: 900; }
+.article-content .bar::before { content: "부담 낮음"; left: 0; }
+.article-content .bar::after { content: "재검토"; right: 0; }
 .article-content p[style*="font-size"] { font-size: inherit !important; line-height: inherit !important; }
 .article-content ul, .article-content ol { padding-left: 1.25em; }
 .article-content li { margin: 9px 0; }
@@ -1433,11 +1592,14 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   box-shadow: none;
   border-radius: 18px;
 }
-.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 18px 0; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
-.table-scroll::before { content: "좌우로 밀어 비교하세요 →"; display: block; padding: 10px 12px 0; color: var(--muted); font-size: 13px; font-weight: 900; }
-.table-scroll table { min-width: 680px; width: 100%; border-collapse: collapse; }
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 22px 0; border: 0; border-radius: 24px; background: #fff; box-shadow: 0 12px 32px rgba(58,37,20,.075); }
+.table-scroll::before { content: "핵심 비교표 · 좌우로 밀어 보기 →"; display: block; padding: 12px 14px 0; color: var(--muted); font-size: 13px; font-weight: 950; }
+.table-scroll table { min-width: 680px; width: 100%; border-collapse: collapse; overflow: hidden; }
 .article-content table { width: 100%; border-collapse: collapse; }
-.article-content th, .article-content td { border: 1px solid var(--line); padding: 10px; vertical-align: top; }
+.article-content th, .article-content td { border: 1px solid #f0e4da; padding: 12px; vertical-align: top; }
+.article-content th { background: #211922; color: #fff; font-size: 14px; letter-spacing: -.01em; }
+.article-content tr:nth-child(even) td { background: #fffaf4; }
+.article-content td:first-child { font-weight: 900; color: #2f2724; }
 .related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
 .related-radar h2 { margin-top: 0; }
 .related-radar ul { margin-bottom: 0; }
@@ -1477,7 +1639,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
   .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
   .lead { font-size: 17px; line-height: 1.62; }
-  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .article-product-hero { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .article-product-hero, .radar-card, .radar-experience-grid { grid-template-columns: 1fr; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .category-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .category-chip { flex: 0 0 auto; }
@@ -1485,6 +1647,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin, .hero-pin.pin-1, .hero-pin.pin-2, .hero-pin.pin-3 { position: relative; inset: auto; flex: 0 0 132px; width: 132px; transform: none; border-width: 5px; border-radius: 20px; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
+  .radar-card { padding: 0; }
+  .radar-card-visual { min-height: 210px; }
+  .radar-map-card { min-height: auto; }
+  .radar-toc-card ol { grid-template-columns: 1fr; }
   .search-row { flex-direction: column; }
   .search-row input, .search-row button { width: 100%; }
   .article-page { max-width: 100%; }
@@ -1519,6 +1685,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .quick-links span { display: block; margin-top: 4px; }
   .article-content { padding: 20px 18px; font-size: 16.5px; line-height: 1.78; }
   .article-content h2 { font-size: 24px; line-height: 1.25; }
+  .radar-article .article-content > section > h2, .radar-article .article-content > h2 { grid-template-columns: 34px 1fr; gap: 10px; }
+  .radar-article .article-content > section > h2::before, .radar-article .article-content > h2::before { width: 30px; height: 30px; font-size: 12px; }
   .article-content h3 { font-size: 20px; line-height: 1.32; }
   .article-content img { max-height: 330px; }
   .table-scroll { margin-left: 0; margin-right: 0; width: 100%; overflow-x: visible; padding: 0 0 8px; }
