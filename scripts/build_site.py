@@ -783,7 +783,7 @@ def radar_scene_markup(scene: str, chips: tuple[str, str, str]) -> str:
       <span class="rival-sign">경쟁</span>
     </span>'''
     return f'''<span class="scene-art filter-art">
-      <span class="funnel"></span><span class="checklist"><i>{c0}</i><i>{c1}</i><i>{c2}</i></span>
+      <span class="funnel"></span><span class="visual-checklist"><i>{c0}</i><i>{c1}</i><i>{c2}</i></span>
       <span class="reject-card">삭제</span><span class="keep-card">보류</span>
     </span>'''
 
@@ -1714,7 +1714,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .loss-line { right: 2px; top: 8px; padding: 10px 12px; border-radius: 18px; background: #fff; color: #1d4ed8; font-size: 24px; font-weight: 950; box-shadow: 0 16px 30px rgba(0,0,0,.2); }
 .cost-chip.chip-a { right: 66px; bottom: 54px; } .cost-chip.chip-b { right: 10px; bottom: 36px; } .cost-chip.chip-c { right: 46px; bottom: 2px; }
 .funnel { left: 18px; top: 5px; width: 112px; height: 122px; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(187,247,208,.9)); clip-path: polygon(0 0, 100% 0, 66% 52%, 66% 100%, 34% 100%, 34% 52%); filter: drop-shadow(0 18px 26px rgba(0,0,0,.22)); }
-.checklist { right: 4px; top: 12px; width: 94px; padding: 10px; border-radius: 18px; background: rgba(255,255,255,.92); color: #15251d; box-shadow: 0 16px 28px rgba(0,0,0,.18); } .checklist i { display: block; padding: 5px 0 5px 18px; position: relative; font-style: normal; font-size: 12px; font-weight: 950; } .checklist i::before { content: ""; position: absolute; left: 0; top: 10px; width: 9px; height: 5px; border-left: 2px solid #0f8b57; border-bottom: 2px solid #0f8b57; transform: rotate(-45deg); }
+.visual-checklist { right: 4px; top: 12px; width: 94px; padding: 10px; border-radius: 18px; background: rgba(255,255,255,.92); color: #15251d; box-shadow: 0 16px 28px rgba(0,0,0,.18); } .visual-checklist i { display: block; padding: 5px 0 5px 18px; position: relative; font-style: normal; font-size: 12px; font-weight: 950; } .visual-checklist i::before { content: ""; position: absolute; left: 0; top: 10px; width: 9px; height: 5px; border-left: 2px solid #0f8b57; border-bottom: 2px solid #0f8b57; transform: rotate(-45deg); }
 .reject-card, .keep-card { bottom: 6px; padding: 8px 10px; border-radius: 14px; font-size: 13px; font-weight: 950; box-shadow: 0 12px 22px rgba(0,0,0,.2); } .reject-card { left: 4px; background: #2f2724; color: #fff; transform: rotate(-8deg); } .keep-card { right: 12px; background: #fff; color: #0f8b57; transform: rotate(7deg); }
 .awning { left: 14px; top: 12px; width: 132px; height: 36px; border-radius: 16px 16px 6px 6px; background: repeating-linear-gradient(90deg, #fff 0 18px, #ff6b2b 18px 36px); box-shadow: 0 14px 28px rgba(0,0,0,.2); }
 .storefront { left: 22px; top: 46px; width: 116px; height: 82px; border-radius: 12px 12px 20px 20px; background: rgba(255,255,255,.92); color: #17152b; display: grid; place-items: center; font-size: 17px; box-shadow: 0 16px 28px rgba(0,0,0,.18); }
@@ -1759,6 +1759,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-hero-copy h1 { max-width: 880px; font-size: clamp(36px, 5.6vw, 66px); }
 .deal-hero-panel { padding: 24px; align-self: end; }
 .deal-hero-panel > strong { display: block; font-size: 22px; letter-spacing: -.03em; margin-bottom: 12px; }
+.deal-hero-panel .checklist { margin: 0; display: grid; gap: 12px; }
+.deal-hero-panel .checklist li { margin: 0; line-height: 1.62; overflow-wrap: break-word; word-break: keep-all; }
 .deal-hero-panel .microcopy { margin: 14px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; font-weight: 850; }
 .playful-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .playful-badges span { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 13px; font-weight: 950; }
@@ -2023,7 +2025,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .calc { left: 6px; width: 96px; }
   .loss-line { right: 0; font-size: 20px; }
   .funnel { left: 8px; width: 94px; }
-  .checklist { right: 0; width: 78px; }
+  .visual-checklist { right: 0; width: 78px; }
   .awning { left: 4px; width: 112px; }
   .storefront { left: 10px; width: 102px; }
   .cup { right: 0; width: 54px; }
