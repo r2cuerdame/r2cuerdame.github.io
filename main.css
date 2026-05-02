@@ -228,9 +228,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .map-route-path { stroke: #ff5a1f; stroke-width: 4.5; filter: drop-shadow(0 0 10px rgba(255,90,31,.52)); }
 .map-route-arrow { fill: #ff5a1f; }
 .map-label { position: absolute; left: 18px; top: 16px; z-index: 3; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); color: #fff; border: 1px solid rgba(255,255,255,.28); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); box-shadow: 0 10px 24px rgba(0,0,0,.16); }
-.map-node { position: absolute; z-index: 4; display: grid; gap: 5px; justify-items: center; color: #fff; font-size: 12px; font-weight: 950; transform: translate(-50%, -21px); }
+.map-node { position: absolute; z-index: 4; display: grid; gap: 5px; justify-items: center; color: #fff; font-size: 13px; font-weight: 950; transform: translate(-50%, -21px); }
 .map-node b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px; background: #fff; color: #211922; border: 3px solid #ffefe8; box-shadow: 0 12px 26px rgba(0,0,0,.30), 0 0 0 5px rgba(255,90,31,.20); }
-.map-node em { font-style: normal; padding: 4px 8px; border-radius: 999px; background: rgba(33,25,34,.58); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(8px); box-shadow: 0 8px 18px rgba(0,0,0,.18); }
+.map-node em { font-style: normal; line-height: 1; letter-spacing: -.02em; padding: 5px 10px; border-radius: 999px; background: rgba(33,25,34,.72); border: 1px solid rgba(255,255,255,.20); backdrop-filter: blur(8px); box-shadow: 0 8px 18px rgba(0,0,0,.18); }
 .node-1 { left: 13%; top: 66%; } .node-2 { left: 31%; top: 39%; } .node-3 { left: 50%; top: 57%; } .node-4 { left: 74%; top: 36%; } .node-5 { left: 88%; top: 61%; }
 .radar-brief-stack { display: grid; gap: 12px; }
 .brief-card { padding: 18px 20px; }
@@ -376,7 +376,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .radar-map-card { min-height: auto; }
   .radar-map { min-height: 260px; }
   .map-label { left: 12px; top: 12px; font-size: 11px; }
-  .map-node { font-size: 11px; transform: translate(-50%, -19px); }
+  .map-node { font-size: 12px; transform: translate(-50%, -19px); }
   .map-node b { width: 38px; height: 38px; border-width: 2px; }
   .radar-toc-card ol { grid-template-columns: 1fr; }
   .search-row { flex-direction: column; }
