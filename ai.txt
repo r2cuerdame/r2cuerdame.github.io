@@ -10,6 +10,7 @@ Search: https://r2cuerdame.github.io/search/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
+Radar Article: https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/ — 출근길 15분, 통근 피로를 확인하는 동네 체크
 Radar Article: https://r2cuerdame.github.io/radar/after-work-neighborhood-check/ — 퇴근 후 20분, 살 동네를 다시 보는 법
 Radar Article: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/ — 관리비 총액만 보이는 월세 후보, 방문 전 이렇게 보류하세요
 Radar Article: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/ — 월세가 낮아 보여도 답이 흐리면 위험합니다: 계약 전 확인할 5개 질문
@@ -20,4 +21,4 @@ Separate Deals Article: https://r2cuerdame.github.io/deals/beauty-personal-care-
 Separate Deals Article: https://r2cuerdame.github.io/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/ — 제습기 뭐 살까, 위닉스·LG·위니아 인기 5종 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/모니터-조명-추천-top-5-야간-작업-눈-피로-줄이는-제품-85cf2710/ — 모니터 조명 추천 TOP 5, 야간 작업 눈 피로 줄이는 제품
 Language: ko-KR
-Updated: 2026-05-02T13:51:11+09:00
+Updated: 2026-05-02T15:29:36+09:00

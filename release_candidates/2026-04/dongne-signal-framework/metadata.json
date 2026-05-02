@@ -2,7 +2,7 @@
   "slug": "dongne-signal-framework",
   "title": "월세·전세 계약 전, 동네 데이터로 먼저 걸러볼 5가지",
   "section": "dongne-radar",
-  "status": "published_revision",
+  "status": "release_candidate_ready",
   "cadence_mode": "rolling_buffer",
   "mature_started_at": "2026-04-29T21:44:43+09:00",
   "publish_ready_at": "2026-05-06T21:44:43+09:00",
@@ -24,7 +24,26 @@
     ]
   },
   "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
-  "updated_at": "2026-04-29T22:48:33+09:00",
-  "revision_note": "공개 글을 이사·전월세 계약 예정 25~39세 1차 타겟 기준으로 제목/도입/본문 재작성",
-  "date": "2026-04-29T22:48:33+09:00"
+  "updated_at": "2026-05-01T20:40:07+09:00",
+  "revision_note": "backlog_reduction 턴에서 좋은 반례/판단 보류 표를 추가해 단순 평균 해석을 줄이고 현장 질문 흐름을 보강",
+  "date": "2026-04-29T22:48:33+09:00",
+  "last_review": "ready=19 hard=0 soft=0 after backlog polish; this candidate chars=5145 visuals=10",
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "hourly_internal_links_polish_at": "2026-05-01T17:39:51+09:00",
+    "hourly_internal_links_count": 2,
+    "visible_prose_chars": 5145,
+    "reader_visual_count": 10,
+    "reviewed_at": "2026-05-01T20:40:07+09:00",
+    "hourly_backlog_polish_at": "2026-05-01T20:40:07+09:00",
+    "hourly_backlog_polish_type": "counterexample_decision_table"
+  },
+  "last_hourly_polish": {
+    "at": "2026-05-01T20:40:07+09:00",
+    "type": "counterexample_decision_table",
+    "note": "ready 후보 상한 초과로 새 후보 생성 없이 좋은 반례와 보류 전환 신호 표를 추가해 평균 점수 오독을 줄임"
+  }
 }

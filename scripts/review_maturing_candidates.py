@@ -22,6 +22,17 @@ FORBIDDEN_TERMS = [
     "내부 제작", "제휴",
 ]
 REQUIRED_SIGNALS = ["반례", "한계", "현장", "질문", "사용법", "해석"]
+STRATEGY_TERMS = {
+    "primary_audience_context": ["이사", "전월세", "월세", "전세", "계약", "거주지", "집 보러", "살 동네", "통근", "관리비", "생활권"],
+    "decision_situation": ["확인", "질문", "체크", "보류", "비교", "판단", "계약 전", "방문 전", "현장", "계속 볼"],
+    "reader_tool": ["질문", "체크리스트", "표", "신호", "순서", "문장", "비교", "보류"],
+}
+TARGET_OPENING_TERMS = {
+    "metro_market": ["서울", "수도권"],
+    "age_or_life_stage": ["25~39", "직장인", "1인가구", "신혼"],
+    "housing_intent": ["이사", "전월세", "월세", "전세", "계약", "거주지", "집 보러", "후보를 비교"],
+    "decision_action": ["계속 볼", "보류", "확인", "질문", "체크", "비교", "판단", "계약 전", "방문 전", "현장"],
+}
 
 
 class VisibleTextParser(html.parser.HTMLParser):
@@ -127,16 +138,34 @@ def review_file(path: Path, now: str) -> dict:
     if missing:
         hard.append("missing_magazine_signals:" + ",".join(missing))
 
+    missing_strategy = []
+    for group, terms in STRATEGY_TERMS.items():
+        if not any(term in all_visible for term in terms):
+            missing_strategy.append(group)
+    if missing_strategy:
+        hard.append("missing_strategy_fit:" + ",".join(missing_strategy))
+
+    opening_text = all_visible[:600]
+    missing_target_opening = []
+    for group, terms in TARGET_OPENING_TERMS.items():
+        if not any(term in opening_text for term in terms):
+            missing_target_opening.append(group)
+    if missing_target_opening:
+        hard.append("missing_target_fit_opening:" + ",".join(missing_target_opening))
+
     title_match = re.search(r"<h1[^>]*>(.*?)</h1>", raw, re.IGNORECASE | re.DOTALL)
     title = re.sub(r"<[^>]+>", "", title_match.group(1)).strip() if title_match else path.parent.name
 
     rel = path.relative_to(ROOT).as_posix()
+    target_fit = not missing_strategy and not missing_target_opening
     return {
         "path": rel,
         "title": title,
         "reviewed_at": now,
         "visible_prose_chars": chars,
         "reader_visual_count": visual_count,
+        "target_fit": target_fit,
+        "target_opening_missing": missing_target_opening,
         "hard_issues": hard,
         "soft_issues": soft,
         "observations": observations,
@@ -182,7 +211,7 @@ def main() -> int:
         lines.append("- no release candidates found")
     for item in results:
         lines.append(
-            f"- `{item['path']}` — ready={item['ready']} chars={item['visible_prose_chars']} "
+            f"- `{item['path']}` — ready={item['ready']} target_fit={item.get('target_fit')} chars={item['visible_prose_chars']} "
             f"visuals={item['reader_visual_count']} hard={len(item['hard_issues'])} soft={len(item['soft_issues'])}"
         )
         if item["hard_issues"]:

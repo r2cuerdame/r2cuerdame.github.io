@@ -1,0 +1,50 @@
+{
+  "slug": "commute-fatigue-neighborhood-check",
+  "title": "출근길 15분, 통근 피로를 확인하는 동네 체크",
+  "description": "이사 후보를 고를 때 출근길 최단시간만 보면 반복 피로를 놓치기 쉽다. 계약 전 15분 동안 대기, 환승 끊김, 마지막 도보, 우회 루트, 생활 루프를 따로 보며 계속 볼지, 출근 시간대에 다시 볼지, 보류할지 정리하는 체크 루틴.",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-04-30T21:45:04+09:00",
+  "publish_ready_at": "2026-05-07T21:45:04+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-04/commute-fatigue-neighborhood-check/50-copy.md",
+  "reader_qa_stage": "articles/2026-04/commute-fatigue-neighborhood-check/60-reader-qa.md",
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-04-30T21:45:04+09:00",
+  "updated_at": "2026-05-02T15:29:28+09:00",
+  "reader_qa": {
+    "score": 93,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 5826,
+    "reader_visual_count": 9,
+    "reviewed_at": "2026-05-01T17:42:09+09:00",
+    "hourly_internal_links_polish_at": "2026-05-01T17:39:51+09:00",
+    "hourly_internal_links_count": 3
+  },
+  "last_hourly_polish": {
+    "at": "2026-05-01T17:39:51+09:00",
+    "type": "internal_links_backlog_reduction",
+    "note": "ready 후보 상한 초과로 새 후보 생성 없이 공개 /radar/ 내부링크 섹션을 추가해 기존 후보의 탐색 흐름을 보강함"
+  },
+  "pages_published_at": "2026-05-02T15:29:28+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/"
+}
