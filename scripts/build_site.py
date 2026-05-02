@@ -981,7 +981,7 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
     <span class="category-chip">이사 준비</span><span class="category-chip">월세·전세 계약</span><span class="category-chip">통근 피로</span><span class="category-chip">생활권</span><span class="category-chip">밤길·소음·관리비</span><span class="category-chip">상가·권리금</span><span class="category-chip">현장 확인 질문</span>
   </div>
 </section>
-<section class="article-list mixed-list">
+<section class="article-list mixed-list radar-latest-grid">
   <div class="section-title"><h2>동네 레이더 최신 글</h2><p>계약 전 리스크와 현장 질문을 먼저 확인하세요.</p></div>
   {radar_html}
 </section>
@@ -1437,6 +1437,15 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-card-actions span { display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
 .radar-card .text-link { width: fit-content; min-height: 40px; margin-top: auto; padding: 0 13px; border-radius: 14px; background: var(--ink); color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(33,25,34,.13); }
 .radar-card .text-link:hover { background: var(--orange); color: #fff; }
+.radar-latest-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); align-items: stretch; }
+.radar-latest-grid .radar-card { display: flex; flex-direction: column; min-height: 100%; }
+.radar-latest-grid .radar-card-visual { min-height: 210px; width: 100%; flex: 0 0 auto; }
+.radar-latest-grid .radar-card-body { min-width: 0; padding: 22px; flex: 1; }
+.radar-latest-grid .card-meta { gap: 8px; }
+.radar-latest-grid .radar-card h2 { font-size: clamp(20px, 2vw, 25px); line-height: 1.18; letter-spacing: -.045em; }
+.radar-latest-grid .radar-card p { font-size: 15px; line-height: 1.65; }
+.radar-latest-grid .radar-card-actions { display: none; }
+.radar-latest-grid .radar-card .text-link { margin-top: 12px; }
 .section-title { grid-column: 1 / -1; }
 .section-title h2 { margin-bottom: 4px; }
 .section-title p { margin-top: 0; color: var(--muted); }
