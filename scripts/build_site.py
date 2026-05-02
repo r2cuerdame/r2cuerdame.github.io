@@ -1700,16 +1700,16 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .deal-grid, .mixed-list { grid-template-columns: 1fr; gap: 12px; }
   .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
   .radar-map-card { padding: 18px; }
-  .radar-map { min-height: 380px; border-radius: 24px; }
+  .radar-map { min-height: 420px; border-radius: 24px; }
   .map-route-desktop { display: none; }
   .map-route-mobile { display: block; }
   .map-route-guide { stroke-width: 11; }
   .map-route-path { stroke-width: 4.25; }
   .map-label { left: 12px; top: 12px; font-size: 12px; padding: 7px 10px; }
   .node-1 { left: 17%; top: 26%; } .node-2 { left: 58%; top: 28%; } .node-3 { left: 82%; top: 47%; } .node-4 { left: 38%; top: 66%; } .node-5 { left: 72%; top: 83%; }
-  .map-node { font-size: 13.5px; }
-  .map-node b { width: 40px; height: 40px; }
-  .map-node em { padding: 6px 11px; }
+  .map-node { font-size: 15px; transform: translate(-50%, -21px); }
+  .map-node b { width: 42px; height: 42px; }
+  .map-node em { padding: 7px 13px; }
   .deal-thumb { min-height: 100%; display: flex; align-items: center; justify-content: center; }
   .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
   .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
