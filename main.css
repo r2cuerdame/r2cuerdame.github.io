@@ -220,15 +220,18 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-map-card { position: relative; overflow: hidden; padding: 24px; min-height: 430px; background: linear-gradient(145deg, #fffaf4 0%, #ffffff 52%, #fff1e7 100%); }
 .radar-map-card h2 { margin: 6px 0 8px; font-size: clamp(27px, 3.6vw, 42px); }
 .radar-map-card p:not(.eyebrow) { max-width: 560px; color: #5f5652; margin-bottom: 20px; }
-.radar-map { position: relative; min-height: 245px; margin-top: 12px; border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 22% 24%, rgba(255,90,31,.16), transparent 20%), radial-gradient(circle at 78% 72%, rgba(37,99,235,.14), transparent 22%), #241b20; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
-.radar-map::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 36px 36px; mask-image: radial-gradient(circle at center, #000 40%, transparent 88%); }
-.map-line { position: absolute; left: 12%; right: 12%; top: 18%; bottom: 17%; border: 5px solid rgba(255,255,255,.34); border-right-color: #ffd2b8; border-bottom-color: #ff5a1f; border-radius: 50%; background: transparent; transform: rotate(-10deg); box-shadow: 0 0 28px rgba(255,90,31,.32); }
-.map-line::after { content: ""; position: absolute; right: 13%; bottom: -10px; width: 0; height: 0; border-left: 13px solid #ff5a1f; border-top: 8px solid transparent; border-bottom: 8px solid transparent; transform: rotate(34deg); filter: drop-shadow(0 0 8px rgba(255,90,31,.45)); }
-.map-label { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; border: 1px solid rgba(255,255,255,.26); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); }
-.map-node { position: absolute; display: grid; gap: 4px; justify-items: center; color: #fff; font-size: 12px; font-weight: 950; }
-.map-node b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px; background: #fff; color: #211922; box-shadow: 0 12px 26px rgba(0,0,0,.28); }
-.map-node em { font-style: normal; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.16); backdrop-filter: blur(8px); }
-.node-1 { left: 8%; top: 54%; } .node-2 { left: 25%; top: 30%; } .node-3 { left: 48%; top: 48%; } .node-4 { right: 22%; top: 28%; } .node-5 { right: 7%; bottom: 18%; }
+.radar-map { position: relative; min-height: 245px; margin-top: 12px; border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 18% 24%, rgba(255,90,31,.16), transparent 20%), radial-gradient(circle at 78% 70%, rgba(37,99,235,.14), transparent 22%), #241b20; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.radar-map::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 36px 36px; mask-image: radial-gradient(circle at center, #000 40%, transparent 88%); }
+.map-route { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.map-route-guide, .map-route-path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.map-route-guide { stroke: rgba(255,255,255,.34); stroke-width: 12; }
+.map-route-path { stroke: #ff5a1f; stroke-width: 4.5; filter: drop-shadow(0 0 10px rgba(255,90,31,.52)); }
+.map-route-arrow { fill: #ff5a1f; }
+.map-label { position: absolute; left: 18px; top: 16px; z-index: 3; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); color: #fff; border: 1px solid rgba(255,255,255,.28); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); box-shadow: 0 10px 24px rgba(0,0,0,.16); }
+.map-node { position: absolute; z-index: 4; display: grid; gap: 5px; justify-items: center; color: #fff; font-size: 12px; font-weight: 950; transform: translate(-50%, -21px); }
+.map-node b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px; background: #fff; color: #211922; border: 3px solid #ffefe8; box-shadow: 0 12px 26px rgba(0,0,0,.30), 0 0 0 5px rgba(255,90,31,.20); }
+.map-node em { font-style: normal; padding: 4px 8px; border-radius: 999px; background: rgba(33,25,34,.58); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(8px); box-shadow: 0 8px 18px rgba(0,0,0,.18); }
+.node-1 { left: 13%; top: 66%; } .node-2 { left: 31%; top: 39%; } .node-3 { left: 50%; top: 57%; } .node-4 { left: 74%; top: 36%; } .node-5 { left: 88%; top: 61%; }
 .radar-brief-stack { display: grid; gap: 12px; }
 .brief-card { padding: 18px 20px; }
 .brief-card span { display: inline-flex; margin-bottom: 8px; padding: 4px 9px; border-radius: 999px; background: #f4ebe2; color: #6b625f; font-size: 11px; font-weight: 950; letter-spacing: .08em; }
@@ -371,6 +374,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .radar-card { padding: 0; }
   .radar-card-visual { min-height: 210px; }
   .radar-map-card { min-height: auto; }
+  .radar-map { min-height: 260px; }
+  .map-label { left: 12px; top: 12px; font-size: 11px; }
+  .map-node { font-size: 11px; transform: translate(-50%, -19px); }
+  .map-node b { width: 38px; height: 38px; border-width: 2px; }
   .radar-toc-card ol { grid-template-columns: 1fr; }
   .search-row { flex-direction: column; }
   .search-row input, .search-row button { width: 100%; }

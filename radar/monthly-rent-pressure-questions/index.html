@@ -29,7 +29,7 @@
   <meta property="og:image" content="https://r2cuerdame.github.io/assets/og-card.svg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#101828" />
-  <link rel="stylesheet" href="/main.css?v=48ee1a0421" />
+  <link rel="stylesheet" href="/main.css?v=f943f7ff0e" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LH60Y8V89F"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -71,8 +71,16 @@
     <h2>글 읽기 전에 먼저 보는 현장 루프</h2>
     <p>텍스트를 길게 읽기 전, 이 글이 실제로 확인하려는 동선을 먼저 잡습니다.</p>
     <div class="radar-map" aria-hidden="true">
-      <span class="map-line"></span>
-      <span class="map-label">20분 루프</span>
+      <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none" role="presentation" focusable="false">
+        <defs>
+          <marker id="radar-detail-route-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+            <path d="M 0 0 L 10 5 L 0 10 Z" class="map-route-arrow"></path>
+          </marker>
+        </defs>
+        <path class="map-route-guide" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66"></path>
+        <path class="map-route-path" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66" marker-end="url(#radar-detail-route-arrow)"></path>
+      </svg>
+      <span class="map-label">1→5 현장 순서</span>
       <span class="map-node node-1"><b>1</b><em>출구</em></span>
       <span class="map-node node-2"><b>2</b><em>큰길</em></span>
       <span class="map-node node-3"><b>3</b><em>골목</em></span>
@@ -274,7 +282,7 @@
   <footer class="footer">
     <p><strong>Recuerdame Lab</strong> — 이사·월세·전세·상가 계약 전, 동네 리스크를 먼저 거르는 공개 노트.</p>
     <p class="muted">/radar/는 동네 레이더, /deals/는 별도 구매가이드로 분리해 운영합니다.</p>
-    <p class="muted">마지막 업데이트: <time datetime="2026-05-02T13:51:11+09:00">2026-05-02 13:51 KST</time></p>
+    <p class="muted">마지막 업데이트: <time datetime="2026-05-02T14:17:43+09:00">2026-05-02 14:17 KST</time></p>
   </footer>
 </body>
 </html>
