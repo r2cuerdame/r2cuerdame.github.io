@@ -706,8 +706,10 @@ def radar_experience_block(article: dict) -> str:
             <path d="M 0 0 L 10 5 L 0 10 Z" class="map-route-arrow"></path>
           </marker>
         </defs>
-        <path class="map-route-guide" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66"></path>
-        <path class="map-route-path" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66" marker-end="url(#radar-detail-route-arrow)"></path>
+        <path class="map-route-guide map-route-desktop" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66"></path>
+        <path class="map-route-path map-route-desktop" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66" marker-end="url(#radar-detail-route-arrow)"></path>
+        <path class="map-route-guide map-route-mobile" d="M 17 26 C 32 16 47 18 58 28 C 71 38 82 34 82 47 C 82 65 55 59 38 66 C 48 76 58 88 72 83 L 89 78"></path>
+        <path class="map-route-path map-route-mobile" d="M 17 26 C 32 16 47 18 58 28 C 71 38 82 34 82 47 C 82 65 55 59 38 66 C 48 76 58 88 72 83 L 89 78" marker-end="url(#radar-detail-route-arrow)"></path>
       </svg>
       <span class="map-label">1→5 현장 순서</span>
       <span class="map-node node-1"><b>1</b><em>출구</em></span>
@@ -1526,13 +1528,14 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-map::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 36px 36px; mask-image: radial-gradient(circle at center, #000 40%, transparent 88%); }
 .map-route { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .map-route-guide, .map-route-path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.map-route-mobile { display: none; }
 .map-route-guide { stroke: rgba(255,255,255,.34); stroke-width: 12; }
 .map-route-path { stroke: #ff5a1f; stroke-width: 4.5; filter: drop-shadow(0 0 10px rgba(255,90,31,.52)); }
 .map-route-arrow { fill: #ff5a1f; }
 .map-label { position: absolute; left: 18px; top: 16px; z-index: 3; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); color: #fff; border: 1px solid rgba(255,255,255,.28); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); box-shadow: 0 10px 24px rgba(0,0,0,.16); }
-.map-node { position: absolute; z-index: 4; display: grid; gap: 5px; justify-items: center; color: #fff; font-size: 13px; font-weight: 950; transform: translate(-50%, -21px); }
+.map-node { position: absolute; z-index: 4; display: grid; gap: 6px; justify-items: center; color: #fff; font-size: 14px; font-weight: 950; transform: translate(-50%, -21px); }
 .map-node b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px; background: #fff; color: #211922; border: 3px solid #ffefe8; box-shadow: 0 12px 26px rgba(0,0,0,.30), 0 0 0 5px rgba(255,90,31,.20); }
-.map-node em { font-style: normal; line-height: 1; letter-spacing: -.02em; padding: 5px 10px; border-radius: 999px; background: rgba(33,25,34,.72); border: 1px solid rgba(255,255,255,.20); backdrop-filter: blur(8px); box-shadow: 0 8px 18px rgba(0,0,0,.18); }
+.map-node em { font-style: normal; line-height: 1; letter-spacing: 0; padding: 6px 12px; border-radius: 999px; background: rgba(21,17,22,.86); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(8px); box-shadow: 0 8px 18px rgba(0,0,0,.22); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
 .node-1 { left: 13%; top: 66%; } .node-2 { left: 31%; top: 39%; } .node-3 { left: 50%; top: 57%; } .node-4 { left: 74%; top: 36%; } .node-5 { left: 88%; top: 61%; }
 .radar-brief-stack { display: grid; gap: 12px; }
 .brief-card { padding: 18px 20px; }
@@ -1696,6 +1699,17 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .status-strip div, .shop-summary div { padding: 15px 16px; border-radius: 18px; }
   .deal-grid, .mixed-list { grid-template-columns: 1fr; gap: 12px; }
   .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
+  .radar-map-card { padding: 18px; }
+  .radar-map { min-height: 380px; border-radius: 24px; }
+  .map-route-desktop { display: none; }
+  .map-route-mobile { display: block; }
+  .map-route-guide { stroke-width: 11; }
+  .map-route-path { stroke-width: 4.25; }
+  .map-label { left: 12px; top: 12px; font-size: 12px; padding: 7px 10px; }
+  .node-1 { left: 17%; top: 26%; } .node-2 { left: 58%; top: 28%; } .node-3 { left: 82%; top: 47%; } .node-4 { left: 38%; top: 66%; } .node-5 { left: 72%; top: 83%; }
+  .map-node { font-size: 13.5px; }
+  .map-node b { width: 40px; height: 40px; }
+  .map-node em { padding: 6px 11px; }
   .deal-thumb { min-height: 100%; display: flex; align-items: center; justify-content: center; }
   .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
   .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
