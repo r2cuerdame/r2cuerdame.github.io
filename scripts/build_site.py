@@ -176,8 +176,8 @@ STATIC_PAGES = [
     {
         "path": "/deals/",
         "file": "deals/index.html",
-        "title": "생활가전·재택근무 구매가이드 — Recuerdame Lab",
-        "description": "계절가전, 책상 장비, 음향기기처럼 구매 직전 비교가 필요한 생활·재택 상품을 상황별로 모아 보는 쇼핑픽 랜딩입니다.",
+        "title": "쇼핑픽 구매가이드 — 생활가전·재택근무 비교",
+        "description": "생활가전, 책상 장비, 음향기기처럼 구매 직전 비교가 필요한 상품을 오늘의 추천, 카테고리, 검색으로 빠르게 찾는 쇼핑픽 랜딩입니다.",
         "priority": "0.72",
         "type": "CollectionPage",
         "section": "deals",
@@ -230,6 +230,23 @@ def nav_html(page_path: str) -> str:
     return "\n".join(items)
 
 
+def deals_nav_html(page_path: str) -> str:
+    items = [
+        ("쇼핑픽 홈", "/deals/", "nav-primary"),
+        ("오늘 BEST", "/deals/#today-best", "nav-primary"),
+        ("카테고리", "/deals/#category-blocks", "nav-secondary"),
+        ("검색", "/search/", "nav-action"),
+    ]
+    out = []
+    for index, (name, href, tone) in enumerate(items, start=1):
+        current = ' aria-current="page"' if href == "/deals/" and page_path == "/deals/" else ""
+        out.append(
+            f'      <a class="{tone}" data-nav-order="{index}" href="{href}"{current}>'
+            f'<span>{esc(name)}</span></a>'
+        )
+    return "\n".join(out)
+
+
 def strip_tags(value: str) -> str:
     value = re.sub(r"<script\b[^>]*>.*?</script>", " ", value or "", flags=re.I | re.S)
     value = re.sub(r"<style\b[^>]*>.*?</style>", " ", value, flags=re.I | re.S)
@@ -259,6 +276,9 @@ TABLE_RE = re.compile(r'(<table\b[\s\S]*?</table>)', re.I)
 TABLE_ROW_RE = re.compile(r'<tr\b[^>]*>[\s\S]*?</tr>', re.I)
 TABLE_HEAD_CELL_RE = re.compile(r'<th\b[^>]*>([\s\S]*?)</th>', re.I)
 TABLE_DATA_OPEN_RE = re.compile(r'<td\b([^>]*)>', re.I)
+A_TAG_OPEN_RE = re.compile(r'<a\b(?P<attrs>[^>]*)>', re.I)
+HREF_ATTR_RE = re.compile(r'\s+href\s*=\s*(["\'])(.*?)\1', re.I | re.S)
+TARGET_REL_ATTR_RE = re.compile(r'\s+(?:target|rel)\s*=\s*(?:(["\']).*?\1|[^\s>]+)', re.I | re.S)
 SOURCE_URL_TO_PATH: dict[str, str] = {}
 
 
@@ -335,8 +355,27 @@ def mobile_labeled_table(table_html: str) -> str:
     return TABLE_ROW_RE.sub(add_row_labels, table_html)
 
 
+def normalize_coupang_outbound_links(body: str) -> str:
+    """Force paid outbound Coupang anchors to carry the required rel tokens."""
+    def replace_anchor(match: re.Match[str]) -> str:
+        attrs = match.group("attrs") or ""
+        href_match = HREF_ATTR_RE.search(" " + attrs)
+        if not href_match:
+            return match.group(0)
+        href = html.unescape(href_match.group(2)).strip()
+        if "coupang.com" not in href.lower():
+            return match.group(0)
+        kept = HREF_ATTR_RE.sub("", " " + attrs)
+        kept = TARGET_REL_ATTR_RE.sub("", kept)
+        kept = re.sub(r"\s+", " ", kept).strip()
+        kept = f" {kept}" if kept else ""
+        return f'<a{kept} href="{esc(href)}" target="_blank" rel="sponsored nofollow noopener">'
+
+    return A_TAG_OPEN_RE.sub(replace_anchor, str(body or ""))
+
+
 def localize_public_body(body: str) -> str:
-    out = str(body or "")
+    out = normalize_coupang_outbound_links(body)
     for source_url, path in SOURCE_URL_TO_PATH.items():
         if source_url:
             out = out.replace(source_url, path)
@@ -561,7 +600,11 @@ def layout(page: dict, body: str) -> str:
     description = page["description"]
     keywords = keywords_for(page)
     og_image = page.get("image_url") or f"{BASE}/assets/og-card.svg"
-    nav = nav_html(page["path"])
+    is_deals_page = page.get("section") == "deals" or str(page.get("path") or "").startswith("/deals/")
+    nav = deals_nav_html(page["path"]) if is_deals_page else nav_html(page["path"])
+    brand_label = "쇼핑픽" if is_deals_page else "Recuerdame Lab"
+    brand_sub = "구매 전 비교" if is_deals_page else "계약 전 동네 레이더"
+    body_class = "deals-site" if is_deals_page else "standard-site"
     analytics = analytics_snippet()
     return f'''<!doctype html>
 <html lang="ko">
@@ -598,12 +641,12 @@ def layout(page: dict, body: str) -> str:
 {analytics}
   <script type="application/ld+json">{jsonld_for(page)}</script>
 </head>
-<body>
+<body class="{body_class}">
   <a class="skip-link" href="#content">본문 바로가기</a>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Recuerdame Lab home">
+    <a class="brand" href="{'/deals/' if is_deals_page else '/'}" aria-label="{esc(brand_label)} home">
       <span class="brand-mark">R</span>
-      <span class="brand-copy"><strong>Recuerdame Lab</strong><small>계약 전 동네 레이더</small></span>
+      <span class="brand-copy"><strong>{esc(brand_label)}</strong><small>{esc(brand_sub)}</small></span>
     </a>
     <nav class="nav" aria-label="주요 메뉴">
 {nav}
@@ -732,27 +775,39 @@ def radar_experience_block(article: dict) -> str:
 '''
 
 
-def deal_card(a: dict) -> str:
-    img = a.get("image_url") or "/assets/og-card.svg"
+def deal_card(a: dict, rank: int | None = None) -> str:
+    img = a.get("image_url") or ""
+    card_class = "deal-card" if img else "deal-card text-card"
+    if rank:
+        card_class += " ranked"
     date = parse_dt(a.get("date")).strftime("%m.%d")
     metric = traffic_badge(a["path"])
     deal_url = a.get("primary_deal_url") or ""
     external = ""
     if deal_url:
-        external = f'<a class="deal-button ghost" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인하기</a>'
-    return f'''<article class="deal-card">
-  <a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+        external = f'<a class="deal-price-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인</a>'
+    rank_badge = f'<span class="deal-rank">BEST {rank}</span>' if rank else ""
+    if img:
+        thumb = f'''<a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
     <img src="{esc(img)}" alt="{esc(a['title'])} 대표 상품 이미지" loading="lazy" decoding="async" />
-    <span class="deal-count">{esc(a.get('item_count_hint'))}</span>
-  </a>
+    <span class="deal-count">{esc(a.get('item_count_hint') or '비교글')}</span>
+    {rank_badge}
+  </a>'''
+    else:
+        thumb = f'''<a class="deal-text-badge" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+    <span>{esc(a.get('item_count_hint') or '비교글')}</span>
+    {rank_badge}
+  </a>'''
+    price_hint = esc(a.get("price_hint") or "상세가는 상품 페이지에서 확인")
+    return f'''<article class="{card_class}">
+  {thumb}
   <div class="deal-body">
     <div class="deal-meta"><span>{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
     <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
-    <p>{esc(short_text(a.get('description') or '', 78))}</p>
-    <div class="deal-price">{esc(a.get('price_hint'))}</div>
+    <p>{esc(short_text(a.get('description') or '', 92))}</p>
+    <div class="deal-price"><span>{price_hint}</span>{external}</div>
     <div class="deal-actions">
       <a class="deal-button primary" href="{esc(a['path'])}">비교글 보기</a>
-      {external}
     </div>
   </div>
 </article>'''
@@ -764,12 +819,19 @@ def deal_cards(articles: list[dict]) -> str:
     return "\n".join(deal_card(a) for a in articles)
 
 
+def best_deal_cards(articles: list[dict], limit: int = 6) -> str:
+    prioritized = deals_by_growth_priority(articles)[:limit]
+    if not prioritized:
+        return deal_cards([])
+    return "\n".join(deal_card(a, rank=index) for index, a in enumerate(prioritized, start=1))
+
+
 def article_cards(articles: list[dict], empty: str) -> str:
     if not articles:
         return f'<article class="list-card"><span class="tag">준비중</span><h2>{esc(empty)}</h2><p>새 글이 올라오면 이곳에서 바로 볼 수 있습니다.</p></article>'
     cards = []
     for a in articles:
-        if a.get("section") == "deals" and a.get("image_url"):
+        if a.get("section") == "deals":
             cards.append(deal_card(a))
         elif a.get("section") == "radar":
             cards.append(radar_article_card(a))
@@ -784,7 +846,9 @@ def category_chips(articles: list[dict]) -> str:
         cat = str(a.get("category") or "").strip()
         if cat and cat not in cats:
             cats.append(cat)
-    return "".join(f'<span class="category-chip">{esc(c)}</span>' for c in cats[:6])
+    if not cats:
+        return '<span class="category-chip">비교글 준비중</span>'
+    return "".join(f'<a class="category-chip" href="/search/?q={quote(c)}">{esc(c)}</a>' for c in cats[:8])
 
 
 def search_form(placeholder: str = "상품명, 용도, 예산, 동네 키워드로 검색") -> str:
@@ -954,6 +1018,52 @@ def deal_category_hubs(deals: list[dict]) -> str:
     return "\n".join(cards)
 
 
+def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
+    body = article.get("body_html") or ""
+    names: list[str] = []
+    skip_terms = ("서론", "결론", "마무리", "제품별", "핵심", "비교표", "구매", "추천 기준", "체크")
+    for raw in re.findall(r'<h[23][^>]*>(.*?)</h[23]>', body, flags=re.I | re.S):
+        name = strip_tags(raw)
+        name = re.sub(r"^\s*(?:\d+\s*[.)]|[①-⑩]|BEST\s*\d+\s*[:.-]?)\s*", "", name, flags=re.I)
+        name = re.sub(r"\s+(?:활용도 체크|구매 포인트|추천 이유|장단점|비교|후기).*$", "", name).strip()
+        if not name or any(term in name for term in skip_terms):
+            continue
+        if name not in names:
+            names.append(short_text(name, 46))
+        if len(names) >= limit:
+            break
+    return names
+
+
+def deal_article_quick_block(article: dict) -> str:
+    products = deal_article_product_names(article)
+    product_items = "".join(f"<li>{esc(name)}</li>" for name in products)
+    if not product_items:
+        product_items = "<li>본문에서 후보별 장단점과 가격대를 확인하세요.</li>"
+    external = ""
+    if article.get("primary_deal_url"):
+        external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
+    return f'''<section class="deal-quick-box" aria-label="구매가이드 빠른 결론">
+  <div class="quick-verdict">
+    <span class="tag">빠른 결론</span>
+    <h2>먼저 이렇게 판단하세요</h2>
+    <p>{esc(short_text(article.get('description') or '', 150))}</p>
+  </div>
+  <div class="quick-facts" aria-label="핵심 정보">
+    <div><strong>{esc(article.get('item_count_hint') or '비교글')}</strong><span>후보 수</span></div>
+    <div><strong>{esc(article.get('price_hint') or '상세 확인')}</strong><span>가격 기준</span></div>
+    <div><strong>{esc(article.get('category') or '구매가이드')}</strong><span>카테고리</span></div>
+  </div>
+  <div class="quick-products">
+    <h3>본문에서 비교하는 후보</h3>
+    <ol>{product_items}</ol>
+  </div>
+  <div class="deal-actions quick-actions">
+    <a class="deal-button primary" href="#article-body">비교 내용 바로 보기</a>{external}
+  </div>
+</section>'''
+
+
 def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
     deal_html = article_cards(deals[:3], "구매가이드 글 준비중") if deals else ""
@@ -1006,58 +1116,54 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
 
 def deals_body(deals: list[dict]) -> str:
     return f'''
-<section class="shop-hero">
-  <div class="shop-hero-copy">
-    <p class="eyebrow">Shopping Picks · 구매 직전 비교</p>
-    <h1>생활가전·재택근무 장비를 상황별로 고르는 구매가이드</h1>
-    <p class="lead">상품을 많이 나열하기보다 “내가 쓰는 상황”에 맞춰 실패 가능성을 먼저 줄입니다. 장마, 재택근무, 이동·몰입, 선물용처럼 구매 의도가 분명한 검색어부터 바로 비교하세요.</p>
+<section class="deal-landing-hero">
+  <div class="deal-hero-copy">
+    <p class="eyebrow">Shopping Picks · 쇼핑픽</p>
+    <h1>구매 직전 3분 안에 후보를 좁히는 생활상품 비교</h1>
+    <p class="lead">생활가전, 책상 장비, 음향기기를 화려하게 꾸미지 않고 가격대·사용환경·관리 부담 기준으로 정리합니다. 먼저 오늘의 추천을 보고, 필요하면 카테고리와 검색으로 좁히세요.</p>
+    <aside class="affiliate-disclosure" aria-label="제휴 고지">
+      <strong>제휴 고지</strong>
+      <p>쿠팡 파트너스 활동의 일환으로, 구매 시 이에 따른 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·재고는 상품 페이지에서 다시 확인하세요.</p>
+    </aside>
     <div class="hero-actions">
-      <a class="button primary" href="#buying-situations">상황별로 고르기</a>
-      <a class="button" href="#popular-deals">요즘 본 글</a>
-      <a class="button" href="#all-deals">전체 비교글</a>
+      <a class="button primary" href="#today-best">오늘의 추천 보기</a>
+      <a class="button" href="#category-blocks">카테고리로 찾기</a>
+      <a class="button" href="#deal-search">검색하기</a>
     </div>
-    <div class="category-strip">{category_chips(deals)}</div>
+    <div class="category-strip" aria-label="카테고리 빠른 이동">{category_chips(deals)}</div>
   </div>
-  <div class="hero-pin-stack" aria-label="추천 상품 미리보기">
-    {hero_pins(deals)}
-  </div>
+  <aside class="deal-hero-panel" aria-label="쇼핑픽 운영 기준">
+    <strong>쇼핑픽 기준</strong>
+    <ul class="checklist">
+      <li><strong>실사용 먼저:</strong> 방 크기, 책상 공간, 이동·회의처럼 실제 쓰는 상황을 기준으로 봅니다.</li>
+      <li><strong>가격 확인:</strong> 옵션·재고·배송 조건은 상품 페이지에서 마지막으로 확인합니다.</li>
+      <li><strong>중복 억제:</strong> 같은 상품군은 새 글보다 기존 비교글 업데이트를 우선합니다.</li>
+    </ul>
+  </aside>
 </section>
-<section class="panel soft search-panel">
+<section id="today-best" class="landing-section above-fold-section">
+  <div class="section-title"><p class="eyebrow">Today Best</p><h2>오늘의 추천 BEST</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
+  <div class="deal-grid best-grid">{best_deal_cards(deals)}</div>
+</section>
+<section id="deal-search" class="panel soft search-panel lower-search">
+  <div class="section-title"><h2>원하는 상품만 검색</h2><p>상품명, 용도, 예산, 사용 장소를 넣어 관련 비교글을 찾습니다.</p></div>
   {search_form("예: 원룸 제습기, 모니터암, 사무용 의자, 블루투스 스피커")}
 </section>
-<section class="notice affiliate compact-notice">
-  <strong>제휴 고지</strong>
-  <p>이 페이지의 일부 링크는 쿠팡 파트너스 링크이며, 구매 시 일정액의 수수료를 받을 수 있습니다. 가격·배송·재고는 상품 페이지에서 다시 확인하세요.</p>
-</section>
-<section class="shop-summary" aria-label="쇼핑픽 요약">
-  <div><strong>{len(deals)}개</strong><span>비교글 운영 중</span></div>
-  <div><strong>상황별 허브</strong><span>장마·재택·몰입·선물</span></div>
-  <div><strong>중복 억제</strong><span>같은 상품군 반복 발행 금지</span></div>
-</section>
-<section id="buying-situations" class="landing-section">
-  <div class="section-title"><h2>무엇을 사야 할지보다, 어디에 쓸지부터</h2><p>검색 유입을 노리는 구매상황별 시작점입니다. 이미 있는 비교글은 연결하고, 없는 상품군은 다음 후보로 남깁니다.</p></div>
-  <div class="intent-grid">{deal_intent_hubs(deals)}</div>
-</section>
-<section id="popular-deals" class="grid two landing-section">
-  <article class="panel popular-panel">
-    <div class="section-title"><h2>최근 반응 있는 쇼핑픽</h2><p>GA4 조회가 잡힌 글을 우선 보여주고, 데이터가 없는 글은 색인 대기 상태로 둡니다.</p></div>
-    <ol class="popular-deal-list">{popular_deal_list(deals)}</ol>
-  </article>
-  <article class="panel decision-panel">
-    <div class="section-title"><h2>구매 전 30초 체크</h2><p>본문으로 들어가기 전 이 세 가지만 정하면 비교가 빨라집니다.</p></div>
-    <ul class="checklist">
-      <li><strong>사용 장소:</strong> 원룸, 거실, 재택 책상, 출퇴근, 캠핑처럼 실제 사용 위치를 먼저 정합니다.</li>
-      <li><strong>불편 기준:</strong> 소음, 공간, 눈 피로, 허리 부담, 세척·필터 비용 중 가장 싫은 실패를 고릅니다.</li>
-      <li><strong>가격 확인:</strong> 상세 가격·배송·옵션은 연결된 상품 페이지에서 마지막으로 다시 확인합니다.</li>
-    </ul>
-  </article>
-</section>
-<section class="landing-section">
-  <div class="section-title"><h2>카테고리별 비교글 묶음</h2><p>같은 상품군을 반복 발행하지 않고, 기존 글을 먼저 업데이트하거나 내부 링크로 확장합니다.</p></div>
+<section id="category-blocks" class="landing-section">
+  <div class="section-title"><h2>카테고리별 비교글 묶음</h2><p>생활가전, 재택 장비, 음향기기처럼 같은 의도끼리 묶어 빠르게 이동합니다.</p></div>
   <div class="category-hubs">{deal_category_hubs(deals)}</div>
 </section>
-<section id="all-deals" class="deal-grid">
-  {deal_cards(deals)}
+<section class="landing-section decision-strip" aria-label="구매 전 체크">
+  <div class="section-title"><h2>구매 전 30초 체크</h2><p>본문으로 들어가기 전 이 세 가지만 정하면 비교가 빨라집니다.</p></div>
+  <div class="grid three">
+    <article class="card"><span class="tag">1</span><h2>사용 장소</h2><p>원룸, 거실, 재택 책상, 출퇴근, 캠핑처럼 실제 사용 위치를 먼저 정합니다.</p></article>
+    <article class="card"><span class="tag">2</span><h2>불편 기준</h2><p>소음, 공간, 눈 피로, 허리 부담, 세척·필터 비용 중 가장 싫은 실패를 고릅니다.</p></article>
+    <article class="card"><span class="tag">3</span><h2>마지막 확인</h2><p>상세 가격·배송·옵션·최근 후기는 연결된 상품 페이지에서 다시 확인합니다.</p></article>
+  </div>
+</section>
+<section id="all-deals" class="landing-section">
+  <div class="section-title"><h2>전체 비교글</h2><p>이미 공개된 쇼핑픽 구매가이드 전체 목록입니다.</p></div>
+  <div class="deal-grid">{deal_cards(deals)}</div>
 </section>
 '''
 
@@ -1189,31 +1295,32 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (article.get("tags") or [])[:8])
     notice = ""
     if article.get("is_affiliate"):
-        notice = '<section class="notice affiliate compact-notice"><strong>제휴 고지</strong><p>이 글은 쿠팡 파트너스 활동의 일환으로 작성될 수 있으며, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.</p></section>'
+        notice = '<section class="notice affiliate compact-notice"><strong>제휴 고지</strong><p>쿠팡 파트너스 활동의 일환으로, 구매 시 이에 따른 일정액의 수수료를 제공받을 수 있습니다.</p></section>'
+    quick_block = ""
     image_block = ""
-    if article.get("section") == "deals" and article.get("image_url"):
-        external = ""
-        if article.get("primary_deal_url"):
-            external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">대표 상품 보기</a>'
-        image_block = f'''<section class="article-product-hero">
+    if article.get("section") == "deals":
+        article_class = "article-page deal-article"
+        quick_block = deal_article_quick_block(article)
+        if article.get("image_url"):
+            image_block = f'''<section class="article-product-hero">
   <img src="{esc(article['image_url'])}" alt="{esc(article['title'])} 대표 상품 이미지" loading="eager" decoding="async" />
   <div>
-    <span class="tag">{esc(article.get('item_count_hint'))}</span>
-    <h2>사진으로 먼저 보고, 아래에서 후보별로 비교하세요.</h2>
-    <p>{esc(article.get('price_hint'))}</p>
-    <div class="deal-actions"><a class="deal-button primary" href="#article-body">본문 비교 보기</a>{external}</div>
+    <span class="tag">{esc(article.get('item_count_hint') or '비교글')}</span>
+    <h2>대표 이미지와 후보를 확인한 뒤 본문에서 조건을 비교하세요.</h2>
+    <p>{esc(article.get('price_hint') or '상세가는 상품 페이지에서 확인')}</p>
   </div>
 </section>'''
+    else:
+        article_class = "article-page"
     visual_block = ""
-    article_class = "article-page"
     if article.get("section") == "radar":
         visual_block = radar_experience_block(article)
         article_class += " radar-article"
 
     related_block = ""
     if article.get("section") == "deals":
-        related_block = f'''<section class="related-radar">
-  <h2>비슷한 구매가이드 찾기</h2>
+        related_block = f'''<section class="related-radar deal-related-search">
+  <h2>다른 비교글 찾기</h2>
   {search_form("예: 같은 용도, 예산, 브랜드, 생활가전")}
 </section>'''
     elif article.get("section") == "radar":
@@ -1236,6 +1343,7 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     <div class="tag-row">{tags}</div>
   </header>
   {notice}
+  {quick_block}
   {visual_block}
   {image_block}
   <section id="article-body" class="article-content">
@@ -1469,6 +1577,47 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .card-meta, .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 800; }
 .traffic-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-weight: 950; font-size: 12px; white-space: nowrap; }
 .text-link { color: var(--orange-dark); font-weight: 950; display: inline-flex; align-items: center; min-height: 44px; }
+.deals-site { background: #f7f8fb; }
+.deals-site .site-header { background: rgba(255,255,255,.96); }
+.deals-site main { width: min(1180px, calc(100% - 32px)); }
+.deal-landing-hero {
+  display: grid; grid-template-columns: minmax(0, 1.28fr) minmax(280px, .72fr); gap: clamp(18px, 4vw, 42px);
+  align-items: stretch; padding: clamp(34px, 6vw, 64px) 0 18px;
+}
+.deal-hero-copy, .deal-hero-panel, .affiliate-disclosure, .deal-quick-box {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 12px 30px rgba(15, 23, 42, .06);
+}
+.deal-hero-copy { padding: clamp(24px, 4vw, 42px); }
+.deal-hero-copy h1 { max-width: 880px; font-size: clamp(36px, 5.6vw, 66px); }
+.deal-hero-panel { padding: 24px; align-self: end; }
+.deal-hero-panel > strong { display: block; font-size: 22px; letter-spacing: -.03em; margin-bottom: 12px; }
+.affiliate-disclosure { margin: 22px 0 0; padding: 14px 16px; background: #fff7ed; border-color: #fed7aa; }
+.affiliate-disclosure strong { color: var(--orange-dark); }
+.affiliate-disclosure p { margin: 4px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; }
+.above-fold-section { margin-top: 18px; }
+.deal-grid.best-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.deal-card.ranked { border-color: #fed7aa; }
+.deal-rank { position: absolute; right: 12px; top: 12px; padding: 7px 10px; border-radius: 999px; background: #111827; color: #fff; font-size: 12px; font-weight: 950; }
+.deal-text-badge { position: relative; min-height: 150px; display: flex; align-items: center; justify-content: center; padding: 18px; background: linear-gradient(135deg, #fff7ed, #ffffff); border-bottom: 1px solid var(--line); color: var(--orange-dark); font-weight: 950; text-align: center; }
+.deal-price { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.deal-price-link { display: inline-flex; align-items: center; min-height: 34px; padding: 0 10px; border-radius: 999px; background: #fff7ed; border: 1px solid #fed7aa; color: var(--orange-dark); font-size: 12px; font-weight: 950; text-decoration: none; }
+.lower-search { margin-top: 18px; }
+.decision-strip .card { background: #fff; }
+.deal-quick-box { margin: 20px 0; padding: clamp(20px, 3.5vw, 30px); display: grid; gap: 18px; }
+.deal-quick-box h2 { margin: 8px 0 8px; font-size: clamp(26px, 3.4vw, 36px); }
+.deal-quick-box p { margin: 0; color: #4b5563; }
+.quick-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.quick-facts div { padding: 14px; border-radius: 18px; background: #f9fafb; border: 1px solid #e5e7eb; }
+.quick-facts strong, .quick-facts span { display: block; }
+.quick-facts strong { color: #111827; font-size: 15px; }
+.quick-facts span { color: #6b7280; font-size: 12px; font-weight: 900; margin-top: 3px; }
+.quick-products { border-top: 1px solid #e5e7eb; padding-top: 16px; }
+.quick-products h3 { margin: 0 0 8px; font-size: 19px; }
+.quick-products ol { margin: 0; padding-left: 1.25em; columns: 2; }
+.quick-products li { margin: 5px 0; font-weight: 850; }
+.quick-actions { margin-top: 0; }
+.deal-article .article-hero { padding-bottom: 8px; }
+.deal-article .article-product-hero { margin-top: 16px; }
 .shop-hero {
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: clamp(20px, 5vw, 56px);
   align-items: center; padding: clamp(34px, 6vw, 66px) 0 22px;
@@ -1668,8 +1817,12 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
   .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
   .lead { font-size: 17px; line-height: 1.62; }
-  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .article-product-hero, .radar-card, .radar-experience-grid { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid { grid-template-columns: 1fr; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
+  .deal-landing-hero { gap: 14px; padding-top: 24px; }
+  .deal-hero-copy, .deal-hero-panel, .deal-quick-box { border-radius: 22px; }
+  .deal-grid.best-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .quick-products ol { columns: 1; }
   .category-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .category-chip { flex: 0 0 auto; }
   .hero-pin-stack { min-height: auto; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -1698,6 +1851,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .status-strip, .shop-summary { grid-template-columns: 1fr; gap: 8px; }
   .status-strip div, .shop-summary div { padding: 15px 16px; border-radius: 18px; }
   .deal-grid, .mixed-list { grid-template-columns: 1fr; gap: 12px; }
+  .deal-grid.best-grid { grid-template-columns: 1fr; }
+  .deal-hero-copy { padding: 20px; }
+  .affiliate-disclosure { margin-top: 16px; }
+  .quick-facts { gap: 8px; }
   .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
   .radar-map-card { padding: 18px; }
   .radar-map { min-height: 420px; border-radius: 24px; }
@@ -1712,6 +1869,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .map-node em { padding: 7px 13px; }
   .deal-thumb { min-height: 100%; display: flex; align-items: center; justify-content: center; }
   .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
+  .deal-text-badge { min-height: 132px; padding: 10px; font-size: 12px; border-bottom: 0; border-right: 1px solid var(--line); }
   .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
   .deal-body { min-width: 0; padding: 14px; gap: 8px; }
   .deal-meta { align-items: flex-start; flex-direction: column; gap: 4px; font-size: 11px; }
