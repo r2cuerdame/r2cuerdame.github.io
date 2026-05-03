@@ -4,4 +4,4 @@ Site: https://r2cuerdame.github.io/
 Language: Korean
 Primary purpose: Dongne Radar — moving, rent, commute, living-area, on-site-check, and commercial-lease risk notes.
 Separate section: /deals/ for lifestyle shopping picks and affiliate-disclosed comparisons.
-Updated: 2026-05-03T04:36:27+09:00
+Updated: 2026-05-03T17:32:21+09:00

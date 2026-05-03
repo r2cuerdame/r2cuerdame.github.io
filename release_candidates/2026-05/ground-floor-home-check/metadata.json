@@ -1,0 +1,56 @@
+{
+  "slug": "ground-floor-home-check",
+  "title": "반지하가 아닌 1층집, 계속 볼지 보류할지 보는 14분",
+  "description": "반지하가 아닌 1층 전월세 후보를 볼 때 현관 앞 5m, 창문 시선, 수거·택배 동선, 우천 흔적, 야간 소음을 14분 루프로 나눠 계속 보기·다시 보기·보류를 판단하는 동네 레이더 글.",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-05-01T03:47:15+09:00",
+  "publish_ready_at": "2026-05-08T03:47:15+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-05/ground-floor-home-check/50-copy.md",
+  "reader_qa_stage": "articles/2026-05/ground-floor-home-check/60-reader-qa.md",
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-05-01T03:47:15+09:00",
+  "updated_at": "2026-05-03T17:32:19+09:00",
+  "reader_qa": {
+    "score": 95,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 5566,
+    "reader_visual_count": 12,
+    "reviewed_at": "2026-05-03T04:39:12+09:00",
+    "hourly_internal_links_polish_at": "2026-05-01T17:39:51+09:00",
+    "hourly_internal_links_count": 4,
+    "hourly_backlog_visual_polish_at": "2026-05-01T21:42:10+09:00",
+    "hourly_backlog_visual_polish_note": "재방문 시간대 선택표를 추가해 1층 후보의 남은 빈칸을 시간대별 확인 행동으로 연결함",
+    "hourly_backlog_duplicate_polish_at": "2026-05-02T16:40:32+09:00",
+    "hourly_backlog_duplicate_polish_note": "헷갈리기 쉬운 후보와 분리하기 figure를 추가해 1층집을 창문 거리·주차장 출입구·공용부 관리 후보와 구분함",
+    "hourly_backlog_floor_compare_polish_at": "2026-05-03T04:37:50+09:00",
+    "hourly_backlog_floor_compare_polish_note": "낮은 층/높은 층 비교 figure와 공개된 4층 계단형 내부링크를 추가해 다음 발행 후보의 층수 선택 결정상황을 선명하게 함"
+  },
+  "last_hourly_polish": {
+    "at": "2026-05-03T04:37:50+09:00",
+    "type": "backlog_reduction_floor_choice_internal_link",
+    "note": "ready 후보 상한 초과로 새 후보 생성 없이 ground-floor 후보에 1층/4층 비교 카드와 공개된 4층 계단형 내부링크를 추가함"
+  },
+  "pages_published_at": "2026-05-03T17:32:19+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/ground-floor-home-check/"
+}
