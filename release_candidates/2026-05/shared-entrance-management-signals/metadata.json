@@ -1,0 +1,53 @@
+{
+  "slug": "shared-entrance-management-signals",
+  "title": "공동현관 앞 30초, 살 동네의 관리 신호를 읽는 법",
+  "description": "전월세 후보를 볼 때 공동현관·우편함·택배·분리수거·공지판 신호를 30초 루프로 나눠 계속 보기, 다시 보기, 보류를 판단하는 동네 레이더 글.",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-05-01T04:48:49+09:00",
+  "publish_ready_at": "2026-05-08T04:48:49+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-05/shared-entrance-management-signals/50-copy.md",
+  "reader_qa_stage": "articles/2026-05/shared-entrance-management-signals/60-reader-qa.md",
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-05-01T04:48:49+09:00",
+  "updated_at": "2026-05-04T00:28:27+09:00",
+  "reader_qa": {
+    "score": 94,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 5791,
+    "reader_visual_count": 11,
+    "reviewed_at": "2026-05-03T02:37:45+09:00",
+    "hourly_internal_links_polish_at": "2026-05-01T17:39:51+09:00",
+    "hourly_internal_links_count": 3,
+    "hourly_backlog_polish_at": "2026-05-03T02:36:55+09:00",
+    "hourly_comparison_visual_count": 1,
+    "hourly_life_rhythm_visual_count": 1
+  },
+  "last_hourly_polish": {
+    "at": "2026-05-03T02:36:55+09:00",
+    "type": "backlog_reduction_life_rhythm_target_polish",
+    "note": "새 후보 생성 없이 공동현관 후보에 생활 리듬별 우선 질문 섹션/카드를 추가해 늦은 귀가·택배 많은 생활·재택·신혼/예비신혼·짐 많은 이동의 보류선을 분리함"
+  },
+  "pages_published_at": "2026-05-04T00:28:27+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/shared-entrance-management-signals/"
+}
