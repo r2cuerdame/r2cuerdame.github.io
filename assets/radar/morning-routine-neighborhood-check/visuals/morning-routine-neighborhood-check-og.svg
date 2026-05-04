@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="t d">
+<title id="t">아침 8시 동선 · 등교·수거·출근 충돌</title><desc id="d">Dongne Radar cover for morning-routine-neighborhood-check</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#052e16"/><stop offset="100%" stop-color="#020617"/></linearGradient></defs>
+<rect width="1200" height="675" fill="url(#g)" rx="28"/>
+<rect x="60.0" y="81.0" width="1080.0" height="513.0" rx="24" fill="none" stroke="#4ade80" stroke-opacity="0.35"/>
+<text x="96.0" y="182.2" fill="#4ade80" font-size="54.0" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">DONGNE RADAR</text>
+<text x="96.0" y="324.0" fill="#f8fafc" font-size="67.5" font-weight="800" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">아침 8시 동선</text>
+<text x="96.0" y="418.5" fill="#cbd5e1" font-size="47.3" font-weight="600" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">등교·수거·출근 충돌</text>
+<path d="M 888.0 378.0 L 1080.0 378.0 M 888.0 418.5 L 1080.0 418.5 M 888.0 459.0 L 1080.0 459.0" stroke="#4ade80" stroke-width="8" stroke-linecap="round"/>
+</svg>

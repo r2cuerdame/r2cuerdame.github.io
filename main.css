@@ -129,62 +129,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; }
 .radar-card, .radar-card * { overflow-wrap: break-word; word-break: keep-all; }
-.radar-card-visual { position: relative; display: block; min-height: 250px; overflow: hidden; isolation: isolate; padding: 22px; color: #fff; background: linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); }
-.radar-card.theme-commute .radar-card-visual { background: radial-gradient(circle at 18% 18%, rgba(147,197,253,.35), transparent 24%), linear-gradient(135deg, #0f172a, #1d4ed8 58%, #38bdf8); }
-.radar-card.theme-night .radar-card-visual { background: radial-gradient(circle at 74% 18%, rgba(255,214,165,.28), transparent 25%), linear-gradient(135deg, #160f1d, #3b1f2b 55%, #ff6b2b); }
-.radar-card.theme-fee .radar-card-visual { background: radial-gradient(circle at 18% 22%, rgba(255,255,255,.24), transparent 23%), linear-gradient(135deg, #2b2118, #7a4f12 56%, #ffb020); }
-.radar-card.theme-pressure .radar-card-visual { background: radial-gradient(circle at 75% 18%, rgba(186,230,253,.24), transparent 24%), linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
-.radar-card.theme-filter .radar-card-visual { background: radial-gradient(circle at 22% 18%, rgba(187,247,208,.22), transparent 23%), linear-gradient(135deg, #15251d, #22543d 55%, #0f8b57); }
-.radar-card.theme-cafe .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(254,240,138,.23), transparent 23%), linear-gradient(135deg, #17152b, #3b2f74 55%, #0f8b57); }
-.radar-card-visual::before { content: ""; position: absolute; inset: 16px; z-index: -2; border-radius: 28px; border: 1px solid rgba(255,255,255,.18); background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
-.radar-card-visual::after { content: ""; position: absolute; right: -54px; bottom: -70px; z-index: -1; width: 230px; height: 230px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.24), rgba(255,255,255,.05) 48%, transparent 68%); pointer-events: none; }
-.radar-thumb-label { position: relative; z-index: 3; display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); font-size: 11px; font-weight: 950; letter-spacing: .08em; }
-.radar-thumb-title { position: relative; z-index: 3; display: block; max-width: 205px; margin-top: 14px; font-size: clamp(29px, 4vw, 44px); line-height: .98; letter-spacing: -.06em; text-shadow: 0 14px 34px rgba(0,0,0,.28); }
-.radar-thumb-subline { position: relative; z-index: 3; display: block; max-width: 220px; margin-top: 9px; color: rgba(255,255,255,.84); font-size: 13px; line-height: 1.35; font-weight: 850; }
-.radar-thumb-art { position: absolute; z-index: 2; right: 16px; bottom: 18px; width: min(58%, 220px); height: 58%; min-height: 132px; pointer-events: none; }
-.scene-art, .scene-art > * { position: absolute; display: block; box-sizing: border-box; }
-.scene-art { inset: 0; }
-.radar-card-badge { position: absolute; z-index: 4; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
-.time-card { left: 8px; top: 4px; padding: 10px 12px; border-radius: 18px; background: #fff; color: #0f172a; font-weight: 950; font-size: 26px; box-shadow: 0 18px 34px rgba(0,0,0,.25); }
-.rail-line { left: 12px; right: 10px; top: 78px; height: 7px; border-radius: 999px; background: linear-gradient(90deg, #fff, #93c5fd); box-shadow: 0 0 20px rgba(147,197,253,.7); }
-.station { top: 62px; min-width: 48px; padding: 7px 8px; border-radius: 999px; background: rgba(15,23,42,.78); border: 1px solid rgba(255,255,255,.28); color: #fff; font-size: 11px; text-align: center; font-weight: 950; }
-.station-a { left: 0; } .station-b { left: 47%; transform: translateX(-50%); } .station-c { right: 0; }
-.rain-mark { right: 18px; top: 12px; width: 46px; height: 72px; transform: rotate(18deg); background: repeating-linear-gradient(90deg, rgba(255,255,255,.82) 0 3px, transparent 3px 12px); opacity: .55; }
-.lamp-post { left: 22px; top: 18px; width: 10px; height: 92px; border-radius: 999px; background: rgba(255,255,255,.8); }
-.lamp-post::before { content: ""; position: absolute; left: -16px; top: -8px; width: 46px; height: 16px; border-radius: 999px; background: #ffe2a8; box-shadow: 0 0 24px rgba(255,226,168,.9); }
-.lamp-light { left: -18px; top: 18px; width: 96px; height: 104px; transform: skewX(-12deg); background: linear-gradient(120deg, rgba(255,226,168,.38), transparent 72%); clip-path: polygon(38% 0, 72% 0, 100% 100%, 0 100%); }
-.alley-road { left: 42px; right: 8px; bottom: 2px; height: 56px; transform: skewX(-20deg); border-radius: 18px; background: linear-gradient(90deg, rgba(20,16,24,.92), rgba(255,255,255,.14)); }
-.window-stack { right: 12px; top: 15px; width: 54px; height: 72px; border-radius: 16px; background: repeating-linear-gradient(180deg, rgba(255,238,190,.95) 0 9px, transparent 9px 20px), rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2); }
-.noise-wave { right: 70px; top: 42px; width: 42px; height: 42px; border: 2px solid rgba(255,255,255,.7); border-left-color: transparent; border-bottom-color: transparent; border-radius: 50%; transform: rotate(45deg); } .wave-two { right: 60px; top: 32px; width: 66px; height: 66px; opacity: .45; }
-.street-chip, .cost-chip { padding: 6px 9px; border-radius: 999px; background: rgba(255,255,255,.9); color: #211922; font-size: 11px; font-weight: 950; box-shadow: 0 10px 20px rgba(0,0,0,.18); }
-.street-chip.chip-a { left: 4px; bottom: 12px; } .street-chip.chip-b { left: 68px; bottom: 42px; } .street-chip.chip-c { right: 2px; bottom: 14px; }
-.receipt { left: 16px; top: 4px; width: 126px; min-height: 132px; padding: 14px 12px 16px; border-radius: 18px 18px 8px 8px; background: #fffaf4; color: #2b2118; box-shadow: 0 18px 32px rgba(0,0,0,.22); }
-.receipt::after { content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 12px; background: repeating-linear-gradient(90deg, #fffaf4 0 12px, transparent 12px 24px); }
-.receipt b, .receipt i { display: block; font-style: normal; } .receipt b { margin-bottom: 10px; font-size: 16px; } .receipt i { padding: 5px 0; border-top: 1px dashed rgba(43,33,24,.22); color: #705036; font-size: 12px; font-weight: 900; }
-.stamp { right: 8px; bottom: 28px; width: 76px; height: 76px; display: grid; place-items: center; border: 4px solid rgba(255,255,255,.9); border-radius: 50%; color: #fff; font-size: 17px; font-weight: 950; transform: rotate(-13deg); }
-.coin { right: 26px; top: 20px; width: 46px; height: 46px; border-radius: 50%; background: #ffd166; box-shadow: inset 0 0 0 7px rgba(255,255,255,.25), 0 12px 22px rgba(0,0,0,.22); } .coin-b { right: 2px; top: 52px; transform: scale(.72); }
-.calc { left: 16px; top: 8px; width: 112px; height: 128px; padding: 13px; border-radius: 22px; background: #f8fbff; box-shadow: 0 18px 34px rgba(0,0,0,.22); display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-.calc b { grid-column: 1 / -1; display: block; padding: 7px 8px; border-radius: 10px; background: #172033; color: #fff; font-size: 13px; } .calc i { border-radius: 9px; background: #c7d2fe; }
-.loss-line { right: 2px; top: 8px; padding: 10px 12px; border-radius: 18px; background: #fff; color: #1d4ed8; font-size: 24px; font-weight: 950; box-shadow: 0 16px 30px rgba(0,0,0,.2); }
-.cost-chip.chip-a { right: 66px; bottom: 54px; } .cost-chip.chip-b { right: 10px; bottom: 36px; } .cost-chip.chip-c { right: 46px; bottom: 2px; }
-.funnel { left: 18px; top: 5px; width: 112px; height: 122px; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(187,247,208,.9)); clip-path: polygon(0 0, 100% 0, 66% 52%, 66% 100%, 34% 100%, 34% 52%); filter: drop-shadow(0 18px 26px rgba(0,0,0,.22)); }
-.visual-checklist { right: 4px; top: 12px; width: 94px; padding: 10px; border-radius: 18px; background: rgba(255,255,255,.92); color: #15251d; box-shadow: 0 16px 28px rgba(0,0,0,.18); } .visual-checklist i { display: block; padding: 5px 0 5px 18px; position: relative; font-style: normal; font-size: 12px; font-weight: 950; } .visual-checklist i::before { content: ""; position: absolute; left: 0; top: 10px; width: 9px; height: 5px; border-left: 2px solid #0f8b57; border-bottom: 2px solid #0f8b57; transform: rotate(-45deg); }
-.reject-card, .keep-card { bottom: 6px; padding: 8px 10px; border-radius: 14px; font-size: 13px; font-weight: 950; box-shadow: 0 12px 22px rgba(0,0,0,.2); } .reject-card { left: 4px; background: #2f2724; color: #fff; transform: rotate(-8deg); } .keep-card { right: 12px; background: #fff; color: #0f8b57; transform: rotate(7deg); }
-.awning { left: 14px; top: 12px; width: 132px; height: 36px; border-radius: 16px 16px 6px 6px; background: repeating-linear-gradient(90deg, #fff 0 18px, #ff6b2b 18px 36px); box-shadow: 0 14px 28px rgba(0,0,0,.2); }
-.storefront { left: 22px; top: 46px; width: 116px; height: 82px; border-radius: 12px 12px 20px 20px; background: rgba(255,255,255,.92); color: #17152b; display: grid; place-items: center; font-size: 17px; box-shadow: 0 16px 28px rgba(0,0,0,.18); }
-.cup { right: 10px; bottom: 6px; width: 64px; height: 68px; border-radius: 12px 12px 26px 26px; background: #fffaf4; box-shadow: inset -10px 0 rgba(15,139,87,.16), 0 16px 28px rgba(0,0,0,.2); } .cup::after { content: ""; position: absolute; right: -15px; top: 18px; width: 24px; height: 24px; border: 7px solid #fffaf4; border-left: 0; border-radius: 0 18px 18px 0; }
-.footfall { width: 12px; height: 12px; border-radius: 50%; background: #bbf7d0; box-shadow: 0 0 0 5px rgba(187,247,208,.18); } .dot-a { left: 0; bottom: 26px; } .dot-b { left: 26px; bottom: 2px; } .dot-c { left: 58px; bottom: 20px; }
-.rival-sign { right: 4px; top: 26px; padding: 6px 8px; border-radius: 999px; background: #17152b; color: #fff; font-size: 11px; font-weight: 950; border: 1px solid rgba(255,255,255,.28); }
-.radar-card-body { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
-.radar-card h2 { margin: 2px 0 0; font-size: clamp(22px, 3vw, 31px); }
-.radar-card p { margin: 0; }
-.radar-card-hook { padding: 9px 11px; border-radius: 16px; background: #fff7ed; border: 1px solid #ffd2b8; color: #9a3412; font-size: 14px; line-height: 1.45; font-weight: 950; }
-.radar-card-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
-.radar-card-actions span { display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
-.radar-card .text-link { width: fit-content; min-height: 40px; margin-top: auto; padding: 0 13px; border-radius: 14px; background: var(--ink); color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(33,25,34,.13); }
-.radar-card .text-link:hover { background: var(--orange); color: #fff; }
-.radar-latest-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); align-items: stretch; }
-.radar-latest-grid .radar-card { display: flex; flex-direction: column; min-height: 100%; }
+.radar-card-visual { display: block; overflow: hidden; border-radius: 24px; background: #0f172a; }
+.radar-card-visual picture, .radar-card-visual img { display: block; width: 100%; height: auto; }
+.radar-card-visual img { aspect-ratio: 16 / 9; object-fit: cover; }
 .radar-latest-grid .radar-card-visual { min-height: 210px; width: 100%; flex: 0 0 auto; }
 .radar-latest-grid .radar-card-body { min-width: 0; padding: 22px; flex: 1; }
 .radar-latest-grid .card-meta { gap: 8px; }
@@ -470,10 +417,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
   .radar-card { padding: 0; }
-  .radar-card-visual { min-height: 236px; padding: 19px; }
-  .radar-thumb-title { max-width: 166px; font-size: clamp(27px, 8.1vw, 36px); }
-  .radar-thumb-subline { max-width: 152px; font-size: 12px; line-height: 1.32; }
-  .radar-thumb-art { width: min(45%, 168px); right: 10px; bottom: 22px; min-height: 126px; }
+    .radar-card-visual { min-height: 0; }
   .time-card { font-size: 21px; padding: 8px 10px; }
   .rail-line { top: 82px; }
   .station { min-width: 42px; padding: 6px 7px; font-size: 10px; }

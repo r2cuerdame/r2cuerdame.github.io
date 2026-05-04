@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="t d">
+<title id="t">출근길 피로 15분 · 앱 시간의 사각지대</title><desc id="d">Dongne Radar cover for commute-fatigue-neighborhood-check</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1f2937"/><stop offset="100%" stop-color="#020617"/></linearGradient></defs>
+<rect width="1200" height="675" fill="url(#g)" rx="28"/>
+<rect x="60.0" y="81.0" width="1080.0" height="513.0" rx="24" fill="none" stroke="#f59e0b" stroke-opacity="0.35"/>
+<text x="96.0" y="182.2" fill="#f59e0b" font-size="54.0" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">DONGNE RADAR</text>
+<text x="96.0" y="324.0" fill="#f8fafc" font-size="67.5" font-weight="800" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">출근길 피로 15분</text>
+<text x="96.0" y="418.5" fill="#cbd5e1" font-size="47.3" font-weight="600" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">앱 시간의 사각지대</text>
+<path d="M 888.0 378.0 L 1080.0 378.0 M 888.0 418.5 L 1080.0 418.5 M 888.0 459.0 L 1080.0 459.0" stroke="#f59e0b" stroke-width="8" stroke-linecap="round"/>
+</svg>
