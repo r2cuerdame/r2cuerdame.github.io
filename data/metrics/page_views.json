@@ -12,7 +12,7 @@
     },
     "/deals/": {
       "active_users": 1,
-      "views": 10
+      "views": 15
     },
     "/deals/2026-robot-vacuum-best4/": {
       "active_users": 1,
@@ -26,9 +26,13 @@
       "active_users": 1,
       "views": 1
     },
-    "/deals/재택근무-사무용-의자-추천-best-5-허리-편한-모델-위주-ac5c9f75/": {
+    "/deals/모니터-조명-추천-top-5-야간-작업-눈-피로-줄이는-제품-85cf2710/": {
       "active_users": 1,
       "views": 1
+    },
+    "/deals/재택근무-사무용-의자-추천-best-5-허리-편한-모델-위주-ac5c9f75/": {
+      "active_users": 1,
+      "views": 2
     },
     "/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/": {
       "active_users": 1,
@@ -40,7 +44,7 @@
     },
     "/radar/": {
       "active_users": 1,
-      "views": 12
+      "views": 16
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -54,9 +58,13 @@
       "active_users": 1,
       "views": 1
     },
+    "/radar/night-noise-walk-check/": {
+      "active_users": 1,
+      "views": 1
+    },
     "/search/": {
       "active_users": 1,
-      "views": 5
+      "views": 6
     }
   },
   "property_configured": true,
@@ -66,12 +74,12 @@
     {
       "active_users": 1,
       "path": "/radar/",
-      "views": 12
+      "views": 16
     },
     {
       "active_users": 1,
       "path": "/deals/",
-      "views": 10
+      "views": 15
     },
     {
       "active_users": 3,
@@ -86,7 +94,12 @@
     {
       "active_users": 1,
       "path": "/search/",
-      "views": 5
+      "views": 6
+    },
+    {
+      "active_users": 1,
+      "path": "/deals/재택근무-사무용-의자-추천-best-5-허리-편한-모델-위주-ac5c9f75/",
+      "views": 2
     },
     {
       "active_users": 1,
@@ -115,7 +128,7 @@
     },
     {
       "active_users": 1,
-      "path": "/deals/재택근무-사무용-의자-추천-best-5-허리-편한-모델-위주-ac5c9f75/",
+      "path": "/deals/모니터-조명-추천-top-5-야간-작업-눈-피로-줄이는-제품-85cf2710/",
       "views": 1
     },
     {
@@ -132,7 +145,12 @@
       "active_users": 1,
       "path": "/radar/monthly-rent-pressure-questions/",
       "views": 1
+    },
+    {
+      "active_users": 1,
+      "path": "/radar/night-noise-walk-check/",
+      "views": 1
     }
   ],
-  "updated_at": "2026-05-02T12:07:04+09:00"
+  "updated_at": "2026-05-04T16:51:36+09:00"
 }
