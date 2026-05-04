@@ -81,6 +81,8 @@ h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.05
 h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .lead { color: #5f5652; font-size: clamp(18px, 2.1vw, 23px); max-width: 850px; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.hero-links { margin-top: 12px; display: flex; gap: 8px; align-items: center; color: var(--muted); }
+.hero-links .text-link { font-weight: 700; }
 .button, .deal-button {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 48px; padding: 0 18px; border-radius: 16px;
@@ -258,6 +260,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .shop-hero-copy h1 { max-width: 760px; }
 .category-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.category-accordion summary { cursor: pointer; font-weight: 850; color: var(--ink); }
+.category-accordion[open] summary { margin-bottom: 4px; }
 .category-chip { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: #4b423f; font-weight: 900; font-size: 13px; }
 .hero-pin-stack { position: relative; min-height: 380px; }
 .hero-pin { position: absolute; display: block; width: 58%; overflow: hidden; border-radius: 30px; background: #fff; box-shadow: var(--shadow); border: 8px solid #fff; }
