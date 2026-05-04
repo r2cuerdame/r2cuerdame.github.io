@@ -143,22 +143,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; border-radius: var(--radar-card-radius); box-shadow: var(--radar-thumb-card-shadow); }
 .radar-card, .radar-card * { overflow-wrap: break-word; word-break: keep-all; }
-.radar-card-visual { position: relative; display: block; min-height: var(--radar-thumb-min-height); overflow: hidden; isolation: isolate; padding: var(--radar-thumb-padding); color: #fff; background: linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); }
-.radar-card.theme-commute .radar-card-visual { background: linear-gradient(135deg, #0f172a, #1d4ed8 58%, #38bdf8); }
-.radar-card.theme-night .radar-card-visual { background: linear-gradient(135deg, #160f1d, #3b1f2b 55%, #ff6b2b); }
-.radar-card.theme-fee .radar-card-visual { background: linear-gradient(135deg, #2b2118, #7a4f12 56%, #ffb020); }
-.radar-card.theme-pressure .radar-card-visual { background: linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
-.radar-card.theme-filter .radar-card-visual { background: linear-gradient(135deg, #15251d, #22543d 55%, #0f8b57); }
-.radar-card.theme-cafe .radar-card-visual { background: linear-gradient(135deg, #17152b, #3b2f74 55%, #0f8b57); }
-.radar-card-visual::before { content: ""; position: absolute; inset: 16px; z-index: -2; border-radius: var(--radar-thumb-radius); border: var(--radar-frame-border); background-image: linear-gradient(var(--radar-frame-grid) 1px, transparent 1px), linear-gradient(90deg, var(--radar-frame-grid) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
-.radar-card-visual::after { content: ""; position: absolute; right: -54px; bottom: -70px; z-index: -1; width: 230px; height: 230px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.24), rgba(255,255,255,.05) 48%, transparent 68%); pointer-events: none; }
-.radar-thumb-label { position: relative; z-index: 3; display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); font-size: 11px; font-weight: 950; letter-spacing: .08em; }
-.radar-thumb-title { position: relative; z-index: 3; display: block; max-width: 205px; margin-top: 14px; font-size: clamp(29px, 4vw, 44px); line-height: .98; letter-spacing: -.06em; text-shadow: 0 14px 34px rgba(0,0,0,.28); }
-.radar-thumb-subline { position: relative; z-index: 3; display: block; max-width: 220px; margin-top: 9px; color: rgba(255,255,255,.84); font-size: 13px; line-height: 1.35; font-weight: 850; }
-.radar-thumb-art { position: absolute; z-index: 2; right: var(--radar-thumb-art-right); bottom: var(--radar-thumb-art-bottom); width: var(--radar-thumb-art-width); height: var(--radar-thumb-art-height); min-height: var(--radar-thumb-art-min-height); pointer-events: none; }
-.radar-card-badge { position: absolute; z-index: 4; left: 18px; bottom: 18px; display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(10px); color: #fff; font-size: 12px; font-weight: 950; }
-/* Deprecated: legacy scene-art decorators are frozen and should not be used for new radar cards.
-   New thumbnails must be file assets rendered via .radar-thumb-image in assets/radar/radar-thumbs.css. */
+.radar-card-visual { display: block; overflow: hidden; border-radius: 24px; background: #0f172a; }
+.radar-card-visual picture, .radar-card-visual img { display: block; width: 100%; height: auto; }
+.radar-card-visual img { aspect-ratio: 16 / 9; object-fit: cover; }
+/* Deprecated: legacy DOM thumbnail decorators are frozen. Radar cards now use file assets. */
 .scene-art,
 .lamp-post, .lamp-light, .alley-road, .funnel, .visual-checklist, .rail-line,
 .time-card, .station, .station-a, .station-b, .station-c, .rain-mark, .window-stack,
@@ -171,8 +159,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-card-hook { padding: 9px 11px; border-radius: 16px; background: #fff7ed; border: 1px solid #ffd2b8; color: #9a3412; font-size: 14px; line-height: 1.45; font-weight: 950; }
 
 .radar-card-checkpoint { margin: 2px 0 0; color: var(--orange-dark); font-size: 13px; font-weight: 900; }
-.radar-card-list .tag-row,
-.radar-card-list .radar-card-badge { display: none; }
+.radar-card-list .tag-row { display: none; }
 .radar-card-list .radar-card-body { gap: 10px; }
 .radar-card-list .radar-card .text-link { margin-top: 2px; }
 .radar-card-list .radar-card p { margin: 0; }
@@ -469,10 +456,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .hero-pin span { display: none; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
   .radar-card { padding: 0; }
-  .radar-card-visual { min-height: 236px; padding: 19px; }
-  .radar-thumb-title { max-width: 166px; font-size: clamp(27px, 8.1vw, 36px); }
-  .radar-thumb-subline { max-width: 152px; font-size: 12px; line-height: 1.32; }
-  .radar-thumb-art { width: min(45%, 168px); right: 10px; bottom: 22px; min-height: 126px; }
+  .radar-card-visual { min-height: 0; }
   .radar-map-card { min-height: auto; }
   .radar-map { min-height: 260px; }
   .map-label { left: 12px; top: 12px; font-size: 11px; }
