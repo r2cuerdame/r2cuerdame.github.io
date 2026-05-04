@@ -4,6 +4,7 @@
   "description": "지도앱 최단시간만 보면 줄 서는 정류장, 긴 환승 통로, 비 오는 날 마지막 도보, 야근 후 우회길이 빠진다. 서울·수도권 전월세 후보를 계약 전 15분 동안 걸러보는 통근 피로 레이더.",
   "date": "2026-05-02T15:29:28+09:00",
   "category": "동네 레이더",
+  "image_url": "/assets/radar/thumbs/commute-fatigue-neighborhood-check.webp",
   "tags": [
     "동네 레이더",
     "이사 준비",

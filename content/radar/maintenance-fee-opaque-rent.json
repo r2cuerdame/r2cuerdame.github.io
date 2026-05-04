@@ -4,6 +4,7 @@
   "description": "월세가 낮아 보여도 관리비 포함 항목이 흐리면 실제 고정비는 달라진다. 전기·수도·가스·인터넷·청소·공용관리 중 무엇이 빠졌는지 묻고, 답이 흐린 월세 후보를 보류하는 체크 루틴.",
   "date": "2026-05-02T08:28:39+09:00",
   "category": "동네 레이더",
+  "image_url": "/assets/radar/thumbs/maintenance-fee-opaque-rent.webp",
   "tags": [
     "동네 레이더",
     "이사 준비",

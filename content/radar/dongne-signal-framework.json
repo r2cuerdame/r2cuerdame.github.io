@@ -4,6 +4,7 @@
   "description": "좋은 동네를 찾기 전에 안 맞는 후보를 줄여야 한다. 예산, 통근, 인구 신호, 생활 상권, 현장 질문을 묶어 서울·수도권 월세·전세 후보를 계약 전 걸러내는 동네 레이더 프레임.",
   "date": "2026-04-29T22:48:33+09:00",
   "category": "동네 레이더",
+  "image_url": "/assets/radar/thumbs/dongne-signal-framework.webp",
   "tags": [
     "동네 레이더",
     "이사 준비",

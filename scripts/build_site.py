@@ -290,6 +290,13 @@ def clean_url(value: str) -> str:
     return ""
 
 
+def absolute_url(value: str) -> str:
+    url = clean_url(value)
+    if url.startswith("/"):
+        return f"{BASE}{url}"
+    return url
+
+
 def image_from_body(body: str) -> str:
     for url in IMG_SRC_RE.findall(body or ""):
         url = clean_url(url)
@@ -527,7 +534,7 @@ def jsonld_for(page: dict) -> str:
                 "dateModified": page.get("updated_at") or NOW.isoformat(timespec="seconds"),
                 "articleSection": page.get("category"),
                 "keywords": page.get("tags") or [],
-                "image": page.get("image_url") or f"{BASE}/assets/og-card.svg",
+                "image": absolute_url(page.get("image_url")) or f"{BASE}/assets/og-card.svg",
             }
         )
         graph.append(
@@ -600,7 +607,7 @@ def layout(page: dict, body: str) -> str:
     title = page["title"]
     description = page["description"]
     keywords = keywords_for(page)
-    og_image = page.get("image_url") or f"{BASE}/assets/og-card.svg"
+    og_image = absolute_url(page.get("image_url")) or f"{BASE}/assets/og-card.svg"
     is_deals_page = page.get("section") == "deals" or str(page.get("path") or "").startswith("/deals/")
     nav = deals_nav_html(page["path"]) if is_deals_page else nav_html(page["path"])
     brand_label = "쇼핑픽" if is_deals_page else "Recuerdame Lab"
@@ -680,59 +687,122 @@ def plain_article_card(a: dict) -> str:
 
 
 RADAR_CARD_VISUALS = {
-    "commute-fatigue-neighborhood-check": {
-        "theme": "theme-commute",
-        "scene": "commute",
-        "badge": "출근길 함정",
-        "label": "CASE 01",
-        "headline": "35분→50분",
-        "subline": "앱 시간 말고 몸이 기억하는 시간",
-        "chips": ("앱", "환승", "마지막 도보"),
-    },
-    "after-work-neighborhood-check": {
+    "station-to-home-night-route-check": {
         "theme": "theme-night",
         "scene": "night",
-        "badge": "밤길 수사",
-        "label": "CASE 02",
-        "headline": "낮사진 사기",
-        "subline": "방보다 귀가 장면을 먼저 본다",
-        "chips": ("출구", "골목", "소음"),
+        "badge": "밤길 동선",
+        "label": "NEW",
+        "headline": "마지막 7분",
+        "subline": "역에서 집까지 밤에 다시 걷기",
+        "chips": ("역", "골목", "우회"),
     },
-    "maintenance-fee-opaque-rent": {
-        "theme": "theme-fee",
-        "scene": "fee",
-        "badge": "관리비 블랙박스",
-        "label": "CASE 03",
-        "headline": "+α 고정비",
-        "subline": "월세 옆 빈칸을 열어 본다",
-        "chips": ("월세", "공용", "계절비"),
+    "shared-entrance-management-signals": {
+        "theme": "theme-filter",
+        "scene": "filter",
+        "badge": "공용부 신호",
+        "label": "CHECK",
+        "headline": "현관 30초",
+        "subline": "우편함·게시판·문 앞 질서 보기",
+        "chips": ("현관", "우편", "게시"),
+    },
+    "ground-floor-home-check": {
+        "theme": "theme-filter",
+        "scene": "filter",
+        "badge": "1층 리스크",
+        "label": "CHECK",
+        "headline": "창문 거리",
+        "subline": "낮빛·시선·택배 동선 확인",
+        "chips": ("시선", "방범", "채광"),
+    },
+    "stair-only-fourth-floor-villa-check": {
+        "theme": "theme-commute",
+        "scene": "commute",
+        "badge": "계단 체력",
+        "label": "CHECK",
+        "headline": "4층 루틴",
+        "subline": "장보기·이사 날까지 계산",
+        "chips": ("계단", "짐", "반복"),
+    },
+    "morning-routine-neighborhood-check": {
+        "theme": "theme-commute",
+        "scene": "commute",
+        "badge": "아침 동선",
+        "label": "CHECK",
+        "headline": "8시 충돌",
+        "subline": "등교·차량·분리수거가 겹치는지",
+        "chips": ("등교", "차량", "수거"),
+    },
+    "night-noise-walk-check": {
+        "theme": "theme-night",
+        "scene": "night",
+        "badge": "밤 소음",
+        "label": "CHECK",
+        "headline": "22시 소리",
+        "subline": "낮에 안 들리는 생활음을 잡기",
+        "chips": ("창문", "배달", "골목"),
+    },
+    "rainy-day-viewing-neighborhood-signals": {
+        "theme": "theme-commute",
+        "scene": "commute",
+        "badge": "비 오는 날",
+        "label": "CHECK",
+        "headline": "물길 확인",
+        "subline": "배수·미끄럼·습기 신호 보기",
+        "chips": ("배수", "습기", "진입"),
     },
     "monthly-rent-pressure-questions": {
         "theme": "theme-pressure",
         "scene": "pressure",
         "badge": "월세 착시",
-        "label": "CASE 04",
+        "label": "CASE",
         "headline": "5만↓ 손실↑",
         "subline": "싼 숫자 뒤 생활비를 꺼낸다",
         "chips": ("보증금", "통근", "생활비"),
+    },
+    "maintenance-fee-opaque-rent": {
+        "theme": "theme-fee",
+        "scene": "fee",
+        "badge": "관리비 블랙박스",
+        "label": "CASE",
+        "headline": "+α 고정비",
+        "subline": "월세 옆 빈칸을 열어 본다",
+        "chips": ("월세", "공용", "계절비"),
     },
     "dongne-signal-framework": {
         "theme": "theme-filter",
         "scene": "filter",
         "badge": "후보 필터",
-        "label": "CASE 05",
+        "label": "CASE",
         "headline": "저장 말고 삭제",
         "subline": "후보 과잉을 3곳으로 줄인다",
         "chips": ("예산", "통근", "생활권"),
+    },
+    "commute-fatigue-neighborhood-check": {
+        "theme": "theme-commute",
+        "scene": "commute",
+        "badge": "출근길 함정",
+        "label": "CASE",
+        "headline": "35분→50분",
+        "subline": "앱 시간 말고 몸이 기억하는 시간",
+        "chips": ("앱", "환승", "마지막 도보"),
     },
     "cafe-contract-risk": {
         "theme": "theme-cafe",
         "scene": "cafe",
         "badge": "상권 현장",
-        "label": "CASE 06",
+        "label": "CASE",
         "headline": "사람≠손님",
         "subline": "유동인구가 매출로 바뀌는지 본다",
         "chips": ("유동", "컵", "경쟁점"),
+    },
+    "after-work-neighborhood-check": {
+        "theme": "theme-night",
+        "scene": "night",
+        "badge": "밤길 수사",
+        "label": "CASE",
+        "headline": "낮사진 사기",
+        "subline": "방보다 귀가 장면을 먼저 본다",
+        "chips": ("출구", "골목", "소음"),
     },
 }
 
@@ -798,15 +868,20 @@ def radar_article_card(a: dict) -> str:
     theme = visual["theme"]
     scene = visual["scene"]
     chips = visual["chips"]
+    thumb = a.get("image_url") or visual.get("image_url") or visual.get("image") or ""
+    thumb_class = "has-ai-thumb" if thumb else "has-css-thumb"
+    thumb_img = f'<img class="radar-card-image" src="{esc(thumb)}" alt="" loading="eager" decoding="async" aria-hidden="true" />' if thumb else ""
+    thumb_art = "" if thumb else f'''<span class="radar-thumb-art" aria-hidden="true">
+      {radar_scene_markup(scene, chips)}
+    </span>'''
     hook = f'<p class="radar-card-hook">오늘의 의심 · {esc(suspicion)}</p>' if suspicion else ""
     return f'''<article class="list-card radar-card {theme}">
-  <a class="radar-card-visual scene-{esc(scene)}" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+  <a class="radar-card-visual {thumb_class} scene-{esc(scene)}" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
+    {thumb_img}
     <span class="radar-thumb-label">{esc(visual['label'])}</span>
     <strong class="radar-thumb-title">{esc(visual['headline'])}</strong>
     <span class="radar-thumb-subline">{esc(visual['subline'])}</span>
-    <span class="radar-thumb-art" aria-hidden="true">
-      {radar_scene_markup(scene, chips)}
-    </span>
+    {thumb_art}
     <span class="radar-card-badge">{esc(visual['badge'])}</span>
   </a>
   <div class="radar-card-body">
@@ -1702,8 +1777,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-card.theme-pressure .radar-card-visual { background: radial-gradient(circle at 75% 18%, rgba(186,230,253,.24), transparent 24%), linear-gradient(135deg, #172033, #244973 58%, #2563eb); }
 .radar-card.theme-filter .radar-card-visual { background: radial-gradient(circle at 22% 18%, rgba(187,247,208,.22), transparent 23%), linear-gradient(135deg, #15251d, #22543d 55%, #0f8b57); }
 .radar-card.theme-cafe .radar-card-visual { background: radial-gradient(circle at 20% 20%, rgba(254,240,138,.23), transparent 23%), linear-gradient(135deg, #17152b, #3b2f74 55%, #0f8b57); }
+.radar-card-image { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% center; transform: scale(1.012); filter: saturate(1.04) contrast(1.02); pointer-events: none; }
 .radar-card-visual::before { content: ""; position: absolute; inset: 16px; z-index: -2; border-radius: 28px; border: 1px solid rgba(255,255,255,.18); background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
 .radar-card-visual::after { content: ""; position: absolute; right: -54px; bottom: -70px; z-index: -1; width: 230px; height: 230px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.24), rgba(255,255,255,.05) 48%, transparent 68%); pointer-events: none; }
+.radar-card-visual.has-ai-thumb::before { inset: 0; z-index: 1; border: 0; border-radius: 0; background: linear-gradient(90deg, rgba(16,12,18,.74) 0%, rgba(16,12,18,.58) 32%, rgba(16,12,18,.14) 66%, rgba(16,12,18,.10) 100%), linear-gradient(0deg, rgba(16,12,18,.48) 0%, rgba(16,12,18,.10) 48%, rgba(255,255,255,.02) 100%); }
+.radar-card-visual.has-ai-thumb::after { inset: 14px; z-index: 2; width: auto; height: auto; border-radius: 26px; border: 1px solid rgba(255,255,255,.18); background: linear-gradient(135deg, rgba(255,255,255,.08), transparent 38%, rgba(0,0,0,.18)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
 .radar-thumb-label { position: relative; z-index: 3; display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); font-size: 11px; font-weight: 950; letter-spacing: .08em; }
 .radar-thumb-title { position: relative; z-index: 3; display: block; max-width: 205px; margin-top: 14px; font-size: clamp(29px, 4vw, 44px); line-height: .98; letter-spacing: -.06em; text-shadow: 0 14px 34px rgba(0,0,0,.28); }
 .radar-thumb-subline { position: relative; z-index: 3; display: block; max-width: 220px; margin-top: 9px; color: rgba(255,255,255,.84); font-size: 13px; line-height: 1.35; font-weight: 850; }
