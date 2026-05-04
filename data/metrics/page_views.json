@@ -62,6 +62,10 @@
       "active_users": 1,
       "views": 1
     },
+    "/radar/shared-entrance-management-signals/": {
+      "active_users": 0,
+      "views": 1
+    },
     "/search/": {
       "active_users": 1,
       "views": 6
@@ -150,7 +154,12 @@
       "active_users": 1,
       "path": "/radar/night-noise-walk-check/",
       "views": 1
+    },
+    {
+      "active_users": 0,
+      "path": "/radar/shared-entrance-management-signals/",
+      "views": 1
     }
   ],
-  "updated_at": "2026-05-04T16:51:36+09:00"
+  "updated_at": "2026-05-04T18:51:04+09:00"
 }
