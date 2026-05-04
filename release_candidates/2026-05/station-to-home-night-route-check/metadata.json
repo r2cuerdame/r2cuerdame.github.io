@@ -1,0 +1,52 @@
+{
+  "slug": "station-to-home-night-route-check",
+  "title": "역에서 집까지 마지막 7분, 밤길을 다시 보는 법",
+  "description": "서울·수도권 25~39세 전월세·이사 독자가 역세권 후보를 낮 지도 거리만으로 정하지 않도록 퇴근 후 마지막 7분의 조명·시야·멈춤 지점·우회 선택지와 생활 리듬별 보류선을 확인하는 동네 레이더 글.",
+  "section": "dongne-radar",
+  "status": "published_to_pages",
+  "cadence_mode": "rolling_buffer",
+  "mature_started_at": "2026-05-01T05:45:00+09:00",
+  "publish_ready_at": "2026-05-08T05:45:00+09:00",
+  "publish_ready_at_note": "buffer tracking metadata only; not a publish blocker when review is clean",
+  "target_audience": "서울·수도권에서 3~12개월 안에 전월세 후보를 비교해야 하는 25~39세 직장인·1인가구·신혼·예비신혼",
+  "source_stage": "articles/2026-05/station-to-home-night-route-check/50-copy.md",
+  "reader_qa_stage": "articles/2026-05/station-to-home-night-route-check/60-reader-qa.md",
+  "external_publish": {
+    "hourly_job": "review_only_no_external_publish",
+    "forbidden_actions": [
+      "login",
+      "captcha_bypass",
+      "category_change",
+      "skin_change",
+      "ad_settings",
+      "external_publish"
+    ]
+  },
+  "created_at": "2026-05-01T05:45:00+09:00",
+  "updated_at": "2026-05-04T13:38:57+09:00",
+  "reader_qa": {
+    "score": 94,
+    "required_hard_issues": 0,
+    "required_soft_issues": 0
+  },
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "visible_prose_chars": 5991,
+    "reader_visual_count": 12,
+    "reviewed_at": "2026-05-03T17:38:37+09:00",
+    "hourly_internal_links_polish_at": "2026-05-03T17:38:37+09:00",
+    "hourly_internal_links_count": 5,
+    "hourly_backlog_polish_at": "2026-05-03T17:38:37+09:00",
+    "hourly_backlog_polish_type": "life_rhythm_hold_line_cards_and_published_internal_links"
+  },
+  "last_hourly_polish": {
+    "at": "2026-05-03T17:38:37+09:00",
+    "type": "polish_only_target_fit_and_internal_links",
+    "note": "새 후보 생성 없이 생활 리듬별 보류선 섹션/카드를 추가하고 서울·수도권 25~39세 meta description 및 공개된 밤 소음·통근 피로 내부링크를 보강해 역세권 밤길 후보를 실제 귀가 리듬별 판단으로 선명하게 함"
+  },
+  "pages_published_at": "2026-05-04T13:38:57+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/station-to-home-night-route-check/"
+}

@@ -10,6 +10,7 @@ Search: https://r2cuerdame.github.io/search/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
+Radar Article: https://r2cuerdame.github.io/radar/station-to-home-night-route-check/ — 역에서 집까지 마지막 7분, 밤길을 다시 보는 법
 Radar Article: https://r2cuerdame.github.io/radar/shared-entrance-management-signals/ — 공동현관 앞 30초, 살 동네의 관리 신호를 읽는 법
 Radar Article: https://r2cuerdame.github.io/radar/ground-floor-home-check/ — 반지하가 아닌 1층집, 계속 볼지 보류할지 보는 14분
 Radar Article: https://r2cuerdame.github.io/radar/stair-only-fourth-floor-villa-check/ — 엘리베이터 없는 4층 빌라, 계속 볼지 보류할지 보는 12분
@@ -21,10 +22,9 @@ Radar Article: https://r2cuerdame.github.io/radar/after-work-neighborhood-check/
 Radar Article: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/ — 월세는 싼데 관리비가 흐리다? ‘관리비 블랙박스’ 보류법
 Radar Article: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/ — 월세 5만 원 싼 집이 더 비쌀 때: 계약 전 5개 질문
 Radar Article: https://r2cuerdame.github.io/radar/dongne-signal-framework/ — 동네 후보를 줄이는 5개 신호: 월세·전세 계약 전 레이더
-Radar Article: https://r2cuerdame.github.io/radar/cafe-contract-risk/ — 사람 많은 상권이 꼭 좋은 자리는 아닙니다: 카페 계약 전 5개 의심
 Separate Deals Article: https://r2cuerdame.github.io/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/ — 2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/ — 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/ — 제습기 뭐 살까, 위닉스·LG·위니아 인기 5종 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/모니터-조명-추천-top-5-야간-작업-눈-피로-줄이는-제품-85cf2710/ — 모니터 조명 추천 TOP 5, 야간 작업 눈 피로 줄이는 제품
 Language: ko-KR
-Updated: 2026-05-04T00:28:30+09:00
+Updated: 2026-05-04T13:38:59+09:00
