@@ -1125,12 +1125,32 @@ def deal_category_hubs(deals: list[dict]) -> str:
 def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
     body = article.get("body_html") or ""
     names: list[str] = []
-    skip_terms = ("서론", "결론", "마무리", "제품별", "핵심", "비교표", "구매", "추천 기준", "체크")
+    skip_terms = (
+        "서론",
+        "결론",
+        "마무리",
+        "제품별",
+        "핵심",
+        "비교표",
+        "구매",
+        "추천 기준",
+        "선택 기준",
+        "체크",
+        "한눈",
+        "자주 묻는",
+        "FAQ",
+        "후보 제외",
+        "정확 매칭",
+        "블로그 최신",
+        "같이 볼",
+        "함께 보면",
+        "다음에",
+    )
     for raw in re.findall(r'<h[23][^>]*>(.*?)</h[23]>', body, flags=re.I | re.S):
         name = strip_tags(raw)
         name = re.sub(r"^\s*(?:\d+\s*[.)]|[①-⑩]|BEST\s*\d+\s*[:.-]?)\s*", "", name, flags=re.I)
         name = re.sub(r"\s+(?:활용도 체크|구매 포인트|추천 이유|장단점|비교|후기).*$", "", name).strip()
-        if not name or any(term in name for term in skip_terms):
+        if not name or "?" in name or name.endswith(("인가요", "나요", "까요", "가요")) or any(term in name for term in skip_terms):
             continue
         if name not in names:
             names.append(short_text(name, 46))
