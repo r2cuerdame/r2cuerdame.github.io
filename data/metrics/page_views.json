@@ -11,8 +11,8 @@
       "views": 1
     },
     "/deals/": {
-      "active_users": 1,
-      "views": 15
+      "active_users": 2,
+      "views": 16
     },
     "/deals/2026-robot-vacuum-best4/": {
       "active_users": 1,
@@ -43,8 +43,8 @@
       "views": 7
     },
     "/radar/": {
-      "active_users": 1,
-      "views": 16
+      "active_users": 2,
+      "views": 17
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -76,14 +76,14 @@
   "status": "ok",
   "top_pages": [
     {
-      "active_users": 1,
+      "active_users": 2,
       "path": "/radar/",
-      "views": 16
+      "views": 17
     },
     {
-      "active_users": 1,
+      "active_users": 2,
       "path": "/deals/",
-      "views": 15
+      "views": 16
     },
     {
       "active_users": 3,
@@ -161,5 +161,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-04T18:51:04+09:00"
+  "updated_at": "2026-05-04T23:00:40+09:00"
 }
