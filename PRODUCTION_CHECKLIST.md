@@ -9,6 +9,7 @@ _Last updated: 2026-05-02 12:31 KST_
 - [ ] 20-data-qa: 산식, 지역 단위, 기간 비교, 과장 결론 방지.
 - [ ] 30-story: 발견 → 해석 → 반례/한계 → 현장 질문 → 사용법.
 - [ ] 40-visual: 최소 6개/목표 8개 이상의 독자용 시각자료 + visual rhythm(상단 루프/요약카드, 중간 callout/카드, 표만 연속 금지).
+- [ ] 40-visual-thumb-QA: 썸네일 고유성/가독성/대비(텍스트와 배경 명암 대비) 확인 후 발행.
 - [ ] 50-copy: 제목, 첫 문단, 메타 설명, 문장 흐름, 저장/공유 이유.
 - [ ] 60-reader-qa: scorecard와 정적 가드 통과.
 - [ ] 70-final-html: release candidate final.html 생성, 본문에서 내부어 제거, 렌더링 후 글+표만 보이지 않는지 확인.
