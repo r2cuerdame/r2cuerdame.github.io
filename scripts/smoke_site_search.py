@@ -134,6 +134,15 @@ def run_smoke(search_page: str, search_js: str, data: dict[str, Any], *, mode: s
     unrelated = [r["item"].get("title") for r in air_rows if "공기청정기" not in str(r["item"].get("title") or "")]
     assert_true(not unrelated, f"search_unrelated_air_purifier_results:{unrelated[:5]}")
 
+    # Regression: broad audio category tags should not make speaker pages rank for headset intent.
+    headset_rows = search(items, "헤드셋")
+    unrelated_audio = [
+        r["item"].get("title")
+        for r in headset_rows
+        if not any(term in str(r["item"].get("title") or "") for term in ("헤드셋", "헤드폰", "이어폰"))
+    ]
+    assert_true(not unrelated_audio, f"search_unrelated_headset_results:{unrelated_audio[:5]}")
+
     return {
         "ok": True,
         "mode": mode,
