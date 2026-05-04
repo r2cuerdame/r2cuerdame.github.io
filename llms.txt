@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-05-04T13:38:59+09:00
+Last updated: 2026-05-04T16:02:56+09:00
 
 ## Primary sections
 
@@ -42,6 +42,7 @@ Last updated: 2026-05-04T13:38:59+09:00
 
 ## Separate deals articles
 
+- 무선청소기·스틱청소기 4종 비교, 자동 먼지 비움부터 흡입력까지 구매가이드: https://r2cuerdame.github.io/deals/wireless-stick-vacuum-top4-2026/
 - 2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교: https://r2cuerdame.github.io/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/
 - 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/
 - 제습기 뭐 살까, 위닉스·LG·위니아 인기 5종 비교: https://r2cuerdame.github.io/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/
@@ -49,7 +50,6 @@ Last updated: 2026-05-04T13:38:59+09:00
 - 게이밍 헤드셋 뭐 살까, HyperX·로지텍·레이저 인기 5종 비교: https://r2cuerdame.github.io/deals/게이밍-헤드셋-뭐-살까-hyperx-로지텍-레이저-인기-5종-비교-21e8fcbc/
 - 공기청정기 뭐 살까, LG·삼성·샤오미 인기 5종 비교: https://r2cuerdame.github.io/deals/공기청정기-뭐-살까-lg-삼성-샤오미-인기-5종-비교-070c8834/
 - 재택근무 사무용 의자 추천 BEST 5, 허리 편한 모델 위주: https://r2cuerdame.github.io/deals/재택근무-사무용-의자-추천-best-5-허리-편한-모델-위주-ac5c9f75/
-- 주방가전 할인 BEST 5, 실사용 만족도 높은 인기 제품 위주: https://r2cuerdame.github.io/deals/주방가전-할인-best-5-실사용-만족도-높은-인기-제품-위주-67ac40f4/
 
 ## Crawl hints
 
