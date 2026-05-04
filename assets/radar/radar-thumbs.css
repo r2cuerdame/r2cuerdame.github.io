@@ -1,0 +1,16 @@
+.radar-thumb-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 14px 24px rgba(0,0,0,.28));
+}
+.radar-card.theme-night .radar-thumb-image { background-image: url('/assets/radar/thumbs/night-route.svg'); }
+.radar-card.theme-filter .radar-thumb-image { background-image: url('/assets/radar/thumbs/filter-check.svg'); }
+.radar-card.theme-commute .radar-thumb-image { background-image: url('/assets/radar/thumbs/commute-fatigue.svg'); }
+.radar-card.theme-fee .radar-thumb-image { background-image: url('/assets/radar/thumbs/fee-blackbox.svg'); }
+.radar-card.theme-pressure .radar-thumb-image { background-image: url('/assets/radar/thumbs/rent-pressure.svg'); }
+.radar-card.theme-cafe .radar-thumb-image { background-image: url('/assets/radar/thumbs/cafe-contract.svg'); }
