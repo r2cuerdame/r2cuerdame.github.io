@@ -1429,7 +1429,7 @@ def topic_card(topic: dict, deals: list[dict], radar: list[dict]) -> str:
   <p>{esc(topic['description'])}</p>
   <div class="search-chip-row">{chips}</div>
   <ul class="mini-link-list">{topic_list_links(related)}</ul>
-  <a class="text-link" href="{esc(path)}">허브 열기 →</a>
+  <a class="text-link" href="{esc(path)}">주제 열기 →</a>
 </article>'''
 
 
@@ -1502,7 +1502,7 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
   <ol>
     <li>검색어 그대로 답하는 1문장 결론을 도입부에 추가</li>
     <li>현장 체크리스트·지도형 예시·상품 비교표 중 하나를 중간 스크롤에 배치</li>
-    <li>관련 허브와 상세 글을 서로 링크해 체류와 색인을 같이 올림</li>
+    <li>관련 주제와 상세 글을 서로 링크해 체류와 색인을 같이 올림</li>
   </ol>
 </section>
 <section class="article-list mixed-list">
@@ -2037,7 +2037,7 @@ def build_search_index(deals: list[dict], radar: list[dict]) -> dict[str, Any]:
                 "date": TODAY,
                 "image_url": "",
                 "price_hint": "",
-                "item_count_hint": "검색 의도 허브" if p.get("section") == "topics" else "",
+                "item_count_hint": "주제별 페이지" if p.get("section") == "topics" else "",
                 "views": 0,
                 "text": f"{p['title']} {p['description']} {topic_terms}",
             }
