@@ -1197,6 +1197,41 @@ def deal_category_hubs(deals: list[dict]) -> str:
     return "\n".join(cards)
 
 
+def clean_deal_product_link_label(raw_html: str) -> str:
+    label = strip_tags(raw_html)
+    label = re.sub(r"^[\s🛒👉✅·•|-]+", "", label).strip()
+    label = re.sub(
+        r"\s*(?:가격\s*확인(?:하기)?|상품\s*페이지\s*확인|구매\s*링크|자세히\s*보기|보러가기|구매하기)\s*$",
+        "",
+        label,
+        flags=re.I,
+    ).strip()
+    label = re.sub(r"\s+", " ", label)
+    return short_text(label or "상품 페이지", 46)
+
+
+def deal_article_product_links(article: dict, limit: int = 8) -> list[dict[str, str]]:
+    body = article.get("body_html") or ""
+    links: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for attrs, inner in re.findall(r"<a\b([^>]*)>(.*?)</a>", body, flags=re.I | re.S):
+        href_match = re.search(r"\bhref\s*=\s*(['\"])(.*?)\1", attrs, flags=re.I | re.S)
+        if not href_match:
+            continue
+        href = html.unescape(href_match.group(2)).strip()
+        if "coupang.com" not in href.lower():
+            continue
+        label = clean_deal_product_link_label(inner)
+        key = (href.split("?", 1)[0], label)
+        if key in seen:
+            continue
+        seen.add(key)
+        links.append({"href": href, "label": label})
+        if len(links) >= limit:
+            break
+    return links
+
+
 def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
     body = article.get("body_html") or ""
     names: list[str] = []
@@ -1235,10 +1270,21 @@ def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
 
 
 def deal_article_quick_block(article: dict) -> str:
-    products = deal_article_product_names(article)
-    product_items = "".join(f"<li>{esc(name)}</li>" for name in products)
-    if not product_items:
-        product_items = "<li>본문에서 후보별 장단점과 가격대를 확인하세요.</li>"
+    product_links = deal_article_product_links(article)
+    product_note = ""
+    if product_links:
+        products_heading = "상품 페이지 바로가기"
+        product_note = '<p class="quick-product-note">설명 읽다가 다시 찾지 않도록 후보별 가격·옵션 확인 링크를 먼저 모았습니다.</p>'
+        product_items = "".join(
+            f'<li><a class="quick-product-link" href="{esc(link["href"])}" target="_blank" rel="sponsored nofollow noopener">{esc(link["label"])}</a></li>'
+            for link in product_links
+        )
+    else:
+        products_heading = "본문에서 비교하는 후보"
+        products = deal_article_product_names(article)
+        product_items = "".join(f"<li>{esc(name)}</li>" for name in products)
+        if not product_items:
+            product_items = "<li>본문에서 후보별 장단점과 가격대를 확인하세요.</li>"
     external = ""
     if article.get("primary_deal_url"):
         external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
@@ -1255,7 +1301,8 @@ def deal_article_quick_block(article: dict) -> str:
     <div><strong>{esc(article.get('category') or '구매가이드')}</strong><span>카테고리</span></div>
   </div>
   <div class="quick-products">
-    <h3>본문에서 비교하는 후보</h3>
+    <h3>{products_heading}</h3>
+    {product_note}
     <ol>{product_items}</ol>
   </div>
   <div class="deal-actions quick-actions">
@@ -1895,8 +1942,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .quick-facts span { color: #6b7280; font-size: 12px; font-weight: 900; margin-top: 3px; }
 .quick-products { border-top: 1px solid #e5e7eb; padding-top: 16px; }
 .quick-products h3 { margin: 0 0 8px; font-size: 19px; }
+.quick-product-note { margin: 0 0 10px !important; color: #6b7280 !important; font-size: 13px; font-weight: 850; }
 .quick-products ol { margin: 0; padding-left: 1.25em; columns: 2; }
 .quick-products li { margin: 5px 0; font-weight: 850; }
+.quick-product-link { color: var(--orange-dark); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.quick-product-link::after { content: " ↗"; font-size: 12px; }
 .quick-actions { margin-top: 0; }
 .deal-article .article-hero { padding-bottom: 8px; }
 .deal-article .article-product-hero { margin-top: 16px; }

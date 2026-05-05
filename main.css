@@ -250,8 +250,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .quick-facts span { color: #6b7280; font-size: 12px; font-weight: 900; margin-top: 3px; }
 .quick-products { border-top: 1px solid #e5e7eb; padding-top: 16px; }
 .quick-products h3 { margin: 0 0 8px; font-size: 19px; }
+.quick-product-note { margin: 0 0 10px !important; color: #6b7280 !important; font-size: 13px; font-weight: 850; }
 .quick-products ol { margin: 0; padding-left: 1.25em; columns: 2; }
 .quick-products li { margin: 5px 0; font-weight: 850; }
+.quick-product-link { color: var(--orange-dark); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.quick-product-link::after { content: " ↗"; font-size: 12px; }
 .quick-actions { margin-top: 0; }
 .deal-article .article-hero { padding-bottom: 8px; }
 .deal-article .article-product-hero { margin-top: 16px; }

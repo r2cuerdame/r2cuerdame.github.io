@@ -276,6 +276,15 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_reader_action_missing")
     if kind == "deal_article" and "구매" not in text and "비교" not in text:
         failures.append(f"{path}:deal_reader_action_missing")
+    if kind == "deal_article":
+        affiliate_link_count = len(re.findall(r"<a\b[^>]*href\s*=\s*['\"][^'\"]*coupang\.com", page_html, flags=re.I | re.S))
+        quick_link_count = page_html.count('class="quick-product-link"')
+        if affiliate_link_count < 2:
+            failures.append(f"{path}:deal_affiliate_links_too_few:{affiliate_link_count}")
+        if quick_link_count < min(3, affiliate_link_count):
+            failures.append(f"{path}:deal_quick_product_links_too_few:{quick_link_count}/{affiliate_link_count}")
+        if affiliate_link_count and "상품 페이지 바로가기" not in text:
+            failures.append(f"{path}:deal_product_link_summary_missing")
 
     return failures
 
