@@ -49,6 +49,8 @@ MANDATORY_PATHS = [
     "/",
     "/radar/",
     "/radar/cafe-contract-risk/",
+    "/topics/jeonwolse-contract-check/",
+    "/topics/cafe-commercial-lease-risk/",
     "/deals/",
     "/topics/",
     "/search/",
@@ -57,8 +59,8 @@ MANDATORY_PATHS = [
 SECTION_MANDATORY_PATHS = {
     "all": MANDATORY_PATHS,
     "deals": ["/", "/deals/", "/search/"],
-    "radar": ["/", "/radar/", "/radar/cafe-contract-risk/", "/search/"],
-    "topics": ["/", "/topics/", "/search/"],
+    "radar": ["/", "/radar/", "/radar/cafe-contract-risk/", "/topics/jeonwolse-contract-check/", "/topics/cafe-commercial-lease-risk/", "/search/"],
+    "topics": ["/", "/topics/", "/topics/jeonwolse-contract-check/", "/topics/cafe-commercial-lease-risk/", "/search/"],
 }
 
 
@@ -285,6 +287,15 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:deals_to_radar_return_link_missing")
     if path.startswith("/radar/") and 'href="/deals/"' not in page_html:
         failures.append(f"{path}:radar_to_deals_link_missing")
+    if kind == "radar":
+        for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
+            if f'href="{href}"' not in page_html:
+                failures.append(f"{path}:contract_check_topic_route_missing:{href}")
+        if 'id="contract-check-routes"' not in page_html:
+            failures.append(f"{path}:contract_check_route_list_missing")
+        for direct_href in ('/radar/dongne-signal-framework/', '/radar/cafe-contract-risk/'):
+            if f'href="{direct_href}"' in page_html.split('id="contract-check-routes"', 1)[0]:
+                failures.append(f"{path}:contract_check_hero_direct_article_link:{direct_href}")
 
     category_chip_links = anchor_class_count(page_html, "category-chip")
     tag_links = anchor_class_count(page_html, "tag")

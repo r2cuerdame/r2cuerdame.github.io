@@ -11,6 +11,7 @@ Search: https://r2cuerdame.github.io/search/
 Sitemap: https://r2cuerdame.github.io/sitemap.xml
 Feed: https://r2cuerdame.github.io/feed.xml
 LLM guide: https://r2cuerdame.github.io/llms.txt
+Topic Page: https://r2cuerdame.github.io/topics/jeonwolse-contract-check/ — 전월세 계약 전 체크 — 집 보기 전 먼저 볼 글 목록
 Topic Page: https://r2cuerdame.github.io/topics/wolse-contract-checklist/ — 월세 계약 전 체크리스트 — 관리비·통근·생활권 먼저 보기
 Topic Page: https://r2cuerdame.github.io/topics/jeonse-contract-risk/ — 전세 계약 전 동네 체크 — 보증금보다 먼저 볼 생활 리스크
 Topic Page: https://r2cuerdame.github.io/topics/commute-neighborhood-check/ — 출퇴근 동네 체크 — 지도앱 시간보다 피로를 먼저 계산
@@ -36,4 +37,4 @@ Separate Deals Article: https://r2cuerdame.github.io/deals/2026-블루투스-스
 Separate Deals Article: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/ — 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/제습기-뭐-살까-위닉스-lg-위니아-인기-5종-비교-b00bf404/ — 제습기 뭐 살까, 위닉스·LG·위니아 인기 5종 비교
 Language: ko-KR
-Updated: 2026-05-05T23:18:56+09:00
+Updated: 2026-05-05T23:40:26+09:00

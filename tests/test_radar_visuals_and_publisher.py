@@ -78,6 +78,27 @@ def test_publisher_stages_all_generated_static_outputs():
         assert required in publisher.PUBLIC_ADD_PATHS
 
 
+def test_radar_contract_check_entrypoints_are_topic_lists():
+    build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_contract_routes")
+
+    slugs = [topic["slug"] for topic in build_site.TOPIC_HUBS]
+    assert "jeonwolse-contract-check" in slugs
+    assert "cafe-commercial-lease-risk" in slugs
+
+    html = build_site.radar_body([])
+    assert 'id="contract-check-routes"' in html
+    assert 'href="/topics/jeonwolse-contract-check/"' in html
+    assert 'href="/topics/cafe-commercial-lease-risk/"' in html
+    assert "전월세 글 목록" in html
+    assert "상가 계약 글 목록" in html
+    assert 'href="/radar/dongne-signal-framework/"' not in html
+    assert 'href="/radar/cafe-contract-risk/"' not in html
+
+    cafe_topic = next(topic for topic in build_site.TOPIC_HUBS if topic["slug"] == "cafe-commercial-lease-risk")
+    related = build_site.topic_related_articles(cafe_topic, [], [{"path": "/radar/cafe-contract-risk/"}, {"path": "/radar/dongne-signal-framework/", "body_html": "상권 유동인구"}], limit=10)
+    assert [article["path"] for article in related] == ["/radar/cafe-contract-risk/"]
+
+
 def test_radar_articles_have_content_matched_webp_thumbnails():
     for path in sorted((ROOT / "content" / "radar").glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))

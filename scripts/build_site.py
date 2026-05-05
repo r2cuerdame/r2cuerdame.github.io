@@ -209,11 +209,12 @@ NAV = [
 ]
 
 TOPIC_HUBS = [
+    {"slug": "jeonwolse-contract-check", "title": "전월세 계약 전 체크 — 집 보기 전 먼저 볼 글 목록", "description": "월세·전세 후보를 글 하나로 바로 들어가지 않고, 관리비·통근·밤길·공용부·비 오는 날 신호처럼 계약 전 확인 글을 순서대로 모았습니다.", "label": "전월세 체크", "intent": "집을 보러 가기 전 전세·월세 공통 리스크를 빠르게 훑고 싶은 독자", "keywords": ["전월세", "전월세 계약", "월세", "전세", "이사", "관리비", "통근", "밤길", "공동현관"], "queries": ["전월세 계약 전 체크", "월세 전세 체크리스트", "집 계약 전 확인"], "primary_section": "radar", "priority": "0.86"},
     {"slug": "wolse-contract-checklist", "title": "월세 계약 전 체크리스트 — 관리비·통근·생활권 먼저 보기", "description": "월세가 싸 보여도 관리비, 통근 피로, 밤길, 생활권 비용까지 합치면 더 비싸질 수 있습니다. 계약 전 확인할 글을 한곳에 묶었습니다.", "label": "월세 계약", "intent": "월세 집을 보러 가기 전, 숫자로 보이는 월세와 실제 생활비 차이를 줄이고 싶은 독자", "keywords": ["월세", "관리비", "생활권", "통근", "계약 전"], "queries": ["월세 계약 전 체크리스트", "월세 관리비 확인", "이사 전 동네 체크"], "primary_section": "radar", "priority": "0.84"},
     {"slug": "jeonse-contract-risk", "title": "전세 계약 전 동네 체크 — 보증금보다 먼저 볼 생활 리스크", "description": "전세 계약은 집 내부만 보면 부족합니다. 밤길, 공용부 관리, 통근, 비 오는 날 배수처럼 계약 전에 다시 봐야 할 동네 신호를 정리했습니다.", "label": "전세 체크", "intent": "전세 후보지를 줄이면서 집 내부보다 주변 리스크를 먼저 확인하려는 독자", "keywords": ["전세", "이사", "공동현관", "밤길", "비 오는 날"], "queries": ["전세 계약 전 체크", "전세 집 주변 확인", "동네 리스크 체크"], "primary_section": "radar", "priority": "0.82"},
     {"slug": "commute-neighborhood-check", "title": "출퇴근 동네 체크 — 지도앱 시간보다 피로를 먼저 계산", "description": "지도앱 35분과 매일 몸으로 겪는 출퇴근 피로는 다릅니다. 역에서 집까지 마지막 도보, 환승, 아침 동선을 함께 보는 글 모음입니다.", "label": "출퇴근", "intent": "이사 후보지의 출퇴근 시간이 실제로 버틸 만한지 확인하려는 독자", "keywords": ["통근", "출근", "퇴근", "역", "도보", "환승"], "queries": ["출퇴근 좋은 동네", "역에서 집까지 밤길", "통근 피로 체크"], "primary_section": "radar", "priority": "0.80"},
     {"slug": "night-noise-safety-check", "title": "밤길·소음 체크 — 낮에 본 집을 밤에 다시 보는 법", "description": "낮에는 조용해 보여도 밤 10시의 골목, 배달 동선, 창문 밖 소리는 다릅니다. 계약 전 밤길과 소음을 확인하는 글을 묶었습니다.", "label": "밤길·소음", "intent": "집을 계약하기 전 밤길 안전감과 생활소음을 놓치고 싶지 않은 독자", "keywords": ["밤길", "소음", "퇴근", "골목", "집 보기"], "queries": ["밤에 집 보러가기", "동네 소음 체크", "밤길 안전 확인"], "primary_section": "radar", "priority": "0.80"},
-    {"slug": "cafe-commercial-lease-risk", "title": "카페 창업 상가 계약 체크 — 유동인구보다 먼저 볼 리스크", "description": "사람이 많은 상권이 꼭 좋은 자리는 아닙니다. 카페 창업 전 경쟁점, 권리금, 회전율, 폐업 압력을 확인하는 상가 계약 글 모음입니다.", "label": "상가 계약", "intent": "카페나 작은 매장을 준비하며 유동인구 착시와 권리금 리스크를 줄이고 싶은 예비 사장", "keywords": ["카페", "상가", "창업", "권리금", "상권", "유동인구"], "queries": ["카페 상가 계약 체크", "권리금 리스크", "상권 유동인구 확인"], "primary_section": "radar", "priority": "0.83"},
+    {"slug": "cafe-commercial-lease-risk", "title": "카페 창업 상가 계약 체크 — 유동인구보다 먼저 볼 리스크", "description": "사람이 많은 상권이 꼭 좋은 자리는 아닙니다. 카페 창업 전 경쟁점, 권리금, 회전율, 폐업 압력을 확인하는 상가 계약 글 모음입니다.", "label": "상가 계약", "intent": "카페나 작은 매장을 준비하며 유동인구 착시와 권리금 리스크를 줄이고 싶은 예비 사장", "keywords": ["카페", "상가", "창업", "권리금", "유동인구"], "queries": ["카페 상가 계약 체크", "권리금 리스크", "상권 유동인구 확인"], "primary_section": "radar", "priority": "0.83", "include_paths": ["/radar/cafe-contract-risk/"]},
     {"slug": "rainy-season-home-appliances", "title": "장마철 생활가전 비교 — 제습기·공기청정기 먼저 고르기", "description": "장마와 습기 시즌에는 제습기, 공기청정기, 청소기처럼 관리 부담이 큰 가전부터 비교해야 합니다. 구매 전 확인할 글을 묶었습니다.", "label": "장마 가전", "intent": "장마철 습기와 공기 문제를 해결하려고 생활가전을 비교하는 구매 직전 독자", "keywords": ["제습기", "공기청정기", "장마", "습기", "청소기"], "queries": ["제습기 추천", "공기청정기 비교", "장마철 가전"], "primary_section": "deals", "priority": "0.76"},
     {"slug": "work-from-home-desk-setup", "title": "재택근무 책상 장비 비교 — 의자·모니터암·조명·키보드", "description": "재택근무 장비는 예쁜 사진보다 허리, 눈 피로, 책상 공간을 먼저 봐야 합니다. 의자, 모니터암, 조명, 키보드 비교글을 묶었습니다.", "label": "재택 장비", "intent": "재택근무 책상 셋업을 한 번에 정리하려는 구매 직전 독자", "keywords": ["재택근무", "사무용 의자", "모니터암", "모니터 조명", "키보드"], "queries": ["재택근무 의자 추천", "모니터암 추천", "모니터 조명 추천"], "primary_section": "deals", "priority": "0.75"},
     {"slug": "sound-gaming-gadgets", "title": "음향·게임 장비 비교 — 헤드셋·스피커·ANC 헤드폰", "description": "헤드셋, 블루투스 스피커, ANC 헤드폰은 가격보다 사용 장면과 착용감이 중요합니다. 구매 전 비교글을 한곳에 묶었습니다.", "label": "음향·게임", "intent": "게임, 재택회의, 음악 감상용 음향 장비를 비교하는 구매 직전 독자", "keywords": ["헤드셋", "스피커", "ANC", "헤드폰", "블루투스"], "queries": ["게이밍 헤드셋 추천", "블루투스 스피커 추천", "ANC 헤드폰 비교"], "primary_section": "deals", "priority": "0.74"},
@@ -1525,6 +1526,10 @@ def topic_matches_article(topic: dict, article: dict) -> bool:
 
 def topic_related_articles(topic: dict, deals: list[dict], radar: list[dict], *, limit: int = 8) -> list[dict]:
     articles = radar + deals
+    include_paths = [str(path) for path in (topic.get("include_paths") or []) if str(path).strip()]
+    if include_paths:
+        by_path = {str(a.get("path") or ""): a for a in articles}
+        return [by_path[path] for path in include_paths if path in by_path][:limit]
     matches = [a for a in articles if topic_matches_article(topic, a)]
     primary = topic.get("primary_section")
     if not matches and primary == "deals":
@@ -1573,6 +1578,47 @@ def topic_cards(deals: list[dict], radar: list[dict]) -> str:
     return "\n".join(topic_card(topic, deals, radar) for topic in TOPIC_HUBS)
 
 
+CONTRACT_CHECK_ROUTES = [
+    {
+        "slug": "jeonwolse-contract-check",
+        "label": "전월세 체크",
+        "title": "전월세 계약 전 글 목록",
+        "description": "월세·전세·이사 후보를 바로 개별 글로 보내지 않고, 관리비·통근·밤길·공용부·비 오는 날 신호를 먼저 훑는 입구입니다.",
+        "cta": "전월세 체크 글 목록 →",
+    },
+    {
+        "slug": "cafe-commercial-lease-risk",
+        "label": "상가 계약 체크",
+        "title": "상가·카페 계약 전 글 목록",
+        "description": "유동인구 착시, 경쟁 밀도, 권리금 회수, 임대료 압박처럼 상가 계약 전에 따로 봐야 할 리스크 입구입니다.",
+        "cta": "상가 계약 체크 글 목록 →",
+    },
+]
+
+
+def topic_by_slug(slug: str) -> dict:
+    for topic in TOPIC_HUBS:
+        if topic.get("slug") == slug:
+            return topic
+    return {}
+
+
+def contract_check_route_cards(radar: list[dict]) -> str:
+    cards = []
+    for index, route in enumerate(CONTRACT_CHECK_ROUTES, start=1):
+        topic = topic_by_slug(route["slug"])
+        count = len(topic_related_articles(topic, [], radar, limit=99)) if topic else 0
+        href = f"/topics/{route['slug']}/"
+        cards.append(f'''<article class="card accent-{'blue' if index == 1 else 'green'} contract-route-card">
+  <span class="tag">{esc(route['label'])}</span>
+  <h2><a href="{esc(href)}">{esc(route['title'])}</a></h2>
+  <p>{esc(route['description'])}</p>
+  <strong class="route-count">현재 {count}개 연결 글</strong>
+  <a href="{esc(href)}">{esc(route['cta'])}</a>
+</article>''')
+    return "\n".join(cards)
+
+
 def topics_body(deals: list[dict], radar: list[dict]) -> str:
     return f'''
 <section class="page-hero compact">
@@ -1592,13 +1638,13 @@ def topics_body(deals: list[dict], radar: list[dict]) -> str:
   <span class="tag pale">Traffic Test</span>
   <h2>테스트 기준</h2>
   <ul class="topic-metrics">
-    <li><strong>색인:</strong> /topics/와 8개 주제 페이지가 sitemap·검색 인덱스에 들어가는지 확인</li>
-    <li><strong>유입:</strong> 월세·전세·상가·생활가전 주제별 노출/클릭을 주 단위로 비교</li>
+    <li><strong>색인:</strong> /topics/와 {len(TOPIC_HUBS)}개 주제 페이지가 sitemap·검색 인덱스에 들어가는지 확인</li>
+    <li><strong>유입:</strong> 전월세·월세·전세·상가·생활가전 주제별 노출/클릭을 주 단위로 비교</li>
     <li><strong>전환:</strong> 동네 레이더 글은 체류·다음 글 이동, 쇼핑픽은 상품 페이지 클릭을 봄</li>
   </ul>
 </section>
 <section id="topic-hubs" class="landing-section">
-  <div class="section-title"><h2>주제별 보기 8개</h2><p>현재 글을 월세·전세·상가·생활상품처럼 독자가 고르는 주제별로 다시 묶었습니다.</p></div>
+  <div class="section-title"><h2>주제별 보기 {len(TOPIC_HUBS)}개</h2><p>현재 글을 전월세·월세·전세·상가·생활상품처럼 독자가 고르는 주제별로 다시 묶었습니다.</p></div>
   <div class="topic-grid">{topic_cards(deals, radar)}</div>
 </section>
 '''
@@ -1906,9 +1952,13 @@ def radar_body(radar: list[dict]) -> str:
   <h1>동네 레이더: 계약 전 리스크 체크</h1>
   <p class="lead">이사, 월세·전세, 통근, 생활권, 상가 계약 전에 “좋아 보이는 동네”보다 먼저 걸러야 할 신호와 현장 확인 질문을 정리합니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="/radar/dongne-signal-framework/">전월세 체크</a>
-    <a class="button" href="/radar/cafe-contract-risk/">상가 계약 체크</a>
+    <a class="button primary" href="#contract-check-routes">계약 체크 목록</a>
+    <a class="button" href="/topics/jeonwolse-contract-check/">전월세 글 목록</a>
+    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 계약 글 목록</a>
   </div>
+</section>
+<section id="contract-check-routes" class="grid two contract-check-routes" aria-label="계약 체크 글 목록 입구">
+  {contract_check_route_cards(radar)}
 </section>
 <section class="panel soft">
   <h2>현재 레이더 범위</h2>
@@ -1934,13 +1984,13 @@ def guides_body() -> str:
     <span class="tag">1 · 이사·전월세</span>
     <h2>집 보기 전</h2>
     <p>예산 상한, 보증금·월세·관리비, 통근 피로, 생활 상권, 밤길·소음을 먼저 걸러봅니다.</p>
-    <a href="/radar/dongne-signal-framework/">계약 전 체크리스트 보기 →</a>
+    <a href="/topics/jeonwolse-contract-check/">전월세 체크 글 목록 →</a>
   </article>
   <article class="card accent-green">
     <span class="tag">2 · 상가·창업</span>
     <h2>계약서 쓰기 전</h2>
     <p>유동인구 착시, 경쟁밀도, 폐업 압력, 권리금 회수 리스크를 먼저 의심합니다.</p>
-    <a href="/radar/cafe-contract-risk/">카페 상권 리스크 보기 →</a>
+    <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록 →</a>
   </article>
   <article class="card accent-orange">
     <span class="tag">3 · 별도 구매</span>
@@ -1996,8 +2046,8 @@ def about_body(deals_count: int, radar_count: int) -> str:
 <section class="panel soft">
   <h2>바로 볼 수 있는 동네 레이더</h2>
   <ul>
-    <li><a href="/radar/dongne-signal-framework/">전월세·이사 계약 전 동네 신호 체크</a></li>
-    <li><a href="/radar/cafe-contract-risk/">카페·상가 계약 전 상권 리스크 체크</a></li>
+    <li><a href="/topics/jeonwolse-contract-check/">전월세 계약 전 체크 글 목록</a></li>
+    <li><a href="/topics/cafe-commercial-lease-risk/">카페·상가 계약 전 체크 글 목록</a></li>
   </ul>
 </section>
 <section class="panel">
@@ -2286,6 +2336,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .card p, .list-card p, .panel p, .notice p { color: #5f5652; }
 .card > a:not(.button) { display: inline-flex; align-items: center; min-height: 44px; font-weight: 950; color: var(--orange-dark); }
+.contract-check-routes { margin-top: -4px; }
+.contract-route-card { gap: 10px; justify-content: flex-start; }
+.contract-route-card h2 { margin: 0; font-size: clamp(23px, 2.5vw, 30px); }
+.contract-route-card h2 a { color: inherit; text-decoration: none; }
+.contract-route-card h2 a:hover { color: var(--orange); }
+.route-count { display: inline-flex; width: fit-content; padding: 7px 11px; border-radius: 999px; background: #fff7ed; color: var(--orange-dark); font-size: 13px; }
+.contract-route-card > a:last-child { margin-top: auto; }
 .list-card h2, .list-card h2 a, .deal-card h2, .article-hero h1 { max-width: 100%; overflow-wrap: break-word; word-break: keep-all; }
 .list-card h2 a, .deal-card h2 a, .quick-links a, .related-radar a { display: inline-flex; align-items: center; min-height: 44px; }
 .list-card > img { width: 100%; max-height: 260px; object-fit: contain; background: #fffaf4; border-radius: 18px; margin-bottom: 14px; }

@@ -1,7 +1,7 @@
 {
   "site": "Recuerdame Lab",
   "base_url": "https://r2cuerdame.github.io",
-  "built_at": "2026-05-05T23:18:56+09:00",
+  "built_at": "2026-05-05T23:40:26+09:00",
   "timezone": "Asia/Seoul",
   "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
   "sections": [
@@ -14,6 +14,7 @@
     "/search/"
   ],
   "topic_hubs": [
+    "/topics/jeonwolse-contract-check/",
     "/topics/wolse-contract-checklist/",
     "/topics/jeonse-contract-risk/",
     "/topics/commute-neighborhood-check/",
@@ -26,7 +27,7 @@
   "article_counts": {
     "radar": 14,
     "deals": 17,
-    "topic_hubs": 8
+    "topic_hubs": 9
   },
   "search_ready": [
     "google",
