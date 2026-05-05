@@ -239,6 +239,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".commercial-tool-panel", ".tool-mini-map", ".tool-score-card", ".tool-risk-list", ".tool-link-row"]:
         if marker not in css:
             failures.append(f"commercial_tool_css_missing:{marker}")
+    for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview"]:
+        if marker not in css:
+            failures.append(f"shopping_room_css_missing:{marker}")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
@@ -324,6 +327,18 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:topic_article_list_layout_marker_missing")
         if 'class="article-list mixed-list"' in page_html and 'class="list-card radar-card' in page_html:
             failures.append(f"{path}:topic_radar_cards_use_narrow_mixed_grid")
+    if kind == "deals":
+        room_products = page_html.count('class="room-product')
+        if 'class="shopping-room-card"' not in page_html:
+            failures.append(f"{path}:shopping_room_interactive_card_missing")
+        if 'shopping-room-ai.webp' not in page_html or 'class="room-photo"' not in page_html:
+            failures.append(f"{path}:shopping_room_ai_photo_missing")
+        if 'class="room-hit-area"' not in page_html:
+            failures.append(f"{path}:shopping_room_click_area_missing")
+        if room_products < 4:
+            failures.append(f"{path}:shopping_room_products_too_few:{room_products}")
+        if 'shopping-room-pick-1' not in page_html or 'room-previews' not in page_html:
+            failures.append(f"{path}:shopping_room_toggle_preview_missing")
 
     category_chip_links = anchor_class_count(page_html, "category-chip")
     tag_links = anchor_class_count(page_html, "tag")

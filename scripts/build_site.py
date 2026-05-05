@@ -268,8 +268,7 @@ def deals_nav_html(page_path: str) -> str:
     items = [
         ("동네 레이더", "/radar/", "nav-return"),
         ("쇼핑픽 홈", "/deals/", "nav-primary"),
-        ("오늘 BEST", "/deals/#today-best", "nav-primary"),
-        ("카테고리", "/deals/#category-blocks", "nav-secondary"),
+        ("오늘 추천", "/deals/#today-best", "nav-primary"),
         ("검색", "/search/", "nav-action"),
     ]
     out = []
@@ -1177,6 +1176,34 @@ def radar_example_gallery(article: dict) -> str:
 '''
 
 
+def deal_placeholder_icon(article: dict) -> str:
+    haystack = " ".join(
+        str(part or "")
+        for part in [
+            article.get("title"),
+            article.get("category"),
+            article.get("description"),
+            " ".join(article.get("tags") or []),
+        ]
+    ).lower()
+    icon_rules = [
+        (("제습", "습기", "장마"), "💧"),
+        (("공기청정", "필터", "공기"), "🌬️"),
+        (("스피커", "블루투스", "마샬", "jbl"), "🔊"),
+        (("헤드셋", "헤드폰", "이어폰", "anc"), "🎧"),
+        (("의자", "재택", "허리"), "🪑"),
+        (("로봇청소", "청소기", "무선청소"), "🧹"),
+        (("키보드", "기계식"), "⌨️"),
+        (("모니터", "조명", "데스크"), "🖥️"),
+        (("주방", "가전"), "🍳"),
+        (("뷰티", "케어", "선물"), "✨"),
+    ]
+    for terms, icon in icon_rules:
+        if any(term in haystack for term in terms):
+            return icon
+    return "🛒"
+
+
 def deal_card(a: dict, rank: int | None = None) -> str:
     img = a.get("image_url") or ""
     card_class = "deal-card" if img else "deal-card text-card"
@@ -1189,7 +1216,7 @@ def deal_card(a: dict, rank: int | None = None) -> str:
     external = ""
     if deal_url:
         external = f'<a class="deal-price-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인</a>'
-    rank_badge = f'<span class="deal-rank">BEST {rank}</span>' if rank else ""
+    rank_badge = f'<span class="deal-rank">추천 {rank}</span>' if rank else ""
     if img:
         thumb = f'''<a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
     <img src="{esc(img)}" alt="{esc(a['title'])} 대표 상품 이미지" loading="lazy" decoding="async" />
@@ -1198,7 +1225,8 @@ def deal_card(a: dict, rank: int | None = None) -> str:
   </a>'''
     else:
         thumb = f'''<a class="deal-text-badge" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
-    <span>{esc(a.get('item_count_hint') or '비교글')}</span>
+    <span class="deal-fallback-icon" aria-hidden="true">{esc(deal_placeholder_icon(a))}</span>
+    <span class="deal-fallback-text">{esc(a.get('item_count_hint') or '비교글')}</span>
     {rank_badge}
   </a>'''
     price_hint = esc(a.get("price_hint") or "상세가는 상품 페이지에서 확인")
@@ -1412,6 +1440,107 @@ def deals_by_growth_priority(deals: list[dict]) -> list[dict]:
         key=lambda a: (article_views(a), parse_dt(a.get("date")).timestamp(), str(a.get("title") or "")),
         reverse=True,
     )
+
+
+def shopping_room_kind(article: dict) -> tuple[str, str, str]:
+    haystack = " ".join(
+        [
+            str(article.get("title") or ""),
+            str(article.get("description") or ""),
+            str(article.get("category") or ""),
+            " ".join(str(t) for t in (article.get("tags") or [])),
+        ]
+    )
+    cases = [
+        (("제습", "공기청정", "필터", "장마", "습기"), "air", "침실 습도", "습기·필터"),
+        (("모니터", "키보드", "의자", "책상", "재택", "개발자"), "desk", "책상 셋업", "자세·공간"),
+        (("헤드폰", "헤드셋", "스피커", "ANC", "블루투스", "마샬", "보스"), "sound", "몰입존", "소리 장비"),
+        (("청소기", "로봇", "스틱", "흡입", "먼지"), "clean", "거실 관리", "청소 루틴"),
+        (("주방", "에어프라이", "전자레인지", "믹서", "밥솥"), "kitchen", "주방 코너", "생활가전"),
+        (("뷰티", "퍼스널", "케어", "선물", "드라이", "칫솔"), "care", "욕실 선반", "선물·케어"),
+    ]
+    for terms, kind, scene, cue in cases:
+        if any(term.lower() in haystack.lower() for term in terms):
+            return kind, scene, cue
+    return "daily", "생활 코너", "오늘 후보"
+
+
+def shopping_room_title(article: dict) -> str:
+    title = strip_tags(str(article.get("title") or ""))
+    title = re.sub(r"^\s*2026\s*", "", title)
+    title = re.sub(r"\s+[–-]\s+.*$", "", title)
+    return short_text(title, 34)
+
+
+def shopping_room_deals(deals: list[dict], limit: int = 6) -> list[dict]:
+    prioritized = deals_by_growth_priority(deals)
+    selected: list[dict] = []
+    seen_kinds: set[str] = set()
+    for article in prioritized:
+        kind, _, _ = shopping_room_kind(article)
+        if kind in seen_kinds:
+            continue
+        selected.append(article)
+        seen_kinds.add(kind)
+        if len(selected) >= limit:
+            return selected
+    selected_paths = {a.get("path") for a in selected}
+    for article in prioritized:
+        if article.get("path") in selected_paths:
+            continue
+        selected.append(article)
+        selected_paths.add(article.get("path"))
+        if len(selected) >= limit:
+            break
+    return selected
+
+
+def shopping_room_scene(deals: list[dict]) -> str:
+    items = shopping_room_deals(deals)
+    if not items:
+        return '''<aside class="shopping-room-card" aria-label="쇼핑픽 쇼룸">
+  <div class="room-empty"><strong>쇼핑룸 준비중</strong><p>새 상품 비교글이 올라오면 이 방에 물건처럼 하나씩 붙습니다.</p></div>
+</aside>'''
+    toggles: list[str] = []
+    markers: list[str] = []
+    previews: list[str] = []
+    for idx, article in enumerate(items, start=1):
+        kind, scene, cue = shopping_room_kind(article)
+        title = shopping_room_title(article)
+        desc = short_text(article.get("description") or "", 74)
+        checked = " checked" if idx == 1 else ""
+        toggle_id = f"shopping-room-pick-{idx}"
+        count = article.get("item_count_hint") or "비교글"
+        toggles.append(f'<input class="room-toggle" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
+        markers.append(f'''<label class="room-product pos-{idx} kind-{kind}" for="{toggle_id}" aria-label="{esc(title)} 소개 보기">
+      <span class="room-hit-area" aria-hidden="true"></span>
+      <span class="room-pulse" aria-hidden="true"></span>
+      <span class="room-pin" aria-hidden="true"></span>
+      <span class="room-label"><strong>{esc(title)}</strong><small>{esc(cue)}</small></span>
+    </label>''')
+        previews.append(f'''<article class="room-preview preview-{idx}">
+      <span class="tag pale">{esc(scene)} · {esc(count)}</span>
+      <h3>{esc(title)}</h3>
+      <p>{esc(desc)}</p>
+      <a class="text-link" href="{esc(article['path'])}">비교글에서 후보 보기 →</a>
+    </article>''')
+    return f'''<aside class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
+  <div class="room-card-head">
+    <span class="tag pale">AI 쇼핑룸</span>
+    <strong>방 사진 속 상품을 눌러보세요</strong>
+    <p>AI로 만든 생활공간 위에 쇼핑픽 후보 영역을 얹었습니다. 누르면 아래 비교글이 바로 바뀝니다.</p>
+  </div>
+  <div class="shopping-room-stage">
+    {''.join(toggles)}
+    <div class="room-visual">
+      <img class="room-photo" src="/assets/deals/shopping-room-ai.webp" alt="쇼핑픽 후보를 고를 수 있는 생활공간 이미지" loading="eager" decoding="async" />
+      {''.join(markers)}
+    </div>
+    <div class="room-previews" aria-live="polite">
+      {''.join(previews)}
+    </div>
+  </div>
+</aside>'''
 
 
 def search_chip(label: str) -> str:
@@ -1960,11 +2089,11 @@ def deals_body(deals: list[dict]) -> str:
     return f'''
 <section class="deal-landing-hero">
   <div class="deal-hero-copy">
-    <p class="eyebrow">Shopping Picks · 쇼핑픽</p>
+    <p class="eyebrow">쇼핑픽 · 구매 후보 지도</p>
     <h1>필요한 제품만 빠르게 비교</h1>
     <p class="lead">생활가전·책상 장비·음향기기를 가격대, 사용 장면, 관리 부담 기준으로 짧게 정리합니다. 오늘 살 만한 후보만 먼저 보고, 자세한 가격은 상품 페이지에서 다시 확인하세요.</p>
     <div class="hero-actions compact-actions">
-      <a class="button primary" href="#today-best">오늘 BEST 보기</a>
+      <a class="button primary" href="#today-best">오늘 추천 보기</a>
       <a class="button" href="#deal-search">상품 검색하기</a>
     </div>
     <div class="deal-flow" aria-label="쇼핑픽 이용 순서">
@@ -1974,22 +2103,14 @@ def deals_body(deals: list[dict]) -> str:
     </div>
     <p class="affiliate-inline"><strong>제휴 고지</strong> 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p>
   </div>
-  <aside class="deal-hero-panel" aria-label="쇼핑픽 운영 기준">
-    <span class="tag pale">3분 기준</span>
-    <strong>이 3가지만 보면 됩니다</strong>
-    <ul class="checklist compact-list">
-      <li><strong>쓸 장소:</strong> 원룸·거실·책상·출퇴근 중 어디서 쓸지</li>
-      <li><strong>싫은 실패:</strong> 소음·부피·세척·필터 비용이 감당되는지</li>
-      <li><strong>최종 확인:</strong> 옵션·가격·재고·배송은 상품 페이지에서 재확인</li>
-    </ul>
-  </aside>
+  {shopping_room_scene(deals)}
 </section>
 <section class="deal-category-rail" aria-label="카테고리 빠른 이동">
   <strong>바로가기</strong>
   <div class="category-strip">{category_chips(deals)}</div>
 </section>
 <section id="today-best" class="landing-section above-fold-section">
-  <div class="section-title"><p class="eyebrow">Today Best</p><h2>오늘의 추천 BEST</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
+  <div class="section-title"><p class="eyebrow">오늘 추천</p><h2>지금 볼 만한 쇼핑픽</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
   <div class="deal-grid best-grid">{best_deal_cards(deals)}</div>
 </section>
 <section id="deal-search" class="panel soft search-panel lower-search">
@@ -2017,7 +2138,7 @@ def deals_body(deals: list[dict]) -> str:
   <div class="section-title"><h2>구매 전 3단계</h2><p>살 이유보다 실패 이유를 먼저 고르면 비교가 빨라집니다.</p></div>
   <ol class="decision-steps">
     <li><span>1</span><strong>쓸 장면</strong><p>원룸·책상·출퇴근처럼 실제 사용 위치를 하나로 고정</p></li>
-    <li><span>2</span><strong>피할 실패</strong><p>소음·부피·세척·필터 비용 중 제일 싫은 조건 선택</p></li>
+    <li><span>2</span><strong>실패 피하기</strong><p>소음·부피·세척·필터 비용 중 제일 싫은 조건 선택</p></li>
     <li><span>3</span><strong>상품 확인</strong><p>가격·배송·옵션·최근 후기는 상품 페이지에서 재확인</p></li>
   </ol>
 </section>
@@ -2610,6 +2731,47 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-hero-panel .microcopy { margin: 14px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; font-weight: 850; }
 .playful-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .playful-badges span { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 13px; font-weight: 950; }
+.shopping-room-card { align-self: stretch; min-width: 0; padding: clamp(16px, 2.4vw, 22px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
+.room-card-head { display: grid; gap: 7px; }
+.room-card-head > strong { display: block; color: #111827; font-size: clamp(20px, 2vw, 25px); line-height: 1.15; letter-spacing: -.035em; }
+.room-card-head p, .room-empty p { margin: 0; color: #6b625f; font-size: 13.5px; line-height: 1.55; font-weight: 750; }
+.shopping-room-stage { position: relative; margin-top: 12px; }
+.room-toggle { position: absolute; width: 1px; height: 1px; margin: 0; opacity: .001; pointer-events: none; }
+.room-visual { position: relative; min-height: 350px; overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.room-photo { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.96) contrast(.98); transform: scale(1.01); }
+.room-visual::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(17,24,39,.10)), radial-gradient(circle at 50% 50%, transparent 0 62%, rgba(255,255,255,.26) 100%); }
+.room-product { position: absolute; z-index: 9; display: grid; place-items: center; width: 66px; height: 66px; border-radius: 999px; cursor: pointer; outline: none; transform: translate(-50%, -50%); }
+.room-product.pos-1 { left: 18%; top: 64%; }
+.room-product.pos-2 { left: 56%; top: 45%; }
+.room-product.pos-3 { left: 47%; top: 80%; }
+.room-product.pos-4 { left: 82%; top: 54%; }
+.room-product.pos-5 { left: 13%; top: 64%; }
+.room-product.pos-6 { left: 82%; top: 25%; }
+.room-product.kind-air { left: 20%; top: 65%; }
+.room-product.kind-desk { left: 57%; top: 45%; }
+.room-product.kind-sound { left: 82%; top: 24%; }
+.room-product.kind-clean { left: 48%; top: 80%; }
+.room-product.kind-kitchen { left: 84%; top: 55%; }
+.room-product.kind-care { left: 80%; top: 78%; }
+.room-product.kind-daily { left: 66%; top: 67%; }
+.room-hit-area { position: absolute; inset: 4px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 12px 24px rgba(17,24,39,.13), inset 0 1px 0 rgba(255,255,255,.72); opacity: .78; transform: scale(.74); transition: opacity .16s ease, transform .16s ease, border-color .16s ease, background .16s ease; }
+.room-pulse { position: absolute; width: 38px; height: 38px; border-radius: 999px; background: rgba(255,90,31,.12); border: 1px solid rgba(255,90,31,.38); box-shadow: 0 0 0 0 rgba(255,90,31,.18); transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.room-pin { position: relative; z-index: 2; width: 15px; height: 15px; border-radius: 999px; background: #ff5a1f; border: 3px solid #fff; box-shadow: 0 8px 18px rgba(17,24,39,.24); transition: transform .16s ease; }
+.room-label { position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 4; min-width: 144px; max-width: 190px; transform: translateX(-50%) translateY(6px); padding: 9px 10px; border-radius: 14px; background: rgba(17,24,39,.94); color: #fff; box-shadow: 0 14px 28px rgba(17,24,39,.22); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
+.room-label strong, .room-label small { display: block; }
+.room-label strong { font-size: 12.5px; line-height: 1.25; word-break: keep-all; }
+.room-label small { margin-top: 3px; color: #fed7aa; font-size: 11px; font-weight: 900; }
+.room-product:hover .room-label, .room-product:focus .room-label, #shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-label, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-label, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-label, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-label, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-label, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-label { opacity: 1; transform: translateX(-50%) translateY(0); }
+.room-product:hover .room-hit-area, .room-product:focus .room-hit-area, #shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-hit-area, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-hit-area, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-hit-area, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-hit-area, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-hit-area, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-hit-area { opacity: 1; transform: scale(1); border-color: rgba(255,90,31,.64); background: rgba(255,255,255,.24); }
+#shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-pulse, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-pulse, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-pulse, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-pulse, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-pulse, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-pulse { background: rgba(255,90,31,.24); border-color: rgba(255,90,31,.78); box-shadow: 0 0 0 8px rgba(255,90,31,.10); }
+#shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-pin, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-pin, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-pin, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-pin, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-pin, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-pin { transform: scale(1.18); }
+.room-previews { margin-top: 10px; }
+.room-preview { display: none; padding: 14px 15px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 10px 24px rgba(58,37,20,.06); }
+#shopping-room-pick-1:checked ~ .room-previews .preview-1, #shopping-room-pick-2:checked ~ .room-previews .preview-2, #shopping-room-pick-3:checked ~ .room-previews .preview-3, #shopping-room-pick-4:checked ~ .room-previews .preview-4, #shopping-room-pick-5:checked ~ .room-previews .preview-5, #shopping-room-pick-6:checked ~ .room-previews .preview-6 { display: block; }
+.room-preview h3 { margin: 8px 0 6px; color: #111827; font-size: 18px; line-height: 1.2; letter-spacing: -.03em; }
+.room-preview p { margin: 0 0 8px; color: #5f5652; font-size: 13.5px; line-height: 1.55; font-weight: 750; }
+.room-preview .text-link { min-height: 34px; font-size: 13px; }
+.room-empty { padding: 20px; border-radius: 20px; background: #fff; border: 1px dashed #d6c7bb; }
 .deal-category-rail { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; padding: 10px 12px; border-radius: 18px; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.08); }
 .deal-category-rail > strong { flex: 0 0 auto; color: #111827; font-size: 13px; font-weight: 950; }
 .deal-category-rail .category-strip { margin-top: 0; }
@@ -2627,7 +2789,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-grid.best-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .deal-card.ranked { border-color: #fed7aa; }
 .deal-rank { position: absolute; right: 12px; top: 12px; padding: 7px 10px; border-radius: 999px; background: #111827; color: #fff; font-size: 12px; font-weight: 950; }
-.deal-text-badge { position: relative; min-height: 150px; display: flex; align-items: center; justify-content: center; padding: 18px; background: linear-gradient(135deg, #fff7ed, #ffffff); border-bottom: 1px solid var(--line); color: var(--orange-dark); font-weight: 950; text-align: center; }
+.deal-text-badge { position: relative; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 18px; background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.92) 0 28%, transparent 29%), linear-gradient(135deg, #fff7ed, #ffffff 58%, #eff6ff); border-bottom: 1px solid var(--line); color: var(--orange-dark); font-weight: 950; text-align: center; overflow: hidden; }
+.deal-text-badge::after { content: ''; position: absolute; inset: auto -18% -28% auto; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,90,31,.10); }
+.deal-fallback-icon { position: relative; z-index: 1; display: grid; place-items: center; width: 62px; height: 62px; border-radius: 22px; background: #fff; border: 1px solid rgba(234,223,212,.95); box-shadow: 0 14px 30px rgba(58,37,20,.10); font-size: 31px; line-height: 1; }
+.deal-fallback-text { position: relative; z-index: 1; display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,.86); border: 1px solid rgba(255,90,31,.18); color: var(--orange-dark); font-size: 12px; }
 .deal-price { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .deal-price-link { display: inline-flex; align-items: center; min-height: 30px; padding: 0; border-radius: 0; background: transparent; border: 0; color: #6b7280; font-size: 12px; font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
 .lower-search { margin-top: 18px; }
@@ -2921,9 +3086,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 18px; margin-top: 18px; padding: 22px; }
+  .shopping-room-card { border-radius: 24px; }
+  .room-visual { min-height: 330px; }
   .deal-category-rail { align-items: flex-start; flex-direction: column; gap: 10px; }
   .deal-category-rail .category-strip { width: 100%; }
-  .deal-hero-copy, .deal-hero-panel, .deal-quick-box { border-radius: 22px; }
+  .deal-hero-copy, .deal-hero-panel, .deal-quick-box, .shopping-room-card { border-radius: 22px; }
   .deal-flow { grid-template-columns: 1fr; }
   .decision-steps { grid-template-columns: 1fr; }
   .decision-steps li { border-right: 0; border-bottom: 1px solid rgba(0,0,0,.08); }
@@ -2979,7 +3146,26 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .topic-featured-list { max-width: 100%; }
   .topic-result-card, .topic-result-card.featured { padding: 18px; border-radius: 22px; }
   .deal-grid.best-grid { grid-template-columns: 1fr; }
+  .deal-landing-hero { padding: 16px; }
   .deal-hero-copy { padding: 0; }
+  .shopping-room-card { padding: 12px; }
+  .room-card-head { gap: 5px; }
+  .room-card-head p { font-size: 13px; }
+  .room-visual { min-height: 292px; border-radius: 20px; }
+  .room-photo { object-position: center; }
+  .room-label { display: none; }
+  .room-product { width: 50px; height: 50px; }
+  .room-hit-area { inset: 5px; transform: scale(.68); }
+  .room-pulse { width: 34px; height: 34px; }
+  .room-pin { width: 13px; height: 13px; border-width: 3px; }
+  .room-product.kind-air { left: 20%; top: 66%; }
+  .room-product.kind-desk { left: 57%; top: 45%; }
+  .room-product.kind-sound { left: 82%; top: 25%; }
+  .room-product.kind-clean { left: 48%; top: 80%; }
+  .room-product.kind-kitchen { left: 84%; top: 55%; }
+  .room-product.kind-care { left: 80%; top: 78%; }
+  .room-product.kind-daily { left: 66%; top: 67%; }
+  .room-preview { padding: 13px; border-radius: 18px; }
   .category-hubs { padding: 8px; border-radius: 22px; }
   .category-hub { grid-template-columns: 1fr; gap: 9px; padding: 13px; }
   .category-hub-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -3004,7 +3190,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .map-node em { padding: 7px 13px; }
   .deal-thumb { min-height: 100%; display: flex; align-items: center; justify-content: center; }
   .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
-  .deal-text-badge { min-height: 132px; padding: 10px; font-size: 12px; border-bottom: 0; border-right: 1px solid var(--line); }
+  .deal-text-badge { min-height: 132px; padding: 10px; gap: 8px; font-size: 12px; border-bottom: 0; border-right: 1px solid var(--line); }
+  .deal-fallback-icon { width: 48px; height: 48px; border-radius: 17px; font-size: 24px; }
+  .deal-fallback-text { min-height: 26px; padding: 0 9px; font-size: 11px; }
   .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
   .deal-body { min-width: 0; padding: 14px; gap: 8px; }
   .deal-meta { align-items: flex-start; flex-direction: column; gap: 4px; font-size: 11px; }
