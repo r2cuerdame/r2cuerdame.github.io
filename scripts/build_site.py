@@ -1172,7 +1172,7 @@ def deal_card(a: dict, rank: int | None = None) -> str:
         card_class += " ranked"
     date = parse_dt(a.get("date")).strftime("%m.%d")
     metric = traffic_badge(a["path"])
-    category = taxonomy_link(a.get("category"), "meta-link")
+    category = deal_category_link(a.get("category"), "meta-link")
     deal_url = a.get("primary_deal_url") or ""
     external = ""
     if deal_url:
@@ -1285,6 +1285,16 @@ def deal_category_chip_label(label: str) -> str:
     return aliases.get(label, label.replace("-가전", "").replace("-", "·"))
 
 
+def deal_category_link(label: Any, class_name: str = "", aria_prefix: str = "검색") -> str:
+    text = str(label or "").strip()
+    if not text:
+        return ""
+    display = deal_category_chip_label(text)
+    cls = f' class="{esc(class_name)}"' if class_name else ""
+    aria = f' aria-label="{esc(f"{aria_prefix}: {text}")}"' if aria_prefix else ""
+    return f'<a{cls} href="{esc(search_query_href(text))}"{aria}>{esc(display)}</a>'
+
+
 def category_chips(articles: list[dict]) -> str:
     cats = []
     for a in articles:
@@ -1295,10 +1305,7 @@ def category_chips(articles: list[dict]) -> str:
         return '<span class="category-chip">비교글 준비중</span>'
     links = []
     for cat in cats[:8]:
-        label = deal_category_chip_label(cat)
-        links.append(
-            f'<a class="category-chip" href="{esc(search_query_href(cat))}" aria-label="{esc(f"검색: {cat}")}">{esc(label)}</a>'
-        )
+        links.append(deal_category_link(cat, "category-chip"))
     return "".join(links)
 
 
@@ -1449,7 +1456,7 @@ def popular_deal_list(deals: list[dict]) -> str:
         rows.append(f'''<li>
   <span class="rank">{index}</span>
   <a href="{esc(article['path'])}">{esc(article['title'])}</a>
-  <small>{esc(metric)} · {esc(article.get('category'))}</small>
+  <small>{esc(metric)} · {esc(deal_category_chip_label(str(article.get('category') or '')))}</small>
 </li>''')
     return "\n".join(rows) or '<li class="muted">조회 데이터 수집 중</li>'
 
@@ -1464,7 +1471,7 @@ def deal_category_hubs(deals: list[dict]) -> str:
         articles = deals_by_growth_priority(grouped[category])
         cards.append(f'''<article class="category-hub">
   <div>
-    {taxonomy_link(category, "tag")}
+    {deal_category_link(category, "tag")}
     <strong>{len(articles)}개 비교글</strong>
   </div>
   <ul class="mini-link-list">{mini_deal_links(articles)}</ul>
