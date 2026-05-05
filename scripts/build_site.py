@@ -1358,7 +1358,11 @@ def deals_body(deals: list[dict]) -> str:
     <a class="button" href="/">Recuerdame Lab 홈</a>
   </div>
 </section>
-<section id="today-best" class="landing-section above-fold-section">
+<section id="shopping-intents" class="landing-section above-fold-section">
+  <div class="section-title"><p class="eyebrow">Intent Finder</p><h2>상황별로 먼저 좁히기</h2><p>상품명보다 사용 상황이 먼저 떠오를 때는 검색 칩과 관련 비교글로 바로 이동하세요.</p></div>
+  <div class="intent-grid">{deal_intent_hubs(deals)}</div>
+</section>
+<section id="today-best" class="landing-section">
   <div class="section-title"><p class="eyebrow">Today Best</p><h2>오늘의 추천 BEST</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
   <div class="deal-grid best-grid">{best_deal_cards(deals)}</div>
 </section>
