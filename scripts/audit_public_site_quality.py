@@ -242,6 +242,10 @@ def audit_css(css: str) -> list[str]:
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
+    if "grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr)" not in css:
+        failures.append("shopping_room_desktop_width_weight_guard_missing")
+    if "min-height: clamp(390px, 36vw, 470px)" not in css:
+        failures.append("shopping_room_large_visual_guard_missing")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
