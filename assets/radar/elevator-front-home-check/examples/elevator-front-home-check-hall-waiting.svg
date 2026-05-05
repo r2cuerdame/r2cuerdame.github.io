@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">아침 엘리베이터 대기 방향</title>
+  <desc id="desc">아침 8시 엘리베이터 앞에서 대기 위치와 현관 시선을 확인하는 예시 장면</desc>
+  <rect width="960" height="640" fill="#fff7ed"/>
+  <rect x="72" y="76" width="816" height="488" rx="34" fill="#ffffff" stroke="#fb923c" stroke-width="8"/>
+  <rect x="116" y="174" width="270" height="286" rx="24" fill="#111827" opacity=".9"/>
+  <rect x="644" y="156" width="178" height="322" rx="24" fill="#2563eb" opacity=".92"/>
+  <path d="M386 318h258" stroke="#94a3b8" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="494" cy="268" r="42" fill="#ff5a1f"/><circle cx="552" cy="272" r="38" fill="#0f8b57"/>
+  <path d="M494 310l-34 88h68z" fill="#ff5a1f"/><path d="M552 310l-28 88h66z" fill="#0f8b57"/>
+  <text x="251" y="512" font-family="Arial, sans-serif" font-size="34" text-anchor="middle" fill="#111827" font-weight="700">내 현관</text>
+  <text x="733" y="512" font-family="Arial, sans-serif" font-size="34" text-anchor="middle" fill="#1e3a8a" font-weight="700">승강기 문</text>
+  <text x="480" y="112" font-family="Arial, sans-serif" font-size="38" text-anchor="middle" fill="#7c2d12" font-weight="800">대기자가 어느 쪽을 바라보는가</text>
+</svg>

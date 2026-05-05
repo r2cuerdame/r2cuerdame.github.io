@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">엘리베이터 앞 집 현장 체크</title>
+  <desc id="desc">엘리베이터 홀, 현관, 대기 위치를 나눠 보는 동네 레이더 대표 이미지</desc>
+  <rect width="1200" height="630" fill="#eef6ff"/>
+  <rect x="74" y="64" width="1052" height="502" rx="42" fill="#ffffff" stroke="#1f3b67" stroke-width="8"/>
+  <rect x="160" y="154" width="320" height="330" rx="28" fill="#f8fafc" stroke="#94a3b8" stroke-width="6"/>
+  <rect x="720" y="142" width="250" height="346" rx="30" fill="#dbeafe" stroke="#2563eb" stroke-width="8"/>
+  <line x1="480" y1="318" x2="720" y2="318" stroke="#64748b" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="566" cy="278" r="34" fill="#ff5a1f"/>
+  <circle cx="634" cy="278" r="34" fill="#0f8b57"/>
+  <path d="M244 230h152v190H244z" fill="#111827" opacity=".88"/>
+  <path d="M778 202h134v226H778z" fill="#2563eb" opacity=".9"/>
+  <text x="320" y="520" font-family="Arial, sans-serif" font-size="44" fill="#111827" text-anchor="middle" font-weight="700">내 현관</text>
+  <text x="845" y="522" font-family="Arial, sans-serif" font-size="44" fill="#1e3a8a" text-anchor="middle" font-weight="700">엘리베이터</text>
+  <text x="600" y="92" font-family="Arial, sans-serif" font-size="46" fill="#101828" text-anchor="middle" font-weight="800">대기 위치 · 소리 · 시선 12분 체크</text>
+  <text x="600" y="590" font-family="Arial, sans-serif" font-size="30" fill="#475569" text-anchor="middle">편한 동선인지, 현관 앞 대기실인지 분리합니다</text>
+</svg>

@@ -36,6 +36,8 @@ PUBLIC_ADD_PATHS = [
     "deals",
     "topics",
     "assets/search.js",
+    "assets/radar",
+    "scripts/publish_next_radar_candidate.py",
     "index.html",
     "404.html",
     "main.css",
@@ -345,6 +347,8 @@ def article_json_for(selected: dict[str, Any], published_at: str) -> dict[str, A
     for key in ("radar_suspicion", "field_mission", "editorial_positioning"):
         if meta.get(key):
             article[key] = meta[key]
+    if isinstance(meta.get("field_examples"), list):
+        article["field_examples"] = meta["field_examples"]
     return article
 
 

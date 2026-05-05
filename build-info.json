@@ -1,7 +1,7 @@
 {
   "site": "Recuerdame Lab",
   "base_url": "https://r2cuerdame.github.io",
-  "built_at": "2026-05-06T00:15:43+09:00",
+  "built_at": "2026-05-06T00:53:34+09:00",
   "timezone": "Asia/Seoul",
   "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
   "sections": [
@@ -25,7 +25,7 @@
     "/topics/sound-gaming-gadgets/"
   ],
   "article_counts": {
-    "radar": 14,
+    "radar": 15,
     "deals": 17,
     "topic_hubs": 9
   },
