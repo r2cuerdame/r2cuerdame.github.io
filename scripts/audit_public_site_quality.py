@@ -194,6 +194,14 @@ def split_css_rules(css: str) -> Iterable[tuple[str, str]]:
         yield normalize_ws(selector), normalize_ws(body)
 
 
+def css_media_block(css: str, marker: str) -> str:
+    start = css.find(marker)
+    if start < 0:
+        return ""
+    next_start = css.find("@media", start + len(marker))
+    return css[start:] if next_start < 0 else css[start:next_start]
+
+
 def audit_css(css: str) -> list[str]:
     failures: list[str] = []
     if ".visual-checklist" not in css:
@@ -211,6 +219,16 @@ def audit_css(css: str) -> list[str]:
         width_match = re.search(r"\bwidth\s*:\s*(\d+(?:\.\d+)?)px\b", body)
         if width_match and float(width_match.group(1)) < 160:
             failures.append(f"generic_checklist_fixed_narrow_width:{selector}:{width_match.group(1)}px")
+
+    mobile_560 = css_media_block(css, "@media (max-width: 560px)")
+    ranked_count_match = re.search(r"\.deal-card\.ranked\s+\.deal-count\s*\{([^}]*)\}", mobile_560, flags=re.S)
+    ranked_count_body = normalize_ws(ranked_count_match.group(1)) if ranked_count_match else ""
+    ranked_rank_match = re.search(r"\.deal-card\.ranked\s+\.deal-rank\s*\{([^}]*)\}", mobile_560, flags=re.S)
+    ranked_rank_body = normalize_ws(ranked_rank_match.group(1)) if ranked_rank_match else ""
+    if not ranked_count_match or "bottom:" not in ranked_count_body or "top: auto" not in ranked_count_body:
+        failures.append("mobile_ranked_deal_count_overlap_guard_missing")
+    if not ranked_rank_match or "left:" not in ranked_rank_body or "right: auto" not in ranked_rank_body:
+        failures.append("mobile_ranked_deal_rank_position_guard_missing")
     return failures
 
 

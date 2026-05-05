@@ -954,6 +954,12 @@ def radar_experience_block(article: dict) -> str:
 '''
 
 
+def compact_item_count_hint(value: str) -> str:
+    label = str(value or "비교글").strip() or "비교글"
+    label = re.sub(r"(\d+\s*개)\s*후보\s*비교", r"\1 비교", label)
+    return label
+
+
 def deal_card(a: dict, rank: int | None = None) -> str:
     img = a.get("image_url") or ""
     card_class = "deal-card" if img else "deal-card text-card"
@@ -966,10 +972,11 @@ def deal_card(a: dict, rank: int | None = None) -> str:
     if deal_url:
         external = f'<a class="deal-price-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인</a>'
     rank_badge = f'<span class="deal-rank">BEST {rank}</span>' if rank else ""
+    count_label = esc(compact_item_count_hint(a.get('item_count_hint') or '비교글'))
     if img:
         thumb = f'''<a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
     <img src="{esc(img)}" alt="{esc(a['title'])} 대표 상품 이미지" loading="lazy" decoding="async" />
-    <span class="deal-count">{esc(a.get('item_count_hint') or '비교글')}</span>
+    <span class="deal-count">{count_label}</span>
     {rank_badge}
   </a>'''
     else:
@@ -2229,6 +2236,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
   .deal-text-badge { min-height: 132px; padding: 10px; font-size: 12px; border-bottom: 0; border-right: 1px solid var(--line); }
   .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
+  .deal-card.ranked .deal-rank { left: 8px; right: auto; top: 8px; padding: 5px 8px; font-size: 11px; }
+  .deal-card.ranked .deal-count { top: auto; bottom: 8px; left: 8px; max-width: calc(100% - 16px); padding: 4px 6px; font-size: 10.5px; white-space: nowrap; }
   .deal-body { min-width: 0; padding: 14px; gap: 8px; }
   .deal-meta { align-items: flex-start; flex-direction: column; gap: 4px; font-size: 11px; }
   .deal-card h2 { font-size: 18px; line-height: 1.32; }
