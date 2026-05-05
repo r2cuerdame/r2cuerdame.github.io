@@ -1869,6 +1869,47 @@ def deal_article_quick_block(article: dict) -> str:
 </section>'''
 
 
+def commercial_check_tool_block() -> str:
+    return '''
+<section id="commercial-check-tool" class="commercial-tool-panel" data-commercial-tool-root aria-label="상권과 동네 후보지 30초 체크">
+  <div class="tool-copy">
+    <p class="eyebrow">Commercial Radar · 30초 체크</p>
+    <h2>후보지를 넣으면 계약 전 질문이 먼저 나옵니다.</h2>
+    <p>정확한 통계 API 연동 전에도 주소·업종·고정비·낮/밤 신호를 넣어 500m 도보권, 경쟁 압력, 관리비·권리금 리스크를 빠르게 가늠합니다.</p>
+    <div class="tool-badges"><span>500m 도보권</span><span>낮/밤 리스크</span><span>계약 질문 3개</span></div>
+  </div>
+  <form class="commercial-tool-form" data-commercial-tool>
+    <label>후보지명·동네·역<input id="tool-location" type="text" value="성수역 3번 출구 근처" autocomplete="off"></label>
+    <div class="tool-choice-grid">
+      <label>계약 유형<select id="tool-type"><option value="commercial">상가·카페</option><option value="home">전월세·주거</option></select></label>
+      <label>월 고정비<input id="tool-monthly" type="range" min="60" max="700" value="260" step="10"><span data-monthly-value>260만원</span></label>
+      <label>낮 유입<select id="tool-traffic"><option value="strong">강함</option><option value="normal" selected>보통</option><option value="weak">약함</option></select></label>
+      <label>경쟁/공실<select id="tool-competition"><option value="low">낮음</option><option value="normal" selected>보통</option><option value="high">높음</option></select></label>
+      <label>밤길·소음<select id="tool-night"><option value="safe">안정</option><option value="normal" selected>보통</option><option value="unsafe">불안</option></select></label>
+      <label>앵커시설<select id="tool-anchor"><option value="strong">역·회사·학교 있음</option><option value="normal" selected>보통</option><option value="weak">약함</option></select></label>
+    </div>
+    <button class="button primary" type="submit">후보지 다시 계산</button>
+  </form>
+  <div class="commercial-tool-output" data-mode="commercial" data-grade="warn">
+    <div class="tool-score-card"><span>후보지 점수</span><strong data-risk-score>72</strong><small>/100</small><em data-risk-grade>주의</em></div>
+    <div class="tool-mini-map" aria-label="500m 도보권 미니맵">
+      <span class="map-ring ring-15">15분</span><span class="map-ring ring-10">10분</span><span class="map-ring ring-5">5분</span>
+      <span class="map-dot dot-home">후보지</span><span class="map-dot dot-anchor">앵커</span><span class="map-dot dot-risk">리스크</span>
+    </div>
+    <article class="tool-risk-card">
+      <h3 data-result-title>상가 계약 전에 이 3가지를 다시 보세요</h3>
+      <p data-risk-summary>성수역 3번 출구 근처는 주의 단계입니다. 계약 전에는 점수보다 아래 질문 3개를 먼저 확인하세요.</p>
+      <ol class="tool-risk-list" data-risk-list></ol>
+      <div class="tool-link-row" data-recommend-links>
+        <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록</a>
+        <a href="/topics/jeonwolse-contract-check/">전월세 체크 글 목록</a>
+      </div>
+    </article>
+  </div>
+</section>
+'''
+
+
 def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
     deal_html = article_cards(deals[:3], "쇼핑픽 글 준비중") if deals else ""
@@ -1878,8 +1919,9 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
   <h1>이사·월세·상가 계약 전, 동네 리스크부터 걸러냅니다.</h1>
   <p class="lead">동네 레이더는 “여기가 좋다”가 아니라 내 계약 조건에서 피해야 할 신호와 현장에서 다시 물어볼 질문을 먼저 정리합니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="/radar/">동네 레이더 보기</a>
-    <a class="button" href="/deals/">쇼핑픽 보기</a>
+    <a class="button primary" href="#commercial-check-tool">30초 후보지 체크</a>
+    <a class="button" href="/radar/">동네 레이더 글 보기</a>
+    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 계약 체크</a>
   </div>
 </section>
 <section class="grid two">
@@ -1902,6 +1944,7 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
     {category_strip_links(["이사 준비", "월세·전세 계약", "통근 피로", "생활권", "밤길·소음·관리비", "상가·권리금", "현장 확인 질문"])}
   </div>
 </section>
+{commercial_check_tool_block()}
 <section class="article-list mixed-list radar-latest-grid">
   <div class="section-title"><h2>동네 레이더 최신 글</h2><p>계약 전 리스크와 현장 질문을 먼저 확인하세요.</p></div>
   {radar_html}
@@ -1910,6 +1953,7 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
   <div class="section-title"><h2>분리 운영 중인 쇼핑픽</h2><p>상품 비교가 필요할 때만 별도 섹션에서 확인합니다.</p></div>
   {deal_html}
 </section>
+<script src="/assets/commercial-check.js?v={asset_version(COMMERCIAL_TOOL_JS)}" defer></script>
 '''
 
 def deals_body(deals: list[dict]) -> str:
@@ -2348,6 +2392,49 @@ h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.05
 h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .lead { color: #5f5652; font-size: clamp(18px, 2.1vw, 23px); max-width: 850px; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.commercial-tool-panel {
+  display: grid; grid-template-columns: minmax(0, .85fr) minmax(280px, .72fr) minmax(320px, 1fr); gap: 18px;
+  align-items: stretch; margin: 16px 0 34px; padding: clamp(22px, 4vw, 34px);
+  border: 1px solid rgba(234, 223, 212, .98); border-radius: 34px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(255, 244, 234, .94));
+  box-shadow: 0 20px 58px rgba(58, 37, 20, .10);
+}
+.tool-copy h2 { margin: 8px 0 12px; font-size: clamp(28px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.05em; }
+.tool-copy p { color: #5f5652; font-weight: 650; }
+.tool-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tool-badges span { padding: 7px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 950; color: #594e49; }
+.commercial-tool-form, .commercial-tool-output, .tool-risk-card { min-width: 0; }
+.commercial-tool-form { display: grid; gap: 12px; padding: 18px; border-radius: 24px; background: #fff; border: 1px solid rgba(234, 223, 212, .95); }
+.commercial-tool-form label { display: grid; gap: 6px; color: #514641; font-size: 13px; font-weight: 950; }
+.commercial-tool-form input[type="text"], .commercial-tool-form select {
+  width: 100%; min-height: 44px; border: 1px solid #e4d5c7; border-radius: 14px; padding: 0 12px;
+  background: #fffaf4; color: var(--ink); font: inherit; font-weight: 850;
+}
+.commercial-tool-form input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--orange); }
+.tool-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.commercial-tool-output { display: grid; grid-template-columns: .58fr 1fr; gap: 14px; }
+.tool-score-card { display: grid; align-content: center; justify-items: center; min-height: 166px; padding: 18px; border-radius: 24px; background: #111827; color: #fff; text-align: center; }
+.tool-score-card span { color: #cbd5e1; font-size: 12px; font-weight: 900; }
+.tool-score-card strong { display: flex; align-items: baseline; gap: 3px; font-size: 54px; line-height: 1; letter-spacing: -0.06em; }
+.tool-score-card small { font-size: 17px; color: #cbd5e1; }
+.tool-score-card em { margin-top: 8px; padding: 5px 12px; border-radius: 999px; background: #fbbf24; color: #211922; font-style: normal; font-weight: 950; }
+.tool-mini-map { position: relative; min-height: 166px; border-radius: 24px; overflow: hidden; background: radial-gradient(circle at center, #fff 0 10%, #dbeafe 11% 32%, #fff7ed 33% 58%, #ecfdf5 59% 100%); border: 1px solid rgba(234, 223, 212, .95); }
+.map-ring, .map-dot { position: absolute; display: inline-flex; align-items: center; justify-content: center; font-weight: 950; }
+.map-ring { border: 1px dashed rgba(37, 99, 235, .42); color: #1d4ed8; border-radius: 999px; background: rgba(255,255,255,.48); font-size: 12px; }
+.ring-15 { inset: 12px; } .ring-10 { inset: 34px; } .ring-5 { inset: 58px; }
+.map-dot { min-width: 52px; min-height: 30px; padding: 3px 8px; border-radius: 999px; color: #fff; font-size: 11px; box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+.dot-home { left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--orange); }
+.dot-anchor { left: 12%; top: 22%; background: var(--green); }
+.dot-risk { right: 12%; bottom: 20%; background: #7c2d12; }
+.tool-risk-card { grid-column: 1 / -1; padding: 18px; border-radius: 24px; background: #fff; border: 1px solid rgba(234, 223, 212, .95); }
+.tool-risk-card h3 { margin: 0 0 8px; font-size: 22px; letter-spacing: -0.035em; }
+.tool-risk-card p { margin: 0 0 12px; color: #625954; font-weight: 700; }
+.tool-risk-list { display: grid; gap: 8px; margin: 0; padding-left: 22px; }
+.tool-risk-list li { padding-left: 4px; font-weight: 800; }
+.tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.tool-link-row a { display: inline-flex; min-height: 36px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
+[data-grade="good"] .tool-score-card em { background: #bbf7d0; color: #14532d; }
+[data-grade="hold"] .tool-score-card em { background: #fecaca; color: #7f1d1d; }
 .button, .deal-button {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 48px; padding: 0 18px; border-radius: 16px;
@@ -2810,6 +2897,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .muted { color: var(--muted); font-size: 14px; }
 @media (max-width: 860px) {
+  .commercial-tool-panel { grid-template-columns: 1fr; padding: 18px; border-radius: 26px; }
+  .commercial-tool-output { grid-template-columns: 1fr; }
+  .tool-choice-grid { grid-template-columns: 1fr; }
+  .tool-score-card, .tool-mini-map { min-height: 148px; }
   .site-header { position: static; align-items: stretch; grid-template-columns: 1fr; gap: 10px; padding: 10px 12px 12px; }
   .brand { width: 100%; gap: 10px; }
   .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
@@ -2953,6 +3044,87 @@ LOGO = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="im
 
 OG = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#101828"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1030" cy="120" r="210" fill="#60a5fa" opacity=".22"/><circle cx="170" cy="520" r="190" fill="#f59e0b" opacity=".22"/><text x="80" y="220" fill="#fff" font-family="Arial, sans-serif" font-size="72" font-weight="800">Recuerdame Lab</text><text x="80" y="315" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="38">계약 전 동네 레이더</text><text x="80" y="405" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="30">Search and AI ready public hub</text></svg>'''
 
+COMMERCIAL_TOOL_JS = '''(() => {
+  const root = document.querySelector('[data-commercial-tool-root]');
+  if (!root) return;
+  const form = root.querySelector('[data-commercial-tool]');
+  const byId = (id) => root.querySelector(`#${id}`);
+  const locationInput = byId('tool-location');
+  const typeInput = byId('tool-type');
+  const monthlyInput = byId('tool-monthly');
+  const trafficInput = byId('tool-traffic');
+  const competitionInput = byId('tool-competition');
+  const nightInput = byId('tool-night');
+  const anchorInput = byId('tool-anchor');
+  const monthlyValue = root.querySelector('[data-monthly-value]');
+  const scoreEl = root.querySelector('[data-risk-score]');
+  const gradeEl = root.querySelector('[data-risk-grade]');
+  const summaryEl = root.querySelector('[data-risk-summary]');
+  const titleEl = root.querySelector('[data-result-title]');
+  const listEl = root.querySelector('[data-risk-list]');
+  const linksEl = root.querySelector('[data-recommend-links]');
+  if (!form || !locationInput || !typeInput || !monthlyInput || !scoreEl || !gradeEl || !summaryEl || !titleEl || !listEl || !linksEl) return;
+  const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
+  const add = (items, condition, item) => { if (condition) items.push(item); };
+  const evaluate = () => {
+    const type = typeInput.value;
+    const monthly = Number(monthlyInput.value || 0);
+    const traffic = trafficInput.value;
+    const competition = competitionInput.value;
+    const night = nightInput.value;
+    const anchor = anchorInput.value;
+    const place = locationInput.value.trim() || (type === 'commercial' ? '상가 후보지' : '전월세 후보지');
+    let score = 72;
+    const risks = [];
+    if (type === 'commercial') {
+      if (monthly >= 520) score -= 17; else if (monthly >= 330) score -= 9; else if (monthly <= 160) score += 5;
+      if (traffic === 'weak') score -= 18; else if (traffic === 'strong') score += 8;
+      if (competition === 'high') score -= 16; else if (competition === 'low') score += 6;
+      if (night === 'unsafe') score -= 10; else if (night === 'safe') score += 4;
+      if (anchor === 'weak') score -= 13; else if (anchor === 'strong') score += 8;
+      add(risks, monthly >= 330, '월 고정 부담이 큽니다. 임대료·관리비·인건비를 보수적으로 다시 계산하세요.');
+      add(risks, traffic === 'weak', '낮 유입이 약합니다. 점심·퇴근·주말 시간대를 나눠 실제 체류 인원을 확인하세요.');
+      add(risks, competition === 'high', '경쟁·공실 압력이 높습니다. 같은 업종이 내 고객을 나눠 갖는지 500m 안에서 보세요.');
+      add(risks, anchor === 'weak', '앵커시설이 약합니다. 역·회사·학교·마트처럼 반복 방문을 만드는 이유가 있는지 확인하세요.');
+      add(risks, night === 'unsafe', '밤길·소음 리스크가 있습니다. 영업 종료 후 귀가 동선과 민원 가능성을 같이 보세요.');
+    } else {
+      if (monthly >= 260) score -= 16; else if (monthly >= 170) score -= 8; else if (monthly <= 110) score += 5;
+      if (traffic === 'weak') score -= 10; else if (traffic === 'strong') score += 8;
+      if (competition === 'high') score -= 8; else if (competition === 'low') score += 3;
+      if (night === 'unsafe') score -= 18; else if (night === 'safe') score += 7;
+      if (anchor === 'weak') score -= 12; else if (anchor === 'strong') score += 8;
+      add(risks, monthly >= 170, '월세·관리비·교통비를 합친 고정비가 높습니다. 한 달 현금흐름으로 다시 보세요.');
+      add(risks, night === 'unsafe', '밤길이나 소음이 걱정됩니다. 퇴근 후 10분 현장 확인을 먼저 잡으세요.');
+      add(risks, traffic === 'weak', '생활 편의가 약합니다. 장보기·병원·운동처럼 반복 동선이 멀어지는지 확인하세요.');
+      add(risks, anchor === 'weak', '대체 생활권이 약합니다. 같은 예산으로 갈 수 있는 후보지를 하나 더 남기세요.');
+      add(risks, competition === 'high', '공실·관리 상태 압력이 보입니다. 같은 건물과 옆 건물의 관리 흔적을 비교하세요.');
+    }
+    score = Math.max(18, Math.min(94, Math.round(score)));
+    const grade = score >= 78 ? 'good' : score >= 58 ? 'warn' : 'hold';
+    const gradeText = grade === 'good' ? '진행' : grade === 'warn' ? '주의' : '보류';
+    const fallbackRisks = type === 'commercial'
+      ? ['권리금 회수 조건을 계약서 문구로 확인하세요.', '출근·점심·퇴근·주말을 나눠 유입을 다시 보세요.', '비슷한 업종의 가격대와 회전율을 500m 안에서 비교하세요.']
+      : ['관리비 항목을 영수증 기준으로 확인하세요.', '밤 10시 이후 소음과 귀가 동선을 확인하세요.', '통근 대체 경로와 비 오는 날 동선을 같이 보세요.'];
+    const finalRisks = risks.concat(fallbackRisks).slice(0, 3);
+    root.dataset.mode = type === 'commercial' ? 'commercial' : 'home';
+    root.dataset.grade = grade;
+    monthlyValue.textContent = `${monthly}만원`;
+    scoreEl.textContent = String(score);
+    gradeEl.textContent = gradeText;
+    summaryEl.textContent = `${place} 기준 결과는 ${gradeText} 단계입니다. 계약 전에는 점수보다 아래 질문 3개를 먼저 확인하세요.`;
+    titleEl.textContent = type === 'commercial' ? '상가 계약 전에 이 3가지를 다시 보세요' : '전월세 계약 전에 이 3가지를 다시 보세요';
+    listEl.innerHTML = finalRisks.map((item) => `<li>${esc(item)}</li>`).join('');
+    linksEl.innerHTML = type === 'commercial'
+      ? [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 리스크 검색')].join('')
+      : [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EC%9B%94%EC%84%B8%20%EA%B3%84%EC%95%BD%20%EC%B2%B4%ED%81%AC', '월세 계약 검색'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색')].join('');
+  };
+  form.addEventListener('input', evaluate);
+  form.addEventListener('change', evaluate);
+  form.addEventListener('submit', (event) => { event.preventDefault(); evaluate(); root.querySelector('.commercial-tool-output')?.scrollIntoView({behavior: 'smooth', block: 'nearest'}); });
+  evaluate();
+})();'''
+
 SEARCH_JS = '''(() => {
   const form = document.querySelector('.site-search');
   const input = document.querySelector('#search-query');
@@ -3092,6 +3264,7 @@ def build() -> None:
     write("assets/logo.svg", LOGO)
     write("assets/og-card.svg", OG)
     write("assets/search.js", SEARCH_JS)
+    write("assets/commercial-check.js", COMMERCIAL_TOOL_JS)
     write("data/search-index.json", json.dumps(build_search_index(deals, radar), ensure_ascii=False, indent=2) + "\n")
     write(".nojekyll", "")
     write("robots.txt", f'''User-agent: *

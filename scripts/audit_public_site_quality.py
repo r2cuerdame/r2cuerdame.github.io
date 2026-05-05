@@ -236,6 +236,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
+    for marker in [".commercial-tool-panel", ".tool-mini-map", ".tool-score-card", ".tool-risk-list", ".tool-link-row"]:
+        if marker not in css:
+            failures.append(f"commercial_tool_css_missing:{marker}")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
@@ -289,6 +292,24 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:deals_to_radar_return_link_missing")
     if path.startswith("/radar/") and 'href="/deals/"' not in page_html:
         failures.append(f"{path}:radar_to_deals_link_missing")
+    if kind == "home":
+        required_markers = [
+            'id="commercial-check-tool"',
+            'data-commercial-tool-root',
+            'id="tool-location"',
+            'id="tool-type"',
+            'id="tool-monthly"',
+            'data-risk-score',
+            'data-risk-list',
+            'href="/topics/cafe-commercial-lease-risk/"',
+            'href="/topics/jeonwolse-contract-check/"',
+            '/assets/commercial-check.js?v=',
+        ]
+        for marker in required_markers:
+            if marker not in page_html:
+                failures.append(f"{path}:commercial_tool_marker_missing:{marker}")
+        if page_html.find('id="commercial-check-tool"') > page_html.find('동네 레이더 최신 글'):
+            failures.append(f"{path}:commercial_tool_not_before_latest_articles")
     if kind == "radar":
         for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
             if f'href="{href}"' not in page_html:

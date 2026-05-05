@@ -74,8 +74,54 @@ def test_adaptive_publisher_waits_after_daily_floor_when_queue_is_low(monkeypatc
 def test_publisher_stages_all_generated_static_outputs():
     publisher = load_module(ROOT / "scripts" / "publish_next_radar_candidate.py", "radar_publisher_paths")
 
-    for required in ["404.html", "main.css", "assets/search.js", "deals", "radar", "topics", "search/index.html"]:
+    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
         assert required in publisher.PUBLIC_ADD_PATHS
+
+
+def test_home_has_above_fold_commercial_check_tool():
+    build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_home_tool")
+
+    html = build_site.home_body([], [])
+
+    assert 'href="#commercial-check-tool"' in html
+    assert 'id="commercial-check-tool"' in html
+    assert 'data-commercial-tool-root' in html
+    assert 'id="tool-location"' in html
+    assert 'id="tool-type"' in html
+    assert 'id="tool-monthly"' in html
+    assert 'data-risk-score' in html
+    assert 'data-risk-list' in html
+    assert 'class="tool-mini-map"' in html
+    assert 'href="/topics/cafe-commercial-lease-risk/"' in html
+    assert 'href="/topics/jeonwolse-contract-check/"' in html
+    assert '/assets/commercial-check.js?v=' in html
+    assert html.index('id="commercial-check-tool"') < html.index('동네 레이더 최신 글')
+
+    js = build_site.COMMERCIAL_TOOL_JS
+    assert '[data-commercial-tool-root]' in js
+    assert 'data-risk-score' in js
+    assert '/topics/cafe-commercial-lease-risk/' in js
+    assert '/topics/jeonwolse-contract-check/' in js
+    assert '/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD' in js
+    assert '/radar/cafe-contract-risk/' not in js
+    assert '/radar/monthly-rent-contract-check/' not in js
+
+
+def test_public_audit_rejects_home_without_commercial_tool():
+    audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_home_tool")
+    html = (
+        '<!doctype html><html><head><title>Recuerdame Lab 홈</title>'
+        '<meta name="description" content="이사 월세 전세 상가 계약 전 동네 리스크를 확인하는 홈입니다.">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<link rel="stylesheet" href="/main.css?v=test"></head><body><main>'
+        '<h1>이사·월세·상가 계약 전</h1>'
+        '<section><h2>동네 레이더 최신 글</h2></section>'
+        '</main></body></html>'
+    )
+
+    failures = audit.audit_html("/", html)
+
+    assert any("commercial_tool_marker_missing" in failure for failure in failures)
 
 
 def test_radar_contract_check_entrypoints_are_topic_lists():
@@ -118,7 +164,7 @@ def test_topic_pages_do_not_put_radar_cards_in_narrow_mixed_grid():
 
     html = build_site.topic_page_body(cafe_topic, [], radar)
 
-    assert 'id="related-articles" class="article-list topic-article-list"' in html
+    assert 'id="related-articles" class="article-list topic-article-list topic-featured-list"' in html
     assert 'class="article-list topic-article-list topic-secondary-list"' in html
     assert 'class="article-list mixed-list"' not in html
 

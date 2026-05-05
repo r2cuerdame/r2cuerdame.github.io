@@ -81,6 +81,49 @@ h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.05
 h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .lead { color: #5f5652; font-size: clamp(18px, 2.1vw, 23px); max-width: 850px; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.commercial-tool-panel {
+  display: grid; grid-template-columns: minmax(0, .85fr) minmax(280px, .72fr) minmax(320px, 1fr); gap: 18px;
+  align-items: stretch; margin: 16px 0 34px; padding: clamp(22px, 4vw, 34px);
+  border: 1px solid rgba(234, 223, 212, .98); border-radius: 34px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(255, 244, 234, .94));
+  box-shadow: 0 20px 58px rgba(58, 37, 20, .10);
+}
+.tool-copy h2 { margin: 8px 0 12px; font-size: clamp(28px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.05em; }
+.tool-copy p { color: #5f5652; font-weight: 650; }
+.tool-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tool-badges span { padding: 7px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 950; color: #594e49; }
+.commercial-tool-form, .commercial-tool-output, .tool-risk-card { min-width: 0; }
+.commercial-tool-form { display: grid; gap: 12px; padding: 18px; border-radius: 24px; background: #fff; border: 1px solid rgba(234, 223, 212, .95); }
+.commercial-tool-form label { display: grid; gap: 6px; color: #514641; font-size: 13px; font-weight: 950; }
+.commercial-tool-form input[type="text"], .commercial-tool-form select {
+  width: 100%; min-height: 44px; border: 1px solid #e4d5c7; border-radius: 14px; padding: 0 12px;
+  background: #fffaf4; color: var(--ink); font: inherit; font-weight: 850;
+}
+.commercial-tool-form input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--orange); }
+.tool-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.commercial-tool-output { display: grid; grid-template-columns: .58fr 1fr; gap: 14px; }
+.tool-score-card { display: grid; align-content: center; justify-items: center; min-height: 166px; padding: 18px; border-radius: 24px; background: #111827; color: #fff; text-align: center; }
+.tool-score-card span { color: #cbd5e1; font-size: 12px; font-weight: 900; }
+.tool-score-card strong { display: flex; align-items: baseline; gap: 3px; font-size: 54px; line-height: 1; letter-spacing: -0.06em; }
+.tool-score-card small { font-size: 17px; color: #cbd5e1; }
+.tool-score-card em { margin-top: 8px; padding: 5px 12px; border-radius: 999px; background: #fbbf24; color: #211922; font-style: normal; font-weight: 950; }
+.tool-mini-map { position: relative; min-height: 166px; border-radius: 24px; overflow: hidden; background: radial-gradient(circle at center, #fff 0 10%, #dbeafe 11% 32%, #fff7ed 33% 58%, #ecfdf5 59% 100%); border: 1px solid rgba(234, 223, 212, .95); }
+.map-ring, .map-dot { position: absolute; display: inline-flex; align-items: center; justify-content: center; font-weight: 950; }
+.map-ring { border: 1px dashed rgba(37, 99, 235, .42); color: #1d4ed8; border-radius: 999px; background: rgba(255,255,255,.48); font-size: 12px; }
+.ring-15 { inset: 12px; } .ring-10 { inset: 34px; } .ring-5 { inset: 58px; }
+.map-dot { min-width: 52px; min-height: 30px; padding: 3px 8px; border-radius: 999px; color: #fff; font-size: 11px; box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+.dot-home { left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--orange); }
+.dot-anchor { left: 12%; top: 22%; background: var(--green); }
+.dot-risk { right: 12%; bottom: 20%; background: #7c2d12; }
+.tool-risk-card { grid-column: 1 / -1; padding: 18px; border-radius: 24px; background: #fff; border: 1px solid rgba(234, 223, 212, .95); }
+.tool-risk-card h3 { margin: 0 0 8px; font-size: 22px; letter-spacing: -0.035em; }
+.tool-risk-card p { margin: 0 0 12px; color: #625954; font-weight: 700; }
+.tool-risk-list { display: grid; gap: 8px; margin: 0; padding-left: 22px; }
+.tool-risk-list li { padding-left: 4px; font-weight: 800; }
+.tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.tool-link-row a { display: inline-flex; min-height: 36px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
+[data-grade="good"] .tool-score-card em { background: #bbf7d0; color: #14532d; }
+[data-grade="hold"] .tool-score-card em { background: #fecaca; color: #7f1d1d; }
 .button, .deal-button {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 48px; padding: 0 18px; border-radius: 16px;
@@ -543,6 +586,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .muted { color: var(--muted); font-size: 14px; }
 @media (max-width: 860px) {
+  .commercial-tool-panel { grid-template-columns: 1fr; padding: 18px; border-radius: 26px; }
+  .commercial-tool-output { grid-template-columns: 1fr; }
+  .tool-choice-grid { grid-template-columns: 1fr; }
+  .tool-score-card, .tool-mini-map { min-height: 148px; }
   .site-header { position: static; align-items: stretch; grid-template-columns: 1fr; gap: 10px; padding: 10px 12px 12px; }
   .brand { width: 100%; gap: 10px; }
   .brand-mark { width: 40px; height: 40px; border-radius: 14px; }

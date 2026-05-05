@@ -36,6 +36,7 @@ PUBLIC_ADD_PATHS = [
     "deals",
     "topics",
     "assets/search.js",
+    "assets/commercial-check.js",
     "assets/radar",
     "scripts/publish_next_radar_candidate.py",
     "index.html",
@@ -399,7 +400,7 @@ def publish_selected(selected: dict[str, Any], at: dt.datetime, dry_run: bool = 
         return {"status": "git_commit_failed", "slug": slug, "title": selected["title"], "url": url, "commands": commands}
     if no_push:
         return {"status": "committed_no_push", "slug": slug, "title": selected["title"], "url": url, "commands": commands}
-    commands.append(run_command("git_push", ["git", "push", "origin", "HEAD"], timeout=240))
+    commands.append(run_command("git_push", ["git", "push", "origin", "HEAD:refs/heads/main"], timeout=240))
     if not commands[-1]["ok"]:
         return {"status": "git_push_failed", "slug": slug, "title": selected["title"], "url": url, "commands": commands}
     return {"status": "published_to_pages", "slug": slug, "title": selected["title"], "url": url, "commands": commands}
