@@ -270,6 +270,7 @@ def short_text(value: str, limit: int = 170) -> str:
 
 
 IMG_SRC_RE = re.compile(r'<img\b[^>]*(?:src|data-src)=["\']([^"\']+)["\']', re.I)
+ANCHOR_RE = re.compile(r'<a\b(?P<attrs>[^>]*)>(?P<label>[\s\S]*?)</a>', re.I)
 HREF_RE = re.compile(r'<a\b[^>]*href=["\']([^"\']+)["\']', re.I)
 PRICE_HINT_RE = re.compile(r'가격대는\s*([^<.。]+?수준)', re.I)
 COUNT_HINT_RE = re.compile(r'(?:BEST|TOP)\s*(\d+)|(\d+)선', re.I)
@@ -674,11 +675,12 @@ def layout(page: dict, body: str) -> str:
 
 
 def plain_article_card(a: dict) -> str:
-    tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
+    tags = taxonomy_links(a.get("tags") or [], "tag pale", limit=3)
+    category = taxonomy_link(a.get("category"), "tag")
     date = parse_dt(a.get("date")).strftime("%Y-%m-%d")
     metric = traffic_badge(a["path"])
     return f'''<article class="list-card">
-  <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
+  <div class="card-meta">{category}<time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
   <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
   <p>{esc(short_text(a['description'], 115))}</p>
   <div class="tag-row">{tags}</div>
@@ -859,7 +861,8 @@ def radar_scene_markup(scene: str, chips: tuple[str, str, str]) -> str:
 
 
 def radar_article_card(a: dict) -> str:
-    tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (a.get("tags") or [])[:3])
+    tags = taxonomy_links(a.get("tags") or [], "tag pale", limit=3)
+    category = taxonomy_link(a.get("category"), "tag")
     date = parse_dt(a.get("date")).strftime("%m.%d")
     metric = traffic_badge(a["path"])
     desc = short_text(a.get("description") or "", 84)
@@ -885,7 +888,7 @@ def radar_article_card(a: dict) -> str:
     <span class="radar-card-badge">{esc(visual['badge'])}</span>
   </a>
   <div class="radar-card-body">
-    <div class="card-meta"><span class="tag">{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
+    <div class="card-meta">{category}<time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
     <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
     {hook}
     <p>{esc(desc)}</p>
@@ -954,12 +957,6 @@ def radar_experience_block(article: dict) -> str:
 '''
 
 
-def compact_item_count_hint(value: str) -> str:
-    label = str(value or "비교글").strip() or "비교글"
-    label = re.sub(r"(\d+\s*개)\s*후보\s*비교", r"\1 비교", label)
-    return label
-
-
 def deal_card(a: dict, rank: int | None = None) -> str:
     img = a.get("image_url") or ""
     card_class = "deal-card" if img else "deal-card text-card"
@@ -967,16 +964,16 @@ def deal_card(a: dict, rank: int | None = None) -> str:
         card_class += " ranked"
     date = parse_dt(a.get("date")).strftime("%m.%d")
     metric = traffic_badge(a["path"])
+    category = taxonomy_link(a.get("category"), "meta-link")
     deal_url = a.get("primary_deal_url") or ""
     external = ""
     if deal_url:
         external = f'<a class="deal-price-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인</a>'
     rank_badge = f'<span class="deal-rank">BEST {rank}</span>' if rank else ""
-    count_label = esc(compact_item_count_hint(a.get('item_count_hint') or '비교글'))
     if img:
         thumb = f'''<a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
     <img src="{esc(img)}" alt="{esc(a['title'])} 대표 상품 이미지" loading="lazy" decoding="async" />
-    <span class="deal-count">{count_label}</span>
+    <span class="deal-count">{esc(a.get('item_count_hint') or '비교글')}</span>
     {rank_badge}
   </a>'''
     else:
@@ -988,7 +985,7 @@ def deal_card(a: dict, rank: int | None = None) -> str:
     return f'''<article class="{card_class}">
   {thumb}
   <div class="deal-body">
-    <div class="deal-meta"><span>{esc(a.get('category'))}</span><time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
+    <div class="deal-meta">{category}<time datetime="{esc(a.get('date'))}">{date}</time>{metric}</div>
     <h2><a href="{esc(a['path'])}">{esc(a['title'])}</a></h2>
     <p>{esc(short_text(a.get('description') or '', 92))}</p>
     <div class="deal-price"><span>{price_hint}</span>{external}</div>
@@ -1026,6 +1023,47 @@ def article_cards(articles: list[dict], empty: str) -> str:
     return "\n".join(cards)
 
 
+def search_query_href(label: Any) -> str:
+    text = str(label or "").strip()
+    return f"/search/?q={quote(text, safe='')}"
+
+
+def taxonomy_link(label: Any, class_name: str = "", aria_prefix: str = "검색") -> str:
+    text = str(label or "").strip()
+    if not text:
+        return ""
+    cls = f' class="{esc(class_name)}"' if class_name else ""
+    aria = f' aria-label="{esc(f"{aria_prefix}: {text}")}"' if aria_prefix else ""
+    return f'<a{cls} href="{esc(search_query_href(text))}"{aria}>{esc(text)}</a>'
+
+
+def taxonomy_links(labels, class_name: str, *, limit: int | None = None, separator: str = " ") -> str:
+    links: list[str] = []
+    seen: set[str] = set()
+    for raw in labels or []:
+        text = str(raw or "").strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        links.append(taxonomy_link(text, class_name))
+        if limit is not None and len(links) >= limit:
+            break
+    return separator.join(links)
+
+
+def category_strip_links(labels) -> str:
+    return taxonomy_links(labels, "category-chip", separator="")
+
+
+def related_search_chips(article: dict, *, limit: int = 6) -> str:
+    labels: list[str] = []
+    category = str(article.get("category") or "").strip()
+    if category:
+        labels.append(category)
+    labels.extend(str(tag).strip() for tag in (article.get("tags") or []) if str(tag).strip())
+    return taxonomy_links(labels, "search-chip", limit=limit)
+
+
 def category_chips(articles: list[dict]) -> str:
     cats = []
     for a in articles:
@@ -1034,7 +1072,7 @@ def category_chips(articles: list[dict]) -> str:
             cats.append(cat)
     if not cats:
         return '<span class="category-chip">비교글 준비중</span>'
-    return "".join(f'<a class="category-chip" href="/search/?q={quote(c)}">{esc(c)}</a>' for c in cats[:8])
+    return taxonomy_links(cats, "category-chip", limit=8, separator="")
 
 
 def search_form(placeholder: str = "상품명, 용도, 예산, 동네 키워드로 검색") -> str:
@@ -1103,7 +1141,7 @@ def deals_by_growth_priority(deals: list[dict]) -> list[dict]:
 
 
 def search_chip(label: str) -> str:
-    return f'<a class="search-chip" href="/search/?q={quote(label)}">{esc(label)}</a>'
+    return taxonomy_link(label, "search-chip")
 
 
 def matches_deal_intent(article: dict, terms: list[str]) -> bool:
@@ -1196,47 +1234,12 @@ def deal_category_hubs(deals: list[dict]) -> str:
         articles = deals_by_growth_priority(grouped[category])
         cards.append(f'''<article class="category-hub">
   <div>
-    <span class="tag">{esc(category)}</span>
+    {taxonomy_link(category, "tag")}
     <strong>{len(articles)}개 비교글</strong>
   </div>
   <ul class="mini-link-list">{mini_deal_links(articles)}</ul>
 </article>''')
     return "\n".join(cards)
-
-
-def clean_deal_product_link_label(raw_html: str) -> str:
-    label = strip_tags(raw_html)
-    label = re.sub(r"^[\s🛒👉✅·•|-]+", "", label).strip()
-    label = re.sub(
-        r"\s*(?:가격\s*확인(?:하기)?|상품\s*페이지\s*확인|구매\s*링크|자세히\s*보기|보러가기|구매하기)\s*$",
-        "",
-        label,
-        flags=re.I,
-    ).strip()
-    label = re.sub(r"\s+", " ", label)
-    return short_text(label or "상품 페이지", 46)
-
-
-def deal_article_product_links(article: dict, limit: int = 8) -> list[dict[str, str]]:
-    body = article.get("body_html") or ""
-    links: list[dict[str, str]] = []
-    seen: set[tuple[str, str]] = set()
-    for attrs, inner in re.findall(r"<a\b([^>]*)>(.*?)</a>", body, flags=re.I | re.S):
-        href_match = re.search(r"\bhref\s*=\s*(['\"])(.*?)\1", attrs, flags=re.I | re.S)
-        if not href_match:
-            continue
-        href = html.unescape(href_match.group(2)).strip()
-        if "coupang.com" not in href.lower():
-            continue
-        label = clean_deal_product_link_label(inner)
-        key = (href.split("?", 1)[0], label)
-        if key in seen:
-            continue
-        seen.add(key)
-        links.append({"href": href, "label": label})
-        if len(links) >= limit:
-            break
-    return links
 
 
 def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
@@ -1276,25 +1279,83 @@ def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
     return names
 
 
-def deal_article_quick_block(article: dict) -> str:
-    product_links = deal_article_product_links(article)
-    product_note = ""
-    if product_links:
-        products_heading = "상품 페이지 바로가기"
-        product_note = '<p class="quick-product-note">설명 읽다가 다시 찾지 않도록 후보별 가격·옵션 확인 링크를 먼저 모았습니다.</p>'
-        product_items = "".join(
-            f'<li><a class="quick-product-link" href="{esc(link["href"])}" target="_blank" rel="sponsored nofollow noopener">{esc(link["label"])}</a></li>'
-            for link in product_links
+def specific_product_anchor_label(raw_label: str) -> str:
+    label = strip_tags(raw_label or "")
+    label = re.sub(r"^[\s🛒▶️👉]+", "", label).strip()
+    label = re.sub(r"\s*(?:가격|최저가|옵션|후기)\s*(?:확인|보기|확인하기).*$", "", label).strip()
+    generic = {
+        "",
+        "상품 페이지에서 확인",
+        "상품 페이지에서 옵션·후기 확인하기",
+        "상품 페이지 확인",
+        "가격 확인하기",
+        "자세히 보기",
+    }
+    if label in generic or len(label) < 3:
+        return ""
+    return short_text(label, 42)
+
+
+def clean_product_link_label(raw_label: str, fallback: str) -> str:
+    return specific_product_anchor_label(raw_label) or short_text(fallback or "후보 상품", 42)
+
+
+def deal_article_product_links(article: dict, limit: int = 5) -> list[dict[str, str]]:
+    """Extract de-duplicated Coupang candidate links for the above-the-fold deal path."""
+    body = article.get("body_html") or ""
+    fallbacks = deal_article_product_names(article, limit=limit)
+    links: list[dict[str, str]] = []
+    by_url: dict[str, dict[str, str]] = {}
+    for match in ANCHOR_RE.finditer(body):
+        href_match = HREF_ATTR_RE.search(" " + (match.group("attrs") or ""))
+        if not href_match:
+            continue
+        url = clean_url(href_match.group(2))
+        if not url or "coupang.com" not in url.lower():
+            continue
+        fallback = fallbacks[min(len(links), max(0, len(fallbacks) - 1))] if fallbacks else "후보 상품"
+        label = clean_product_link_label(match.group("label"), fallback)
+        current = by_url.get(url)
+        if current:
+            specific_label = specific_product_anchor_label(match.group("label"))
+            if specific_label:
+                current["label"] = specific_label
+            continue
+        item = {"label": label, "url": url}
+        by_url[url] = item
+        links.append(item)
+        if len(links) >= limit:
+            break
+    return links
+
+
+def deal_article_product_link_block(article: dict) -> str:
+    links = deal_article_product_links(article)
+    if not links:
+        return ""
+    items = []
+    for item in links:
+        items.append(
+            f'<li><a class="quick-product-link" href="{esc(item["url"])}" target="_blank" rel="sponsored nofollow noopener">'
+            f'<span>{esc(item["label"])}</span><strong>쿠팡에서 보기</strong></a></li>'
         )
-    else:
-        products_heading = "본문에서 비교하는 후보"
-        products = deal_article_product_names(article)
-        product_items = "".join(f"<li>{esc(name)}</li>" for name in products)
-        if not product_items:
-            product_items = "<li>본문에서 후보별 장단점과 가격대를 확인하세요.</li>"
+    return f'''<div class="quick-product-links" aria-label="쿠팡 상품 페이지 바로가기">
+    <h3>마음에 드는 후보는 바로 확인</h3>
+    <p>쿠팡 파트너스 링크입니다. 가격·배송·후기는 쿠팡 상품 페이지에서 다시 확인하세요.</p>
+    <ul>{''.join(items)}</ul>
+  </div>'''
+
+
+def deal_article_quick_block(article: dict) -> str:
+    products = deal_article_product_names(article)
+    product_items = "".join(f"<li>{esc(name)}</li>" for name in products)
+    if not product_items:
+        product_items = "<li>본문에서 후보별 장단점과 가격대를 확인하세요.</li>"
+    product_links = deal_article_product_link_block(article)
     external = ""
-    if article.get("primary_deal_url"):
+    if not product_links and article.get("primary_deal_url"):
         external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
+    category_link = taxonomy_link(article.get("category") or "구매가이드", "quick-fact-link")
     return f'''<section class="deal-quick-box" aria-label="구매가이드 빠른 결론">
   <div class="quick-verdict">
     <span class="tag">3분 컷 비교</span>
@@ -1305,13 +1366,13 @@ def deal_article_quick_block(article: dict) -> str:
   <div class="quick-facts" aria-label="핵심 정보">
     <div><strong>{esc(article.get('item_count_hint') or '비교글')}</strong><span>후보 수</span></div>
     <div><strong>{esc(article.get('price_hint') or '상세 확인')}</strong><span>가격 기준</span></div>
-    <div><strong>{esc(article.get('category') or '구매가이드')}</strong><span>카테고리</span></div>
+    <div><strong>{category_link}</strong><span>카테고리</span></div>
   </div>
   <div class="quick-products">
-    <h3>{products_heading}</h3>
-    {product_note}
+    <h3>본문에서 비교하는 후보</h3>
     <ol>{product_items}</ol>
   </div>
+  {product_links}
   <div class="deal-actions quick-actions">
     <a class="deal-button primary" href="#article-body">비교 내용 바로 보기</a>{external}
   </div>
@@ -1355,7 +1416,7 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
 <section class="panel soft">
   <h2>동네 레이더가 보는 범위</h2>
   <div class="category-strip">
-    <span class="category-chip">이사 준비</span><span class="category-chip">월세·전세 계약</span><span class="category-chip">통근 피로</span><span class="category-chip">생활권</span><span class="category-chip">밤길·소음·관리비</span><span class="category-chip">상가·권리금</span><span class="category-chip">현장 확인 질문</span>
+    {category_strip_links(["이사 준비", "월세·전세 계약", "통근 피로", "생활권", "밤길·소음·관리비", "상가·권리금", "현장 확인 질문"])}
   </div>
 </section>
 <section class="article-list mixed-list radar-latest-grid">
@@ -1412,11 +1473,7 @@ def deals_body(deals: list[dict]) -> str:
     <a class="button" href="/">Recuerdame Lab 홈</a>
   </div>
 </section>
-<section id="shopping-intents" class="landing-section above-fold-section">
-  <div class="section-title"><p class="eyebrow">Intent Finder</p><h2>상황별로 먼저 좁히기</h2><p>상품명보다 사용 상황이 먼저 떠오를 때는 검색 칩과 관련 비교글로 바로 이동하세요.</p></div>
-  <div class="intent-grid">{deal_intent_hubs(deals)}</div>
-</section>
-<section id="today-best" class="landing-section">
+<section id="today-best" class="landing-section above-fold-section">
   <div class="section-title"><p class="eyebrow">Today Best</p><h2>오늘의 추천 BEST</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
   <div class="deal-grid best-grid">{best_deal_cards(deals)}</div>
 </section>
@@ -1457,7 +1514,7 @@ def radar_body(radar: list[dict]) -> str:
 <section class="panel soft">
   <h2>현재 레이더 범위</h2>
   <div class="category-strip">
-    <span class="category-chip">예산·보증금·월세</span><span class="category-chip">관리비·교통비</span><span class="category-chip">통근·대체 생활권</span><span class="category-chip">생활 상권</span><span class="category-chip">밤길·소음</span><span class="category-chip">상가 임대차·권리금</span>
+    {category_strip_links(["예산·보증금·월세", "관리비·교통비", "통근·대체 생활권", "생활 상권", "밤길·소음", "상가 임대차·권리금"])}
   </div>
 </section>
 <section class="article-list">
@@ -1567,7 +1624,8 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     section_href = f"/{article['section']}/"
     dt = parse_dt(article.get("date"))
     metric = traffic_badge(article["path"])
-    tags = " ".join(f'<span class="tag pale">{esc(t)}</span>' for t in (article.get("tags") or [])[:8])
+    tags = taxonomy_links(article.get("tags") or [], "tag pale", limit=8)
+    category = taxonomy_link(article.get("category"), "meta-link")
     notice = ""
     if article.get("is_affiliate"):
         notice = '<section class="notice affiliate compact-notice"><strong>제휴 고지</strong><p>쿠팡 파트너스 활동의 일환으로, 구매 시 이에 따른 일정액의 수수료를 제공받을 수 있습니다.</p></section>'
@@ -1609,9 +1667,17 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
         links = "".join(f'<li><a href="{esc(a["path"])}">{esc(a["title"])}</a></li>' for a in related[:3])
         if not links:
             links = '<li><a href="/guides/">동네 레이더 읽는 순서</a></li>'
+        search_chips = related_search_chips(article)
+        search_block = ""
+        if search_chips:
+            search_block = f'''<div class="radar-related-search">
+    <h3>같은 리스크 더 찾기</h3>
+    <div class="search-chip-row">{search_chips}</div>
+  </div>'''
         related_block = f'''<section class="related-radar">
   <h2>다음에 같이 볼 글</h2>
   <ul>{links}<li><a href="/guides/">처음 온 사람을 위한 읽는 순서</a></li></ul>
+  {search_block}
 </section>'''
     if article.get("section") == "deals":
         tail_links = f'''<a class="button" href="{section_href}">쇼핑픽 목록</a>
@@ -1627,7 +1693,7 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     <p class="eyebrow">{esc(section_name)}</p>
     <h1>{esc(article['title'])}</h1>
     <p class="lead">{esc(article['description'])}</p>
-    <div class="article-meta"><span>{esc(article.get('category'))}</span><time datetime="{esc(article.get('date'))}">{dt.strftime('%Y-%m-%d %H:%M KST')}</time>{metric}</div>
+    <div class="article-meta">{category}<time datetime="{esc(article.get('date'))}">{dt.strftime('%Y-%m-%d %H:%M KST')}</time>{metric}</div>
     <div class="tag-row">{tags}</div>
   </header>
   {notice}
@@ -1798,8 +1864,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   box-shadow: 0 10px 30px rgba(58, 37, 20, .06);
 }
 .card { min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
-.tag { display: inline-flex; align-self: flex-start; border-radius: 999px; padding: 5px 11px; background: #fff0e5; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
+.tag { display: inline-flex; align-self: flex-start; align-items: center; min-height: 30px; border-radius: 999px; padding: 5px 11px; background: #fff0e5; color: var(--orange-dark); font-size: 12px; font-weight: 950; text-decoration: none; }
 .tag.pale { background: #f4ebe2; color: #6b625f; }
+.tag[href]:hover { background: #fff7ed; color: var(--orange-dark); box-shadow: 0 6px 14px rgba(255,90,31,.10); }
+.meta-link, .quick-fact-link { color: inherit; font-weight: 950; text-decoration: none; border-bottom: 1px dashed rgba(107,98,95,.55); text-underline-offset: 3px; }
+.meta-link:hover, .quick-fact-link:hover { color: var(--orange-dark); border-bottom-color: currentColor; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .card p, .list-card p, .panel p, .notice p { color: #5f5652; }
 .card > a:not(.button) { display: inline-flex; align-items: center; min-height: 44px; font-weight: 950; color: var(--orange-dark); }
@@ -1949,11 +2018,16 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .quick-facts span { color: #6b7280; font-size: 12px; font-weight: 900; margin-top: 3px; }
 .quick-products { border-top: 1px solid #e5e7eb; padding-top: 16px; }
 .quick-products h3 { margin: 0 0 8px; font-size: 19px; }
-.quick-product-note { margin: 0 0 10px !important; color: #6b7280 !important; font-size: 13px; font-weight: 850; }
 .quick-products ol { margin: 0; padding-left: 1.25em; columns: 2; }
 .quick-products li { margin: 5px 0; font-weight: 850; }
-.quick-product-link { color: var(--orange-dark); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-.quick-product-link::after { content: " ↗"; font-size: 12px; }
+.quick-product-links { border-top: 1px solid #e5e7eb; padding-top: 16px; }
+.quick-product-links h3 { margin: 0 0 4px; font-size: 19px; }
+.quick-product-links p { margin: 0 0 10px !important; font-size: 14px; font-weight: 850; }
+.quick-product-links ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.quick-product-link { display: grid; gap: 3px; min-height: 58px; padding: 11px 13px; border-radius: 16px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; text-decoration: none; }
+.quick-product-link span { min-width: 0; color: #111827; font-weight: 950; font-size: 14px; line-height: 1.35; }
+.quick-product-link strong { color: var(--orange-dark); font-size: 12px; font-weight: 950; }
+.quick-product-link:hover { background: #ffedd5; color: var(--orange-dark); box-shadow: 0 8px 18px rgba(255,90,31,.12); }
 .quick-actions { margin-top: 0; }
 .deal-article .article-hero { padding-bottom: 8px; }
 .deal-article .article-product-hero { margin-top: 16px; }
@@ -1963,7 +2037,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .shop-hero-copy h1 { max-width: 760px; }
 .category-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.category-chip { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: #4b423f; font-weight: 900; font-size: 13px; }
+.category-chip { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: #4b423f; font-weight: 900; font-size: 13px; text-decoration: none; transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease; }
+.category-chip[href]:hover { background: #fff7ed; border-color: #ffd2b8; color: var(--orange-dark); transform: translateY(-1px); }
 .hero-pin-stack { position: relative; min-height: 380px; }
 .hero-pin { position: absolute; display: block; width: 58%; overflow: hidden; border-radius: 30px; background: #fff; box-shadow: var(--shadow); border: 8px solid #fff; }
 .hero-pin img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fff; }
@@ -1977,7 +2052,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .intent-card h2 { margin: 8px 0 8px; font-size: clamp(21px, 2.2vw, 26px); }
 .intent-card p { color: #5f5652; margin: 0 0 14px; line-height: 1.65; }
 .search-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
-.search-chip { display: inline-flex; align-items: center; min-height: 34px; padding: 0 11px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 13px; font-weight: 950; }
+.search-chip { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 13px; font-weight: 950; }
 .mini-link-list { display: grid; gap: 8px; margin: 12px 0 0; padding-left: 18px; }
 .mini-link-list a { color: #2f2724; font-weight: 900; }
 .category-hub > div { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 10px; }
@@ -2122,6 +2197,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .related-radar { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fffaf4; }
 .related-radar h2 { margin-top: 0; }
 .related-radar ul { margin-bottom: 0; }
+.radar-related-search { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.radar-related-search h3 { margin: 0 0 8px; font-size: 18px; }
+.radar-related-search .search-chip-row { margin-bottom: 0; }
 .deal-radar-return { margin: 0 0 22px; padding: 18px; border-radius: 20px; background: linear-gradient(135deg, #eff6ff, #fff 70%); border: 1px solid #bfdbfe; }
 .deal-radar-return h2 { margin: 8px 0 6px; font-size: clamp(22px, 3vw, 30px); }
 .deal-radar-return p { margin: 0 0 12px; color: #5f5652; }
@@ -2236,8 +2314,6 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .deal-thumb img { height: 100%; min-height: 132px; max-height: 168px; aspect-ratio: auto; object-fit: contain; padding: 8px; }
   .deal-text-badge { min-height: 132px; padding: 10px; font-size: 12px; border-bottom: 0; border-right: 1px solid var(--line); }
   .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
-  .deal-card.ranked .deal-rank { left: 8px; right: auto; top: 8px; padding: 5px 8px; font-size: 11px; }
-  .deal-card.ranked .deal-count { top: auto; bottom: 8px; left: 8px; max-width: calc(100% - 16px); padding: 4px 6px; font-size: 10.5px; white-space: nowrap; }
   .deal-body { min-width: 0; padding: 14px; gap: 8px; }
   .deal-meta { align-items: flex-start; flex-direction: column; gap: 4px; font-size: 11px; }
   .deal-card h2 { font-size: 18px; line-height: 1.32; }

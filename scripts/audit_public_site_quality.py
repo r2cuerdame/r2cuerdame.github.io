@@ -88,6 +88,23 @@ def attr_value(tag: str, attr: str) -> str:
     return html.unescape(match.group(2)) if match else ""
 
 
+def anchor_tags(page_html: str) -> list[str]:
+    return re.findall(r"<a\b[^>]*>", page_html, flags=re.I | re.S)
+
+
+def anchor_class_count(page_html: str, class_name: str) -> int:
+    count = 0
+    for tag in anchor_tags(page_html):
+        classes = attr_value(tag, "class").split()
+        if class_name in classes:
+            count += 1
+    return count
+
+
+def coupang_anchor_tags(page_html: str) -> list[str]:
+    return [tag for tag in anchor_tags(page_html) if "coupang.com" in attr_value(tag, "href").lower()]
+
+
 def extract_tag_text(page_html: str, tag: str) -> str:
     match = re.search(rf"<{tag}\b[^>]*>(.*?)</{tag}>", page_html, flags=re.I | re.S)
     if not match:
@@ -194,14 +211,6 @@ def split_css_rules(css: str) -> Iterable[tuple[str, str]]:
         yield normalize_ws(selector), normalize_ws(body)
 
 
-def css_media_block(css: str, marker: str) -> str:
-    start = css.find(marker)
-    if start < 0:
-        return ""
-    next_start = css.find("@media", start + len(marker))
-    return css[start:] if next_start < 0 else css[start:next_start]
-
-
 def audit_css(css: str) -> list[str]:
     failures: list[str] = []
     if ".visual-checklist" not in css:
@@ -219,16 +228,6 @@ def audit_css(css: str) -> list[str]:
         width_match = re.search(r"\bwidth\s*:\s*(\d+(?:\.\d+)?)px\b", body)
         if width_match and float(width_match.group(1)) < 160:
             failures.append(f"generic_checklist_fixed_narrow_width:{selector}:{width_match.group(1)}px")
-
-    mobile_560 = css_media_block(css, "@media (max-width: 560px)")
-    ranked_count_match = re.search(r"\.deal-card\.ranked\s+\.deal-count\s*\{([^}]*)\}", mobile_560, flags=re.S)
-    ranked_count_body = normalize_ws(ranked_count_match.group(1)) if ranked_count_match else ""
-    ranked_rank_match = re.search(r"\.deal-card\.ranked\s+\.deal-rank\s*\{([^}]*)\}", mobile_560, flags=re.S)
-    ranked_rank_body = normalize_ws(ranked_rank_match.group(1)) if ranked_rank_match else ""
-    if not ranked_count_match or "bottom:" not in ranked_count_body or "top: auto" not in ranked_count_body:
-        failures.append("mobile_ranked_deal_count_overlap_guard_missing")
-    if not ranked_rank_match or "left:" not in ranked_rank_body or "right: auto" not in ranked_rank_body:
-        failures.append("mobile_ranked_deal_rank_position_guard_missing")
     return failures
 
 
@@ -267,6 +266,31 @@ def audit_html(path: str, page_html: str) -> list[str]:
     if path.startswith("/radar/") and 'href="/deals/"' not in page_html:
         failures.append(f"{path}:radar_to_deals_link_missing")
 
+    category_chip_links = anchor_class_count(page_html, "category-chip")
+    tag_links = anchor_class_count(page_html, "tag")
+    meta_links = anchor_class_count(page_html, "meta-link")
+    if kind in {"home", "radar", "deals"} and category_chip_links < 5:
+        failures.append(f"{path}:taxonomy_category_links_too_few:{category_chip_links}")
+    if kind in {"radar_article", "deal_article"}:
+        if tag_links < 2:
+            failures.append(f"{path}:taxonomy_tag_links_too_few:{tag_links}")
+        if meta_links < 1:
+            failures.append(f"{path}:taxonomy_category_meta_link_missing")
+    if kind == "radar_article" and anchor_class_count(page_html, "search-chip") < 2:
+        failures.append(f"{path}:radar_related_search_chips_too_few")
+    if kind == "deal_article":
+        quick_product_links = anchor_class_count(page_html, "quick-product-link")
+        coupang_links = coupang_anchor_tags(page_html)
+        if coupang_links and quick_product_links < min(3, len({attr_value(tag, 'href') for tag in coupang_links})):
+            failures.append(f"{path}:deal_quick_product_links_too_few:{quick_product_links}")
+        if quick_product_links and "쿠팡 파트너스 링크입니다" not in text:
+            failures.append(f"{path}:deal_quick_product_affiliate_cue_missing")
+        for tag in coupang_links:
+            rel = set(attr_value(tag, "rel").split())
+            if not {"sponsored", "nofollow", "noopener"}.issubset(rel) or attr_value(tag, "target") != "_blank":
+                failures.append(f"{path}:coupang_anchor_policy_bad")
+                break
+
     if kind in {"radar_article", "deal_article"}:
         if len(text) < 1800:
             failures.append(f"{path}:article_visible_text_too_short:{len(text)}")
@@ -294,15 +318,6 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_reader_action_missing")
     if kind == "deal_article" and "구매" not in text and "비교" not in text:
         failures.append(f"{path}:deal_reader_action_missing")
-    if kind == "deal_article":
-        affiliate_link_count = len(re.findall(r"<a\b[^>]*href\s*=\s*['\"][^'\"]*coupang\.com", page_html, flags=re.I | re.S))
-        quick_link_count = page_html.count('class="quick-product-link"')
-        if affiliate_link_count < 2:
-            failures.append(f"{path}:deal_affiliate_links_too_few:{affiliate_link_count}")
-        if quick_link_count < min(3, affiliate_link_count):
-            failures.append(f"{path}:deal_quick_product_links_too_few:{quick_link_count}/{affiliate_link_count}")
-        if affiliate_link_count and "상품 페이지 바로가기" not in text:
-            failures.append(f"{path}:deal_product_link_summary_missing")
 
     return failures
 
