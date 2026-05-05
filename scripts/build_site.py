@@ -1272,6 +1272,19 @@ def related_search_chips(article: dict, *, limit: int = 6) -> str:
     return taxonomy_links(labels, "search-chip", limit=limit)
 
 
+def deal_category_chip_label(label: str) -> str:
+    aliases = {
+        "블루투스-스피커": "스피커",
+        "게이밍-개발자-셋업": "책상·게임",
+        "이어폰-헤드셋": "음향",
+        "공기청정기-가전": "공기청정기",
+        "로봇청소기-가전": "로봇청소기",
+        "제습기-가전": "제습기",
+        "오늘의딜": "오늘의 딜",
+    }
+    return aliases.get(label, label.replace("-가전", "").replace("-", "·"))
+
+
 def category_chips(articles: list[dict]) -> str:
     cats = []
     for a in articles:
@@ -1280,7 +1293,13 @@ def category_chips(articles: list[dict]) -> str:
             cats.append(cat)
     if not cats:
         return '<span class="category-chip">비교글 준비중</span>'
-    return taxonomy_links(cats, "category-chip", limit=8, separator="")
+    links = []
+    for cat in cats[:8]:
+        label = deal_category_chip_label(cat)
+        links.append(
+            f'<a class="category-chip" href="{esc(search_query_href(cat))}" aria-label="{esc(f"검색: {cat}")}">{esc(label)}</a>'
+        )
+    return "".join(links)
 
 
 def search_form(
@@ -1807,44 +1826,32 @@ def deals_body(deals: list[dict]) -> str:
 <section class="deal-landing-hero">
   <div class="deal-hero-copy">
     <p class="eyebrow">Shopping Picks · 쇼핑픽</p>
-    <h1>구매 직전 3분 안에 후보를 좁히는 생활상품 비교</h1>
-    <p class="lead">생활가전, 책상 장비, 음향기기를 화려하게 꾸미지 않고 가격대·사용환경·관리 부담 기준으로 정리합니다. 장바구니 앞에서 “이거 진짜 필요한가?” 하고 멈칫하는 시간을 줄이고, 필요하면 카테고리와 검색으로 바로 좁히세요.</p>
-    <div class="playful-badges" aria-label="쇼핑픽 사용법">
-      <span>장바구니 고민 줄이기</span>
-      <span>사지 말아야 할 이유도 같이 보기</span>
-      <span>3분 컷 비교</span>
+    <h1>필요한 제품만 빠르게 비교</h1>
+    <p class="lead">생활가전·책상 장비·음향기기를 가격대, 사용 장면, 관리 부담 기준으로 짧게 정리합니다. 오늘 살 만한 후보만 먼저 보고, 자세한 가격은 상품 페이지에서 다시 확인하세요.</p>
+    <div class="hero-actions compact-actions">
+      <a class="button primary" href="#today-best">오늘 BEST 보기</a>
+      <a class="button" href="#deal-search">상품 검색하기</a>
     </div>
-    <aside class="affiliate-disclosure" aria-label="제휴 고지">
-      <strong>제휴 고지</strong>
-      <p>쿠팡 파트너스 활동의 일환으로, 구매 시 이에 따른 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·재고는 상품 페이지에서 다시 확인하세요.</p>
-    </aside>
-    <div class="hero-actions">
-      <a class="button primary" href="#today-best">오늘의 추천 보기</a>
-      <a class="button" href="#category-blocks">카테고리로 찾기</a>
-      <a class="button" href="#deal-search">검색하기</a>
+    <div class="deal-flow" aria-label="쇼핑픽 이용 순서">
+      <span><strong>1</strong> 용도 정하기</span>
+      <span><strong>2</strong> 후보 비교</span>
+      <span><strong>3</strong> 상품 확인</span>
     </div>
-    <div class="category-strip" aria-label="카테고리 빠른 이동">{category_chips(deals)}</div>
+    <p class="affiliate-inline"><strong>제휴 고지</strong> 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p>
   </div>
   <aside class="deal-hero-panel" aria-label="쇼핑픽 운영 기준">
-    <strong>오늘의 장바구니 작전</strong>
-    <ul class="checklist">
-      <li><strong>쓸 장면 먼저:</strong> 방 크기, 책상 공간, 이동·회의처럼 실제 쓰는 상황을 기준으로 봅니다.</li>
-      <li><strong>사지 말아야 할 이유:</strong> 소음·공간·세척·필터처럼 싫은 포인트가 크면 과감히 보류합니다.</li>
-      <li><strong>마지막 확인:</strong> 옵션·가격·재고·배송 조건은 상품 페이지에서 한 번 더 확인합니다.</li>
+    <span class="tag pale">3분 기준</span>
+    <strong>이 3가지만 보면 됩니다</strong>
+    <ul class="checklist compact-list">
+      <li><strong>쓸 장소:</strong> 원룸·거실·책상·출퇴근 중 어디서 쓸지</li>
+      <li><strong>싫은 실패:</strong> 소음·부피·세척·필터 비용이 감당되는지</li>
+      <li><strong>최종 확인:</strong> 옵션·가격·재고·배송은 상품 페이지에서 재확인</li>
     </ul>
-    <p class="microcopy">급할수록 “안 사도 되는 이유”를 먼저 한 줄 적어두면 장바구니가 차분해집니다.</p>
   </aside>
 </section>
-<section class="site-bridge-strip" aria-label="동네 레이더 이동">
-  <div>
-    <span class="tag pale">길 잃음 방지</span>
-    <h2>쇼핑은 쇼핑픽, 동네 판단은 동네 레이더</h2>
-    <p>상품 비교만 보러 온 게 아니라 이사·월세·상가 체크 중이었다면 여기서 바로 돌아가세요.</p>
-  </div>
-  <div class="bridge-actions">
-    <a class="button primary" href="/radar/">동네 레이더로 돌아가기</a>
-    <a class="button" href="/">Recuerdame Lab 홈</a>
-  </div>
+<section class="deal-category-rail" aria-label="카테고리 빠른 이동">
+  <strong>바로가기</strong>
+  <div class="category-strip">{category_chips(deals)}</div>
 </section>
 <section id="today-best" class="landing-section above-fold-section">
   <div class="section-title"><p class="eyebrow">Today Best</p><h2>오늘의 추천 BEST</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
@@ -1860,6 +1867,17 @@ def deals_body(deals: list[dict]) -> str:
 <section id="category-blocks" class="landing-section">
   <div class="section-title"><h2>카테고리별 비교글 묶음</h2><p>생활가전, 재택 장비, 음향기기처럼 같은 의도끼리 묶어 빠르게 이동합니다.</p></div>
   <div class="category-hubs">{deal_category_hubs(deals)}</div>
+</section>
+<section class="site-bridge-strip compact-bridge" aria-label="동네 레이더 이동">
+  <div>
+    <span class="tag pale">다른 목적이라면</span>
+    <h2>이사·월세·상가 판단은 동네 레이더에서 봅니다</h2>
+    <p>상품 비교가 아니라 동네 리스크를 보러 온 경우에만 이동하세요.</p>
+  </div>
+  <div class="bridge-actions">
+    <a class="button" href="/radar/">동네 레이더 보기</a>
+    <a class="button" href="/">Lab 홈</a>
+  </div>
 </section>
 <section class="landing-section decision-strip" aria-label="구매 전 체크">
   <div class="section-title"><h2>오늘의 장바구니 작전</h2><p>본문으로 들어가기 전 살 이유와 안 살 이유를 같이 적어두면 비교가 빨라집니다.</p></div>
@@ -2394,6 +2412,16 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .affiliate-disclosure { margin: 22px 0 0; padding: 14px 16px; background: #fff7ed; border-color: #fed7aa; }
 .affiliate-disclosure strong { color: var(--orange-dark); }
 .affiliate-disclosure p { margin: 4px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; }
+.compact-actions { margin-top: 20px; }
+.deal-flow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.deal-flow span { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 12px; border-radius: 999px; background: #eef6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 13px; font-weight: 950; }
+.deal-flow strong { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: #1d4ed8; color: #fff; font-size: 12px; }
+.affiliate-inline { margin: 16px 0 0; padding: 12px 14px; border: 1px solid #fed7aa; border-radius: 18px; background: #fff7ed; color: #5f5652; font-size: 13px; line-height: 1.55; font-weight: 800; }
+.affiliate-inline strong { color: var(--orange-dark); }
+.deal-category-rail { display: flex; align-items: center; gap: 14px; margin: 2px 0 24px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 22px; background: #fff; box-shadow: 0 10px 24px rgba(15, 23, 42, .05); }
+.deal-category-rail > strong { flex: 0 0 auto; color: #111827; font-size: 14px; }
+.deal-category-rail .category-strip { margin-top: 0; }
+.compact-bridge { margin-top: 18px; }
 .above-fold-section { margin-top: 18px; }
 .deal-grid.best-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .deal-card.ranked { border-color: #fed7aa; }
@@ -2666,6 +2694,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 14px; padding-top: 24px; }
+  .deal-category-rail { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .deal-category-rail .category-strip { width: 100%; }
   .deal-hero-copy, .deal-hero-panel, .deal-quick-box { border-radius: 22px; }
   .deal-grid.best-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .quick-products ol { columns: 1; }
