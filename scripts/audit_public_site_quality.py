@@ -303,15 +303,24 @@ def audit_html(path: str, page_html: str) -> list[str]:
     if kind == "radar_article" and anchor_class_count(page_html, "search-chip") < 2:
         failures.append(f"{path}:radar_related_search_chips_too_few")
     if kind == "radar_article":
-        example_cards = page_html.count('class="example-scene-card')
-        scene_photos = page_html.count('class="scene-photo"')
-        for marker in ['class="radar-example-gallery"', 'class="radar-situation-strip"', "예시 장면", "현장 질문"]:
-            if marker not in page_html:
-                failures.append(f"{path}:radar_example_visual_marker_missing:{marker}")
-        if example_cards < 3:
-            failures.append(f"{path}:radar_example_scene_cards_too_few:{example_cards}")
-        if scene_photos < 3:
-            failures.append(f"{path}:radar_example_ai_scene_photos_too_few:{scene_photos}")
+        has_gallery = 'class="radar-example-gallery"' in page_html
+        if has_gallery:
+            example_cards = page_html.count('class="example-scene-card')
+            scene_photo_tags = re.findall(r"<img\b[^>]*class=[\"'][^\"']*\bscene-photo\b[^\"']*[\"'][^>]*>", page_html, flags=re.I | re.S)
+            scene_photos = len(scene_photo_tags)
+            scene_photo_srcs = [attr_value(tag, "src") for tag in scene_photo_tags]
+            unique_scene_photo_srcs = {src for src in scene_photo_srcs if src}
+            for marker in ['class="radar-situation-strip"', "예시 장면", "현장 질문"]:
+                if marker not in page_html:
+                    failures.append(f"{path}:radar_example_visual_marker_missing:{marker}")
+            if example_cards < 3:
+                failures.append(f"{path}:radar_example_scene_cards_too_few:{example_cards}")
+            if scene_photos < 3:
+                failures.append(f"{path}:radar_example_ai_scene_photos_too_few:{scene_photos}")
+            if len(unique_scene_photo_srcs) < 3:
+                failures.append(f"{path}:radar_example_scene_photos_not_distinct:{len(unique_scene_photo_srcs)}")
+            if any("/thumbs/" in src for src in scene_photo_srcs):
+                failures.append(f"{path}:radar_example_reuses_thumbnail_asset")
         if 'class="radar-map photo-scan' not in page_html or 'class="scan-photo"' not in page_html:
             failures.append(f"{path}:radar_visual_scan_ai_photo_missing")
         if 'scene-skyline' in page_html or 'scene-route' in page_html or '<svg class="map-route"' in page_html:

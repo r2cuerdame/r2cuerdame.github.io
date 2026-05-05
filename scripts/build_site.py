@@ -1110,31 +1110,27 @@ def radar_experience_block(article: dict) -> str:
 
 def radar_example_gallery(article: dict) -> str:
     profile = _radar_scene_profile(article)
-    default_photo = _radar_primary_photo(article)
+    thumbnail_photo = str(article.get("image_url") or "")
     raw_examples = article.get("field_examples") or []
     examples: list[dict[str, str]] = []
-    if raw_examples:
-        for item in raw_examples:
-            if not isinstance(item, dict):
-                continue
-            examples.append({
-                "label": str(item.get("label") or f"예시 장면 {chr(65 + len(examples))}"),
-                "description": str(item.get("description") or "현장에서 먼저 떠올릴 반복 장면입니다."),
-                "badge": str(item.get("badge") or "AI 예시"),
-                "title": str(item.get("title") or item.get("punch") or "현장 장면"),
-                "image_url": str(item.get("image_url") or default_photo),
-                "alt": str(item.get("alt") or item.get("title") or article.get("title") or "동네 레이더 AI 예시 장면"),
-            })
+    seen_images: set[str] = set()
+    for item in raw_examples:
+        if not isinstance(item, dict):
+            continue
+        image_url = str(item.get("image_url") or "")
+        if not image_url or image_url == thumbnail_photo or "/thumbs/" in image_url or image_url in seen_images:
+            continue
+        seen_images.add(image_url)
+        examples.append({
+            "label": str(item.get("label") or f"AI 현장 {chr(65 + len(examples))}"),
+            "description": str(item.get("description") or "현장에서 먼저 떠올릴 반복 장면입니다."),
+            "badge": str(item.get("badge") or "AI 예시"),
+            "title": str(item.get("title") or item.get("punch") or "현장 장면"),
+            "image_url": image_url,
+            "alt": str(item.get("alt") or item.get("title") or article.get("title") or "동네 레이더 AI 예시 장면"),
+        })
     if len(examples) < 3:
-        for label, desc, badge, punch in list(profile["scenes"])[len(examples):3]:
-            examples.append({
-                "label": label,
-                "description": desc,
-                "badge": badge,
-                "title": punch,
-                "image_url": default_photo,
-                "alt": f"{article.get('title') or '동네 레이더'} {punch} AI 예시 장면",
-            })
+        return ""
     cards = []
     for idx, item in enumerate(examples[:3], start=1):
         image_url = item.get("image_url") or ""

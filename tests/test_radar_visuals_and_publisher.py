@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -86,13 +87,21 @@ def test_radar_articles_have_content_matched_webp_thumbnails():
         asset = ROOT / image_url.lstrip("/")
         assert asset.exists(), f"missing thumbnail asset for {path.name}: {asset}"
         assert asset.stat().st_size > 20_000, f"thumbnail asset too small for {path.name}: {asset.stat().st_size}"
+        thumb_hash = hashlib.sha256(asset.read_bytes()).hexdigest()
+        example_hashes: set[str] = set()
         for example in data.get("field_examples") or []:
             example_url = str(example.get("image_url") or "")
             assert example_url.startswith("/assets/radar/"), f"bad field example path for {path.name}: {example_url}"
             assert example_url.endswith(".webp"), f"field example must be webp for {path.name}: {example_url}"
+            assert example_url != image_url, f"field example reuses thumbnail url for {path.name}: {example_url}"
+            assert "/thumbs/" not in example_url, f"field example must not point at thumbnail folder for {path.name}: {example_url}"
             example_asset = ROOT / example_url.lstrip("/")
             assert example_asset.exists(), f"missing field example asset for {path.name}: {example_asset}"
             assert example_asset.stat().st_size > 20_000, f"field example asset too small for {path.name}: {example_asset.stat().st_size}"
+            example_hash = hashlib.sha256(example_asset.read_bytes()).hexdigest()
+            assert example_hash != thumb_hash, f"field example asset duplicates thumbnail bytes for {path.name}: {example_url}"
+            assert example_hash not in example_hashes, f"field examples duplicate each other for {path.name}: {example_url}"
+            example_hashes.add(example_hash)
 
 
 def test_radar_example_gallery_adds_scene_map_and_comparison_markers():
@@ -106,6 +115,29 @@ def test_radar_example_gallery_adds_scene_map_and_comparison_markers():
         "tags": ["버스정류장", "밤길", "소음", "생활권"],
         "image_url": "/assets/radar/thumbs/bus-stop-front-home-check.webp",
         "body_html": "<h2>정류장 앞 장점과 반례</h2><p>현장 질문으로 확인합니다.</p>",
+        "field_examples": [
+            {
+                "label": "아침 대기열 장면",
+                "title": "출근 대기열",
+                "badge": "아침 8시",
+                "description": "정류장 앞 줄이 현관·창문 쪽으로 밀려오는지 봅니다.",
+                "image_url": "/assets/radar/bus-stop-front-home-check/examples/bus-stop-front-home-check-morning-queue-v2.webp",
+            },
+            {
+                "label": "밤 창문 장면",
+                "title": "불빛과 소리",
+                "badge": "밤 10시",
+                "description": "버스 불빛과 정차음이 집 안까지 들어오는지 봅니다.",
+                "image_url": "/assets/radar/bus-stop-front-home-check/examples/bus-stop-front-home-check-night-window-v2.webp",
+            },
+            {
+                "label": "한 블록 비교 장면",
+                "title": "가깝지만 피곤",
+                "badge": "비교",
+                "description": "정류장 바로 앞 후보와 한 블록 안쪽 후보를 비교합니다.",
+                "image_url": "/assets/radar/bus-stop-front-home-check/examples/bus-stop-front-home-check-one-block-compare-v2.webp",
+            },
+        ],
     }
 
     html = build_site.radar_example_gallery(article)
@@ -120,6 +152,9 @@ def test_radar_example_gallery_adds_scene_map_and_comparison_markers():
     assert "월 고정비" not in html
     assert "출근 대기열" in html
     assert "예시 장면" in html
+    assert "예시 장면 A" not in html
+    assert "/thumbs/" not in html
+    assert "bus-stop-front-home-check-scene-a.webp" not in html
     assert "현장 질문" in html
     assert "scene-skyline" not in html
     assert "scene-route" not in html
