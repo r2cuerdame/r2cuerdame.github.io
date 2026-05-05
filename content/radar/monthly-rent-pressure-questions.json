@@ -21,5 +21,31 @@
   "published_at": "2026-05-01T08:41:53+09:00",
   "updated_at": "2026-05-02T15:56:12+09:00",
   "radar_suspicion": "월세 착시: 싸 보이는 숫자가 생활비와 피로를 다른 줄로 숨긴다.",
-  "field_mission": "월세 차이만 보지 말고 보증금 묶임, 관리비 빈칸, 통근 추가 시간, 생활 동선 손실을 한 표에 올린다."
+  "field_mission": "월세 차이만 보지 말고 보증금 묶임, 관리비 빈칸, 통근 추가 시간, 생활 동선 손실을 한 표에 올린다.",
+  "field_examples": [
+    {
+      "label": "싼 방의 거리감",
+      "badge": "월세 착시",
+      "title": "방은 싸지만 생활권은 멀다",
+      "description": "월세가 낮아도 교통·생활시설이 멀어지는 순간 비용이 다른 줄로 옮겨갑니다.",
+      "image_url": "/assets/radar/monthly-rent-pressure-questions/examples/monthly-rent-pressure-questions-rent-cheap-room-v1.webp",
+      "alt": "방은 싸지만 생활권은 멀다 AI 현장 예시"
+    },
+    {
+      "label": "생활 동선 손실",
+      "badge": "장보기·세탁",
+      "title": "매주 반복되는 추가 이동",
+      "description": "장보기·세탁·병원 같은 반복 이동이 길어지는지 몸으로 계산합니다.",
+      "image_url": "/assets/radar/monthly-rent-pressure-questions/examples/monthly-rent-pressure-questions-rent-grocery-laundry-route-v1.webp",
+      "alt": "매주 반복되는 추가 이동 AI 현장 예시"
+    },
+    {
+      "label": "늦은 귀가 비용",
+      "badge": "퇴근 후",
+      "title": "시간과 피로가 붙는 길",
+      "description": "밤 귀가 때 환승·대기·마지막 도보가 월세 차이를 이기는지 봅니다.",
+      "image_url": "/assets/radar/monthly-rent-pressure-questions/examples/monthly-rent-pressure-questions-rent-late-transfer-v1.webp",
+      "alt": "시간과 피로가 붙는 길 AI 현장 예시"
+    }
+  ]
 }

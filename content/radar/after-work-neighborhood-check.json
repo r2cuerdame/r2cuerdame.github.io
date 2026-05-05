@@ -21,5 +21,31 @@
   "published_at": "2026-05-02T12:03:10+09:00",
   "updated_at": "2026-05-02T15:56:12+09:00",
   "radar_suspicion": "낮사진 사기: 방은 멀쩡한데 내가 실제로 사는 시간대가 비어 있다.",
-  "field_mission": "퇴근 시간에 역 출구에서 집 앞까지 거꾸로 걸어보고, 마지막 100m와 건물 입구에서 2분씩 멈춰 선다."
+  "field_mission": "퇴근 시간에 역 출구에서 집 앞까지 거꾸로 걸어보고, 마지막 100m와 건물 입구에서 2분씩 멈춰 선다.",
+  "field_examples": [
+    {
+      "label": "퇴근길 역 출구",
+      "badge": "퇴근 7시",
+      "title": "퇴근길 역 출구 인파",
+      "description": "역에서 집 방향으로 빠져나오는 사람 흐름과 조도, 횡단 대기감을 먼저 봅니다.",
+      "image_url": "/assets/radar/after-work-neighborhood-check/examples/after-work-neighborhood-check-after-work-station-exit-v1.webp",
+      "alt": "퇴근길 역 출구 인파 AI 현장 예시"
+    },
+    {
+      "label": "마지막 100m 장면",
+      "badge": "마지막 100m",
+      "title": "마지막 골목의 조도",
+      "description": "집 앞 마지막 100m가 넓은 길인지 좁은 골목인지, 혼자 걸을 때의 피로를 봅니다.",
+      "image_url": "/assets/radar/after-work-neighborhood-check/examples/after-work-neighborhood-check-after-work-last-100m-v1.webp",
+      "alt": "마지막 골목의 조도 AI 현장 예시"
+    },
+    {
+      "label": "건물 입구 대기",
+      "badge": "입구 2분",
+      "title": "건물 입구에서 멈춰보기",
+      "description": "현관 앞에서 2분 서서 소리·시선·대기감을 실제 생활 시간대로 확인합니다.",
+      "image_url": "/assets/radar/after-work-neighborhood-check/examples/after-work-neighborhood-check-after-work-entrance-wait-v1.webp",
+      "alt": "건물 입구에서 멈춰보기 AI 현장 예시"
+    }
+  ]
 }

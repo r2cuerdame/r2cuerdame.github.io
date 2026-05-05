@@ -21,5 +21,31 @@
   "published_at": "2026-05-02T15:29:28+09:00",
   "updated_at": "2026-05-02T15:56:12+09:00",
   "radar_suspicion": "최단시간 착시: 앱은 35분이라는데 몸은 매일 50분짜리 피로를 기억한다.",
-  "field_mission": "출근 시간대 앱 경로 2개를 띄운 뒤 정류장/역 입구/마지막 도보를 실제 방향으로 확인한다."
+  "field_mission": "출근 시간대 앱 경로 2개를 띄운 뒤 정류장/역 입구/마지막 도보를 실제 방향으로 확인한다.",
+  "field_examples": [
+    {
+      "label": "아침 대기열 장면",
+      "badge": "출근 시간",
+      "title": "앱에 안 보이는 줄",
+      "description": "지도앱 시간에 빠지는 정류장·역 입구 대기열을 실제 출근 시간에 봅니다.",
+      "image_url": "/assets/radar/commute-fatigue-neighborhood-check/examples/commute-fatigue-neighborhood-check-commute-morning-queue-v1.webp",
+      "alt": "앱에 안 보이는 줄 AI 현장 예시"
+    },
+    {
+      "label": "환승 통로 장면",
+      "badge": "환승 구간",
+      "title": "긴 통로와 계단 피로",
+      "description": "시간은 짧아도 긴 통로·계단·군중 흐름이 매일 쌓이는지 확인합니다.",
+      "image_url": "/assets/radar/commute-fatigue-neighborhood-check/examples/commute-fatigue-neighborhood-check-commute-transfer-corridor-v1.webp",
+      "alt": "긴 통로와 계단 피로 AI 현장 예시"
+    },
+    {
+      "label": "비 오는 마지막 길",
+      "badge": "우천 퇴근",
+      "title": "집 앞 마지막 도보",
+      "description": "비 오는 날 우산과 짐을 든 상태에서 마지막 도보가 얼마나 피곤한지 떠올립니다.",
+      "image_url": "/assets/radar/commute-fatigue-neighborhood-check/examples/commute-fatigue-neighborhood-check-commute-rainy-last-walk-v1.webp",
+      "alt": "집 앞 마지막 도보 AI 현장 예시"
+    }
+  ]
 }

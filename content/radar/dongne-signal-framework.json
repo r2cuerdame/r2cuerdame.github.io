@@ -23,5 +23,31 @@
   "editorial_positioning": "계약 전 리스크 필터와 현장 확인 질문 중심",
   "revision_note": "hourly smoke remediation: body length, visual count, 반례/한계/해석/사용법 보강 및 공개 금칙어 제거",
   "radar_suspicion": "후보 과잉 착시: 많이 저장할수록 똑똑해진 것 같지만, 결정은 더 흐려진다.",
-  "field_mission": "관심 동네 3곳만 고르고 예산·통근·생활시설·밤길·현장 질문을 같은 순서로 비교한다."
+  "field_mission": "관심 동네 3곳만 고르고 예산·통근·생활시설·밤길·현장 질문을 같은 순서로 비교한다.",
+  "field_examples": [
+    {
+      "label": "후보 3곳 압축",
+      "badge": "비교 시작",
+      "title": "많이 저장하기보다 줄이기",
+      "description": "후보를 많이 모으기보다 예산·통근·생활 신호로 3곳까지 줄이는 장면입니다.",
+      "image_url": "/assets/radar/dongne-signal-framework/examples/dongne-signal-framework-signal-candidate-table-v1.webp",
+      "alt": "많이 저장하기보다 줄이기 AI 현장 예시"
+    },
+    {
+      "label": "생활 동선 장면",
+      "badge": "낮 동선",
+      "title": "역과 생활시설 거리감",
+      "description": "역·장보기·세탁·병원 같은 반복 동선이 한 번에 이어지는지 봅니다.",
+      "image_url": "/assets/radar/dongne-signal-framework/examples/dongne-signal-framework-signal-daily-route-v1.webp",
+      "alt": "역과 생활시설 거리감 AI 현장 예시"
+    },
+    {
+      "label": "밤길 신호 장면",
+      "badge": "저녁 확인",
+      "title": "살 시간대의 골목",
+      "description": "낮 평가와 별개로 저녁 조도·입구 분위기·우회 선택지를 확인합니다.",
+      "image_url": "/assets/radar/dongne-signal-framework/examples/dongne-signal-framework-signal-night-alley-v1.webp",
+      "alt": "살 시간대의 골목 AI 현장 예시"
+    }
+  ]
 }

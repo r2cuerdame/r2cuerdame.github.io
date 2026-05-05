@@ -22,5 +22,31 @@
   "migration_note": "Canonical public article is served from the main site.",
   "image_url": "/assets/radar/thumbs/cafe-contract-risk.webp",
   "radar_suspicion": "유동인구 착시: 사람이 많은 것과 내 카페에 돈을 쓰는 것은 다르다.",
-  "field_mission": "매물 앞에서 20분 동안 지나가는 사람보다 멈추는 사람, 들고 나오는 컵, 경쟁 간판, 횡단보도 방향을 본다."
+  "field_mission": "매물 앞에서 20분 동안 지나가는 사람보다 멈추는 사람, 들고 나오는 컵, 경쟁 간판, 횡단보도 방향을 본다.",
+  "field_examples": [
+    {
+      "label": "통행 착시 장면",
+      "badge": "20분 관찰",
+      "title": "지나가는 사람 vs 멈추는 사람",
+      "description": "사람 수보다 매장 앞에서 멈추는지, 컵을 들고 나오는지 먼저 분리해 봅니다.",
+      "image_url": "/assets/radar/cafe-contract-risk/examples/cafe-contract-risk-cafe-passersby-v1.webp",
+      "alt": "지나가는 사람 vs 멈추는 사람 AI 현장 예시"
+    },
+    {
+      "label": "경쟁 밀도 장면",
+      "badge": "같은 블록",
+      "title": "카페가 이미 많은 거리",
+      "description": "내 매장 후보 주변에 비슷한 선택지가 얼마나 촘촘한지 같은 블록에서 봅니다.",
+      "image_url": "/assets/radar/cafe-contract-risk/examples/cafe-contract-risk-cafe-competitor-block-v1.webp",
+      "alt": "카페가 이미 많은 거리 AI 현장 예시"
+    },
+    {
+      "label": "비 오는 저녁 장면",
+      "badge": "비 오는 밤",
+      "title": "유동이 꺼지는 시간대",
+      "description": "날씨와 시간대가 바뀌었을 때 빈 좌석·조도·보행 흐름이 어떻게 변하는지 봅니다.",
+      "image_url": "/assets/radar/cafe-contract-risk/examples/cafe-contract-risk-cafe-rainy-empty-v1.webp",
+      "alt": "유동이 꺼지는 시간대 AI 현장 예시"
+    }
+  ]
 }

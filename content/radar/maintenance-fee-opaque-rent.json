@@ -21,5 +21,31 @@
   "published_at": "2026-05-02T08:28:39+09:00",
   "updated_at": "2026-05-02T15:56:12+09:00",
   "radar_suspicion": "관리비 블랙박스: 월세는 낮은데 매달 빠지는 돈의 정체가 안 보인다.",
-  "field_mission": "방문 전 문자로 관리비 포함/별도 항목을 받아 적고, 현장에서는 고지서 예시나 최근 추가 납부 여부를 묻는다."
+  "field_mission": "방문 전 문자로 관리비 포함/별도 항목을 받아 적고, 현장에서는 고지서 예시나 최근 추가 납부 여부를 묻는다.",
+  "field_examples": [
+    {
+      "label": "공용 사용 장면",
+      "badge": "포함 항목",
+      "title": "공용 전기·청소를 묻기",
+      "description": "복도 조명·청소·공용부 관리가 관리비에 어떻게 들어가는지 묻는 장면입니다.",
+      "image_url": "/assets/radar/maintenance-fee-opaque-rent/examples/maintenance-fee-opaque-rent-fee-utility-meters-v1.webp",
+      "alt": "공용 전기·청소를 묻기 AI 현장 예시"
+    },
+    {
+      "label": "공용부 상태 장면",
+      "badge": "현장 확인",
+      "title": "돈이 쓰이는 흔적",
+      "description": "관리비가 실제로 청소·분리수거·공용 관리에 쓰이는 흔적이 있는지 봅니다.",
+      "image_url": "/assets/radar/maintenance-fee-opaque-rent/examples/maintenance-fee-opaque-rent-fee-common-area-v1.webp",
+      "alt": "돈이 쓰이는 흔적 AI 현장 예시"
+    },
+    {
+      "label": "월 고정비 장면",
+      "badge": "계약 전",
+      "title": "월세 밖 비용을 펼치기",
+      "description": "월세 숫자만 보지 않고 매달 빠지는 항목을 같은 표에 올려 봅니다.",
+      "image_url": "/assets/radar/maintenance-fee-opaque-rent/examples/maintenance-fee-opaque-rent-fee-monthly-cost-table-v1.webp",
+      "alt": "월세 밖 비용을 펼치기 AI 현장 예시"
+    }
+  ]
 }

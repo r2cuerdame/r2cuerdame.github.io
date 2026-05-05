@@ -88,8 +88,13 @@ def test_radar_articles_have_content_matched_webp_thumbnails():
         assert asset.exists(), f"missing thumbnail asset for {path.name}: {asset}"
         assert asset.stat().st_size > 20_000, f"thumbnail asset too small for {path.name}: {asset.stat().st_size}"
         thumb_hash = hashlib.sha256(asset.read_bytes()).hexdigest()
+        examples = data.get("field_examples") or []
+        assert len(examples) >= 3, f"radar article needs 3 field examples: {path.name}"
         example_hashes: set[str] = set()
-        for example in data.get("field_examples") or []:
+        for example in examples:
+            assert str(example.get("label") or "").strip(), f"field example label missing for {path.name}"
+            assert str(example.get("title") or "").strip(), f"field example title missing for {path.name}"
+            assert str(example.get("description") or "").strip(), f"field example description missing for {path.name}"
             example_url = str(example.get("image_url") or "")
             assert example_url.startswith("/assets/radar/"), f"bad field example path for {path.name}: {example_url}"
             assert example_url.endswith(".webp"), f"field example must be webp for {path.name}: {example_url}"

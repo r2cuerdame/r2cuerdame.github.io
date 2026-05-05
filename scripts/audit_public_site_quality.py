@@ -304,7 +304,9 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_related_search_chips_too_few")
     if kind == "radar_article":
         has_gallery = 'class="radar-example-gallery"' in page_html
-        if has_gallery:
+        if not has_gallery:
+            failures.append(f"{path}:radar_example_gallery_missing")
+        else:
             example_cards = page_html.count('class="example-scene-card')
             scene_photo_tags = re.findall(r"<img\b[^>]*class=[\"'][^\"']*\bscene-photo\b[^\"']*[\"'][^>]*>", page_html, flags=re.I | re.S)
             scene_photos = len(scene_photo_tags)
