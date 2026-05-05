@@ -1511,6 +1511,10 @@ def shopping_room_scene(deals: list[dict]) -> str:
         checked = " checked" if idx == 1 else ""
         toggle_id = f"shopping-room-pick-{idx}"
         count = article.get("item_count_hint") or "비교글"
+        deal_url = str(article.get("primary_deal_url") or "").strip()
+        product_link = ""
+        if deal_url:
+            product_link = f'<a class="room-product-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">상품 바로가기</a>'
         toggles.append(f'<input class="room-toggle" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
         markers.append(f'''<label class="room-product pos-{idx} kind-{kind}" for="{toggle_id}" aria-label="{esc(title)} 소개 보기">
       <span class="room-hit-area" aria-hidden="true"></span>
@@ -1522,7 +1526,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <span class="tag pale">{esc(scene)} · {esc(count)}</span>
       <h3>{esc(title)}</h3>
       <p>{esc(desc)}</p>
-      <a class="text-link" href="{esc(article['path'])}">비교글에서 후보 보기 →</a>
+      <div class="room-preview-actions">{product_link}<a class="text-link" href="{esc(article['path'])}">비교글 보기 →</a></div>
     </article>''')
     return f'''<aside class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
   <div class="room-card-head">
@@ -3245,8 +3249,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-preview { display: none; padding: 14px 15px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 10px 24px rgba(58,37,20,.06); }
 #shopping-room-pick-1:checked ~ .room-previews .preview-1, #shopping-room-pick-2:checked ~ .room-previews .preview-2, #shopping-room-pick-3:checked ~ .room-previews .preview-3, #shopping-room-pick-4:checked ~ .room-previews .preview-4, #shopping-room-pick-5:checked ~ .room-previews .preview-5, #shopping-room-pick-6:checked ~ .room-previews .preview-6 { display: block; }
 .room-preview h3 { margin: 8px 0 6px; color: #111827; font-size: 18px; line-height: 1.2; letter-spacing: -.03em; }
-.room-preview p { margin: 0 0 8px; color: #5f5652; font-size: 13.5px; line-height: 1.55; font-weight: 750; }
-.room-preview .text-link { min-height: 34px; font-size: 13px; }
+.room-preview p { margin: 0; color: #5f5652; font-size: 13.5px; line-height: 1.55; font-weight: 750; }
+.room-preview-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.room-product-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 13px; border-radius: 999px; background: #ff5a1f; color: #fff; border: 1px solid #ff5a1f; text-decoration: none; font-size: 13px; font-weight: 950; box-shadow: 0 10px 18px rgba(255,90,31,.14); }
+.room-product-link:hover { color: #fff; background: #ea580c; border-color: #ea580c; }
+.room-preview .text-link { min-height: 36px; font-size: 13px; }
 .room-empty { padding: 20px; border-radius: 20px; background: #fff; border: 1px dashed #d6c7bb; }
 .deal-category-rail { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; padding: 10px 12px; border-radius: 18px; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.08); }
 .deal-category-rail > strong { flex: 0 0 auto; color: #111827; font-size: 13px; font-weight: 950; }
@@ -3645,6 +3652,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .room-product.kind-care { left: 80%; top: 78%; }
   .room-product.kind-daily { left: 66%; top: 67%; }
   .room-preview { padding: 13px; border-radius: 18px; }
+  .room-preview-actions { display: grid; grid-template-columns: 1fr; gap: 7px; }
+  .room-product-link, .room-preview .text-link { width: 100%; }
   .category-hubs { padding: 8px; border-radius: 22px; }
   .category-hub { grid-template-columns: 1fr; gap: 9px; padding: 13px; }
   .category-hub-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; }

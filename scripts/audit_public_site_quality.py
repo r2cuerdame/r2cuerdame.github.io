@@ -239,7 +239,7 @@ def audit_css(css: str) -> list[str]:
     for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".tool-link-row"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
-    for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview"]:
+    for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
     if "grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr)" not in css:
@@ -340,6 +340,8 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:topic_radar_cards_use_narrow_mixed_grid")
     if kind == "deals":
         room_products = page_html.count('class="room-product')
+        room_product_links = anchor_class_count(page_html, "room-product-link")
+        coupang_links = coupang_anchor_tags(page_html)
         if 'class="shopping-room-card"' not in page_html:
             failures.append(f"{path}:shopping_room_interactive_card_missing")
         if 'shopping-room-ai.webp' not in page_html or 'class="room-photo"' not in page_html:
@@ -350,6 +352,17 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_products_too_few:{room_products}")
         if 'shopping-room-pick-1' not in page_html or 'room-previews' not in page_html:
             failures.append(f"{path}:shopping_room_toggle_preview_missing")
+        if room_product_links < min(4, room_products):
+            failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
+        if coupang_links and "affiliate_click" not in page_html:
+            failures.append(f"{path}:affiliate_click_tracking_missing")
+        if any("lptag=" not in attr_value(tag, "href") for tag in coupang_links):
+            failures.append(f"{path}:coupang_lptag_missing")
+        for tag in coupang_links:
+            rel = set(attr_value(tag, "rel").split())
+            if not {"sponsored", "nofollow", "noopener"}.issubset(rel) or attr_value(tag, "target") != "_blank":
+                failures.append(f"{path}:coupang_anchor_policy_bad")
+                break
 
     category_chip_links = anchor_class_count(page_html, "category-chip")
     tag_links = anchor_class_count(page_html, "tag")
