@@ -74,40 +74,50 @@ def test_adaptive_publisher_waits_after_daily_floor_when_queue_is_low(monkeypatc
 def test_publisher_stages_all_generated_static_outputs():
     publisher = load_module(ROOT / "scripts" / "publish_next_radar_candidate.py", "radar_publisher_paths")
 
-    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
+    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "data/seoul-commercial-areas.json", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
         assert required in publisher.PUBLIC_ADD_PATHS
 
 
-def test_home_has_above_fold_commercial_check_tool():
+def test_home_has_above_fold_seoul_density_tool():
     build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_home_tool")
 
     html = build_site.home_body([], [])
 
     assert 'href="#commercial-check-tool"' in html
     assert 'id="commercial-check-tool"' in html
-    assert 'data-commercial-tool-root' in html
-    assert 'id="tool-location"' in html
-    assert 'id="tool-type"' in html
-    assert 'id="tool-monthly"' in html
-    assert 'data-risk-score' in html
+    assert 'data-seoul-density-tool-root' in html
+    assert 'class="seoul-map-card"' in html
+    assert 'data-density-layer="cafe"' in html
+    assert 'data-density-layer="population"' in html
+    assert 'data-station-map="hongdae"' in html
+    assert 'id="tool-station"' in html
+    assert 'id="tool-industry"' in html
+    assert 'data-density-count' in html
+    assert 'data-pop-density' in html
     assert 'data-risk-list' in html
-    assert 'class="tool-mini-map"' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
     assert 'href="/topics/jeonwolse-contract-check/"' in html
+    assert '/data/seoul-commercial-areas.json?v=' in html
     assert '/assets/commercial-check.js?v=' in html
-    assert html.index('id="commercial-check-tool"') < html.index('동네 레이더 최신 글')
+    assert html.index('id="commercial-check-tool"') < html.index('사례로 더 보기')
+    assert '분리 운영 중인 쇼핑픽' not in html
 
+    assert len(build_site.SEOUL_COMMERCIAL_AREAS["stations"]) >= 12
     js = build_site.COMMERCIAL_TOOL_JS
-    assert '[data-commercial-tool-root]' in js
-    assert 'data-risk-score' in js
+    assert '[data-seoul-density-tool-root]' in js
+    assert 'data-density-layer' in js
+    assert '/data/seoul-commercial-areas.json' in js
     assert '/topics/cafe-commercial-lease-risk/' in js
     assert '/topics/jeonwolse-contract-check/' in js
-    assert '/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD' in js
     assert '/radar/cafe-contract-risk/' not in js
     assert '/radar/monthly-rent-contract-check/' not in js
+    data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
+    assert "KOSIS_API_KEY" not in data_text
+    assert "Public OSM Overpass" not in data_text
+    assert "비밀 키는 브라우저에 배포하지 않습니다" in data_text
 
 
-def test_public_audit_rejects_home_without_commercial_tool():
+def test_public_audit_rejects_home_without_seoul_density_tool():
     audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_home_tool")
     html = (
         '<!doctype html><html><head><title>Recuerdame Lab 홈</title>'
@@ -121,7 +131,7 @@ def test_public_audit_rejects_home_without_commercial_tool():
 
     failures = audit.audit_html("/", html)
 
-    assert any("commercial_tool_marker_missing" in failure for failure in failures)
+    assert any("seoul_density_tool_marker_missing" in failure for failure in failures)
 
 
 def test_radar_contract_check_entrypoints_are_topic_lists():

@@ -45,6 +45,7 @@ PUBLIC_ADD_PATHS = [
     "sitemap.xml",
     "feed.xml",
     "build-info.json",
+    "data/seoul-commercial-areas.json",
     "data/search-index.json",
     "llms.txt",
     "ai.txt",

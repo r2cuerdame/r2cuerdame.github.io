@@ -1998,36 +1998,490 @@ def deal_article_quick_block(article: dict) -> str:
 </section>'''
 
 
+SEOUL_COMMERCIAL_AREAS = json.loads(r'''
+{
+  "version": "2026-05-seoul-density-mvp",
+  "generated_at": "2026-05-06T02:00:00+09:00",
+  "radius_m": 650,
+  "source_summary": "공개 POI를 빌드 시점에 집계한 정적 데이터입니다. 인구밀도는 공식 통계 연동 전까지 구별 편집 지수로 표시하며, 비밀 키는 브라우저에 배포하지 않습니다.",
+  "categories": {
+    "cafe": "카페",
+    "food": "음식점·주점",
+    "convenience": "편의·마트",
+    "beauty": "미용·뷰티",
+    "clinic": "병원·약국",
+    "academy": "학원·학교",
+    "retail": "소매 전체",
+    "population": "인구밀도"
+  },
+  "stations": [
+    {
+      "id": "magoknaru",
+      "name": "마곡나루역",
+      "district": "강서구",
+      "dong": "마곡동",
+      "lat": 37.5667,
+      "lng": 126.8275,
+      "population_density_index": 58,
+      "population_density_label": "중간",
+      "rent_pressure_index": 65,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 2,
+        "food": 7,
+        "convenience": 5,
+        "beauty": 113,
+        "clinic": 0,
+        "academy": 2,
+        "retail": 120
+      },
+      "total_poi_count": 129,
+      "map_x": 13.6,
+      "map_y": 17.9,
+      "commercial_density_index": 8,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "낮음",
+      "top_industries": [
+        "retail",
+        "beauty",
+        "food"
+      ],
+      "default_take": "주변 POI가 적게 잡히는 후보지입니다. 임대료가 낮아도 유입을 직접 만들 수 있는 업종인지 확인해야 합니다."
+    },
+    {
+      "id": "hongdae",
+      "name": "홍대입구역",
+      "district": "마포구",
+      "dong": "서교동",
+      "lat": 37.5572,
+      "lng": 126.9245,
+      "population_density_index": 68,
+      "population_density_label": "높음",
+      "rent_pressure_index": 82,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 165,
+        "food": 575,
+        "convenience": 59,
+        "beauty": 534,
+        "clinic": 7,
+        "academy": 4,
+        "retail": 760
+      },
+      "total_poi_count": 1343,
+      "map_x": 41.3,
+      "map_y": 25.2,
+      "commercial_density_index": 93,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "과밀",
+      "top_industries": [
+        "retail",
+        "food",
+        "beauty"
+      ],
+      "default_take": "매장 수는 충분하지만 같은 업종끼리 고객을 나눠 갖는 구간입니다. 임대료보다 회전율과 재방문 이유를 먼저 확인하세요."
+    },
+    {
+      "id": "sinchon",
+      "name": "신촌역",
+      "district": "서대문구",
+      "dong": "신촌동",
+      "lat": 37.5551,
+      "lng": 126.9368,
+      "population_density_index": 70,
+      "population_density_label": "높음",
+      "rent_pressure_index": 73,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 136,
+        "food": 678,
+        "convenience": 74,
+        "beauty": 232,
+        "clinic": 73,
+        "academy": 17,
+        "retail": 482
+      },
+      "total_poi_count": 1255,
+      "map_x": 44.8,
+      "map_y": 26.8,
+      "commercial_density_index": 87,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "과밀",
+      "top_industries": [
+        "food",
+        "retail",
+        "beauty"
+      ],
+      "default_take": "매장 수는 충분하지만 같은 업종끼리 고객을 나눠 갖는 구간입니다. 임대료보다 회전율과 재방문 이유를 먼저 확인하세요."
+    },
+    {
+      "id": "yeouido",
+      "name": "여의도역",
+      "district": "영등포구",
+      "dong": "여의도동",
+      "lat": 37.5216,
+      "lng": 126.9242,
+      "population_density_index": 61,
+      "population_density_label": "중상",
+      "rent_pressure_index": 86,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 14,
+        "food": 727,
+        "convenience": 41,
+        "beauty": 85,
+        "clinic": 15,
+        "academy": 4,
+        "retail": 272
+      },
+      "total_poi_count": 1018,
+      "map_x": 41.2,
+      "map_y": 52.6,
+      "commercial_density_index": 76,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "높음",
+      "top_industries": [
+        "food",
+        "retail",
+        "beauty"
+      ],
+      "default_take": "기본 유입은 보이지만 업종 선택에 따라 승패가 갈립니다. 낮·퇴근·주말을 나눠 같은 자리에서 관찰하세요."
+    },
+    {
+      "id": "mullae",
+      "name": "문래역",
+      "district": "영등포구",
+      "dong": "문래동",
+      "lat": 37.5179,
+      "lng": 126.8947,
+      "population_density_index": 61,
+      "population_density_label": "중상",
+      "rent_pressure_index": 67,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 10,
+        "food": 643,
+        "convenience": 55,
+        "beauty": 94,
+        "clinic": 6,
+        "academy": 4,
+        "retail": 247
+      },
+      "total_poi_count": 898,
+      "map_x": 32.8,
+      "map_y": 55.5,
+      "commercial_density_index": 67,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "높음",
+      "top_industries": [
+        "food",
+        "retail",
+        "beauty"
+      ],
+      "default_take": "기본 유입은 보이지만 업종 선택에 따라 승패가 갈립니다. 낮·퇴근·주말을 나눠 같은 자리에서 관찰하세요."
+    },
+    {
+      "id": "jongno3",
+      "name": "종로3가역",
+      "district": "종로구",
+      "dong": "종로3가",
+      "lat": 37.5704,
+      "lng": 126.991,
+      "population_density_index": 38,
+      "population_density_label": "낮음",
+      "rent_pressure_index": 71,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 188,
+        "food": 593,
+        "convenience": 87,
+        "beauty": 59,
+        "clinic": 14,
+        "academy": 9,
+        "retail": 217
+      },
+      "total_poi_count": 833,
+      "map_x": 60.3,
+      "map_y": 15.1,
+      "commercial_density_index": 62,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "높음",
+      "top_industries": [
+        "food",
+        "retail",
+        "cafe"
+      ],
+      "default_take": "기본 유입은 보이지만 업종 선택에 따라 승패가 갈립니다. 낮·퇴근·주말을 나눠 같은 자리에서 관찰하세요."
+    },
+    {
+      "id": "seongsu",
+      "name": "성수역",
+      "district": "성동구",
+      "dong": "성수동",
+      "lat": 37.5446,
+      "lng": 127.0557,
+      "population_density_index": 72,
+      "population_density_label": "높음",
+      "rent_pressure_index": 84,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 44,
+        "food": 191,
+        "convenience": 28,
+        "beauty": 119,
+        "clinic": 6,
+        "academy": 7,
+        "retail": 187
+      },
+      "total_poi_count": 391,
+      "map_x": 78.8,
+      "map_y": 34.9,
+      "commercial_density_index": 27,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "낮음",
+      "top_industries": [
+        "food",
+        "retail",
+        "beauty"
+      ],
+      "default_take": "주변 POI가 적게 잡히는 후보지입니다. 임대료가 낮아도 유입을 직접 만들 수 있는 업종인지 확인해야 합니다."
+    },
+    {
+      "id": "konkuk",
+      "name": "건대입구역",
+      "district": "광진구",
+      "dong": "화양동",
+      "lat": 37.5404,
+      "lng": 127.0692,
+      "population_density_index": 82,
+      "population_density_label": "매우 높음",
+      "rent_pressure_index": 75,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 39,
+        "food": 315,
+        "convenience": 18,
+        "beauty": 191,
+        "clinic": 9,
+        "academy": 6,
+        "retail": 246
+      },
+      "total_poi_count": 576,
+      "map_x": 82.6,
+      "map_y": 38.2,
+      "source_note": "OSM Overpass public POI 600m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_index": 41,
+      "commercial_density_label": "보통",
+      "top_industries": [
+        "food",
+        "retail",
+        "beauty"
+      ],
+      "default_take": "과밀은 덜하지만 목적 방문 이유가 약하면 공실 리스크가 커집니다. 앵커시설과 반복 동선을 먼저 보세요."
+    },
+    {
+      "id": "gangnam",
+      "name": "강남역",
+      "district": "강남구",
+      "dong": "역삼동",
+      "lat": 37.4979,
+      "lng": 127.0276,
+      "population_density_index": 63,
+      "population_density_label": "중상",
+      "rent_pressure_index": 92,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 33,
+        "food": 411,
+        "convenience": 80,
+        "beauty": 261,
+        "clinic": 21,
+        "academy": 7,
+        "retail": 519
+      },
+      "total_poi_count": 958,
+      "map_x": 70.7,
+      "map_y": 70.8,
+      "source_note": "OSM Overpass public POI 600m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_index": 66,
+      "commercial_density_label": "높음",
+      "top_industries": [
+        "retail",
+        "food",
+        "beauty"
+      ],
+      "default_take": "기본 유입은 보이지만 업종 선택에 따라 승패가 갈립니다. 낮·퇴근·주말을 나눠 같은 자리에서 관찰하세요."
+    },
+    {
+      "id": "sadang",
+      "name": "사당역",
+      "district": "동작구",
+      "dong": "사당동",
+      "lat": 37.4766,
+      "lng": 126.9816,
+      "population_density_index": 88,
+      "population_density_label": "매우 높음",
+      "rent_pressure_index": 70,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 18,
+        "food": 137,
+        "convenience": 34,
+        "beauty": 172,
+        "clinic": 5,
+        "academy": 4,
+        "retail": 212
+      },
+      "total_poi_count": 358,
+      "map_x": 57.6,
+      "map_y": 87.2,
+      "commercial_density_index": 24,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "낮음",
+      "top_industries": [
+        "retail",
+        "beauty",
+        "food"
+      ],
+      "default_take": "주변 POI가 적게 잡히는 후보지입니다. 임대료가 낮아도 유입을 직접 만들 수 있는 업종인지 확인해야 합니다."
+    },
+    {
+      "id": "sillim",
+      "name": "신림역",
+      "district": "관악구",
+      "dong": "신림동",
+      "lat": 37.4842,
+      "lng": 126.9296,
+      "population_density_index": 84,
+      "population_density_label": "매우 높음",
+      "rent_pressure_index": 66,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 8,
+        "food": 103,
+        "convenience": 56,
+        "beauty": 269,
+        "clinic": 13,
+        "academy": 3,
+        "retail": 437
+      },
+      "total_poi_count": 555,
+      "map_x": 42.7,
+      "map_y": 81.4,
+      "commercial_density_index": 35,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "낮음",
+      "top_industries": [
+        "retail",
+        "beauty",
+        "food"
+      ],
+      "default_take": "주변 POI가 적게 잡히는 후보지입니다. 임대료가 낮아도 유입을 직접 만들 수 있는 업종인지 확인해야 합니다."
+    },
+    {
+      "id": "jamsil",
+      "name": "잠실역",
+      "district": "송파구",
+      "dong": "잠실동",
+      "lat": 37.5133,
+      "lng": 127.1,
+      "population_density_index": 79,
+      "population_density_label": "매우 높음",
+      "rent_pressure_index": 80,
+      "radius_m": 650,
+      "counts": {
+        "cafe": 41,
+        "food": 111,
+        "convenience": 48,
+        "beauty": 114,
+        "clinic": 4,
+        "academy": 6,
+        "retail": 488
+      },
+      "total_poi_count": 610,
+      "map_x": 91.4,
+      "map_y": 59.0,
+      "commercial_density_index": 38,
+      "source_note": "OSM Overpass public POI 650m precompute + district density editorial index; KOSIS build-time replacement ready",
+      "commercial_density_label": "보통",
+      "top_industries": [
+        "retail",
+        "beauty",
+        "food"
+      ],
+      "default_take": "과밀은 덜하지만 목적 방문 이유가 약하면 공실 리스크가 커집니다. 앵커시설과 반복 동선을 먼저 보세요."
+    }
+  ]
+}
+''')
+
+
 def commercial_check_tool_block() -> str:
-    return '''
-<section id="commercial-check-tool" class="commercial-tool-panel" data-commercial-tool-root aria-label="상권과 동네 후보지 30초 체크">
-  <div class="tool-copy">
-    <p class="eyebrow">Commercial Radar · 30초 체크</p>
-    <h2>후보지를 넣으면 계약 전 질문이 먼저 나옵니다.</h2>
-    <p>정확한 통계 API 연동 전에도 주소·업종·고정비·낮/밤 신호를 넣어 500m 도보권, 경쟁 압력, 관리비·권리금 리스크를 빠르게 가늠합니다.</p>
-    <div class="tool-badges"><span>500m 도보권</span><span>낮/밤 리스크</span><span>계약 질문 3개</span></div>
+    data_version = asset_version(json.dumps(SEOUL_COMMERCIAL_AREAS, ensure_ascii=False, sort_keys=True))
+    categories = SEOUL_COMMERCIAL_AREAS["categories"]
+    default_category = "cafe"
+    default_station = "hongdae"
+    layer_buttons = "\n".join(
+        f'<button type="button" data-density-layer="{esc(key)}" aria-pressed="{str(key == default_category).lower()}">{esc(label)}</button>'
+        for key, label in categories.items()
+        if key in {"cafe", "food", "convenience", "beauty", "clinic", "academy", "population"}
+    )
+    station_buttons = "\n".join(
+        f'<button type="button" class="station-dot" data-station-map="{esc(station["id"])}" style="--x: {station["map_x"]}%; --y: {station["map_y"]}%;" aria-label="{esc(station["name"])} 상권 보기"><span>{esc(station["name"])}</span><small>{esc(station["commercial_density_label"])}</small></button>'
+        for station in SEOUL_COMMERCIAL_AREAS["stations"]
+    )
+    station_options = "\n".join(
+        f'<option value="{esc(station["id"])}"{" selected" if station["id"] == default_station else ""}>{esc(station["name"])} · {esc(station["district"])} {esc(station["dong"])}</option>'
+        for station in SEOUL_COMMERCIAL_AREAS["stations"]
+    )
+    category_options = "\n".join(
+        f'<option value="{esc(key)}"{" selected" if key == default_category else ""}>{esc(label)}</option>'
+        for key, label in categories.items()
+        if key in {"cafe", "food", "convenience", "beauty", "clinic", "academy", "retail", "population"}
+    )
+    return f'''
+<section id="commercial-check-tool" class="seoul-density-panel" data-seoul-density-tool-root data-commercial-tool-root data-density-src="/data/seoul-commercial-areas.json?v={data_version}" aria-label="서울 역세권 업종 밀도 지도">
+  <div class="seoul-tool-copy">
+    <p class="eyebrow">Seoul Density Radar · 역세권 먼저 보기</p>
+    <h2>서울 지도로 업종 밀도와 인구밀도를 같이 봅니다.</h2>
+    <p>집·상가 후보지를 보기 전, 지하철역 주변 650m 안의 매장 수와 행정구 인구밀도 지수를 먼저 비교합니다. 키는 빌드 단계에서만 쓰고, 사이트에는 공개 정적 JSON만 배포하는 구조입니다.</p>
+    <div class="tool-badges"><span>서울 주요 역 12곳</span><span>업종별 밀도</span><span>인구밀도 지수</span><span>계약 질문 3개</span></div>
   </div>
-  <form class="commercial-tool-form" data-commercial-tool>
-    <label>후보지명·동네·역<input id="tool-location" type="text" value="성수역 3번 출구 근처" autocomplete="off"></label>
-    <div class="tool-choice-grid">
-      <label>계약 유형<select id="tool-type"><option value="commercial">상가·카페</option><option value="home">전월세·주거</option></select></label>
-      <label>월 고정비<input id="tool-monthly" type="range" min="60" max="700" value="260" step="10"><span data-monthly-value>260만원</span></label>
-      <label>낮 유입<select id="tool-traffic"><option value="strong">강함</option><option value="normal" selected>보통</option><option value="weak">약함</option></select></label>
-      <label>경쟁/공실<select id="tool-competition"><option value="low">낮음</option><option value="normal" selected>보통</option><option value="high">높음</option></select></label>
-      <label>밤길·소음<select id="tool-night"><option value="safe">안정</option><option value="normal" selected>보통</option><option value="unsafe">불안</option></select></label>
-      <label>앵커시설<select id="tool-anchor"><option value="strong">역·회사·학교 있음</option><option value="normal" selected>보통</option><option value="weak">약함</option></select></label>
+  <div class="seoul-map-card" data-seoul-map>
+    <div class="map-card-head">
+      <div><strong>서울 상권 밀도 지도</strong><span data-map-layer-label>카페 밀도</span></div>
+      <small>역 버튼을 눌러 후보지를 바꾸세요</small>
     </div>
-    <button class="button primary" type="submit">후보지 다시 계산</button>
-  </form>
-  <div class="commercial-tool-output" data-mode="commercial" data-grade="warn">
-    <div class="tool-score-card"><span>후보지 점수</span><strong data-risk-score>72</strong><small>/100</small><em data-risk-grade>주의</em></div>
-    <div class="tool-mini-map" aria-label="500m 도보권 미니맵">
-      <span class="map-ring ring-15">15분</span><span class="map-ring ring-10">10분</span><span class="map-ring ring-5">5분</span>
-      <span class="map-dot dot-home">후보지</span><span class="map-dot dot-anchor">앵커</span><span class="map-dot dot-risk">리스크</span>
+    <div class="density-layer-tabs" role="tablist" aria-label="업종 밀도 레이어">
+      {layer_buttons}
     </div>
-    <article class="tool-risk-card">
-      <h3 data-result-title>상가 계약 전에 이 3가지를 다시 보세요</h3>
-      <p data-risk-summary>성수역 3번 출구 근처는 주의 단계입니다. 계약 전에는 점수보다 아래 질문 3개를 먼저 확인하세요.</p>
+    <div class="seoul-map-canvas" data-map-canvas>
+      <span class="han-river" aria-hidden="true">한강</span>
+      <span class="metro-line metro-line-2" aria-hidden="true">2호선</span>
+      <span class="metro-line metro-line-9" aria-hidden="true">9호선</span>
+      <span class="metro-line metro-line-sinbundang" aria-hidden="true">신분당</span>
+      {station_buttons}
+    </div>
+    <p class="map-source-note" data-source-note>공개 POI를 빌드 시점에 집계한 정적 데이터입니다. KOSIS 키는 브라우저에 노출하지 않습니다.</p>
+  </div>
+  <div class="station-inspector" data-station-inspector>
+    <form class="seoul-selector-form" data-station-tool>
+      <label>역·동네 선택<select id="tool-station">{station_options}</select></label>
+      <label>보고 싶은 업종<select id="tool-industry">{category_options}</select></label>
+      <label>계약 용도<select id="tool-purpose"><option value="commercial">상가·카페 창업</option><option value="home">집·전월세 후보</option></select></label>
+    </form>
+    <article class="density-result-card" data-density-result>
+      <div class="density-title-row">
+        <div><span class="tag pale" data-station-meta>서울 주요 역</span><h3 data-station-title>홍대입구역 상권 밀도</h3></div>
+        <strong data-risk-grade>주의</strong>
+      </div>
+      <p data-risk-summary>역을 선택하면 업종별 매장 수, 인구밀도 지수, 계약 전 질문이 같이 바뀝니다.</p>
+      <div class="density-score-grid">
+        <div><span>선택 업종</span><strong data-density-count>0</strong><small data-density-label>카페</small></div>
+        <div><span>상권 밀도</span><strong data-commercial-density>0</strong><small>/100</small></div>
+        <div><span>인구밀도</span><strong data-pop-density>0</strong><small data-pop-label>지수</small></div>
+      </div>
+      <div class="density-bars" data-density-bars></div>
       <ol class="tool-risk-list" data-risk-list></ol>
       <div class="tool-link-row" data-recommend-links>
         <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록</a>
@@ -2041,46 +2495,46 @@ def commercial_check_tool_block() -> str:
 
 def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
-    deal_html = article_cards(deals[:3], "쇼핑픽 글 준비중") if deals else ""
     return f'''
-<section class="hero home-hero">
-  <p class="eyebrow">Dongne Radar · Recuerdame Lab</p>
-  <h1>이사·월세·상가 계약 전, 동네 리스크부터 걸러냅니다.</h1>
-  <p class="lead">동네 레이더는 “여기가 좋다”가 아니라 내 계약 조건에서 피해야 할 신호와 현장에서 다시 물어볼 질문을 먼저 정리합니다.</p>
-  <div class="hero-actions">
-    <a class="button primary" href="#commercial-check-tool">30초 후보지 체크</a>
-    <a class="button" href="/radar/">동네 레이더 글 보기</a>
-    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 계약 체크</a>
-  </div>
-</section>
-<section class="grid two">
-  <article class="card accent-blue">
-    <span class="tag">Primary</span>
-    <h2>동네 레이더</h2>
-    <p>월세·전세 계약, 통근 피로, 생활권, 밤길·소음·관리비, 상가 권리금 리스크를 계약 전 질문으로 바꿉니다.</p>
-    <a href="/radar/">/radar/ 열기 →</a>
-  </article>
-  <article class="card accent-orange">
-    <span class="tag">Shopping</span>
-    <h2>쇼핑픽</h2>
-    <p>생활 상품 비교는 /deals/에서만 다룹니다. 동네 레이더 글에는 제휴 문맥을 섞지 않습니다.</p>
-    <a href="/deals/">쇼핑픽 보기 →</a>
-  </article>
-</section>
-<section class="panel soft">
-  <h2>동네 레이더가 보는 범위</h2>
-  <div class="category-strip">
-    {category_strip_links(["이사 준비", "월세·전세 계약", "통근 피로", "생활권", "밤길·소음·관리비", "상가·권리금", "현장 확인 질문"])}
+<section class="hero home-hero product-hero">
+  <p class="eyebrow">Dongne Radar · 서울 후보지 체크</p>
+  <h1>블로그가 아니라, 계약 전 서울 후보지를 먼저 거르는 도구.</h1>
+  <p class="lead">역세권 업종 밀도, 인구밀도, 매장 수를 보고 “집으로 볼지, 상가로 볼지, 보류할지”를 30초 안에 가릅니다.</p>
+  <div class="hero-actions compact-actions">
+    <a class="button primary" href="#commercial-check-tool">서울 지도에서 후보지 보기</a>
+    <a class="button" href="/topics/jeonwolse-contract-check/">계약 질문 목록</a>
   </div>
 </section>
 {commercial_check_tool_block()}
-<section class="article-list mixed-list radar-latest-grid">
-  <div class="section-title"><h2>동네 레이더 최신 글</h2><p>계약 전 리스크와 현장 질문을 먼저 확인하세요.</p></div>
-  {radar_html}
+<section class="grid three situation-grid" aria-label="오늘 볼 후보지 유형">
+  <article class="card accent-blue situation-card">
+    <span class="tag">집 보러 가기 전</span>
+    <h2>역에서 집까지 마지막 7분</h2>
+    <p>인구밀도, 밤길, 소음, 엘리베이터·공용부 피로를 보고 전월세 질문으로 바꿉니다.</p>
+    <a href="/topics/jeonwolse-contract-check/">전월세 체크 보기 →</a>
+  </article>
+  <article class="card accent-orange situation-card">
+    <span class="tag">상가·카페 계약 전</span>
+    <h2>500m 안 같은 업종이 얼마나 많은가</h2>
+    <p>카페·음식점·편의·병원·학원 밀도를 보고 권리금과 고정비 질문을 먼저 잡습니다.</p>
+    <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 보기 →</a>
+  </article>
+  <article class="card accent-green situation-card">
+    <span class="tag">현장 확인</span>
+    <h2>점수보다 질문 3개</h2>
+    <p>좋아 보이는 동네가 아니라 계약서에 적기 전에 다시 물어볼 질문을 남깁니다.</p>
+    <a href="/radar/">사례 글로 더 보기 →</a>
+  </article>
 </section>
-<section class="article-list mixed-list">
-  <div class="section-title"><h2>분리 운영 중인 쇼핑픽</h2><p>상품 비교가 필요할 때만 별도 섹션에서 확인합니다.</p></div>
-  {deal_html}
+<section class="panel soft density-search-strip" aria-label="바로 확인할 계약 질문">
+  <h2>오늘 바로 확인할 질문</h2>
+  <div class="category-strip">
+    {category_strip_links(["역세권 상권", "카페 창업", "권리금", "월세 계약", "밤길·소음", "관리비", "현장 확인 질문"])}
+  </div>
+</section>
+<section class="article-list mixed-list radar-latest-grid case-study-list">
+  <div class="section-title"><h2>사례로 더 보기</h2><p>도구에서 걸린 신호를 실제 현장 질문으로 바꾼 글입니다.</p></div>
+  {radar_html}
 </section>
 <script src="/assets/commercial-check.js?v={asset_version(COMMERCIAL_TOOL_JS)}" defer></script>
 '''
@@ -2461,11 +2915,12 @@ a:hover { color: var(--orange-dark); }
 img, svg, video { max-width: 100%; height: auto; }
 h1, h2, h3, p, li, a { overflow-wrap: break-word; word-break: keep-all; }
 .skip-link {
-  position: fixed; left: 16px; top: 12px; z-index: 100;
-  transform: translateY(-140%); padding: 10px 14px; border-radius: 12px;
+  position: fixed; left: -999px; top: 12px; z-index: 100;
+  width: 1px; height: 1px; overflow: hidden;
+  padding: 10px 14px; border-radius: 12px;
   background: var(--ink); color: #fff; font-weight: 950; box-shadow: var(--shadow);
 }
-.skip-link:focus { transform: translateY(0); outline: 3px solid rgba(37, 99, 235, .35); }
+.skip-link:focus-visible { left: 16px; width: auto; height: auto; overflow: visible; outline: 3px solid rgba(37, 99, 235, .35); }
 .site-header {
   position: sticky; top: 0; z-index: 20;
   display: grid; grid-template-columns: minmax(220px, 1fr) auto; align-items: center; gap: 18px;
@@ -2513,49 +2968,70 @@ h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.05
 h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .lead { color: #5f5652; font-size: clamp(18px, 2.1vw, 23px); max-width: 850px; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
-.commercial-tool-panel {
-  display: grid; grid-template-columns: minmax(0, .85fr) minmax(280px, .72fr) minmax(320px, 1fr); gap: 18px;
-  align-items: stretch; margin: 16px 0 34px; padding: clamp(22px, 4vw, 34px);
+.product-hero { padding: clamp(20px, 3.5vw, 42px) 0 8px; }
+.product-hero h1 { max-width: 920px; font-size: clamp(32px, 4.7vw, 54px); margin-bottom: 12px; }
+.product-hero .lead { max-width: 760px; font-size: clamp(17px, 1.8vw, 21px); }
+.product-hero .hero-actions { margin-top: 18px; }
+.seoul-density-panel {
+  scroll-margin-top: 92px;
+  display: grid; grid-template-columns: minmax(270px, .78fr) minmax(420px, 1.12fr) minmax(320px, .82fr); gap: 18px;
+  align-items: stretch; margin: 8px 0 34px; padding: clamp(18px, 3vw, 30px);
   border: 1px solid rgba(234, 223, 212, .98); border-radius: 34px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(255, 244, 234, .94));
-  box-shadow: 0 20px 58px rgba(58, 37, 20, .10);
+  background: linear-gradient(135deg, rgba(255, 255, 255, .97), rgba(255, 244, 234, .95));
+  box-shadow: 0 24px 68px rgba(58, 37, 20, .12);
 }
-.tool-copy h2 { margin: 8px 0 12px; font-size: clamp(28px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.05em; }
-.tool-copy p { color: #5f5652; font-weight: 650; }
+.seoul-tool-copy, .seoul-map-card, .station-inspector, .density-result-card { min-width: 0; }
+.seoul-tool-copy { display: flex; flex-direction: column; justify-content: center; }
+.seoul-tool-copy h2 { margin: 8px 0 12px; font-size: clamp(28px, 4.2vw, 48px); line-height: 1.05; letter-spacing: -0.05em; }
+.seoul-tool-copy p { color: #5f5652; font-weight: 700; }
 .tool-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .tool-badges span { padding: 7px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 950; color: #594e49; }
-.commercial-tool-form, .commercial-tool-output, .tool-risk-card { min-width: 0; }
-.commercial-tool-form { display: grid; gap: 12px; padding: 18px; border-radius: 24px; background: #fff; border: 1px solid rgba(234, 223, 212, .95); }
-.commercial-tool-form label { display: grid; gap: 6px; color: #514641; font-size: 13px; font-weight: 950; }
-.commercial-tool-form input[type="text"], .commercial-tool-form select {
-  width: 100%; min-height: 44px; border: 1px solid #e4d5c7; border-radius: 14px; padding: 0 12px;
-  background: #fffaf4; color: var(--ink); font: inherit; font-weight: 850;
-}
-.commercial-tool-form input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--orange); }
-.tool-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.commercial-tool-output { display: grid; grid-template-columns: .58fr 1fr; gap: 14px; }
-.tool-score-card { display: grid; align-content: center; justify-items: center; min-height: 166px; padding: 18px; border-radius: 24px; background: #111827; color: #fff; text-align: center; }
-.tool-score-card span { color: #cbd5e1; font-size: 12px; font-weight: 900; }
-.tool-score-card strong { display: flex; align-items: baseline; gap: 3px; font-size: 54px; line-height: 1; letter-spacing: -0.06em; }
-.tool-score-card small { font-size: 17px; color: #cbd5e1; }
-.tool-score-card em { margin-top: 8px; padding: 5px 12px; border-radius: 999px; background: #fbbf24; color: #211922; font-style: normal; font-weight: 950; }
-.tool-mini-map { position: relative; min-height: 166px; border-radius: 24px; overflow: hidden; background: radial-gradient(circle at center, #fff 0 10%, #dbeafe 11% 32%, #fff7ed 33% 58%, #ecfdf5 59% 100%); border: 1px solid rgba(234, 223, 212, .95); }
-.map-ring, .map-dot { position: absolute; display: inline-flex; align-items: center; justify-content: center; font-weight: 950; }
-.map-ring { border: 1px dashed rgba(37, 99, 235, .42); color: #1d4ed8; border-radius: 999px; background: rgba(255,255,255,.48); font-size: 12px; }
-.ring-15 { inset: 12px; } .ring-10 { inset: 34px; } .ring-5 { inset: 58px; }
-.map-dot { min-width: 52px; min-height: 30px; padding: 3px 8px; border-radius: 999px; color: #fff; font-size: 11px; box-shadow: 0 8px 18px rgba(0,0,0,.16); }
-.dot-home { left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--orange); }
-.dot-anchor { left: 12%; top: 22%; background: var(--green); }
-.dot-risk { right: 12%; bottom: 20%; background: #7c2d12; }
-.tool-risk-card { grid-column: 1 / -1; padding: 18px; border-radius: 24px; background: #fff; border: 1px solid rgba(234, 223, 212, .95); }
-.tool-risk-card h3 { margin: 0 0 8px; font-size: 22px; letter-spacing: -0.035em; }
-.tool-risk-card p { margin: 0 0 12px; color: #625954; font-weight: 700; }
+.seoul-map-card { order: -1; padding: 16px; border-radius: 28px; background: #101828; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.map-card-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.map-card-head strong, .map-card-head span { display: block; }
+.map-card-head strong { font-size: 18px; letter-spacing: -.035em; }
+.map-card-head span, .map-card-head small { color: #cbd5e1; font-size: 12px; font-weight: 850; }
+.density-layer-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.density-layer-tabs button { min-height: 34px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 0 10px; background: rgba(255,255,255,.08); color: #e5e7eb; font: inherit; font-size: 12px; font-weight: 950; cursor: pointer; }
+.density-layer-tabs button[aria-pressed="true"] { background: #ff5a1f; border-color: #ff5a1f; color: #fff; box-shadow: 0 8px 18px rgba(255,90,31,.24); }
+.seoul-map-canvas { position: relative; min-height: 365px; border-radius: 24px; overflow: hidden; background: radial-gradient(circle at 58% 42%, rgba(96,165,250,.22), transparent 33%), linear-gradient(145deg, #172033, #0f172a 70%); border: 1px solid rgba(255,255,255,.12); }
+.seoul-map-canvas::before { content: ""; position: absolute; inset: 20px 18px 22px; border: 2px solid rgba(255,255,255,.12); border-radius: 42% 46% 45% 50%; transform: rotate(-7deg); }
+.han-river { position: absolute; left: 5%; right: 4%; top: 55%; height: 34px; border-radius: 999px; background: linear-gradient(90deg, rgba(96,165,250,.18), rgba(125,211,252,.45), rgba(96,165,250,.18)); transform: rotate(-5deg); display: flex; align-items: center; justify-content: center; color: #bfdbfe; font-size: 12px; font-weight: 950; letter-spacing: .18em; }
+.metro-line { position: absolute; display: inline-flex; align-items: center; justify-content: center; color: rgba(255,255,255,.7); font-size: 10px; font-weight: 950; border: 1px dashed rgba(255,255,255,.22); border-radius: 999px; }
+.metro-line-2 { left: 24%; top: 24%; width: 48%; height: 47%; border-color: rgba(34,197,94,.42); color: #bbf7d0; }
+.metro-line-9 { left: 19%; right: 8%; top: 55%; height: 28px; border-color: rgba(250,204,21,.42); color: #fef08a; transform: rotate(-4deg); }
+.metro-line-sinbundang { left: 67%; top: 46%; width: 26px; height: 39%; border-color: rgba(239,68,68,.38); color: #fecaca; writing-mode: vertical-rl; }
+.station-dot { --heat: .5; position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: clamp(38px, calc(34px + var(--heat) * 30px), 72px); height: clamp(38px, calc(34px + var(--heat) * 30px), 72px); border: 2px solid rgba(255,255,255,.9); border-radius: 999px; background: radial-gradient(circle at 30% 30%, #fff 0 10%, rgba(255,90,31,.94) 11% 66%, rgba(124,45,18,.96) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(5px + var(--heat) * 10px) rgba(255,90,31, calc(.07 + var(--heat) * .10)), 0 14px 26px rgba(0,0,0,.32); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease; }
+.station-dot:hover, .station-dot[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.08); z-index: 3; box-shadow: 0 0 0 calc(8px + var(--heat) * 13px) rgba(255,90,31,.18), 0 18px 34px rgba(0,0,0,.38); }
+.station-dot span { position: absolute; left: 50%; top: calc(100% + 5px); transform: translateX(-50%); white-space: nowrap; padding: 3px 7px; border-radius: 999px; background: rgba(15,23,42,.72); color: #fff; font-size: 11px; font-weight: 950; }
+.station-dot small { font-size: 10px; font-weight: 950; text-shadow: 0 1px 5px rgba(0,0,0,.42); }
+.map-source-note { margin: 12px 2px 0; color: #cbd5e1; font-size: 12px; font-weight: 750; }
+.station-inspector { display: grid; gap: 12px; padding-top: 14px; }
+.seoul-selector-form { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 16px; border-radius: 24px; background: #fff; border: 1px solid rgba(234,223,212,.95); }
+.seoul-selector-form label { display: grid; gap: 6px; color: #514641; font-size: 13px; font-weight: 950; }
+.seoul-selector-form select { width: 100%; min-height: 44px; border: 1px solid #e4d5c7; border-radius: 14px; padding: 0 12px; background: #fffaf4; color: var(--ink); font: inherit; font-weight: 850; }
+.density-result-card { padding: 18px; border-radius: 26px; background: #fff; border: 1px solid rgba(234,223,212,.95); }
+.density-title-row { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.density-title-row h3 { margin: 7px 0 6px; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.12; letter-spacing: -.04em; }
+.density-title-row > strong { flex: 0 0 auto; padding: 7px 11px; border-radius: 999px; background: #fbbf24; color: #211922; font-size: 13px; }
+[data-grade="good"] .density-title-row > strong { background: #bbf7d0; color: #14532d; }
+[data-grade="hold"] .density-title-row > strong { background: #fecaca; color: #7f1d1d; }
+.density-result-card p { margin: 0 0 12px; color: #5f5652; font-weight: 750; }
+.density-score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.density-score-grid div { min-width: 0; padding: 12px 10px; border-radius: 18px; background: #fff7ed; border: 1px solid #f7d8c4; }
+.density-score-grid span, .density-score-grid small { display: block; color: #7c2d12; font-size: 11px; font-weight: 950; }
+.density-score-grid strong { display: block; margin: 2px 0; font-size: clamp(25px, 4vw, 38px); line-height: 1; letter-spacing: -.055em; }
+.density-bars { display: grid; gap: 8px; margin: 12px 0 14px; }
+.density-bar { display: grid; grid-template-columns: 78px 1fr 42px; gap: 8px; align-items: center; font-size: 12px; font-weight: 950; color: #514641; }
+.density-bar span:nth-child(2) { height: 9px; border-radius: 999px; background: #f3e3d8; overflow: hidden; }
+.density-bar span:nth-child(2)::before { content: ""; display: block; width: var(--value); height: 100%; border-radius: inherit; background: linear-gradient(90deg, #60a5fa, #ff5a1f); }
 .tool-risk-list { display: grid; gap: 8px; margin: 0; padding-left: 22px; }
 .tool-risk-list li { padding-left: 4px; font-weight: 800; }
 .tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tool-link-row a { display: inline-flex; min-height: 36px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
-[data-grade="good"] .tool-score-card em { background: #bbf7d0; color: #14532d; }
-[data-grade="hold"] .tool-score-card em { background: #fecaca; color: #7f1d1d; }
+.situation-grid { margin-top: 18px; }
+.situation-card { min-height: 236px; }
+.case-study-list { margin-top: 34px; }
 .button, .deal-button {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 48px; padding: 0 18px; border-radius: 16px;
@@ -3062,10 +3538,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .muted { color: var(--muted); font-size: 14px; }
 @media (max-width: 860px) {
-  .commercial-tool-panel { grid-template-columns: 1fr; padding: 18px; border-radius: 26px; }
-  .commercial-tool-output { grid-template-columns: 1fr; }
-  .tool-choice-grid { grid-template-columns: 1fr; }
-  .tool-score-card, .tool-mini-map { min-height: 148px; }
+  .seoul-density-panel { grid-template-columns: 1fr; padding: 16px; border-radius: 26px; }
+  .seoul-map-canvas { min-height: 330px; }
+  .density-score-grid { grid-template-columns: 1fr; }
+  .density-bar { grid-template-columns: 72px 1fr 38px; }
+  .station-dot span { opacity: 0; top: calc(100% + 2px); font-size: 10px; pointer-events: none; transition: opacity .14s ease; }
+  .station-dot[aria-pressed="true"] span, .station-dot:focus-visible span, .station-dot:hover span { opacity: 1; z-index: 4; background: rgba(15,23,42,.92); }
+  .product-hero .hero-actions { margin-top: 18px; }
   .site-header { position: static; align-items: stretch; grid-template-columns: 1fr; gap: 10px; padding: 10px 12px 12px; }
   .brand { width: 100%; gap: 10px; }
   .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
@@ -3233,85 +3712,140 @@ LOGO = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="im
 OG = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#101828"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1030" cy="120" r="210" fill="#60a5fa" opacity=".22"/><circle cx="170" cy="520" r="190" fill="#f59e0b" opacity=".22"/><text x="80" y="220" fill="#fff" font-family="Arial, sans-serif" font-size="72" font-weight="800">Recuerdame Lab</text><text x="80" y="315" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="38">계약 전 동네 레이더</text><text x="80" y="405" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="30">Search and AI ready public hub</text></svg>'''
 
 COMMERCIAL_TOOL_JS = '''(() => {
-  const root = document.querySelector('[data-commercial-tool-root]');
+  const root = document.querySelector('[data-seoul-density-tool-root]');
   if (!root) return;
-  const form = root.querySelector('[data-commercial-tool]');
-  const byId = (id) => root.querySelector(`#${id}`);
-  const locationInput = byId('tool-location');
-  const typeInput = byId('tool-type');
-  const monthlyInput = byId('tool-monthly');
-  const trafficInput = byId('tool-traffic');
-  const competitionInput = byId('tool-competition');
-  const nightInput = byId('tool-night');
-  const anchorInput = byId('tool-anchor');
-  const monthlyValue = root.querySelector('[data-monthly-value]');
-  const scoreEl = root.querySelector('[data-risk-score]');
+  const stationSelect = root.querySelector('#tool-station');
+  const industrySelect = root.querySelector('#tool-industry');
+  const purposeSelect = root.querySelector('#tool-purpose');
+  const mapLayerLabel = root.querySelector('[data-map-layer-label]');
+  const scoreRoot = root.querySelector('[data-density-result]');
+  const stationMeta = root.querySelector('[data-station-meta]');
+  const stationTitle = root.querySelector('[data-station-title]');
   const gradeEl = root.querySelector('[data-risk-grade]');
   const summaryEl = root.querySelector('[data-risk-summary]');
-  const titleEl = root.querySelector('[data-result-title]');
-  const listEl = root.querySelector('[data-risk-list]');
+  const countEl = root.querySelector('[data-density-count]');
+  const countLabelEl = root.querySelector('[data-density-label]');
+  const commercialDensityEl = root.querySelector('[data-commercial-density]');
+  const popDensityEl = root.querySelector('[data-pop-density]');
+  const popLabelEl = root.querySelector('[data-pop-label]');
+  const riskListEl = root.querySelector('[data-risk-list]');
+  const barsEl = root.querySelector('[data-density-bars]');
   const linksEl = root.querySelector('[data-recommend-links]');
-  if (!form || !locationInput || !typeInput || !monthlyInput || !scoreEl || !gradeEl || !summaryEl || !titleEl || !listEl || !linksEl) return;
+  const sourceNoteEl = root.querySelector('[data-source-note]');
+  const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
+  const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
+  if (!stationSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
+
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
-  const add = (items, condition, item) => { if (condition) items.push(item); };
-  const evaluate = () => {
-    const type = typeInput.value;
-    const monthly = Number(monthlyInput.value || 0);
-    const traffic = trafficInput.value;
-    const competition = competitionInput.value;
-    const night = nightInput.value;
-    const anchor = anchorInput.value;
-    const place = locationInput.value.trim() || (type === 'commercial' ? '상가 후보지' : '전월세 후보지');
-    let score = 72;
-    const risks = [];
-    if (type === 'commercial') {
-      if (monthly >= 520) score -= 17; else if (monthly >= 330) score -= 9; else if (monthly <= 160) score += 5;
-      if (traffic === 'weak') score -= 18; else if (traffic === 'strong') score += 8;
-      if (competition === 'high') score -= 16; else if (competition === 'low') score += 6;
-      if (night === 'unsafe') score -= 10; else if (night === 'safe') score += 4;
-      if (anchor === 'weak') score -= 13; else if (anchor === 'strong') score += 8;
-      add(risks, monthly >= 330, '월 고정 부담이 큽니다. 임대료·관리비·인건비를 보수적으로 다시 계산하세요.');
-      add(risks, traffic === 'weak', '낮 유입이 약합니다. 점심·퇴근·주말 시간대를 나눠 실제 체류 인원을 확인하세요.');
-      add(risks, competition === 'high', '경쟁·공실 압력이 높습니다. 같은 업종이 내 고객을 나눠 갖는지 500m 안에서 보세요.');
-      add(risks, anchor === 'weak', '앵커시설이 약합니다. 역·회사·학교·마트처럼 반복 방문을 만드는 이유가 있는지 확인하세요.');
-      add(risks, night === 'unsafe', '밤길·소음 리스크가 있습니다. 영업 종료 후 귀가 동선과 민원 가능성을 같이 보세요.');
-    } else {
-      if (monthly >= 260) score -= 16; else if (monthly >= 170) score -= 8; else if (monthly <= 110) score += 5;
-      if (traffic === 'weak') score -= 10; else if (traffic === 'strong') score += 8;
-      if (competition === 'high') score -= 8; else if (competition === 'low') score += 3;
-      if (night === 'unsafe') score -= 18; else if (night === 'safe') score += 7;
-      if (anchor === 'weak') score -= 12; else if (anchor === 'strong') score += 8;
-      add(risks, monthly >= 170, '월세·관리비·교통비를 합친 고정비가 높습니다. 한 달 현금흐름으로 다시 보세요.');
-      add(risks, night === 'unsafe', '밤길이나 소음이 걱정됩니다. 퇴근 후 10분 현장 확인을 먼저 잡으세요.');
-      add(risks, traffic === 'weak', '생활 편의가 약합니다. 장보기·병원·운동처럼 반복 동선이 멀어지는지 확인하세요.');
-      add(risks, anchor === 'weak', '대체 생활권이 약합니다. 같은 예산으로 갈 수 있는 후보지를 하나 더 남기세요.');
-      add(risks, competition === 'high', '공실·관리 상태 압력이 보입니다. 같은 건물과 옆 건물의 관리 흔적을 비교하세요.');
-    }
-    score = Math.max(18, Math.min(94, Math.round(score)));
-    const grade = score >= 78 ? 'good' : score >= 58 ? 'warn' : 'hold';
-    const gradeText = grade === 'good' ? '진행' : grade === 'warn' ? '주의' : '보류';
-    const fallbackRisks = type === 'commercial'
-      ? ['권리금 회수 조건을 계약서 문구로 확인하세요.', '출근·점심·퇴근·주말을 나눠 유입을 다시 보세요.', '비슷한 업종의 가격대와 회전율을 500m 안에서 비교하세요.']
-      : ['관리비 항목을 영수증 기준으로 확인하세요.', '밤 10시 이후 소음과 귀가 동선을 확인하세요.', '통근 대체 경로와 비 오는 날 동선을 같이 보세요.'];
-    const finalRisks = risks.concat(fallbackRisks).slice(0, 3);
-    root.dataset.mode = type === 'commercial' ? 'commercial' : 'home';
-    root.dataset.grade = grade;
-    monthlyValue.textContent = `${monthly}만원`;
-    scoreEl.textContent = String(score);
-    gradeEl.textContent = gradeText;
-    summaryEl.textContent = `${place} 기준 결과는 ${gradeText} 단계입니다. 계약 전에는 점수보다 아래 질문 3개를 먼저 확인하세요.`;
-    titleEl.textContent = type === 'commercial' ? '상가 계약 전에 이 3가지를 다시 보세요' : '전월세 계약 전에 이 3가지를 다시 보세요';
-    listEl.innerHTML = finalRisks.map((item) => `<li>${esc(item)}</li>`).join('');
-    linksEl.innerHTML = type === 'commercial'
-      ? [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 리스크 검색')].join('')
-      : [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EC%9B%94%EC%84%B8%20%EA%B3%84%EC%95%BD%20%EC%B2%B4%ED%81%AC', '월세 계약 검색'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색')].join('');
+  const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
+  let payload = null;
+
+  const categoryLabel = (key) => (payload?.categories?.[key] || ({population: '인구밀도'}[key]) || key);
+  const maxFor = (key) => {
+    if (!payload?.stations?.length) return 1;
+    if (key === 'population') return 100;
+    return Math.max(1, ...payload.stations.map((station) => Number(station.counts?.[key] || 0)));
   };
-  form.addEventListener('input', evaluate);
-  form.addEventListener('change', evaluate);
-  form.addEventListener('submit', (event) => { event.preventDefault(); evaluate(); root.querySelector('.commercial-tool-output')?.scrollIntoView({behavior: 'smooth', block: 'nearest'}); });
-  evaluate();
+  const stationById = (id) => payload?.stations?.find((station) => station.id === id) || payload?.stations?.[0];
+  const gradeFor = (station, industry) => {
+    const density = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.commercial_density_index || 0);
+    const rent = Number(station.rent_pressure_index || 0);
+    const selectedCount = industry === 'population' ? density : Number(station.counts?.[industry] || 0);
+    let score = 86 - Math.round(density * .18) - Math.round(rent * .12);
+    if (selectedCount > maxFor(industry) * .72) score -= 13;
+    if (selectedCount < maxFor(industry) * .16) score -= 8;
+    score = Math.max(28, Math.min(92, score));
+    const grade = score >= 74 ? 'good' : score >= 55 ? 'warn' : 'hold';
+    return {score, grade, label: grade === 'good' ? '진행' : grade === 'warn' ? '주의' : '보류'};
+  };
+  const questionsFor = (station, industry, purpose) => {
+    const label = categoryLabel(industry);
+    if (purpose === 'home') {
+      return [
+        `${station.name} 주변 인구밀도가 ${station.population_density_label}입니다. 밤 10시 이후 귀가 동선과 소음 방향을 직접 걸어봤나요?`,
+        `반경 ${station.radius_m || 650}m 생활 POI가 ${station.total_poi_count || 0}개 잡힙니다. 장보기·병원·운동 동선이 실제 생활 리듬과 맞나요?`,
+        `관리비·교통비까지 합친 월 고정비를 같은 예산의 다른 역 후보와 비교했나요?`
+      ];
+    }
+    return [
+      industry === 'population'
+        ? `인구밀도 지수 ${station.population_density_index || 0}입니다. 거주 기반 업종인지, 출퇴근 유동 기반 업종인지 먼저 나눴나요?`
+        : `${label} 기준 주변 매장 ${(station.counts?.[industry] || 0)}개입니다. 같은 고객을 나눠 갖는 직접 경쟁인지 분리했나요?`,
+      `${station.name}은 임대 압력 지수 ${station.rent_pressure_index || 0}입니다. 임대료·관리비·권리금 회수 기간을 보수적으로 다시 계산했나요?`,
+      `평일 점심·퇴근·주말 3번을 나눠 유입을 세고, 앵커시설 없이도 재방문 이유가 있는지 확인했나요?`
+    ];
+  };
+  const updateMapHeat = (industry) => {
+    const max = maxFor(industry);
+    stationButtons.forEach((button) => {
+      const station = stationById(button.dataset.stationMap);
+      if (!station) return;
+      const raw = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.counts?.[industry] || 0);
+      const heat = Math.max(.18, Math.min(1, raw / max));
+      button.style.setProperty('--heat', heat.toFixed(2));
+      const small = button.querySelector('small');
+      if (small) small.textContent = industry === 'population' ? `${station.population_density_index}` : `${raw}`;
+      button.setAttribute('aria-pressed', station.id === stationSelect.value ? 'true' : 'false');
+    });
+    layerButtons.forEach((button) => button.setAttribute('aria-pressed', button.dataset.densityLayer === industry ? 'true' : 'false'));
+    if (mapLayerLabel) mapLayerLabel.textContent = industry === 'population' ? '인구밀도' : `${categoryLabel(industry)} 밀도`;
+  };
+  const renderBars = (station) => {
+    const maxes = Object.fromEntries(categoryOrder.map((key) => [key, maxFor(key)]));
+    barsEl.innerHTML = categoryOrder.slice(0, 6).map((key) => {
+      const value = Number(station.counts?.[key] || 0);
+      const pct = Math.max(4, Math.round(value / maxes[key] * 100));
+      return `<div class="density-bar"><b>${esc(categoryLabel(key))}</b><span style="--value:${pct}%"></span><em>${value}</em></div>`;
+    }).join('');
+  };
+  const evaluate = () => {
+    if (!payload?.stations?.length) return;
+    const station = stationById(stationSelect.value) || payload.stations[0];
+    const industry = industrySelect.value || 'cafe';
+    const purpose = purposeSelect.value || 'commercial';
+    const count = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.counts?.[industry] || 0);
+    const grade = gradeFor(station, industry);
+    root.dataset.grade = grade.grade;
+    scoreRoot && (scoreRoot.dataset.grade = grade.grade);
+    stationMeta && (stationMeta.textContent = `${station.district} ${station.dong} · ${station.radius_m || 650}m`);
+    stationTitle.textContent = `${station.name} ${industry === 'population' ? '인구밀도' : `${categoryLabel(industry)} 밀도`}`;
+    gradeEl && (gradeEl.textContent = `${grade.label} ${grade.score}`);
+    countEl && (countEl.textContent = String(count));
+    countLabelEl && (countLabelEl.textContent = categoryLabel(industry));
+    commercialDensityEl && (commercialDensityEl.textContent = String(station.commercial_density_index || 0));
+    popDensityEl && (popDensityEl.textContent = String(station.population_density_index || 0));
+    popLabelEl && (popLabelEl.textContent = station.population_density_label || '지수');
+    summaryEl && (summaryEl.textContent = `${station.name}은 상권 밀도 ${station.commercial_density_label}, 인구밀도 ${station.population_density_label} 구간입니다. ${station.default_take || ''}`);
+    riskListEl.innerHTML = questionsFor(station, industry, purpose).map((item) => `<li>${esc(item)}</li>`).join('');
+    linksEl && (linksEl.innerHTML = purpose === 'home'
+      ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
+      : [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 검색')].join(''));
+    renderBars(station);
+    updateMapHeat(industry);
+  };
+
+  const hydrate = (data) => {
+    payload = data;
+    if (payload?.source_summary && sourceNoteEl) sourceNoteEl.textContent = payload.source_summary;
+    evaluate();
+  };
+  layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
+  stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  stationSelect.addEventListener('change', evaluate);
+  industrySelect.addEventListener('change', evaluate);
+  purposeSelect.addEventListener('change', evaluate);
+
+  fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
+    .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))
+    .then(hydrate)
+    .catch((error) => {
+      console.warn('seoul density data load failed', error);
+      const embedded = window.SEOUL_COMMERCIAL_AREAS;
+      if (embedded) hydrate(embedded);
+    });
 })();'''
+
 
 SEARCH_JS = '''(() => {
   const form = document.querySelector('.site-search');
@@ -3453,6 +3987,7 @@ def build() -> None:
     write("assets/og-card.svg", OG)
     write("assets/search.js", SEARCH_JS)
     write("assets/commercial-check.js", COMMERCIAL_TOOL_JS)
+    write("data/seoul-commercial-areas.json", json.dumps(SEOUL_COMMERCIAL_AREAS, ensure_ascii=False, indent=2) + "\n")
     write("data/search-index.json", json.dumps(build_search_index(deals, radar), ensure_ascii=False, indent=2) + "\n")
     write(".nojekyll", "")
     write("robots.txt", f'''User-agent: *

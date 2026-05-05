@@ -236,9 +236,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".commercial-tool-panel", ".tool-mini-map", ".tool-score-card", ".tool-risk-list", ".tool-link-row"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".tool-link-row"]:
         if marker not in css:
-            failures.append(f"commercial_tool_css_missing:{marker}")
+            failures.append(f"seoul_density_tool_css_missing:{marker}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
@@ -302,21 +302,28 @@ def audit_html(path: str, page_html: str) -> list[str]:
     if kind == "home":
         required_markers = [
             'id="commercial-check-tool"',
-            'data-commercial-tool-root',
-            'id="tool-location"',
-            'id="tool-type"',
-            'id="tool-monthly"',
-            'data-risk-score',
+            'data-seoul-density-tool-root',
+            'class="seoul-map-card"',
+            'data-density-layer="cafe"',
+            'data-density-layer="population"',
+            'data-station-map="hongdae"',
+            'id="tool-station"',
+            'id="tool-industry"',
+            'data-density-count',
+            'data-pop-density',
             'data-risk-list',
             'href="/topics/cafe-commercial-lease-risk/"',
             'href="/topics/jeonwolse-contract-check/"',
+            '/data/seoul-commercial-areas.json?v=',
             '/assets/commercial-check.js?v=',
         ]
         for marker in required_markers:
             if marker not in page_html:
-                failures.append(f"{path}:commercial_tool_marker_missing:{marker}")
-        if page_html.find('id="commercial-check-tool"') > page_html.find('동네 레이더 최신 글'):
-            failures.append(f"{path}:commercial_tool_not_before_latest_articles")
+                failures.append(f"{path}:seoul_density_tool_marker_missing:{marker}")
+        if '분리 운영 중인 쇼핑픽' in page_html:
+            failures.append(f"{path}:home_shopping_section_should_not_compete_with_radar")
+        if page_html.find('id="commercial-check-tool"') > page_html.find('사례로 더 보기'):
+            failures.append(f"{path}:seoul_density_tool_not_before_case_articles")
     if kind == "radar":
         for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
             if f'href="{href}"' not in page_html:
