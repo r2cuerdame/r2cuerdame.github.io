@@ -1,0 +1,23 @@
+{
+  "slug": "bus-stop-front-home-check",
+  "title": "버스정류장 앞 집, 편한 위치인지 피곤한 위치인지 보는 10분",
+  "description": "정류장 가까움이 장점인지 소음·대기열·시선 피로인지 계약 전 현장에서 가르는 체크 글입니다.",
+  "status": "published_to_pages",
+  "created_at": "2026-05-05T18:32:00+09:00",
+  "updated_at": "2026-05-05T18:41:31+09:00",
+  "mature_started_at": "2026-05-05T18:32:00+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인",
+  "tags": [
+    "동네 레이더",
+    "버스정류장",
+    "소음",
+    "생활권",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "정류장이 가까운 집은 편하지만, 문 앞 대기열·차량 소리·시선 피로가 매일 반복되면 오래 살기 어렵습니다.",
+  "field_mission": "퇴근 시간과 밤 10시에 정류장 앞 10분을 서서 소리·사람 흐름·집 창문 방향을 동시에 확인합니다.",
+  "editorial_positioning": "정류장 인접 입지의 장점과 반례를 독자가 현장에서 바로 검증하게 만드는 동네 레이더 글",
+  "pages_published_at": "2026-05-05T18:41:31+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/bus-stop-front-home-check/"
+}

@@ -7,14 +7,16 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - Home: https://r2cuerdame.github.io/
 - Dongne Radar: https://r2cuerdame.github.io/radar/
 - Guides: https://r2cuerdame.github.io/guides/
+- Topic Hubs: https://r2cuerdame.github.io/topics/
 - About: https://r2cuerdame.github.io/about/
 - Separate Shopping Picks: https://r2cuerdame.github.io/deals/
 - Site Search: https://r2cuerdame.github.io/search/
 
 ## Current content
 
-- Dongne Radar articles: 13
+- Dongne Radar articles: 14
 - Shopping pick articles: 17
+- Search intent hubs: 8
 
 ## Search/AI files
 
@@ -25,6 +27,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - `https://r2cuerdame.github.io/ai.txt`
 - `https://r2cuerdame.github.io/humans.txt`
 - `https://r2cuerdame.github.io/search/`
+- `https://r2cuerdame.github.io/topics/`
 - `https://r2cuerdame.github.io/data/search-index.json`
 
 ## Operating scope
