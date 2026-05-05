@@ -1,0 +1,35 @@
+{
+  "slug": "elevator-front-home-check",
+  "title": "엘리베이터 앞 집, 편한 동선인지 시끄러운 대기실인지 보는 12분",
+  "description": "엘리베이터 가까움이 편의인지 대기 소리와 시선 피로인지 계약 전 현장에서 나누는 체크 글입니다.",
+  "status": "release_candidate_ready",
+  "created_at": "2026-05-05T19:37:36+09:00",
+  "updated_at": "2026-05-05T19:46:12+09:00",
+  "mature_started_at": "2026-05-05T19:37:36+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "엘리베이터",
+    "공용부",
+    "소음",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "엘리베이터 앞 집은 동선이 짧지만, 대기 소리와 시선이 현관 앞에 반복되면 집 안의 휴식 리듬을 흔듭니다.",
+  "field_mission": "평일 출근 전, 퇴근 후, 밤 10시에 엘리베이터 앞 12분을 서서 사람 흐름·문 닫힘 소리·현관 시선을 같이 확인합니다.",
+  "editorial_positioning": "엘리베이터 인접 세대의 편의와 피로를 독자가 현장에서 바로 나누게 만드는 동네 레이더 글",
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-05T19:37:36+09:00",
+    "visible_prose_chars": 4693,
+    "reader_visual_count": 8,
+    "target_fit": true,
+    "reviewed_at": "2026-05-05T19:46:12+09:00",
+    "hourly_replenishment_status": "new_clean_candidate"
+  },
+  "last_review": "ready=4 hard=0 soft=0; this candidate chars=4693 visuals=8 target_fit=True"
+}

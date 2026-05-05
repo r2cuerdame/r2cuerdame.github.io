@@ -1,6 +1,6 @@
 # 동네 레이더 OPERATIONS BOARD
 
-_Last updated: 2026-05-02T13:47:55+09:00 KST_
+_Last updated: 2026-05-05T19:46:38+09:00 KST_
 
 ## Scope
 
@@ -17,7 +17,7 @@ _Last updated: 2026-05-02T13:47:55+09:00 KST_
 - 공개 cadence: **매일 1개는 기본 floor**다. 하루 1개 cap은 폐기하고, dedicated publisher desk만 GitHub Pages `/radar/`에 공개한다. backlog가 목표 7개를 넘으면 adaptive 발행부가 하루 최대 4개·최소 2시간 간격으로 추가 공개한다.
 - 매일 포스팅 조건: 각 글의 타겟이 명확하고 본문 품질·시각자료·금칙어·hard/soft issue 기준을 모두 충족하면 발행을 미루지 않는다.
 - 첫 KPI: 품질 통과 release candidate 수가 아니라 **타겟에 맞는 발행 큐의 선명도**다.
-- 생산 기준: 품질 통과 미발행 후보 최소 3개, 목표 7개, 상한 10개. 현재 7개 초과 구간에서는 새 후보 양산을 멈추고 기존 후보 품질 보강·중복 제거·주제 다변화에 쓴다. 10개 초과면 backlog 감축 모드로 보고한다.
+- 생산 기준: 품질 통과 미발행 후보 최소 3개, 목표 7개, 상한 10개. 최신 publisher dry-run 기준 `ready_unpublished=2`라 `replenish` 모드다. 새 후보는 최대 2개까지만 보강/완성하고, 생성한 후보도 Reader QA·정적 가드 통과 전에는 발행 후보로 세지 않는다.
 - 7일/168시간은 buffer tracking metadata일 뿐, clean 후보 발행 차단 사유가 아니다.
 - 본문 4,500자 이상, 독자용 시각자료 8개 이상, visible 금칙어 0건, hard/soft issue 0건이면 `검사 충분`으로 보고 선발행 후보 기준을 통과한다. 충분히 검사된 후보는 추가 숙성/완벽주의로 묶어두지 않고 baseline/adaptive 슬롯이 열리면 공개한다.
 
@@ -370,12 +370,48 @@ _Last updated: 2026-05-02T13:47:55+09:00 KST_
   - [x] 70-publish note: `articles/2026-05/corner-home-turning-car-window-distance-check/70-publish-note.md`
   - [x] 80-growth: `articles/2026-05/corner-home-turning-car-window-distance-check/80-growth.md`
 
+### U. 엘리베이터 앞 집, 편한 동선인지 시끄러운 대기실인지 보는 12분
+
+- 상태: `release_candidate_ready` / replenish 턴에서 00-topic→70-final-html까지 완성. review 통과 (`ready=4 hard=0 soft=0`, 해당 후보 chars=4693 visuals=8, target_fit=True). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
+- 최종본: `release_candidates/2026-05/elevator-front-home-check/final.html`
+- 메타: `release_candidates/2026-05/elevator-front-home-check/metadata.json`
+- 검증: `reports/cron-review-latest.md`; hourly smoke pass (`ready=4 hard=0 soft=0 warnings=0`); publisher dry-run은 `slot_closed`라 실제 공개/푸시 없음.
+- Stage notes:
+  - [x] 00-topic: `articles/2026-05/elevator-front-home-check/00-topic.md`
+  - [x] 10-source: `articles/2026-05/elevator-front-home-check/10-source.md`
+  - [x] 20-data-qa: `articles/2026-05/elevator-front-home-check/20-data-qa.md`
+  - [x] 30-story: `articles/2026-05/elevator-front-home-check/30-story.md`
+  - [x] 40-visual: `articles/2026-05/elevator-front-home-check/40-visual-plan.md`
+  - [x] 50-copy: `articles/2026-05/elevator-front-home-check/50-copy.md`
+  - [x] 60-reader-qa: `articles/2026-05/elevator-front-home-check/60-reader-qa.md`
+  - [x] 70-final-html: `articles/2026-05/elevator-front-home-check/70-final-html.md`
+  - [x] 70-publish note: `articles/2026-05/elevator-front-home-check/70-publish-note.md`
+  - [x] 80-growth: `articles/2026-05/elevator-front-home-check/80-growth.md`
+
+### V. 대로변 한 블록 안쪽 집, 조용함인지 고립감인지 보는 밤 12분
+
+- 상태: `release_candidate_ready` / replenish 턴에서 00-topic→70-final-html까지 완성. review 통과 (`ready=4 hard=0 soft=0`, 해당 후보 chars=4543 visuals=8, target_fit=True). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
+- 최종본: `release_candidates/2026-05/one-block-inside-main-road-check/final.html`
+- 메타: `release_candidates/2026-05/one-block-inside-main-road-check/metadata.json`
+- 검증: `reports/cron-review-latest.md`; hourly smoke pass (`ready=4 hard=0 soft=0 warnings=0`); publisher dry-run은 `slot_closed`라 실제 공개/푸시 없음.
+- Stage notes:
+  - [x] 00-topic: `articles/2026-05/one-block-inside-main-road-check/00-topic.md`
+  - [x] 10-source: `articles/2026-05/one-block-inside-main-road-check/10-source.md`
+  - [x] 20-data-qa: `articles/2026-05/one-block-inside-main-road-check/20-data-qa.md`
+  - [x] 30-story: `articles/2026-05/one-block-inside-main-road-check/30-story.md`
+  - [x] 40-visual: `articles/2026-05/one-block-inside-main-road-check/40-visual-plan.md`
+  - [x] 50-copy: `articles/2026-05/one-block-inside-main-road-check/50-copy.md`
+  - [x] 60-reader-qa: `articles/2026-05/one-block-inside-main-road-check/60-reader-qa.md`
+  - [x] 70-final-html: `articles/2026-05/one-block-inside-main-road-check/70-final-html.md`
+  - [x] 70-publish note: `articles/2026-05/one-block-inside-main-road-check/70-publish-note.md`
+  - [x] 80-growth: `articles/2026-05/one-block-inside-main-road-check/80-growth.md`
+
 ## Department handoff
 
-- 출판관리부: latest review 기준 total ready 19 / publisher dry-run 기준 미발행 ready 15 / 오늘 공개 2 / cap 10 초과로 `backlog_reduction` 모드다. 새 후보·새 articles·새 release_candidates 생성은 계속 금지하고 기존 후보 품질 보강과 dedicated publisher의 adaptive backlog 소화를 우선한다.
-- 발행부: Tistory/로그인형 외부 publish는 실행하지 않는다. GitHub Pages 공개는 전용 publisher desk가 담당하며, 이번 hourly 발행부 dry-run은 `publish_slot_closed_spacing`(마지막 공개 후 1.75h, 최소 2h)이라 실제 공개/푸시를 실행하지 않았다. daily 1개는 floor일 뿐 상한이 아니다.
-- 기획부/자료수집부/데이터검증부: B의 원자료·기준월·산식 확인 전 순위 작성 금지. 이번 턴은 G 비 오는 날 후보가 습기/하자 단정 글처럼 읽힐 위험과 퇴근 후 루프·관리비 질문과 섞일 위험을 확인하고, 새 자료 수집 없이 공개 후보 내 표로 `비 오는 날=날씨가 드러낸 빈칸`, `퇴근 후=평일 귀가 루프`, `관리비=비용·책임 질문` 역할을 분리했다.
-- 편집부/그래픽부/카피부/검수부/성장분석부: G 후보는 chars 5,215→5,443, visuals 9→10, target_fit=True를 확인했다. review 재검증 결과 전체 `ready=19 hard=0 soft=0`을 유지한다. 다음 시간 우선순위도 backlog 감축: 새 후보 양산 금지, 기존 후보 중 1개만 제목·도입·캡션·중복 주제·내부링크·반례 균형 중 하나를 폴리싱.
+- 출판관리부: latest review 기준 candidates=4 / ready=4 / published=2 / ready_unpublished=2. buffer 정책상 `replenish` 모드이며 미발행 품질후보가 최소 3개 미만이라 이번 턴에는 새 후보 2개를 완성했다.
+- 발행부: Tistory/로그인형 외부 publish는 실행하지 않는다. GitHub Pages 공개는 전용 publisher desk가 담당하며, 이번 hourly 발행부 dry-run은 `slot_closed`(`ready_unpublished=2<=ready_target=7`, `daily_floor_open=False`, 마지막 공개 후 1.085h<2h)라 실제 공개/푸시를 실행하지 않았다. daily 1개는 floor일 뿐 상한이 아니다.
+- 기획부/자료수집부/데이터검증부: U/V 신규 후보는 외부 순위·수치 결론 없이 현장 관찰형으로 만들었다. 기준월·산식 없음, 단위는 12분 현장 루프/위치/질문이며 한 번 본 장면을 상시 문제로 단정하지 않는 한계를 명시했다.
+- 편집부/그래픽부/카피부/검수부/성장분석부: U는 chars=4693 visuals=8 target_fit=True, V는 chars=4543 visuals=8 target_fit=True로 review 통과. 다음 시간 우선순위는 아직 `ready_unpublished<3`이므로 한 후보 추가 보강 또는 기존 U/V의 내부링크·제목·도입 미세 보강 후 재검증.
 
 ## Blockers
 

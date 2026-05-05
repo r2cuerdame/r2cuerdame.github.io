@@ -1,0 +1,35 @@
+{
+  "slug": "one-block-inside-main-road-check",
+  "title": "대로변 한 블록 안쪽 집, 조용함인지 고립감인지 보는 밤 12분",
+  "description": "큰길과 골목 사이 집이 안전한 조용함인지 고립감·우회 피로인지 밤 동선으로 확인하는 체크 글입니다.",
+  "status": "release_candidate_ready",
+  "created_at": "2026-05-05T19:37:36+09:00",
+  "updated_at": "2026-05-05T19:46:12+09:00",
+  "mature_started_at": "2026-05-05T19:37:36+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "밤길",
+    "대로변",
+    "골목",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "대로변 한 블록 안쪽 집은 조용해 보이지만, 마지막 골목의 빛·사람 흐름·우회 동선이 약하면 밤마다 고립감이 커집니다.",
+  "field_mission": "퇴근 후와 밤 10시에 큰길에서 현관까지 12분을 걸으며 빛·시야·우회 가능성·머무는 가게를 같이 확인합니다.",
+  "editorial_positioning": "큰길 접근성과 골목 고립감을 독자가 현장 루트로 검증하게 만드는 동네 레이더 글",
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-05T19:37:36+09:00",
+    "visible_prose_chars": 4543,
+    "reader_visual_count": 8,
+    "target_fit": true,
+    "reviewed_at": "2026-05-05T19:46:12+09:00",
+    "hourly_replenishment_status": "new_clean_candidate"
+  },
+  "last_review": "ready=4 hard=0 soft=0; this candidate chars=4543 visuals=8 target_fit=True"
+}
