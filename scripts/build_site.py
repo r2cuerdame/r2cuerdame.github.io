@@ -2986,7 +2986,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .seoul-tool-copy p { color: #5f5652; font-weight: 700; }
 .tool-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .tool-badges span { padding: 7px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 950; color: #594e49; }
-.seoul-map-card { order: -1; padding: 16px; border-radius: 28px; background: #101828; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.seoul-map-card { order: -1; align-self: start; padding: 16px; border-radius: 28px; background: #101828; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
 .map-card-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
 .map-card-head strong, .map-card-head span { display: block; }
 .map-card-head strong { font-size: 18px; letter-spacing: -.035em; }
