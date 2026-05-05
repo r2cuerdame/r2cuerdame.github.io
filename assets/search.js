@@ -55,7 +55,7 @@
     results.innerHTML = matches.map(({item}) => {
       const meta = [item.category, item.item_count_hint, item.price_hint].filter(Boolean).slice(0, 3).join(' · ');
       const image = item.image_url ? `<img src="${esc(item.image_url)}" alt="${esc(item.title)}" loading="lazy" decoding="async" />` : '';
-      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '구매가이드' : item.section === 'radar' ? '동네 레이더' : item.section === 'topics' ? '주제별' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
+      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '쇼핑픽' : item.section === 'radar' ? '동네 레이더' : item.section === 'topics' ? '주제별' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
     }).join('');
   };
   const updateUrl = (query) => {
