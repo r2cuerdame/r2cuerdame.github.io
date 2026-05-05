@@ -183,6 +183,15 @@ STATIC_PAGES = [
         "section": "deals",
     },
     {
+        "path": "/topics/",
+        "file": "topics/index.html",
+        "title": "검색 허브 — 월세·전세·상가·생활상품 체크리스트",
+        "description": "월세 계약, 전세 체크, 통근·밤길·상가 리스크와 생활상품 비교를 검색 의도별로 묶은 Recuerdame Lab 검색 허브입니다.",
+        "priority": "0.82",
+        "type": "CollectionPage",
+        "section": "topics",
+    },
+    {
         "path": "/search/",
         "file": "search/index.html",
         "title": "사이트 검색 — Recuerdame Lab",
@@ -196,8 +205,20 @@ STATIC_PAGES = [
 NAV = [
     ("동네 레이더", "/radar/", "nav-primary"),
     ("구매가이드", "/deals/", "nav-primary"),
+    ("검색허브", "/topics/", "nav-action"),
     ("검색", "/search/", "nav-action"),
     ("읽는 순서", "/guides/", "nav-secondary"),
+]
+
+TOPIC_HUBS = [
+    {"slug": "wolse-contract-checklist", "title": "월세 계약 전 체크리스트 — 관리비·통근·생활권 먼저 보기", "description": "월세가 싸 보여도 관리비, 통근 피로, 밤길, 생활권 비용까지 합치면 더 비싸질 수 있습니다. 계약 전 확인할 글을 한곳에 묶었습니다.", "label": "월세 계약", "intent": "월세 집을 보러 가기 전, 숫자로 보이는 월세와 실제 생활비 차이를 줄이고 싶은 독자", "keywords": ["월세", "관리비", "생활권", "통근", "계약 전"], "queries": ["월세 계약 전 체크리스트", "월세 관리비 확인", "이사 전 동네 체크"], "primary_section": "radar", "priority": "0.84"},
+    {"slug": "jeonse-contract-risk", "title": "전세 계약 전 동네 체크 — 보증금보다 먼저 볼 생활 리스크", "description": "전세 계약은 집 내부만 보면 부족합니다. 밤길, 공용부 관리, 통근, 비 오는 날 배수처럼 계약 전에 다시 봐야 할 동네 신호를 정리했습니다.", "label": "전세 체크", "intent": "전세 후보지를 줄이면서 집 내부보다 주변 리스크를 먼저 확인하려는 독자", "keywords": ["전세", "이사", "공동현관", "밤길", "비 오는 날"], "queries": ["전세 계약 전 체크", "전세 집 주변 확인", "동네 리스크 체크"], "primary_section": "radar", "priority": "0.82"},
+    {"slug": "commute-neighborhood-check", "title": "출퇴근 동네 체크 — 지도앱 시간보다 피로를 먼저 계산", "description": "지도앱 35분과 매일 몸으로 겪는 출퇴근 피로는 다릅니다. 역에서 집까지 마지막 도보, 환승, 아침 동선을 함께 보는 글 모음입니다.", "label": "출퇴근", "intent": "이사 후보지의 출퇴근 시간이 실제로 버틸 만한지 확인하려는 독자", "keywords": ["통근", "출근", "퇴근", "역", "도보", "환승"], "queries": ["출퇴근 좋은 동네", "역에서 집까지 밤길", "통근 피로 체크"], "primary_section": "radar", "priority": "0.80"},
+    {"slug": "night-noise-safety-check", "title": "밤길·소음 체크 — 낮에 본 집을 밤에 다시 보는 법", "description": "낮에는 조용해 보여도 밤 10시의 골목, 배달 동선, 창문 밖 소리는 다릅니다. 계약 전 밤길과 소음을 확인하는 글을 묶었습니다.", "label": "밤길·소음", "intent": "집을 계약하기 전 밤길 안전감과 생활소음을 놓치고 싶지 않은 독자", "keywords": ["밤길", "소음", "퇴근", "골목", "집 보기"], "queries": ["밤에 집 보러가기", "동네 소음 체크", "밤길 안전 확인"], "primary_section": "radar", "priority": "0.80"},
+    {"slug": "cafe-commercial-lease-risk", "title": "카페 창업 상가 계약 체크 — 유동인구보다 먼저 볼 리스크", "description": "사람이 많은 상권이 꼭 좋은 자리는 아닙니다. 카페 창업 전 경쟁점, 권리금, 회전율, 폐업 압력을 확인하는 상가 계약 글 모음입니다.", "label": "상가 계약", "intent": "카페나 작은 매장을 준비하며 유동인구 착시와 권리금 리스크를 줄이고 싶은 예비 사장", "keywords": ["카페", "상가", "창업", "권리금", "상권", "유동인구"], "queries": ["카페 상가 계약 체크", "권리금 리스크", "상권 유동인구 확인"], "primary_section": "radar", "priority": "0.83"},
+    {"slug": "rainy-season-home-appliances", "title": "장마철 생활가전 비교 — 제습기·공기청정기 먼저 고르기", "description": "장마와 습기 시즌에는 제습기, 공기청정기, 청소기처럼 관리 부담이 큰 가전부터 비교해야 합니다. 구매 전 확인할 글을 묶었습니다.", "label": "장마 가전", "intent": "장마철 습기와 공기 문제를 해결하려고 생활가전을 비교하는 구매 직전 독자", "keywords": ["제습기", "공기청정기", "장마", "습기", "청소기"], "queries": ["제습기 추천", "공기청정기 비교", "장마철 가전"], "primary_section": "deals", "priority": "0.76"},
+    {"slug": "work-from-home-desk-setup", "title": "재택근무 책상 장비 비교 — 의자·모니터암·조명·키보드", "description": "재택근무 장비는 예쁜 사진보다 허리, 눈 피로, 책상 공간을 먼저 봐야 합니다. 의자, 모니터암, 조명, 키보드 비교글을 묶었습니다.", "label": "재택 장비", "intent": "재택근무 책상 셋업을 한 번에 정리하려는 구매 직전 독자", "keywords": ["재택근무", "사무용 의자", "모니터암", "모니터 조명", "키보드"], "queries": ["재택근무 의자 추천", "모니터암 추천", "모니터 조명 추천"], "primary_section": "deals", "priority": "0.75"},
+    {"slug": "sound-gaming-gadgets", "title": "음향·게임 장비 비교 — 헤드셋·스피커·ANC 헤드폰", "description": "헤드셋, 블루투스 스피커, ANC 헤드폰은 가격보다 사용 장면과 착용감이 중요합니다. 구매 전 비교글을 한곳에 묶었습니다.", "label": "음향·게임", "intent": "게임, 재택회의, 음악 감상용 음향 장비를 비교하는 구매 직전 독자", "keywords": ["헤드셋", "스피커", "ANC", "헤드폰", "블루투스"], "queries": ["게이밍 헤드셋 추천", "블루투스 스피커 추천", "ANC 헤드폰 비교"], "primary_section": "deals", "priority": "0.74"},
 ]
 
 
@@ -236,6 +257,7 @@ def deals_nav_html(page_path: str) -> str:
         ("쇼핑픽 홈", "/deals/", "nav-primary"),
         ("오늘 BEST", "/deals/#today-best", "nav-primary"),
         ("카테고리", "/deals/#category-blocks", "nav-secondary"),
+        ("검색허브", "/topics/", "nav-action"),
         ("검색", "/search/", "nav-action"),
     ]
     out = []
@@ -509,13 +531,19 @@ def jsonld_for(page: dict) -> str:
         },
     ]
     if path != "/":
-        section_label = "구매가이드" if path.startswith("/deals/") else "동네 레이더" if path.startswith("/radar/") else page.get("title", SITE_NAME)
-        section_path = "/deals/" if path.startswith("/deals/") else "/radar/" if path.startswith("/radar/") else path
+        if path.startswith("/deals/"):
+            section_label, section_path = "구매가이드", "/deals/"
+        elif path.startswith("/radar/"):
+            section_label, section_path = "동네 레이더", "/radar/"
+        elif path.startswith("/topics/"):
+            section_label, section_path = "검색 허브", "/topics/"
+        else:
+            section_label, section_path = page.get("title", SITE_NAME), path
         items = [
             {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{BASE}/"},
             {"@type": "ListItem", "position": 2, "name": section_label, "item": f"{BASE}{section_path}"},
         ]
-        if page.get("type") == "BlogPosting" and section_path != path:
+        if section_path != path:
             items.append({"@type": "ListItem", "position": 3, "name": page["title"], "item": url})
         graph.append({"@type": "BreadcrumbList", "@id": f"{url}#breadcrumb", "itemListElement": items})
     if page.get("type") == "BlogPosting":
@@ -593,6 +621,8 @@ def keywords_for(page: dict) -> str:
         return keyword_join(RADAR_KEYWORDS, page.get("tags") or [], extras)
     if section in {"home", "guides", "about"}:
         return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS)
+    if section == "topics" or path.startswith("/topics/"):
+        return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS, DEALS_KEYWORDS, page.get("tags") or [], "검색 허브, 월세 체크리스트, 전세 체크리스트, 상가 계약 체크, 구매가이드 허브")
     if section == "search":
         return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS, DEALS_KEYWORDS, "사이트 검색, 상품 검색, 구매가이드 검색")
     if section == "deals" or path.startswith("/deals/"):
@@ -957,6 +987,72 @@ def radar_experience_block(article: dict) -> str:
 '''
 
 
+def radar_example_gallery(article: dict) -> str:
+    joined = " ".join([
+        str(article.get("title") or ""),
+        str(article.get("description") or ""),
+        " ".join(str(tag) for tag in (article.get("tags") or [])),
+    ])
+    if any(token in joined for token in ("카페", "상가", "권리", "상권", "유동")):
+        scenes = [
+            ("예시 장면 A", "사람은 많지만 컵을 든 사람이 빠져나가는 길인지 본다", "횡단보도 3분", "유동 ≠ 결제"),
+            ("예시 장면 B", "문 앞 대기줄이 생겨도 옆 가게로 새는 동선인지 본다", "입구 1분", "대기열"),
+            ("예시 장면 C", "반경 50m 안 경쟁점의 메뉴·가격·좌석수를 같이 적는다", "경쟁점", "가격 그림자"),
+        ]
+        good = "손님이 멈추고, 메뉴판을 보고, 다시 들어오는 장면이 반복됩니다."
+        bad = "사람은 지나가지만 시선·대기·재방문 흔적이 없으면 유동인구 착시입니다."
+    elif any(token in joined for token in ("관리비", "월세", "보증금", "고정비", "총액")):
+        scenes = [
+            ("예시 장면 A", "월세 숫자 옆에 관리비·교통비·계절비를 한 줄로 붙인다", "총액", "월 고정비"),
+            ("예시 장면 B", "관리비 항목표에서 공용전기·청소·수선비의 빈칸을 찾는다", "고지서", "빈칸"),
+            ("예시 장면 C", "싼 집 후보와 가까운 집 후보의 한 달 피로비를 비교한다", "비교", "싸지만 먼 집"),
+        ]
+        good = "가격표 밖 비용까지 적어도 감당 가능한 월 총액이 보입니다."
+        bad = "월세만 싸고 관리비·교통비·계절비가 흐리면 계약 후 비용이 튑니다."
+    elif any(token in joined for token in ("밤", "소음", "골목", "퇴근", "역")):
+        scenes = [
+            ("예시 장면 A", "역 출구부터 집 문 앞까지 불 꺼지는 구간을 표시한다", "밤길 지도", "어두운 7분"),
+            ("예시 장면 B", "창문을 열고 배달 오토바이·술집·차량 소리 방향을 듣는다", "22시", "소리 방향"),
+            ("예시 장면 C", "낮 사진에서 안 보이는 우회길·큰길 복귀 동선을 찾는다", "우회", "돌아가는 길"),
+        ]
+        good = "늦은 시간에도 큰길 복귀가 쉽고, 소리·시선·조명이 설명 가능합니다."
+        bad = "낮에는 멀쩡하지만 밤에는 골목·소음·우회가 한꺼번에 늘어납니다."
+    else:
+        scenes = [
+            ("예시 장면 A", "후보 집 앞 30초 사진처럼 현관·게시판·우편함 질서를 본다", "입구", "관리 신호"),
+            ("예시 장면 B", "집에서 역·편의점·분리수거장까지 매일 걸을 선을 그린다", "동선 지도", "반복 루트"),
+            ("예시 장면 C", "좋아 보이는 조건 옆에 계약 후 매일 겪을 반례를 붙인다", "비교", "좋음 vs 피곤"),
+        ]
+        good = "좋은 조건과 불편한 반복 장면을 한 화면에서 같이 설명할 수 있습니다."
+        bad = "사진상 장점만 있고, 실제로 매일 부딪힐 장면이 비어 있으면 보류합니다."
+    cards = []
+    for idx, (label, desc, badge, punch) in enumerate(scenes, start=1):
+        cards.append(f'''<article class="example-scene-card scene-{idx}">
+      <div class="scene-frame" aria-hidden="true">
+        <span class="scene-skyline"></span><span class="scene-route"></span><span class="scene-pin pin-a">{idx}</span><span class="scene-pin pin-b"></span>
+        <span class="scene-badge">{esc(badge)}</span>
+      </div>
+      <div class="scene-copy"><span>{esc(label)}</span><strong>{esc(punch)}</strong><p>{esc(desc)}</p></div>
+    </article>''')
+    question = short_text(article.get("field_mission") or article.get("radar_suspicion") or article.get("description") or "현장에서 20분 안에 직접 확인할 장면을 먼저 정합니다.", 110)
+    return f'''<section class="radar-example-gallery" aria-label="본문 예시 이미지와 현장 시각화">
+  <div class="example-gallery-head">
+    <p class="eyebrow">Field Examples</p>
+    <h2>글을 읽기 전에 먼저 떠올릴 예시 장면</h2>
+    <p>그래프와 표만 보지 말고, 계약 뒤 매일 반복될 장면을 먼저 상상하게 만드는 현장형 시각 자료입니다.</p>
+  </div>
+  <div class="example-scene-grid">
+    {''.join(cards)}
+  </div>
+  <div class="radar-situation-strip">
+    <article><span>좋은 신호</span><p>{esc(good)}</p></article>
+    <article><span>위험한 반례</span><p>{esc(bad)}</p></article>
+    <article class="field-question"><span>현장 질문</span><p>{esc(question)}</p></article>
+  </div>
+</section>
+'''
+
+
 def deal_card(a: dict, rank: int | None = None) -> str:
     img = a.get("image_url") or ""
     card_class = "deal-card" if img else "deal-card text-card"
@@ -1243,6 +1339,168 @@ def deal_category_hubs(deals: list[dict]) -> str:
   <ul class="mini-link-list">{mini_deal_links(articles)}</ul>
 </article>''')
     return "\n".join(cards)
+
+
+def topic_page_metas() -> list[dict]:
+    pages: list[dict] = []
+    for topic in TOPIC_HUBS:
+        pages.append(
+            {
+                "path": f"/topics/{topic['slug']}/",
+                "file": f"topics/{topic['slug']}/index.html",
+                "title": topic["title"],
+                "description": topic["description"],
+                "priority": topic.get("priority", "0.76"),
+                "type": "CollectionPage",
+                "section": "topics",
+                "tags": topic.get("keywords") or [],
+                "topic": topic,
+            }
+        )
+    return pages
+
+
+def topic_haystack(article: dict) -> str:
+    return " ".join(
+        [
+            str(article.get("title") or ""),
+            str(article.get("description") or ""),
+            str(article.get("category") or ""),
+            " ".join(str(t) for t in (article.get("tags") or [])),
+            strip_tags(str(article.get("body_html") or ""))[:1800],
+        ]
+    ).lower()
+
+
+def topic_matches_article(topic: dict, article: dict) -> bool:
+    haystack = topic_haystack(article)
+    terms = [str(x).lower() for x in (topic.get("keywords") or []) + (topic.get("queries") or []) if str(x).strip()]
+    return any(term in haystack for term in terms)
+
+
+def topic_related_articles(topic: dict, deals: list[dict], radar: list[dict], *, limit: int = 8) -> list[dict]:
+    articles = radar + deals
+    matches = [a for a in articles if topic_matches_article(topic, a)]
+    primary = topic.get("primary_section")
+    if not matches and primary == "deals":
+        matches = deals_by_growth_priority(deals)[:limit]
+    if not matches and primary == "radar":
+        matches = radar[:limit]
+    return sorted(
+        matches,
+        key=lambda a: (
+            1 if a.get("section") == primary else 0,
+            article_views(a),
+            parse_dt(a.get("date")).timestamp(),
+        ),
+        reverse=True,
+    )[:limit]
+
+
+def topic_list_links(articles: list[dict], empty_label: str = "관련 글 준비중") -> str:
+    if not articles:
+        return f'<li class="muted">{esc(empty_label)}</li>'
+    return "\n".join(
+        f'<li><a href="{esc(a["path"])}">{esc(short_text(a.get("title") or "", 42))}</a></li>'
+        for a in articles[:3]
+    )
+
+
+def topic_card(topic: dict, deals: list[dict], radar: list[dict]) -> str:
+    related = topic_related_articles(topic, deals, radar, limit=4)
+    chips = "".join(search_chip(q) for q in topic.get("queries") or [])
+    path = f"/topics/{topic['slug']}/"
+    return f'''<article class="topic-card">
+  <div class="topic-card-head">
+    <span class="tag pale">{esc(topic['label'])}</span>
+    <strong>{len(related)}개 연결 글</strong>
+  </div>
+  <h2><a href="{esc(path)}">{esc(topic['title'])}</a></h2>
+  <p class="topic-intent">{esc(topic['intent'])}</p>
+  <p>{esc(topic['description'])}</p>
+  <div class="search-chip-row">{chips}</div>
+  <ul class="mini-link-list">{topic_list_links(related)}</ul>
+  <a class="text-link" href="{esc(path)}">허브 열기 →</a>
+</article>'''
+
+
+def topic_cards(deals: list[dict], radar: list[dict]) -> str:
+    return "\n".join(topic_card(topic, deals, radar) for topic in TOPIC_HUBS)
+
+
+def topics_body(deals: list[dict], radar: list[dict]) -> str:
+    return f'''
+<section class="page-hero compact">
+  <p class="eyebrow">Search Hubs</p>
+  <h1>월세·전세·상가·생활상품 검색 의도별 허브</h1>
+  <p class="lead">1~2개월 트래픽 테스트는 글을 더 많이 쌓기보다, 검색 의도별 고정 URL을 만들고 어떤 묶음이 먼저 노출되는지 보는 방식으로 갑니다.</p>
+  <div class="hero-actions">
+    <a class="button primary" href="#topic-hubs">허브 카드 보기</a>
+    <a class="button" href="/search/">전체 검색</a>
+    <a class="button" href="/guides/">읽는 순서</a>
+  </div>
+</section>
+<section class="panel soft search-panel">
+  {search_form("예: 월세 계약 전 체크, 전세 밤길, 카페 상가 계약, 제습기")}
+</section>
+<section class="panel topic-test-plan">
+  <span class="tag pale">Traffic Test</span>
+  <h2>테스트 기준</h2>
+  <ul class="topic-metrics">
+    <li><strong>색인:</strong> /topics/와 8개 허브가 sitemap·검색 인덱스에 들어가는지 확인</li>
+    <li><strong>유입:</strong> 월세·전세·상가·생활가전 쿼리별 노출/클릭을 주 단위로 비교</li>
+    <li><strong>전환:</strong> 동네 레이더 글은 체류·다음 글 이동, 구매가이드는 상품 페이지 클릭을 봄</li>
+  </ul>
+</section>
+<section id="topic-hubs" class="landing-section">
+  <div class="section-title"><h2>검색 허브 8개</h2><p>현재 글을 검색 의도별로 다시 묶어, 신규 글 없이도 색인면을 늘리는 테스트입니다.</p></div>
+  <div class="topic-grid">{topic_cards(deals, radar)}</div>
+</section>
+'''
+
+
+def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
+    articles = topic_related_articles(topic, deals, radar, limit=10)
+    chips = "".join(search_chip(q) for q in topic.get("queries") or [])
+    keyword_chips = category_strip_links(topic.get("keywords") or [])
+    article_paths = {a.get("path") for a in articles}
+    secondary = [a for a in (radar + deals) if a.get("path") not in article_paths][:4]
+    secondary_html = article_cards(secondary, "다음 연결 글 준비중")
+    first_query = str((topic.get("queries") or [topic.get("label") or ""])[0])
+    return f'''
+<section class="page-hero compact">
+  <p class="eyebrow">Topic Hub · {esc(topic['label'])}</p>
+  <h1>{esc(topic['title'])}</h1>
+  <p class="lead">{esc(topic['description'])}</p>
+  <div class="hero-actions">
+    <a class="button primary" href="#related-articles">연결 글 보기</a>
+    <a class="button" href="/topics/">전체 허브</a>
+    <a class="button" href="/search/?q={quote(first_query, safe='')}">이 주제로 검색</a>
+  </div>
+</section>
+<section class="panel soft topic-brief">
+  <span class="tag pale">검색 의도</span>
+  <h2>{esc(topic['intent'])}</h2>
+  <div class="search-chip-row">{chips}</div>
+  <div class="category-strip">{keyword_chips}</div>
+</section>
+<section id="related-articles" class="article-list mixed-list">
+  <div class="section-title"><h2>먼저 볼 연결 글</h2><p>현재 공개 글 중 이 검색 의도와 가장 가까운 글입니다.</p></div>
+  {article_cards(articles, "연결 글 준비중")}
+</section>
+<section class="panel topic-followup">
+  <h2>다음에 보강할 글 방향</h2>
+  <ol>
+    <li>검색어 그대로 답하는 1문장 결론을 도입부에 추가</li>
+    <li>현장 체크리스트·지도형 예시·상품 비교표 중 하나를 중간 스크롤에 배치</li>
+    <li>관련 허브와 상세 글을 서로 링크해 체류와 색인을 같이 올림</li>
+  </ol>
+</section>
+<section class="article-list mixed-list">
+  <div class="section-title"><h2>같이 볼 만한 글</h2><p>의도는 다르지만 같은 방문자가 이어서 볼 수 있는 글입니다.</p></div>
+  {secondary_html}
+</section>
+'''
 
 
 def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
@@ -1652,8 +1910,10 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
     else:
         article_class = "article-page"
     visual_block = ""
+    example_block = ""
     if article.get("section") == "radar":
         visual_block = radar_experience_block(article)
+        example_block = radar_example_gallery(article)
         article_class += " radar-article"
 
     related_block = ""
@@ -1705,6 +1965,7 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
   {notice}
   {quick_block}
   {visual_block}
+  {example_block}
   {image_block}
   <section id="article-body" class="article-content">
     {article['body_html']}
@@ -1742,24 +2003,36 @@ def search_index_item(article: dict) -> dict[str, Any]:
 
 def build_search_index(deals: list[dict], radar: list[dict]) -> dict[str, Any]:
     items = [search_index_item(a) for a in deals + radar]
-    static_items = [
-        {
-            "title": p["title"],
-            "description": p["description"],
-            "path": p["path"],
-            "section": p.get("section"),
-            "category": "사이트",
-            "tags": [],
-            "date": TODAY,
-            "image_url": "",
-            "price_hint": "",
-            "item_count_hint": "",
-            "views": 0,
-            "text": f"{p['title']} {p['description']}",
-        }
-        for p in STATIC_PAGES
-        if p.get("section") != "search"
-    ]
+    index_pages = list(STATIC_PAGES) + topic_page_metas()
+    static_items = []
+    for p in index_pages:
+        if p.get("section") == "search":
+            continue
+        topic = p.get("topic") or {}
+        topic_terms = " ".join(
+            [
+                str(topic.get("label") or ""),
+                str(topic.get("intent") or ""),
+                " ".join(str(x) for x in topic.get("keywords") or []),
+                " ".join(str(x) for x in topic.get("queries") or []),
+            ]
+        )
+        static_items.append(
+            {
+                "title": p["title"],
+                "description": p["description"],
+                "path": p["path"],
+                "section": p.get("section"),
+                "category": "검색허브" if p.get("section") == "topics" else "사이트",
+                "tags": p.get("tags") or [],
+                "date": TODAY,
+                "image_url": "",
+                "price_hint": "",
+                "item_count_hint": "검색 의도 허브" if p.get("section") == "topics" else "",
+                "views": 0,
+                "text": f"{p['title']} {p['description']} {topic_terms}",
+            }
+        )
     return {
         "version": 1,
         "base_url": BASE,
@@ -2053,10 +2326,18 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .hero-pin.pin-2 { left: 0; bottom: 0; width: 48%; z-index: 2; transform: rotate(-5deg); }
 .hero-pin.pin-3 { right: 0; bottom: 24px; width: 46%; z-index: 1; transform: rotate(5deg); }
 .landing-section { margin: 34px 0 58px; scroll-margin-top: 96px; }
-.intent-grid, .category-hubs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-.intent-card, .category-hub { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(58, 37, 20, .065); }
-.intent-card h2 { margin: 8px 0 8px; font-size: clamp(21px, 2.2vw, 26px); }
-.intent-card p { color: #5f5652; margin: 0 0 14px; line-height: 1.65; }
+.intent-grid, .category-hubs, .topic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.intent-card, .category-hub, .topic-card { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(58, 37, 20, .065); }
+.intent-card h2, .topic-card h2 { margin: 8px 0 8px; font-size: clamp(21px, 2.2vw, 26px); }
+.intent-card p, .topic-card p { color: #5f5652; margin: 0 0 14px; line-height: 1.65; }
+.topic-card { display: flex; flex-direction: column; min-height: 100%; }
+.topic-card .text-link { margin-top: auto; }
+.topic-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.topic-card-head strong { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.topic-intent { padding: 12px 14px; border-radius: 18px; background: #fff7ed; border: 1px solid #ffd2b8; font-weight: 800; color: #4b423f !important; }
+.topic-test-plan, .topic-brief, .topic-followup { margin: 24px 0; }
+.topic-metrics { display: grid; gap: 10px; padding-left: 20px; }
+.topic-followup ol { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 8px; }
 .search-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
 .search-chip { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 13px; font-weight: 950; }
 .mini-link-list { display: grid; gap: 8px; margin: 12px 0 0; padding-left: 18px; }
@@ -2087,7 +2368,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .article-page { max-width: 940px; margin: 0 auto; }
 .article-hero { padding: 44px 0 18px; }
 .radar-article { max-width: 1120px; }
-.radar-article .breadcrumb, .radar-article .article-hero, .radar-article .article-content, .radar-article .related-radar, .radar-article .article-tail { max-width: 940px; margin-left: auto; margin-right: auto; }
+.radar-article .breadcrumb, .radar-article .article-hero, .radar-article .article-content, .radar-article .related-radar, .radar-article .article-tail, .radar-article .radar-example-gallery { max-width: 940px; margin-left: auto; margin-right: auto; }
 .radar-experience-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 18px; margin: 20px 0 26px; align-items: stretch; }
 .radar-map-card, .brief-card, .radar-toc-card { background: rgba(255,255,255,.94); border: 1px solid rgba(234,223,212,.95); border-radius: 30px; box-shadow: 0 16px 44px rgba(58,37,20,.09); }
 .radar-map-card { position: relative; overflow: hidden; padding: 24px; min-height: 430px; background: linear-gradient(145deg, #fffaf4 0%, #ffffff 52%, #fff1e7 100%); }
@@ -2118,6 +2399,29 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-toc-card ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
 .radar-toc-card li { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 8px; padding: 10px; border-radius: 16px; background: #fffaf4; color: #443a36; font-weight: 850; }
 .radar-toc-card li span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 950; }
+.radar-example-gallery { margin: 0 auto 26px; padding: clamp(20px, 3.5vw, 30px); border-radius: 30px; border: 1px solid rgba(234,223,212,.95); background: linear-gradient(135deg, #fffaf4, #ffffff 48%, #eef6ff); box-shadow: 0 16px 44px rgba(58,37,20,.085); }
+.example-gallery-head h2 { margin: 4px 0 8px; font-size: clamp(25px, 3.2vw, 36px); }
+.example-gallery-head p:not(.eyebrow) { margin: 0 0 18px; color: #5f5652; line-height: 1.65; }
+.example-scene-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.example-scene-card { min-width: 0; overflow: hidden; border-radius: 24px; border: 1px solid rgba(234,223,212,.95); background: #fff; box-shadow: 0 10px 26px rgba(58,37,20,.07); }
+.scene-frame { position: relative; display: block; min-height: 145px; overflow: hidden; background: radial-gradient(circle at 22% 24%, rgba(255,90,31,.18), transparent 23%), radial-gradient(circle at 78% 78%, rgba(37,99,235,.18), transparent 25%), linear-gradient(145deg, #211922, #3c2b34); }
+.scene-skyline { position: absolute; left: 14px; right: 14px; bottom: 22px; height: 54px; background: linear-gradient(90deg, rgba(255,255,255,.22) 0 15%, transparent 15% 21%, rgba(255,255,255,.18) 21% 41%, transparent 41% 47%, rgba(255,255,255,.24) 47% 74%, transparent 74% 80%, rgba(255,255,255,.16) 80%); border-radius: 12px 12px 0 0; }
+.scene-route { position: absolute; left: 16px; right: -18px; top: 70px; height: 5px; border-radius: 999px; background: linear-gradient(90deg, #ff5a1f, #ffb020, #60a5fa); transform: rotate(-12deg); box-shadow: 0 0 18px rgba(255,90,31,.45); }
+.scene-pin { position: absolute; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: #fff; color: #211922; font-size: 13px; font-weight: 950; box-shadow: 0 10px 22px rgba(0,0,0,.24); }
+.scene-pin.pin-a { left: 18px; top: 28px; }
+.scene-pin.pin-b { right: 22px; bottom: 36px; width: 20px; height: 20px; background: #ff5a1f; }
+.scene-badge { position: absolute; left: 14px; bottom: 12px; max-width: calc(100% - 28px); padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,.9); color: #2f2724; font-size: 12px; font-weight: 950; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scene-copy { padding: 15px; }
+.scene-copy span { display: inline-flex; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 950; letter-spacing: .06em; }
+.scene-copy strong { display: block; font-size: 18px; letter-spacing: -.02em; }
+.scene-copy p { margin: 6px 0 0; color: #5f5652; font-size: 14px; line-height: 1.58; overflow-wrap: break-word; word-break: keep-all; }
+.radar-situation-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.radar-situation-strip article { padding: 15px; border-radius: 20px; background: rgba(255,255,255,.82); border: 1px solid rgba(234,223,212,.95); }
+.radar-situation-strip span { display: block; margin-bottom: 6px; color: var(--orange-dark); font-size: 12px; font-weight: 950; }
+.radar-situation-strip p { margin: 0; color: #3f3733; font-size: 14px; line-height: 1.58; overflow-wrap: break-word; word-break: keep-all; }
+.radar-situation-strip .field-question { background: #211922; border-color: #211922; }
+.radar-situation-strip .field-question span { color: #ffcfb8; }
+.radar-situation-strip .field-question p { color: #fff3ec; }
 .article-product-hero { display: grid; grid-template-columns: minmax(220px, 330px) 1fr; gap: 24px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 30px; padding: clamp(16px, 3vw, 28px); box-shadow: var(--shadow); margin: 22px 0; }
 .article-product-hero img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 24px; background: #fffaf4; }
 .article-product-hero h2 { margin: 12px 0 8px; }
@@ -2245,7 +2549,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
   .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
   .lead { font-size: 17px; line-height: 1.62; }
-  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid, .example-scene-grid, .radar-situation-strip { grid-template-columns: 1fr; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 14px; padding-top: 24px; }
@@ -2305,6 +2609,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .affiliate-disclosure { margin-top: 16px; }
   .quick-facts { gap: 8px; }
   .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
+  .radar-example-gallery { padding: 18px; border-radius: 22px; }
+  .scene-frame { min-height: 132px; }
+  .scene-copy { padding: 13px; }
+  .radar-situation-strip article { padding: 13px; }
   .radar-map-card { padding: 18px; }
   .radar-map { min-height: 420px; border-radius: 24px; }
   .map-route-desktop { display: none; }
@@ -2415,7 +2723,7 @@ SEARCH_JS = '''(() => {
     results.innerHTML = matches.map(({item}) => {
       const meta = [item.category, item.item_count_hint, item.price_hint].filter(Boolean).slice(0, 3).join(' · ');
       const image = item.image_url ? `<img src="${esc(item.image_url)}" alt="${esc(item.title)}" loading="lazy" decoding="async" />` : '';
-      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '구매가이드' : item.section === 'radar' ? '동네 레이더' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
+      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '구매가이드' : item.section === 'radar' ? '동네 레이더' : item.section === 'topics' ? '검색허브' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
     }).join('');
   };
   const updateUrl = (query) => {
@@ -2463,11 +2771,13 @@ def build() -> None:
             SOURCE_URL_TO_PATH[source_url] = article["path"]
     for article in deals + radar:
         article["body_html"] = localize_public_body(article["body_html"])
+    topic_pages = topic_page_metas()
 
     bodies = {
         "home": home_body(deals, radar),
         "radar": radar_body(radar),
         "deals": deals_body(deals),
+        "topics": topics_body(deals, radar),
         "search": search_body(deals, radar),
         "guides": guides_body(),
         "about": about_body(len(deals), len(radar)),
@@ -2475,6 +2785,9 @@ def build() -> None:
 
     for page in STATIC_PAGES:
         write(page["file"], layout(page, bodies[page["section"]]))
+
+    for page in topic_pages:
+        write(page["file"], layout(page, topic_page_body(page["topic"], deals, radar)))
 
     for article in deals + radar:
         related = [a for a in radar if a["path"] != article["path"]][:3] if article.get("section") == "radar" else []
@@ -2533,7 +2846,7 @@ Sitemap: {BASE}/sitemap.xml
 Host: r2cuerdame.github.io
 ''')
 
-    all_pages = list(STATIC_PAGES) + radar + deals
+    all_pages = list(STATIC_PAGES) + topic_pages + radar + deals
     sitemap_items = "\n".join(
         f'  <url><loc>{BASE}{p["path"]}</loc><lastmod>{parse_dt(p.get("date")).date().isoformat() if p.get("type") == "BlogPosting" else TODAY}</lastmod><changefreq>{"weekly" if p.get("type") == "BlogPosting" else "daily"}</changefreq><priority>{p.get("priority", "0.64")}</priority></url>'
         for p in all_pages
@@ -2559,6 +2872,12 @@ Host: r2cuerdame.github.io
     deals_article_lines = "\n".join(
         f"- {a['title']}: {BASE}{a['path']}" for a in deals[:8]
     ) or "- 공개된 구매가이드 없음"
+    topic_lines = "\n".join(
+        f"- {p['title']}: {BASE}{p['path']}" for p in topic_pages
+    ) or "- 검색 허브 준비중"
+    ai_topic_lines = "\n".join(
+        f"Topic Hub: {BASE}{p['path']} — {p['title']}" for p in topic_pages
+    ) or "Topic Hub: none"
     ai_radar_lines = "\n".join(
         f"Radar Article: {BASE}{a['path']} — {a['title']}" for a in radar[:12]
     ) or "Radar Article: none"
@@ -2580,6 +2899,8 @@ Last updated: {NOW.isoformat(timespec='seconds')}
   - 계약 전 리스크, 생활권, 통근, 관리비, 소음, 상권·권리금 리스크를 판단 카드와 현장 질문으로 정리합니다.
 - 읽는 순서: {BASE}/guides/
   - 첫 방문자가 이사·월세·상가 계약 전 어떤 글을 먼저 읽을지 안내합니다.
+- 검색 허브: {BASE}/topics/
+  - 월세·전세·통근·밤길·상가·생활상품 검색 의도별 고정 랜딩입니다.
 - 소개: {BASE}/about/
   - 운영 원칙, 섹션 분리, 검색/AI 공개 원칙을 설명합니다.
 
@@ -2594,6 +2915,10 @@ Last updated: {NOW.isoformat(timespec='seconds')}
 ## Dongne Radar articles
 
 {radar_article_lines}
+
+## Topic hubs
+
+{topic_lines}
 
 ## Separate deals articles
 
@@ -2617,12 +2942,14 @@ Canonical: {BASE}/
 Primary scope: Dongne Radar for moving, monthly rent, jeonse, commute, living area, on-site checks, commercial lease, cafe/store location, key money risk.
 Radar: {BASE}/radar/
 Guides: {BASE}/guides/
+Topic hubs: {BASE}/topics/
 About: {BASE}/about/
 Separate deals section: {BASE}/deals/
 Search: {BASE}/search/
 Sitemap: {BASE}/sitemap.xml
 Feed: {BASE}/feed.xml
 LLM guide: {BASE}/llms.txt
+{ai_topic_lines}
 {ai_radar_lines}
 {ai_deals_lines}
 Language: ko-KR
@@ -2633,6 +2960,7 @@ Owner: r2cuerdame
 Site: {BASE}/
 Language: Korean
 Primary purpose: Dongne Radar — moving, rent, commute, living-area, on-site-check, and commercial-lease risk notes.
+Topic hubs: /topics/ for monthly-rent, jeonse, commute, night/noise, commercial-lease, and shopping-intent landing pages.
 Separate section: /deals/ for lifestyle shopping picks and affiliate-disclosed comparisons.
 Updated: {NOW.isoformat(timespec='seconds')}
 ''')
@@ -2643,7 +2971,8 @@ Updated: {NOW.isoformat(timespec='seconds')}
         "timezone": "Asia/Seoul",
         "primary_scope": "Dongne Radar: 이사·월세·전세·통근·생활권·현장 확인·상가 계약 리스크",
         "sections": [p["path"] for p in STATIC_PAGES],
-        "article_counts": {"radar": len(radar), "deals": len(deals)},
+        "topic_hubs": [p["path"] for p in topic_pages],
+        "article_counts": {"radar": len(radar), "deals": len(deals), "topic_hubs": len(topic_pages)},
         "search_ready": ["google", "naver", "daum", "ai_search", "site_search"],
         "search_index": f"{BASE}/data/search-index.json",
         "analytics": {"tracking_ready": bool(ANALYTICS_ID), "metrics_status": PAGE_METRICS_DATA.get("status"), "metrics_updated_at": PAGE_METRICS_DATA.get("updated_at")},
@@ -2662,6 +2991,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - Home: {BASE}/
 - Dongne Radar: {BASE}/radar/
 - Guides: {BASE}/guides/
+- Topic Hubs: {BASE}/topics/
 - About: {BASE}/about/
 - Separate Shopping Picks: {BASE}/deals/
 - Site Search: {BASE}/search/
@@ -2670,6 +3000,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 
 - Dongne Radar articles: {len(radar)}
 - Shopping pick articles: {len(deals)}
+- Search intent hubs: {len(topic_pages)}
 
 ## Search/AI files
 
@@ -2680,6 +3011,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - `{BASE}/ai.txt`
 - `{BASE}/humans.txt`
 - `{BASE}/search/`
+- `{BASE}/topics/`
 - `{BASE}/data/search-index.json`
 
 ## Operating scope
@@ -2700,8 +3032,9 @@ LLM guide: {BASE}/llms.txt
 ## Already handled in repo
 
 - robots allows Google, Naver/Yeti, Daumoa, Bing, and major AI/search crawlers.
-- sitemap includes static sections and generated article URLs.
+- sitemap includes static sections, topic hub URLs, and generated article URLs.
 - every HTML page has canonical, description, OG, RSS, sitemap link, SearchAction JSON-LD, breadcrumb JSON-LD, and page/article JSON-LD.
+- `/topics/` gives Google/Search Console fixed landing URLs for 월세·전세·상가·생활상품 intent tests.
 - `/search/` and `data/search-index.json` give users a fast site/product search surface.
 - `llms.txt` and `ai.txt` exist for AI search/answer engines.
 - new public articles update the related feed and sitemap.

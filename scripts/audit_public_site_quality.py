@@ -50,6 +50,7 @@ MANDATORY_PATHS = [
     "/radar/",
     "/radar/cafe-contract-risk/",
     "/deals/",
+    "/topics/",
     "/search/",
 ]
 
@@ -57,6 +58,7 @@ SECTION_MANDATORY_PATHS = {
     "all": MANDATORY_PATHS,
     "deals": ["/", "/deals/", "/search/"],
     "radar": ["/", "/radar/", "/radar/cafe-contract-risk/", "/search/"],
+    "topics": ["/", "/topics/", "/search/"],
 }
 
 
@@ -152,7 +154,7 @@ def section_mandatory_paths(section: str) -> list[str]:
 def local_pages(limit_articles: int, section: str = "all") -> list[str]:
     paths = section_mandatory_paths(section)
     article_paths: list[str] = []
-    root_names = ["radar", "deals"] if section == "all" else [section]
+    root_names = ["topics", "radar", "deals"] if section == "all" else [section]
     for root_name in root_names:
         base = ROOT / root_name
         if not base.exists():
@@ -167,7 +169,7 @@ def local_pages(limit_articles: int, section: str = "all") -> list[str]:
 
 def live_pages(base_url: str, limit_articles: int, section: str = "all") -> list[str]:
     paths = section_mandatory_paths(section)
-    allowed_prefixes = ("/radar/", "/deals/") if section == "all" else (f"/{section}/",)
+    allowed_prefixes = ("/topics/", "/radar/", "/deals/") if section == "all" else (f"/{section}/",)
     try:
         sitemap = fetch_url(urljoin(base_url.rstrip("/") + "/", "sitemap.xml?quality_audit=1"))
         for loc in re.findall(r"<loc>(.*?)</loc>", sitemap, flags=re.I | re.S):
@@ -227,6 +229,9 @@ def audit_css(css: str) -> list[str]:
     failures: list[str] = []
     if ".visual-checklist" not in css:
         failures.append("visual_checklist_class_missing")
+    for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip"]:
+        if marker not in css:
+            failures.append(f"radar_example_visual_css_missing:{marker}")
     guard_match = re.search(r"\.article-content\s+\.checklist\s*\{([^}]*)\}", css, flags=re.S)
     guard_body = normalize_ws(guard_match.group(1)) if guard_match else ""
     if not guard_match or "width: 100%" not in guard_body or "max-width: none" not in guard_body:
@@ -290,6 +295,13 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:taxonomy_category_meta_link_missing")
     if kind == "radar_article" and anchor_class_count(page_html, "search-chip") < 2:
         failures.append(f"{path}:radar_related_search_chips_too_few")
+    if kind == "radar_article":
+        example_cards = page_html.count('class="example-scene-card')
+        for marker in ['class="radar-example-gallery"', 'class="radar-situation-strip"', "예시 장면", "현장 질문"]:
+            if marker not in page_html:
+                failures.append(f"{path}:radar_example_visual_marker_missing:{marker}")
+        if example_cards < 3:
+            failures.append(f"{path}:radar_example_scene_cards_too_few:{example_cards}")
     if kind == "deal_article":
         quick_product_links = anchor_class_count(page_html, "quick-product-link")
         coupang_links = coupang_anchor_tags(page_html)
@@ -313,6 +325,9 @@ def audit_html(path: str, page_html: str) -> list[str]:
             "checklist",
             "radar-map-card",
             "radar-brief-stack",
+            "radar-example-gallery",
+            "example-scene-card",
+            "radar-situation-strip",
             "comparison",
             "deal-table",
             "table",
