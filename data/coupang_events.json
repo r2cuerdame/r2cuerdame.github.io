@@ -1,0 +1,6 @@
+{
+  "source": "manual_coupang_partners_events",
+  "updated_at": "",
+  "notes": "쿠팡 파트너스 이벤트 화면에서 사람이 확인한 eventName/landingUrl만 입력한다. 쿠키·토큰·비밀번호·세션 값은 저장하지 않는다. events가 비어 있으면 공개 페이지에는 아무 카드도 렌더링하지 않는다.",
+  "events": []
+}

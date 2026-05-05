@@ -115,6 +115,12 @@ def coupang_anchor_tags(page_html: str) -> list[str]:
     return [tag for tag in anchor_tags(page_html) if "coupang.com" in attr_value(tag, "href").lower()]
 
 
+def coupang_href_has_tracking(href: str) -> bool:
+    parsed = urlparse(href)
+    host = parsed.netloc.lower().split("@")[-1]
+    return "lptag=" in href.lower() or host == "link.coupang.com"
+
+
 def extract_tag_text(page_html: str, tag: str) -> str:
     match = re.search(rf"<{tag}\b[^>]*>(.*?)</{tag}>", page_html, flags=re.I | re.S)
     if not match:
@@ -242,6 +248,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
+    for marker in [".coupang-event-strip", ".coupang-event-card", ".coupang-event-link", ".event-disclosure"]:
+        if marker not in css:
+            failures.append(f"coupang_event_css_missing:{marker}")
     if "grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr)" not in css:
         failures.append("shopping_room_desktop_width_weight_guard_missing")
     if "min-height: clamp(390px, 36vw, 470px)" not in css:
@@ -359,13 +368,22 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
         if coupang_links and "affiliate_click" not in page_html:
             failures.append(f"{path}:affiliate_click_tracking_missing")
-        if any("lptag=" not in attr_value(tag, "href") for tag in coupang_links):
+        if any(not coupang_href_has_tracking(attr_value(tag, "href")) for tag in coupang_links):
             failures.append(f"{path}:coupang_lptag_missing")
         for tag in coupang_links:
             rel = set(attr_value(tag, "rel").split())
             if not {"sponsored", "nofollow", "noopener"}.issubset(rel) or attr_value(tag, "target") != "_blank":
                 failures.append(f"{path}:coupang_anchor_policy_bad")
                 break
+        if 'class="coupang-event-strip"' in page_html:
+            event_cards = page_html.count('class="coupang-event-card"')
+            event_links = anchor_class_count(page_html, "coupang-event-link")
+            if not (1 <= event_cards <= 3):
+                failures.append(f"{path}:coupang_event_card_count_bad:{event_cards}")
+            if event_links != event_cards:
+                failures.append(f"{path}:coupang_event_links_mismatch:{event_links}:{event_cards}")
+            if "쿠팡 파트너스 활동" not in text:
+                failures.append(f"{path}:coupang_event_disclosure_missing")
 
     category_chip_links = anchor_class_count(page_html, "category-chip")
     tag_links = anchor_class_count(page_html, "tag")
@@ -413,7 +431,7 @@ def audit_html(path: str, page_html: str) -> list[str]:
         coupang_links = coupang_anchor_tags(page_html)
         if coupang_links and "affiliate_click" not in page_html:
             failures.append(f"{path}:affiliate_click_tracking_missing")
-        if any("lptag=" not in attr_value(tag, "href") for tag in coupang_links):
+        if any(not coupang_href_has_tracking(attr_value(tag, "href")) for tag in coupang_links):
             failures.append(f"{path}:coupang_lptag_missing")
         if coupang_links and quick_product_links < min(3, len({attr_value(tag, 'href') for tag in coupang_links})):
             failures.append(f"{path}:deal_quick_product_links_too_few:{quick_product_links}")

@@ -6,7 +6,7 @@ then writes static section indexes, article pages, SEO files, RSS, and assets.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 from email.utils import format_datetime
 from pathlib import Path
 import hashlib
@@ -15,7 +15,7 @@ import json
 import os
 import re
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 KST = timezone(timedelta(hours=9))
@@ -29,6 +29,7 @@ RADAR_KEYWORDS = "동네 레이더, 전월세 계약, 월세 계약, 전세 계�
 DEALS_KEYWORDS = "쇼핑픽, 구매가이드, 생활용품 추천, 상품 비교, 가격 비교, Recuerdame Lab"
 
 METRICS_PATH = ROOT / "data" / "metrics" / "page_views.json"
+COUPANG_EVENTS_PATH = ROOT / "data" / "coupang_events.json"
 ANALYTICS_CONFIG_PATHS = [
     Path("/root/.hermes/secrets/deals_google_metrics.json"),
     ROOT / "data" / "metrics" / "analytics_config.json",
@@ -1442,6 +1443,129 @@ def deals_by_growth_priority(deals: list[dict]) -> list[dict]:
     )
 
 
+EVENT_SECRET_KEYWORDS = ("cookie", "token", "password", "secret", "session", "credential")
+
+
+def parse_event_date(value: Any, *, field: str, event_id: str) -> date:
+    raw = str(value or "").strip()
+    if not raw:
+        raise BuildError(f"coupang_event:{event_id}:{field}_required")
+    try:
+        return datetime.strptime(raw, "%Y-%m-%d").date()
+    except ValueError as exc:
+        raise BuildError(f"coupang_event:{event_id}:{field}_invalid") from exc
+
+
+def coupang_event_url_ok(url: str) -> bool:
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return False
+    host = parsed.netloc.lower().split("@")[-1]
+    return parsed.scheme == "https" and (host == "link.coupang.com" or host.endswith(".coupang.com"))
+
+
+def coupang_event_tracking_ok(url: str) -> bool:
+    parsed = urlparse(url)
+    host = parsed.netloc.lower().split("@")[-1]
+    return "lptag=" in url.lower() or host == "link.coupang.com"
+
+
+def validate_coupang_event(raw: Any, index: int) -> dict[str, Any] | None:
+    if not isinstance(raw, dict):
+        raise BuildError(f"coupang_event:{index}:object_required")
+    if raw.get("enabled") is False:
+        return None
+    lowered_keys = " ".join(str(key).lower() for key in raw.keys())
+    if any(keyword in lowered_keys for keyword in EVENT_SECRET_KEYWORDS):
+        raise BuildError(f"coupang_event:{index}:secret_like_key_forbidden")
+
+    event_id = str(raw.get("event_id") or raw.get("slug") or f"event-{index}").strip()
+    name = str(raw.get("event_name") or raw.get("title") or "").strip()
+    description = str(raw.get("description") or "").strip()
+    landing_url = str(raw.get("landing_url") or "").strip()
+    if not event_id or not re.fullmatch(r"[A-Za-z0-9_-]{2,80}", event_id):
+        raise BuildError(f"coupang_event:{index}:event_id_invalid")
+    if not (2 <= len(name) <= 90):
+        raise BuildError(f"coupang_event:{event_id}:event_name_required")
+    if not landing_url or not coupang_event_url_ok(landing_url) or not coupang_event_tracking_ok(landing_url):
+        raise BuildError(f"coupang_event:{event_id}:landing_url_not_tracked_coupang")
+
+    start_date = parse_event_date(raw.get("start_date"), field="start_date", event_id=event_id)
+    end_date = parse_event_date(raw.get("end_date"), field="end_date", event_id=event_id)
+    if end_date < start_date:
+        raise BuildError(f"coupang_event:{event_id}:end_before_start")
+    if end_date < NOW.date():
+        raise BuildError(f"coupang_event:{event_id}:expired_event_forbidden")
+
+    image_url = str(raw.get("image_url") or "").strip()
+    if image_url and not image_url.startswith("https://"):
+        raise BuildError(f"coupang_event:{event_id}:image_url_https_required")
+
+    tags = raw.get("tags") or []
+    if isinstance(tags, str):
+        tags = [part.strip() for part in tags.split(",") if part.strip()]
+
+    return {
+        "event_id": event_id,
+        "event_name": name,
+        "description": description,
+        "landing_url": landing_url,
+        "start_date": start_date.isoformat(),
+        "end_date": end_date.isoformat(),
+        "category": str(raw.get("category") or "쿠팡 기획전").strip()[:24],
+        "tags": [str(tag).strip() for tag in tags if str(tag).strip()][:3],
+        "active": start_date <= NOW.date() <= end_date,
+    }
+
+
+def load_coupang_events(limit: int = 3) -> list[dict[str, Any]]:
+    if not COUPANG_EVENTS_PATH.exists():
+        return []
+    try:
+        data = json.loads(COUPANG_EVENTS_PATH.read_text(encoding="utf-8-sig"))
+    except Exception as exc:
+        raise BuildError("coupang_events_json_invalid") from exc
+    events = data.get("events") if isinstance(data, dict) else None
+    if not isinstance(events, list):
+        raise BuildError("coupang_events_list_required")
+    valid: list[dict[str, Any]] = []
+    for index, raw in enumerate(events, start=1):
+        event = validate_coupang_event(raw, index)
+        if event and event["active"]:
+            valid.append(event)
+    return valid[:limit]
+
+
+def coupang_event_strip() -> str:
+    events = load_coupang_events()
+    if not events:
+        return ""
+    cards = []
+    for event in events:
+        date_label = f"{event['start_date'][5:].replace('-', '.')}–{event['end_date'][5:].replace('-', '.')}"
+        chips = "".join(f'<span>{esc(tag)}</span>' for tag in event.get("tags") or [])
+        chip_row = f'<div class="coupang-event-tags">{chips}</div>' if chips else ""
+        desc = short_text(event.get("description") or "쿠팡 파트너스 기획전에서 오늘 노출할 만한 상품 묶음을 확인합니다.", 94)
+        cards.append(f'''<article class="coupang-event-card">
+  <div class="coupang-event-copy">
+    <span class="tag pale">{esc(event['category'])}</span>
+    <strong>{esc(event['event_name'])}</strong>
+    <p>{esc(desc)}</p>
+    {chip_row}
+  </div>
+  <div class="coupang-event-action">
+    <small>{esc(date_label)}</small>
+    <a class="coupang-event-link" href="{esc(event['landing_url'])}" target="_blank" rel="sponsored nofollow noopener">기획전 보기</a>
+  </div>
+</article>''')
+    return f'''<section id="coupang-events" class="coupang-event-strip" aria-label="오늘의 쿠팡 기획전">
+  <div class="section-title"><p class="eyebrow">오늘의 쿠팡 기획전</p><h2>공식 기획전은 조용한 카드로만 노출</h2><p>파트너스에서 확인한 공식 추적 링크가 검증된 경우에만 1–3개를 보여줍니다.</p></div>
+  <div class="coupang-event-grid">{''.join(cards)}</div>
+  <p class="event-disclosure">제휴 고지: 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다. 가격·혜택·기간은 쿠팡 기획전 화면에서 다시 확인하세요.</p>
+</section>'''
+
+
 ROOM_SCENES = {
     "living": {
         "label": "거실·책상",
@@ -2014,7 +2138,7 @@ def deal_article_product_link_block(article: dict) -> str:
         )
     return f'''<div class="quick-product-links" aria-label="상품 페이지 바로가기">
     <h3>마음에 드는 후보는 바로 확인</h3>
-    <p>제휴 고지: 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·후기는 상품 페이지에서 다시 확인하세요.</p>
+    <p>쿠팡 파트너스 링크입니다. 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·후기는 상품 페이지에서 다시 확인하세요.</p>
     <ul>{''.join(items)}</ul>
   </div>'''
 
@@ -2640,6 +2764,7 @@ def deals_body(deals: list[dict]) -> str:
   <strong>바로가기</strong>
   <div class="category-strip">{category_chips(deals)}</div>
 </section>
+{coupang_event_strip()}
 <section id="today-best" class="landing-section above-fold-section">
   <div class="section-title"><p class="eyebrow">오늘 추천</p><h2>지금 볼 만한 쇼핑픽</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
   <div class="deal-grid best-grid">{best_deal_cards(deals)}</div>
@@ -3360,13 +3485,28 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-preview h3 { margin: 8px 0 6px; color: #111827; font-size: 18px; line-height: 1.2; letter-spacing: -.03em; }
 .room-preview p { margin: 0; color: #5f5652; font-size: 13.5px; line-height: 1.55; font-weight: 750; }
 .room-preview-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
-.room-product-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 13px; border-radius: 999px; background: #ff5a1f; color: #fff; border: 1px solid #ff5a1f; text-decoration: none; font-size: 13px; font-weight: 950; box-shadow: 0 10px 18px rgba(255,90,31,.14); }
+.room-product-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 15px; border-radius: 999px; background: #ff5a1f; color: #fff; border: 1px solid #ff5a1f; text-decoration: none; font-size: 13px; font-weight: 950; box-shadow: 0 10px 18px rgba(255,90,31,.14); }
 .room-product-link:hover { color: #fff; background: #ea580c; border-color: #ea580c; }
-.room-preview .text-link { min-height: 36px; font-size: 13px; }
+.room-preview .text-link { min-height: 44px; font-size: 13px; }
 .room-empty { padding: 20px; border-radius: 20px; background: #fff; border: 1px dashed #d6c7bb; }
 .deal-category-rail { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; padding: 10px 12px; border-radius: 18px; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.08); }
 .deal-category-rail > strong { flex: 0 0 auto; color: #111827; font-size: 13px; font-weight: 950; }
 .deal-category-rail .category-strip { margin-top: 0; }
+.coupang-event-strip { margin: 14px 0 24px; padding: 16px; border-radius: 24px; background: rgba(255,255,255,.84); border: 1px solid rgba(0,0,0,.08); box-shadow: rgba(0,0,0,.03) 0 4px 18px; }
+.coupang-event-strip .section-title { margin-bottom: 10px; }
+.coupang-event-strip .section-title h2 { font-size: clamp(20px, 2.4vw, 28px); }
+.coupang-event-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.coupang-event-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; min-width: 0; padding: 14px; border-radius: 18px; background: #fff; border: 1px solid rgba(234,223,212,.95); box-shadow: none; }
+.coupang-event-copy { min-width: 0; }
+.coupang-event-copy strong { display: block; margin: 6px 0 5px; color: #111827; font-size: 16px; line-height: 1.25; letter-spacing: -.02em; word-break: keep-all; }
+.coupang-event-copy p { margin: 0; color: #5f5652; font-size: 13px; line-height: 1.52; font-weight: 760; }
+.coupang-event-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.coupang-event-tags span { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: 999px; background: #f6f5f4; color: #6b625f; font-size: 11px; font-weight: 900; }
+.coupang-event-action { display: grid; justify-items: end; gap: 8px; }
+.coupang-event-action small { color: #6b7280; font-size: 12px; font-weight: 950; }
+.coupang-event-link { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 13px; border-radius: 999px; background: #111827; color: #fff; text-decoration: none; font-size: 13px; font-weight: 950; white-space: nowrap; }
+.coupang-event-link:hover { color: #fff; background: #ff5a1f; }
+.event-disclosure { margin: 10px 0 0; color: #6b7280; font-size: 12px; line-height: 1.5; font-weight: 760; }
 .site-bridge-strip { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; margin: 8px 0 24px; padding: 20px; background: #fff; border: 1px solid #dbeafe; border-radius: 24px; box-shadow: 0 12px 30px rgba(15, 23, 42, .06); }
 .site-bridge-strip.compact-bridge { margin: 24px 0 30px; padding: 18px; border-color: #e5e7eb; background: rgba(255,255,255,.82); box-shadow: none; }
 .site-bridge-strip h2 { margin: 8px 0 6px; font-size: clamp(24px, 3vw, 34px); }
@@ -3702,6 +3842,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .room-visual { min-height: 330px; }
   .deal-category-rail { align-items: flex-start; flex-direction: column; gap: 10px; }
   .deal-category-rail .category-strip { width: 100%; }
+  .coupang-event-grid { grid-template-columns: 1fr; }
+  .coupang-event-card { grid-template-columns: minmax(0, 1fr) auto; }
   .deal-hero-copy, .deal-hero-panel, .deal-quick-box, .shopping-room-card { border-radius: 22px; }
   .deal-flow { grid-template-columns: 1fr; }
   .decision-steps { grid-template-columns: 1fr; }
@@ -3783,6 +3925,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .room-preview { padding: 13px; border-radius: 18px; }
   .room-preview-actions { display: grid; grid-template-columns: 1fr; gap: 7px; }
   .room-product-link, .room-preview .text-link { width: 100%; }
+  .coupang-event-strip { padding: 13px; border-radius: 20px; }
+  .coupang-event-card { grid-template-columns: 1fr; gap: 10px; padding: 13px; }
+  .coupang-event-action { justify-items: stretch; }
+  .coupang-event-link { width: 100%; }
   .category-hubs { padding: 8px; border-radius: 22px; }
   .category-hub { grid-template-columns: 1fr; gap: 9px; padding: 13px; }
   .category-hub-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
