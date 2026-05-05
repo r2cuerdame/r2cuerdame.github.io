@@ -99,6 +99,40 @@ def test_radar_contract_check_entrypoints_are_topic_lists():
     assert [article["path"] for article in related] == ["/radar/cafe-contract-risk/"]
 
 
+def test_topic_pages_do_not_put_radar_cards_in_narrow_mixed_grid():
+    build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_topic_layout")
+    cafe_topic = next(topic for topic in build_site.TOPIC_HUBS if topic["slug"] == "cafe-commercial-lease-risk")
+    radar = [
+        {
+            "section": "radar",
+            "path": "/radar/cafe-contract-risk/",
+            "title": "사람 많은 상권이 꼭 좋은 자리는 아닙니다: 카페 계약 전 5개 의심",
+            "description": "오늘의 의심 · 유동인구 착시: 사람이 많은 것과 내 카페에 돈을 쓰는 것은 다르다.",
+            "category": "동네 레이더",
+            "tags": ["카페 창업", "상권 분석"],
+            "date": "2026-05-01T09:00:00+09:00",
+            "image_url": "/assets/radar/thumbs/cafe-contract-risk.webp",
+            "body_html": "카페 상가 권리금 유동인구",
+        }
+    ]
+
+    html = build_site.topic_page_body(cafe_topic, [], radar)
+
+    assert 'id="related-articles" class="article-list topic-article-list"' in html
+    assert 'class="article-list topic-article-list topic-secondary-list"' in html
+    assert 'class="article-list mixed-list"' not in html
+
+
+def test_public_audit_rejects_topic_radar_cards_in_mixed_grid():
+    audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_topic_layout")
+    html = '''<!doctype html><html><head><title>상가 계약 체크 페이지</title><meta name="description" content="카페 창업 전 상가 계약 체크 글을 모아 보는 페이지입니다."><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/main.css?v=test"></head><body><main><h1>상가 계약 체크 페이지</h1><section class="article-list mixed-list"><article class="list-card radar-card"><h2>카페 계약 전 체크</h2></article></section></main></body></html>'''
+
+    failures = audit.audit_html("/topics/cafe-commercial-lease-risk/", html)
+
+    assert "/topics/cafe-commercial-lease-risk/:topic_article_list_layout_marker_missing" in failures
+    assert "/topics/cafe-commercial-lease-risk/:topic_radar_cards_use_narrow_mixed_grid" in failures
+
+
 def test_radar_articles_have_content_matched_webp_thumbnails():
     for path in sorted((ROOT / "content" / "radar").glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))

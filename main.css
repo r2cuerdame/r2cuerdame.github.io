@@ -137,6 +137,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .status-strip span, .shop-summary span { color: #ecd9cd; }
 .article-list { display: grid; gap: 16px; margin: 24px 0 56px; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.topic-article-list { grid-template-columns: minmax(0, 1fr); }
+.topic-secondary-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); }
+.topic-article-list .radar-card { min-width: 0; }
 .radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; }
 .radar-card, .radar-card * { overflow-wrap: break-word; word-break: keep-all; }
 .radar-card-visual { position: relative; display: block; min-height: 250px; overflow: hidden; isolation: isolate; padding: 22px; color: #fff; background: linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); }

@@ -144,7 +144,9 @@ def page_kind(path: str) -> str:
         return "radar_article"
     if clean.startswith("deals/") and clean != "deals":
         return "deal_article"
-    if clean in {"radar", "deals", "search", ""}:
+    if clean.startswith("topics/") and clean != "topics":
+        return "topic"
+    if clean in {"radar", "deals", "topics", "search", ""}:
         return clean or "home"
     return "page"
 
@@ -296,6 +298,11 @@ def audit_html(path: str, page_html: str) -> list[str]:
         for direct_href in ('/radar/dongne-signal-framework/', '/radar/cafe-contract-risk/'):
             if f'href="{direct_href}"' in page_html.split('id="contract-check-routes"', 1)[0]:
                 failures.append(f"{path}:contract_check_hero_direct_article_link:{direct_href}")
+    if kind == "topic":
+        if 'topic-article-list' not in page_html:
+            failures.append(f"{path}:topic_article_list_layout_marker_missing")
+        if 'class="article-list mixed-list"' in page_html and 'class="list-card radar-card' in page_html:
+            failures.append(f"{path}:topic_radar_cards_use_narrow_mixed_grid")
 
     category_chip_links = anchor_class_count(page_html, "category-chip")
     tag_links = anchor_class_count(page_html, "tag")

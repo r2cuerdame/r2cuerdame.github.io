@@ -1675,7 +1675,7 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
   <div class="search-chip-row">{chips}</div>
   <div class="category-strip">{keyword_chips}</div>
 </section>
-<section id="related-articles" class="article-list mixed-list">
+<section id="related-articles" class="article-list topic-article-list">
   <div class="section-title"><h2>먼저 볼 연결 글</h2><p>현재 공개 글 중 이 주제와 가장 가까운 글입니다.</p></div>
   {article_cards(articles, "연결 글 준비중")}
 </section>
@@ -1687,7 +1687,7 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
     <li>관련 주제와 상세 글을 서로 링크해 체류와 색인을 같이 올림</li>
   </ol>
 </section>
-<section class="article-list mixed-list">
+<section class="article-list topic-article-list topic-secondary-list">
   <div class="section-title"><h2>같이 볼 만한 글</h2><p>의도는 다르지만 같은 방문자가 이어서 볼 수 있는 글입니다.</p></div>
   {secondary_html}
 </section>
@@ -2366,6 +2366,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .status-strip span, .shop-summary span { color: #ecd9cd; }
 .article-list { display: grid; gap: 16px; margin: 24px 0 56px; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.topic-article-list { grid-template-columns: minmax(0, 1fr); }
+.topic-secondary-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); }
+.topic-article-list .radar-card { min-width: 0; }
 .radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; }
 .radar-card, .radar-card * { overflow-wrap: break-word; word-break: keep-all; }
 .radar-card-visual { position: relative; display: block; min-height: 250px; overflow: hidden; isolation: isolate; padding: 22px; color: #fff; background: linear-gradient(135deg, #211922, #573322 58%, #ff5a1f); }
