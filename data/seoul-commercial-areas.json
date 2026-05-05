@@ -2,7 +2,7 @@
   "version": "2026-05-seoul-density-mvp",
   "generated_at": "2026-05-06T02:00:00+09:00",
   "radius_m": 650,
-  "source_summary": "공개 POI를 빌드 시점에 집계한 정적 데이터입니다. 인구밀도는 공식 통계 연동 전까지 구별 편집 지수로 표시하며, 비밀 키는 브라우저에 배포하지 않습니다.",
+  "source_summary": "공개 POI 정적 집계 · 인구밀도는 공식 통계 연동 전 편집 지수 · 비밀 키 미배포",
   "categories": {
     "cafe": "카페",
     "food": "음식점·주점",

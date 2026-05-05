@@ -6,6 +6,8 @@
   const industrySelect = root.querySelector('#tool-industry');
   const purposeSelect = root.querySelector('#tool-purpose');
   const mapLayerLabel = root.querySelector('[data-map-layer-label]');
+  const mapFocusName = root.querySelector('[data-map-focus-name]');
+  const mapFocusMeta = root.querySelector('[data-map-focus-meta]');
   const scoreRoot = root.querySelector('[data-density-result]');
   const stationMeta = root.querySelector('[data-station-meta]');
   const stationTitle = root.querySelector('[data-station-title]');
@@ -104,6 +106,7 @@
       button.style.setProperty('--heat', heat.toFixed(2));
       const small = button.querySelector('small');
       if (small) small.textContent = industry === 'population' ? `${station.population_density_index}` : `${raw}`;
+      button.title = `${station.name} · ${industry === 'population' ? '인구밀도' : categoryLabel(industry)} ${raw}`;
       button.setAttribute('aria-pressed', station.id === stationSelect.value ? 'true' : 'false');
     });
     layerButtons.forEach((button) => button.setAttribute('aria-pressed', button.dataset.densityLayer === industry ? 'true' : 'false'));
@@ -123,12 +126,16 @@
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
     const count = valueFor(station, industry);
+    const layerLabel = industry === 'population' ? '인구밀도' : `${categoryLabel(industry)} 밀도`;
+    const focusMetric = industry === 'population' ? `인구밀도 ${count}` : `${categoryLabel(industry)} ${count}개`;
     const compare = compareStationFor(station);
     const grade = gradeFor(station, industry);
     root.dataset.grade = grade.grade;
     scoreRoot && (scoreRoot.dataset.grade = grade.grade);
     stationMeta && (stationMeta.textContent = `${station.district} ${station.dong} · ${station.radius_m || 650}m`);
-    stationTitle.textContent = `${station.name} ${industry === 'population' ? '인구밀도' : `${categoryLabel(industry)} 밀도`}`;
+    stationTitle.textContent = `${station.name} ${layerLabel}`;
+    mapFocusName && (mapFocusName.textContent = station.name);
+    mapFocusMeta && (mapFocusMeta.textContent = `${station.district} ${station.dong} · ${focusMetric}`);
     gradeEl && (gradeEl.textContent = `${grade.label} ${grade.score}`);
     countEl && (countEl.textContent = String(count));
     countLabelEl && (countLabelEl.textContent = categoryLabel(industry));
