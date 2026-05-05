@@ -348,6 +348,10 @@ def audit_html(path: str, page_html: str) -> list[str]:
     if kind == "deal_article":
         quick_product_links = anchor_class_count(page_html, "quick-product-link")
         coupang_links = coupang_anchor_tags(page_html)
+        if coupang_links and "affiliate_click" not in page_html:
+            failures.append(f"{path}:affiliate_click_tracking_missing")
+        if any("lptag=" not in attr_value(tag, "href") for tag in coupang_links):
+            failures.append(f"{path}:coupang_lptag_missing")
         if coupang_links and quick_product_links < min(3, len({attr_value(tag, 'href') for tag in coupang_links})):
             failures.append(f"{path}:deal_quick_product_links_too_few:{quick_product_links}")
         if quick_product_links and "쿠팡 파트너스 링크입니다" not in text:

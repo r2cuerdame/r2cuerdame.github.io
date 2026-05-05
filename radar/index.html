@@ -13,7 +13,7 @@
   <meta name="naver-site-verification" content="bb83dff028cd4b034e752644078b8cea69499c9a" />
   <meta name="Yeti" content="index,follow" />
   <meta name="Daumoa" content="index,follow" />
-  <meta name="date" content="2026-05-05" />
+  <meta name="date" content="2026-05-06" />
   <link rel="canonical" href="https://r2cuerdame.github.io/radar/" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
   <link rel="alternate" type="application/rss+xml" title="Recuerdame Lab RSS" href="/feed.xml" />
@@ -29,15 +29,29 @@
   <meta property="og:image" content="https://r2cuerdame.github.io/assets/og-card.svg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#101828" />
-  <link rel="stylesheet" href="/main.css?v=dbe2f24b4c" />
+  <link rel="stylesheet" href="/main.css?v=5fb6f350bd" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LH60Y8V89F"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-LH60Y8V89F', { anonymize_ip: true });
+    document.addEventListener('click', function(event) {
+      var link = event.target && event.target.closest ? event.target.closest('a[href*="coupang.com"]') : null;
+      if (!link || typeof gtag !== 'function') return;
+      try {
+        var url = new URL(link.href, window.location.href);
+        gtag('event', 'affiliate_click', {
+          event_category: 'outbound',
+          outbound_domain: url.hostname,
+          link_url: url.origin + url.pathname,
+          page_path: window.location.pathname,
+          transport_type: 'beacon'
+        });
+      } catch (error) {}
+    }, true);
   </script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://r2cuerdame.github.io/#website","name":"Recuerdame Lab","url":"https://r2cuerdame.github.io/","inLanguage":"ko-KR","description":"이사·월세·전세·상가 계약 전, 동네와 상권 리스크를 먼저 걸러내는 Dongne Radar 공개 노트입니다.","publisher":{"@id":"https://r2cuerdame.github.io/#publisher"},"potentialAction":{"@type":"SearchAction","target":"https://r2cuerdame.github.io/search/?q={search_term_string}","query-input":"required name=search_term_string"}},{"@type":["Organization","Person"],"@id":"https://r2cuerdame.github.io/#publisher","name":"r2cuerdame / Recuerdame Lab","url":"https://r2cuerdame.github.io/"},{"@type":"SiteNavigationElement","name":["동네 레이더","쇼핑픽","검색"],"url":["https://r2cuerdame.github.io/radar/","https://r2cuerdame.github.io/deals/","https://r2cuerdame.github.io/search/"]},{"@type":"BreadcrumbList","@id":"https://r2cuerdame.github.io/radar/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://r2cuerdame.github.io/"},{"@type":"ListItem","position":2,"name":"동네 레이더","item":"https://r2cuerdame.github.io/radar/"}]},{"@type":"CollectionPage","@id":"https://r2cuerdame.github.io/radar/#webpage","url":"https://r2cuerdame.github.io/radar/","name":"동네 레이더 — 이사·월세·상가 계약 전 리스크 체크","description":"이사, 월세·전세, 통근, 생활권, 상가 계약 전에 걸러야 할 동네·상권 리스크와 현장 확인 질문을 정리합니다.","isPartOf":{"@id":"https://r2cuerdame.github.io/#website"},"inLanguage":"ko-KR","datePublished":"2026-04-29T21:00:00+09:00","dateModified":"2026-05-05T23:56:23+09:00"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://r2cuerdame.github.io/#website","name":"Recuerdame Lab","url":"https://r2cuerdame.github.io/","inLanguage":"ko-KR","description":"이사·월세·전세·상가 계약 전, 동네와 상권 리스크를 먼저 걸러내는 Dongne Radar 공개 노트입니다.","publisher":{"@id":"https://r2cuerdame.github.io/#publisher"},"potentialAction":{"@type":"SearchAction","target":"https://r2cuerdame.github.io/search/?q={search_term_string}","query-input":"required name=search_term_string"}},{"@type":["Organization","Person"],"@id":"https://r2cuerdame.github.io/#publisher","name":"r2cuerdame / Recuerdame Lab","url":"https://r2cuerdame.github.io/"},{"@type":"SiteNavigationElement","name":["동네 레이더","쇼핑픽","검색"],"url":["https://r2cuerdame.github.io/radar/","https://r2cuerdame.github.io/deals/","https://r2cuerdame.github.io/search/"]},{"@type":"BreadcrumbList","@id":"https://r2cuerdame.github.io/radar/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://r2cuerdame.github.io/"},{"@type":"ListItem","position":2,"name":"동네 레이더","item":"https://r2cuerdame.github.io/radar/"}]},{"@type":"CollectionPage","@id":"https://r2cuerdame.github.io/radar/#webpage","url":"https://r2cuerdame.github.io/radar/","name":"동네 레이더 — 이사·월세·상가 계약 전 리스크 체크","description":"이사, 월세·전세, 통근, 생활권, 상가 계약 전에 걸러야 할 동네·상권 리스크와 현장 확인 질문을 정리합니다.","isPartOf":{"@id":"https://r2cuerdame.github.io/#website"},"inLanguage":"ko-KR","datePublished":"2026-04-29T21:00:00+09:00","dateModified":"2026-05-06T00:15:43+09:00"}]}</script>
 </head>
 <body class="standard-site">
   <a class="skip-link" href="#content">본문 바로가기</a>
@@ -98,7 +112,7 @@
     <span class="radar-card-badge">정류장 소음</span>
   </a>
   <div class="radar-card-body">
-    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-05T18:41:31+09:00">05.05</time></div>
+    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-05T18:41:31+09:00">05.05</time><span class="traffic-badge" title="최근 30일 조회 데이터">👁 최근 30일 1회 · 방문 1</span></div>
     <h2><a href="/radar/bus-stop-front-home-check/">버스정류장 앞 집, 편한 위치인지 피곤한 위치인지 보는 10분</a></h2>
     <p class="radar-card-hook">오늘의 의심 · 정류장이 가까운 집은 편하지만, 문 앞 대기열·차량 소리·시선 피로가 매일 반복되면 오래 살기 어렵습니…</p>
     <p>정류장 가까움이 장점인지 소음·대기열·시선 피로인지 계약 전 현장에서 가르는 체크 글입니다.</p>
@@ -117,7 +131,7 @@
     <span class="radar-card-badge">밤길 동선</span>
   </a>
   <div class="radar-card-body">
-    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-04T13:38:57+09:00">05.04</time></div>
+    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-04T13:38:57+09:00">05.04</time><span class="traffic-badge" title="최근 30일 조회 데이터">👁 최근 30일 2회 · 방문 1</span></div>
     <h2><a href="/radar/station-to-home-night-route-check/">역에서 집까지 마지막 7분, 밤길을 다시 보는 법</a></h2>
 
     <p>서울·수도권 25~39세 전월세·이사 독자가 역세권 후보를 낮 지도 거리만으로 정하지 않도록 퇴근 후 마지막 7분의 조명·시야·멈춤 지점·우회 선택지…</p>
@@ -136,7 +150,7 @@
     <span class="radar-card-badge">공용부 신호</span>
   </a>
   <div class="radar-card-body">
-    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-04T00:28:27+09:00">05.04</time><span class="traffic-badge" title="최근 30일 조회 데이터">👁 최근 30일 1회 · 방문 1</span></div>
+    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-04T00:28:27+09:00">05.04</time><span class="traffic-badge" title="최근 30일 조회 데이터">👁 최근 30일 2회 · 방문 2</span></div>
     <h2><a href="/radar/shared-entrance-management-signals/">공동현관 앞 30초, 살 동네의 관리 신호를 읽는 법</a></h2>
 
     <p>전월세 후보를 볼 때 공동현관·우편함·택배·분리수거·공지판 신호를 30초 루프로 나눠 계속 보기, 다시 보기, 보류를 판단하는 동네 레이더 글.</p>
@@ -174,7 +188,7 @@
     <span class="radar-card-badge">계단 체력</span>
   </a>
   <div class="radar-card-body">
-    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-03T04:36:25+09:00">05.03</time></div>
+    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-03T04:36:25+09:00">05.03</time><span class="traffic-badge" title="최근 30일 조회 데이터">👁 최근 30일 1회 · 방문 1</span></div>
     <h2><a href="/radar/stair-only-fourth-floor-villa-check/">엘리베이터 없는 4층 빌라, 계속 볼지 보류할지 보는 12분</a></h2>
 
     <p>서울·수도권 25~39세 전월세 독자가 엘리베이터 없는 4층 빌라를 볼 때 계단, 큰 짐, 택배, 분리수거, 밤 귀가를 12분 루프로 나눠 계속 보기…</p>
@@ -288,7 +302,7 @@
     <span class="radar-card-badge">관리비 블랙박스</span>
   </a>
   <div class="radar-card-body">
-    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-02T08:28:39+09:00">05.02</time></div>
+    <div class="card-meta"><a class="tag" href="/search/?q=%EB%8F%99%EB%84%A4%20%EB%A0%88%EC%9D%B4%EB%8D%94" aria-label="검색: 동네 레이더">동네 레이더</a><time datetime="2026-05-02T08:28:39+09:00">05.02</time><span class="traffic-badge" title="최근 30일 조회 데이터">👁 최근 30일 1회 · 방문 1</span></div>
     <h2><a href="/radar/maintenance-fee-opaque-rent/">월세는 싼데 관리비가 흐리다? ‘관리비 블랙박스’ 보류법</a></h2>
     <p class="radar-card-hook">오늘의 의심 · 관리비 블랙박스: 월세는 낮은데 매달 빠지는 돈의 정체가 안 보인다.</p>
     <p>월세가 낮아 보여도 관리비 포함 항목이 흐리면 실제 고정비는 달라진다. 전기·수도·가스·인터넷·청소·공용관리 중 무엇이 빠졌는지 묻고, 답이 흐린 월…</p>
@@ -360,7 +374,7 @@
   <footer class="footer">
     <p><strong>Recuerdame Lab</strong> — 이사·월세·전세·상가 계약 전, 동네 리스크를 먼저 거르는 공개 노트.</p>
     <p class="muted">/radar/는 동네 레이더, /deals/는 별도 쇼핑픽으로 분리해 운영합니다.</p>
-    <p class="muted">마지막 업데이트: <time datetime="2026-05-05T23:56:23+09:00">2026-05-05 23:56 KST</time></p>
+    <p class="muted">마지막 업데이트: <time datetime="2026-05-06T00:15:43+09:00">2026-05-06 00:15 KST</time></p>
   </footer>
 </body>
 </html>

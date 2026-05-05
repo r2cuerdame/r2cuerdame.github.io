@@ -134,6 +134,20 @@ def analytics_snippet() -> str:
     function gtag(){{dataLayer.push(arguments);}}
     gtag('js', new Date());
     gtag('config', '{mid}', {{ anonymize_ip: true }});
+    document.addEventListener('click', function(event) {{
+      var link = event.target && event.target.closest ? event.target.closest('a[href*="coupang.com"]') : null;
+      if (!link || typeof gtag !== 'function') return;
+      try {{
+        var url = new URL(link.href, window.location.href);
+        gtag('event', 'affiliate_click', {{
+          event_category: 'outbound',
+          outbound_domain: url.hostname,
+          link_url: url.origin + url.pathname,
+          page_path: window.location.pathname,
+          transport_type: 'beacon'
+        }});
+      }} catch (error) {{}}
+    }}, true);
   </script>'''
 
 STATIC_PAGES = [
@@ -1229,6 +1243,31 @@ def article_cards(articles: list[dict], empty: str) -> str:
     return "\n".join(cards)
 
 
+def topic_result_card(article: dict, *, featured: bool = False) -> str:
+    category = taxonomy_link(article.get("category"), "tag")
+    date = parse_dt(article.get("date")).strftime("%m.%d")
+    metric = traffic_badge(article["path"])
+    tags = taxonomy_links(article.get("tags") or [], "tag pale", limit=2)
+    desc_limit = 132 if featured else 96
+    desc = short_text(article.get("description") or "", desc_limit)
+    cta = "비교글 보기 →" if article.get("section") == "deals" else "레이더 열기 →"
+    featured_class = " featured" if featured else ""
+    return f'''<article class="topic-result-card{featured_class}">
+  <div class="topic-result-meta">{category}<time datetime="{esc(article.get('date'))}">{date}</time>{metric}</div>
+  <h2><a href="{esc(article['path'])}">{esc(article['title'])}</a></h2>
+  <p>{esc(desc)}</p>
+  <div class="tag-row">{tags}</div>
+  <a class="text-link" href="{esc(article['path'])}">{esc(cta)}</a>
+</article>'''
+
+
+def topic_result_cards(articles: list[dict], empty: str, *, featured: bool = False, limit: int | None = None) -> str:
+    selected = articles[:limit] if limit is not None else articles
+    if not selected:
+        return f'<article class="topic-result-card empty"><span class="tag">준비중</span><h2>{esc(empty)}</h2><p>새 글이 올라오면 이곳에서 바로 볼 수 있습니다.</p></article>'
+    return "\n".join(topic_result_card(a, featured=featured) for a in selected)
+
+
 def search_query_href(label: Any) -> str:
     text = str(label or "").strip()
     return f"/search/?q={quote(text, safe='')}"
@@ -1656,7 +1695,7 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
     keyword_chips = category_strip_links(topic.get("keywords") or [])
     article_paths = {a.get("path") for a in articles}
     secondary = [a for a in (radar + deals) if a.get("path") not in article_paths][:4]
-    secondary_html = article_cards(secondary, "다음 연결 글 준비중")
+    secondary_html = topic_result_cards(secondary, "다음 연결 글 준비중", limit=4)
     first_query = str((topic.get("queries") or [topic.get("label") or ""])[0])
     return f'''
 <section class="page-hero compact">
@@ -1665,8 +1704,7 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
   <p class="lead">{esc(topic['description'])}</p>
   <div class="hero-actions">
     <a class="button primary" href="#related-articles">연결 글 보기</a>
-    <a class="button" href="/topics/">전체 주제 보기</a>
-    <a class="button" href="/search/?q={quote(first_query, safe='')}">이 주제로 검색</a>
+    <a class="button" href="{search_query_href(first_query)}">이 주제로 검색</a>
   </div>
 </section>
 <section class="panel soft topic-brief">
@@ -1675,20 +1713,20 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
   <div class="search-chip-row">{chips}</div>
   <div class="category-strip">{keyword_chips}</div>
 </section>
-<section id="related-articles" class="article-list topic-article-list">
-  <div class="section-title"><h2>먼저 볼 연결 글</h2><p>현재 공개 글 중 이 주제와 가장 가까운 글입니다.</p></div>
-  {article_cards(articles, "연결 글 준비중")}
+<section id="related-articles" class="article-list topic-article-list topic-featured-list">
+  <div class="section-title"><h2>먼저 볼 연결 글</h2><p>이 주제와 가장 가까운 공개 글만 넓게 보여줍니다.</p></div>
+  {topic_result_cards(articles, "연결 글 준비중", featured=True, limit=3)}
 </section>
 <section class="panel topic-followup">
-  <h2>다음에 보강할 글 방향</h2>
+  <h2>추가로 확인할 체크포인트</h2>
   <ol>
-    <li>검색어 그대로 답하는 1문장 결론을 도입부에 추가</li>
-    <li>현장 체크리스트·지도형 예시·상품 비교표 중 하나를 중간 스크롤에 배치</li>
-    <li>관련 주제와 상세 글을 서로 링크해 체류와 색인을 같이 올림</li>
+    <li>유동인구가 실제 결제로 이어지는 시간대인지 확인</li>
+    <li>권리금·임대료·경쟁점 밀도를 같은 표에서 비교</li>
+    <li>계약 전 현장에서 다시 물어볼 질문을 먼저 정리</li>
   </ol>
 </section>
 <section class="article-list topic-article-list topic-secondary-list">
-  <div class="section-title"><h2>같이 볼 만한 글</h2><p>의도는 다르지만 같은 방문자가 이어서 볼 수 있는 글입니다.</p></div>
+  <div class="section-title"><h2>같이 볼 만한 글</h2><p>같은 방문자가 이어서 볼 수 있는 글만 간단히 묶었습니다.</p></div>
   {secondary_html}
 </section>
 '''
@@ -2367,6 +2405,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .article-list { display: grid; gap: 16px; margin: 24px 0 56px; }
 .mixed-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .topic-article-list { grid-template-columns: minmax(0, 1fr); }
+.topic-featured-list { max-width: 940px; }
 .topic-secondary-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); }
 .topic-article-list .radar-card { min-width: 0; }
 .radar-card { padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr); align-items: stretch; }
@@ -2573,6 +2612,15 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .topic-test-plan, .topic-brief, .topic-followup { margin: 24px 0; }
 .topic-metrics { display: grid; gap: 10px; padding-left: 20px; }
 .topic-followup ol { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 8px; }
+.topic-result-card { min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 22px; border-radius: 24px; background: rgba(255,255,255,.94); border: 1px solid rgba(234,223,212,.95); box-shadow: 0 10px 30px rgba(58,37,20,.055); }
+.topic-result-card.featured { padding: 26px; border-radius: 28px; background: linear-gradient(135deg, #fffaf4, #fff 72%); }
+.topic-result-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 850; }
+.topic-result-card h2 { margin: 0; font-size: clamp(22px, 2.35vw, 31px); line-height: 1.2; letter-spacing: -.035em; }
+.topic-result-card h2 a { color: #211922; text-decoration: none; overflow-wrap: anywhere; word-break: keep-all; }
+.topic-result-card h2 a:hover { color: var(--orange-dark); }
+.topic-result-card p { margin: 0; color: #5f5652; line-height: 1.65; }
+.topic-result-card .tag-row { margin-top: 0; }
+.topic-result-card .text-link { margin-top: auto; width: fit-content; }
 .search-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
 .search-chip { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd2b8; color: var(--orange-dark); font-size: 13px; font-weight: 950; }
 .mini-link-list { display: grid; gap: 8px; margin: 12px 0 0; padding-left: 18px; }
@@ -2836,7 +2884,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .button, .deal-button { width: 100%; }
   .status-strip, .shop-summary { grid-template-columns: 1fr; gap: 8px; }
   .status-strip div, .shop-summary div { padding: 15px 16px; border-radius: 18px; }
-  .deal-grid, .mixed-list { grid-template-columns: 1fr; gap: 12px; }
+  .deal-grid, .mixed-list, .topic-secondary-list { grid-template-columns: 1fr; gap: 12px; }
+  .topic-featured-list { max-width: 100%; }
+  .topic-result-card, .topic-result-card.featured { padding: 18px; border-radius: 22px; }
   .deal-grid.best-grid { grid-template-columns: 1fr; }
   .deal-hero-copy { padding: 0; }
   .category-hubs { padding: 8px; border-radius: 22px; }
