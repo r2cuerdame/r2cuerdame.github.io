@@ -288,6 +288,10 @@ def audit_html(path: str, page_html: str) -> list[str]:
     meta_links = anchor_class_count(page_html, "meta-link")
     if kind in {"home", "radar", "deals"} and category_chip_links < 5:
         failures.append(f"{path}:taxonomy_category_links_too_few:{category_chip_links}")
+    if kind in {"home", "radar"} and 'class="radar-card-visual has-css-thumb' in page_html:
+        failures.append(f"{path}:radar_card_ai_thumbnail_missing")
+    if kind in {"home", "radar"} and 'class="radar-card-image"' not in page_html:
+        failures.append(f"{path}:radar_card_ai_thumbnail_image_missing")
     if kind in {"radar_article", "deal_article"}:
         if tag_links < 2:
             failures.append(f"{path}:taxonomy_tag_links_too_few:{tag_links}")

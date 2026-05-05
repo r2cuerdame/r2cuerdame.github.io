@@ -3,6 +3,6 @@ Owner: r2cuerdame
 Site: https://r2cuerdame.github.io/
 Language: Korean
 Primary purpose: Dongne Radar — moving, rent, commute, living-area, on-site-check, and commercial-lease risk notes.
-Topic hubs: /topics/ for monthly-rent, jeonse, commute, night/noise, commercial-lease, and shopping-intent landing pages.
+Topic pages: /topics/ groups monthly-rent, jeonse, commute, night/noise, commercial-lease, and shopping-intent pages.
 Separate section: /deals/ for lifestyle shopping picks and affiliate-disclosed comparisons.
-Updated: 2026-05-05T19:07:53+09:00
+Updated: 2026-05-05T19:19:19+09:00

@@ -185,8 +185,8 @@ STATIC_PAGES = [
     {
         "path": "/topics/",
         "file": "topics/index.html",
-        "title": "검색 허브 — 월세·전세·상가·생활상품 체크리스트",
-        "description": "월세 계약, 전세 체크, 통근·밤길·상가 리스크와 생활상품 비교를 검색 의도별로 묶은 Recuerdame Lab 검색 허브입니다.",
+        "title": "주제별 보기 — 월세·전세·상가·생활상품 체크리스트",
+        "description": "월세 계약, 전세 체크, 통근·밤길·상가 리스크와 생활상품 비교를 주제별로 묶은 Recuerdame Lab 안내 페이지입니다.",
         "priority": "0.82",
         "type": "CollectionPage",
         "section": "topics",
@@ -205,7 +205,7 @@ STATIC_PAGES = [
 NAV = [
     ("동네 레이더", "/radar/", "nav-primary"),
     ("구매가이드", "/deals/", "nav-primary"),
-    ("검색허브", "/topics/", "nav-action"),
+    ("주제별 보기", "/topics/", "nav-action"),
     ("검색", "/search/", "nav-action"),
     ("읽는 순서", "/guides/", "nav-secondary"),
 ]
@@ -257,7 +257,7 @@ def deals_nav_html(page_path: str) -> str:
         ("쇼핑픽 홈", "/deals/", "nav-primary"),
         ("오늘 BEST", "/deals/#today-best", "nav-primary"),
         ("카테고리", "/deals/#category-blocks", "nav-secondary"),
-        ("검색허브", "/topics/", "nav-action"),
+        ("주제별 보기", "/topics/", "nav-action"),
         ("검색", "/search/", "nav-action"),
     ]
     out = []
@@ -536,7 +536,7 @@ def jsonld_for(page: dict) -> str:
         elif path.startswith("/radar/"):
             section_label, section_path = "동네 레이더", "/radar/"
         elif path.startswith("/topics/"):
-            section_label, section_path = "검색 허브", "/topics/"
+            section_label, section_path = "주제별 보기", "/topics/"
         else:
             section_label, section_path = page.get("title", SITE_NAME), path
         items = [
@@ -622,7 +622,7 @@ def keywords_for(page: dict) -> str:
     if section in {"home", "guides", "about"}:
         return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS)
     if section == "topics" or path.startswith("/topics/"):
-        return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS, DEALS_KEYWORDS, page.get("tags") or [], "검색 허브, 월세 체크리스트, 전세 체크리스트, 상가 계약 체크, 구매가이드 허브")
+        return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS, DEALS_KEYWORDS, page.get("tags") or [], "주제별 보기, 월세 체크리스트, 전세 체크리스트, 상가 계약 체크, 구매가이드 모음")
     if section == "search":
         return keyword_join(COMMON_KEYWORDS, RADAR_KEYWORDS, DEALS_KEYWORDS, "사이트 검색, 상품 검색, 구매가이드 검색")
     if section == "deals" or path.startswith("/deals/"):
@@ -719,6 +719,15 @@ def plain_article_card(a: dict) -> str:
 
 
 RADAR_CARD_VISUALS = {
+    "bus-stop-front-home-check": {
+        "theme": "theme-night",
+        "scene": "night",
+        "badge": "정류장 소음",
+        "label": "CASE",
+        "headline": "문앞 정류장",
+        "subline": "대기열·차량 소리·시선 피로 보기",
+        "chips": ("정류장", "대기열", "소음"),
+    },
     "station-to-home-night-route-check": {
         "theme": "theme-night",
         "scene": "night",
@@ -1431,12 +1440,12 @@ def topic_cards(deals: list[dict], radar: list[dict]) -> str:
 def topics_body(deals: list[dict], radar: list[dict]) -> str:
     return f'''
 <section class="page-hero compact">
-  <p class="eyebrow">Search Hubs</p>
-  <h1>월세·전세·상가·생활상품 검색 의도별 허브</h1>
-  <p class="lead">1~2개월 트래픽 테스트는 글을 더 많이 쌓기보다, 검색 의도별 고정 URL을 만들고 어떤 묶음이 먼저 노출되는지 보는 방식으로 갑니다.</p>
+  <p class="eyebrow">주제별 보기</p>
+  <h1>월세·전세·상가·생활상품을 주제별로 보기</h1>
+  <p class="lead">검색창에 뭘 쳐야 할지 애매할 때 먼저 들어오는 길입니다. 월세·전세·상가·생활상품처럼 독자가 고르는 주제로 글을 묶었습니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="#topic-hubs">허브 카드 보기</a>
-    <a class="button" href="/search/">전체 검색</a>
+    <a class="button primary" href="#topic-hubs">주제 카드 보기</a>
+    <a class="button" href="/search/">직접 검색하기</a>
     <a class="button" href="/guides/">읽는 순서</a>
   </div>
 </section>
@@ -1447,13 +1456,13 @@ def topics_body(deals: list[dict], radar: list[dict]) -> str:
   <span class="tag pale">Traffic Test</span>
   <h2>테스트 기준</h2>
   <ul class="topic-metrics">
-    <li><strong>색인:</strong> /topics/와 8개 허브가 sitemap·검색 인덱스에 들어가는지 확인</li>
-    <li><strong>유입:</strong> 월세·전세·상가·생활가전 쿼리별 노출/클릭을 주 단위로 비교</li>
+    <li><strong>색인:</strong> /topics/와 8개 주제 페이지가 sitemap·검색 인덱스에 들어가는지 확인</li>
+    <li><strong>유입:</strong> 월세·전세·상가·생활가전 주제별 노출/클릭을 주 단위로 비교</li>
     <li><strong>전환:</strong> 동네 레이더 글은 체류·다음 글 이동, 구매가이드는 상품 페이지 클릭을 봄</li>
   </ul>
 </section>
 <section id="topic-hubs" class="landing-section">
-  <div class="section-title"><h2>검색 허브 8개</h2><p>현재 글을 검색 의도별로 다시 묶어, 신규 글 없이도 색인면을 늘리는 테스트입니다.</p></div>
+  <div class="section-title"><h2>주제별 보기 8개</h2><p>현재 글을 월세·전세·상가·생활상품처럼 독자가 고르는 주제별로 다시 묶었습니다.</p></div>
   <div class="topic-grid">{topic_cards(deals, radar)}</div>
 </section>
 '''
@@ -1469,12 +1478,12 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
     first_query = str((topic.get("queries") or [topic.get("label") or ""])[0])
     return f'''
 <section class="page-hero compact">
-  <p class="eyebrow">Topic Hub · {esc(topic['label'])}</p>
+  <p class="eyebrow">주제별 보기 · {esc(topic['label'])}</p>
   <h1>{esc(topic['title'])}</h1>
   <p class="lead">{esc(topic['description'])}</p>
   <div class="hero-actions">
     <a class="button primary" href="#related-articles">연결 글 보기</a>
-    <a class="button" href="/topics/">전체 허브</a>
+    <a class="button" href="/topics/">전체 주제 보기</a>
     <a class="button" href="/search/?q={quote(first_query, safe='')}">이 주제로 검색</a>
   </div>
 </section>
@@ -1485,7 +1494,7 @@ def topic_page_body(topic: dict, deals: list[dict], radar: list[dict]) -> str:
   <div class="category-strip">{keyword_chips}</div>
 </section>
 <section id="related-articles" class="article-list mixed-list">
-  <div class="section-title"><h2>먼저 볼 연결 글</h2><p>현재 공개 글 중 이 검색 의도와 가장 가까운 글입니다.</p></div>
+  <div class="section-title"><h2>먼저 볼 연결 글</h2><p>현재 공개 글 중 이 주제와 가장 가까운 글입니다.</p></div>
   {article_cards(articles, "연결 글 준비중")}
 </section>
 <section class="panel topic-followup">
@@ -2023,7 +2032,7 @@ def build_search_index(deals: list[dict], radar: list[dict]) -> dict[str, Any]:
                 "description": p["description"],
                 "path": p["path"],
                 "section": p.get("section"),
-                "category": "검색허브" if p.get("section") == "topics" else "사이트",
+                "category": "주제별" if p.get("section") == "topics" else "사이트",
                 "tags": p.get("tags") or [],
                 "date": TODAY,
                 "image_url": "",
@@ -2723,7 +2732,7 @@ SEARCH_JS = '''(() => {
     results.innerHTML = matches.map(({item}) => {
       const meta = [item.category, item.item_count_hint, item.price_hint].filter(Boolean).slice(0, 3).join(' · ');
       const image = item.image_url ? `<img src="${esc(item.image_url)}" alt="${esc(item.title)}" loading="lazy" decoding="async" />` : '';
-      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '구매가이드' : item.section === 'radar' ? '동네 레이더' : item.section === 'topics' ? '검색허브' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
+      return `<article class="list-card search-result-card">${image}<div class="card-meta"><span class="tag">${esc(item.section === 'deals' ? '구매가이드' : item.section === 'radar' ? '동네 레이더' : item.section === 'topics' ? '주제별' : '사이트')}</span></div><h2><a href="${esc(item.path)}">${esc(item.title)}</a></h2><p>${esc(item.description || '')}</p><p class="muted">${esc(meta)}</p><a class="text-link" href="${esc(item.path)}">열기 →</a></article>`;
     }).join('');
   };
   const updateUrl = (query) => {
@@ -2874,10 +2883,10 @@ Host: r2cuerdame.github.io
     ) or "- 공개된 구매가이드 없음"
     topic_lines = "\n".join(
         f"- {p['title']}: {BASE}{p['path']}" for p in topic_pages
-    ) or "- 검색 허브 준비중"
+    ) or "- 주제별 보기 준비중"
     ai_topic_lines = "\n".join(
-        f"Topic Hub: {BASE}{p['path']} — {p['title']}" for p in topic_pages
-    ) or "Topic Hub: none"
+        f"Topic Page: {BASE}{p['path']} — {p['title']}" for p in topic_pages
+    ) or "Topic Page: none"
     ai_radar_lines = "\n".join(
         f"Radar Article: {BASE}{a['path']} — {a['title']}" for a in radar[:12]
     ) or "Radar Article: none"
@@ -2899,8 +2908,8 @@ Last updated: {NOW.isoformat(timespec='seconds')}
   - 계약 전 리스크, 생활권, 통근, 관리비, 소음, 상권·권리금 리스크를 판단 카드와 현장 질문으로 정리합니다.
 - 읽는 순서: {BASE}/guides/
   - 첫 방문자가 이사·월세·상가 계약 전 어떤 글을 먼저 읽을지 안내합니다.
-- 검색 허브: {BASE}/topics/
-  - 월세·전세·통근·밤길·상가·생활상품 검색 의도별 고정 랜딩입니다.
+- 주제별 보기: {BASE}/topics/
+  - 월세·전세·통근·밤길·상가·생활상품을 주제별로 묶은 고정 랜딩입니다.
 - 소개: {BASE}/about/
   - 운영 원칙, 섹션 분리, 검색/AI 공개 원칙을 설명합니다.
 
@@ -2942,7 +2951,7 @@ Canonical: {BASE}/
 Primary scope: Dongne Radar for moving, monthly rent, jeonse, commute, living area, on-site checks, commercial lease, cafe/store location, key money risk.
 Radar: {BASE}/radar/
 Guides: {BASE}/guides/
-Topic hubs: {BASE}/topics/
+Topic pages: {BASE}/topics/
 About: {BASE}/about/
 Separate deals section: {BASE}/deals/
 Search: {BASE}/search/
@@ -2960,7 +2969,7 @@ Owner: r2cuerdame
 Site: {BASE}/
 Language: Korean
 Primary purpose: Dongne Radar — moving, rent, commute, living-area, on-site-check, and commercial-lease risk notes.
-Topic hubs: /topics/ for monthly-rent, jeonse, commute, night/noise, commercial-lease, and shopping-intent landing pages.
+Topic pages: /topics/ groups monthly-rent, jeonse, commute, night/noise, commercial-lease, and shopping-intent pages.
 Separate section: /deals/ for lifestyle shopping picks and affiliate-disclosed comparisons.
 Updated: {NOW.isoformat(timespec='seconds')}
 ''')
@@ -2991,7 +3000,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - Home: {BASE}/
 - Dongne Radar: {BASE}/radar/
 - Guides: {BASE}/guides/
-- Topic Hubs: {BASE}/topics/
+- Topic Pages: {BASE}/topics/
 - About: {BASE}/about/
 - Separate Shopping Picks: {BASE}/deals/
 - Site Search: {BASE}/search/
@@ -3032,7 +3041,7 @@ LLM guide: {BASE}/llms.txt
 ## Already handled in repo
 
 - robots allows Google, Naver/Yeti, Daumoa, Bing, and major AI/search crawlers.
-- sitemap includes static sections, topic hub URLs, and generated article URLs.
+- sitemap includes static sections, topic page URLs, and generated article URLs.
 - every HTML page has canonical, description, OG, RSS, sitemap link, SearchAction JSON-LD, breadcrumb JSON-LD, and page/article JSON-LD.
 - `/topics/` gives Google/Search Console fixed landing URLs for 월세·전세·상가·생활상품 intent tests.
 - `/search/` and `data/search-index.json` give users a fast site/product search surface.

@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-05-05T19:07:53+09:00
+Last updated: 2026-05-05T19:19:19+09:00
 
 ## Primary sections
 
@@ -13,8 +13,8 @@ Last updated: 2026-05-05T19:07:53+09:00
   - 계약 전 리스크, 생활권, 통근, 관리비, 소음, 상권·권리금 리스크를 판단 카드와 현장 질문으로 정리합니다.
 - 읽는 순서: https://r2cuerdame.github.io/guides/
   - 첫 방문자가 이사·월세·상가 계약 전 어떤 글을 먼저 읽을지 안내합니다.
-- 검색 허브: https://r2cuerdame.github.io/topics/
-  - 월세·전세·통근·밤길·상가·생활상품 검색 의도별 고정 랜딩입니다.
+- 주제별 보기: https://r2cuerdame.github.io/topics/
+  - 월세·전세·통근·밤길·상가·생활상품을 주제별로 묶은 고정 랜딩입니다.
 - 소개: https://r2cuerdame.github.io/about/
   - 운영 원칙, 섹션 분리, 검색/AI 공개 원칙을 설명합니다.
 

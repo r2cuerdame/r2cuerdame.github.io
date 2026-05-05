@@ -7,7 +7,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 - Home: https://r2cuerdame.github.io/
 - Dongne Radar: https://r2cuerdame.github.io/radar/
 - Guides: https://r2cuerdame.github.io/guides/
-- Topic Hubs: https://r2cuerdame.github.io/topics/
+- Topic Pages: https://r2cuerdame.github.io/topics/
 - About: https://r2cuerdame.github.io/about/
 - Separate Shopping Picks: https://r2cuerdame.github.io/deals/
 - Site Search: https://r2cuerdame.github.io/search/

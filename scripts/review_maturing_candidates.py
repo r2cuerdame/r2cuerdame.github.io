@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE_ROOT = ROOT / "release_candidates"
+CONTENT_ROOT = ROOT / "content" / "radar"
 REPORT_DIR = ROOT / "reports"
 STATE_PATH = REPORT_DIR / "candidate-review-state.json"
 REPORT_PATH = REPORT_DIR / "cron-review-latest.md"
@@ -99,7 +100,14 @@ def visible_char_count(text: str) -> int:
     return len(re.sub(r"\s+", "", text))
 
 
-def review_file(path: Path, now: str) -> dict:
+def load_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return {}
+
+
+def review_file(path: Path, now: str, content_slugs: set[str] | None = None) -> dict:
     raw = path.read_text(encoding="utf-8", errors="replace")
     parser = VisibleTextParser()
     parser.feed(raw)
@@ -108,6 +116,10 @@ def review_file(path: Path, now: str) -> dict:
     all_visible = main_text or prose_text
     chars = visible_char_count(prose_text)
     visual_count = parser.visuals_in_main if parser.seen_main else parser.visuals_in_body
+    meta = load_json(path.parent / "metadata.json")
+    slug = str(meta.get("slug") or path.parent.name)
+    content_slugs = content_slugs or set()
+    published = slug in content_slugs or str(meta.get("status") or "") == "published_to_pages" or bool(meta.get("pages_published_at"))
 
     hard: list[str] = []
     soft: list[str] = []
@@ -126,6 +138,23 @@ def review_file(path: Path, now: str) -> dict:
         hard.append(f"visuals_too_few:{visual_count}<6")
     elif visual_count < 8:
         soft.append(f"visuals_below_target:{visual_count}<8")
+
+    field_scene_ok = any(term in all_visible for term in ["예시 장면", "현장 예시", "장면", "사진처럼", "직접 본"])
+    map_or_route_ok = any(term in all_visible for term in ["지도", "동선", "루트", "거리", "반경", "출구", "역", "골목"])
+    comparison_ok = any(term in all_visible for term in ["비교", "반례", "위험한 반례", "좋은 신호", "보류", "체크리스트"])
+    missing_visual_diversity = []
+    if not field_scene_ok:
+        missing_visual_diversity.append("field_example_scene")
+    if not map_or_route_ok:
+        missing_visual_diversity.append("map_or_route_visual")
+    if not comparison_ok:
+        missing_visual_diversity.append("comparison_or_counterexample_card")
+    if missing_visual_diversity:
+        issue = "missing_visual_diversity:" + ",".join(missing_visual_diversity)
+        if published:
+            observations.append(issue)
+        else:
+            hard.append(issue)
 
     forbidden_hits = []
     for term in FORBIDDEN_TERMS:
@@ -166,6 +195,7 @@ def review_file(path: Path, now: str) -> dict:
         "reader_visual_count": visual_count,
         "target_fit": target_fit,
         "target_opening_missing": missing_target_opening,
+        "published": published,
         "hard_issues": hard,
         "soft_issues": soft,
         "observations": observations,
@@ -181,7 +211,8 @@ def main() -> int:
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     candidates = sorted(RELEASE_ROOT.glob("*/*/final.html")) if RELEASE_ROOT.exists() else []
-    results = [review_file(path, now) for path in candidates]
+    content_slugs = {path.stem for path in CONTENT_ROOT.glob("*.json")} if CONTENT_ROOT.exists() else set()
+    results = [review_file(path, now, content_slugs) for path in candidates]
     ready_count = sum(1 for r in results if r["ready"])
     hard_count = sum(len(r["hard_issues"]) for r in results)
     soft_count = sum(len(r["soft_issues"]) for r in results)
@@ -211,7 +242,7 @@ def main() -> int:
         lines.append("- no release candidates found")
     for item in results:
         lines.append(
-            f"- `{item['path']}` — ready={item['ready']} target_fit={item.get('target_fit')} chars={item['visible_prose_chars']} "
+            f"- `{item['path']}` — ready={item['ready']} published={item.get('published')} target_fit={item.get('target_fit')} chars={item['visible_prose_chars']} "
             f"visuals={item['reader_visual_count']} hard={len(item['hard_issues'])} soft={len(item['soft_issues'])}"
         )
         if item["hard_issues"]:
