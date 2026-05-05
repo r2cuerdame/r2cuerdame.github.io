@@ -1075,14 +1075,17 @@ def category_chips(articles: list[dict]) -> str:
     return taxonomy_links(cats, "category-chip", limit=8, separator="")
 
 
-def search_form(placeholder: str = "상품명, 용도, 예산, 동네 키워드로 검색") -> str:
+def search_form(
+    placeholder: str = "상품명, 용도, 예산, 동네 키워드로 검색",
+    helper: str = "구매가이드 상품명, 생활용품 용도, 동네·계약 키워드를 같이 찾습니다.",
+) -> str:
     return f'''<form class="site-search" action="/search/" method="get" role="search">
   <label for="search-query">사이트 검색</label>
   <div class="search-row">
     <input id="search-query" name="q" type="search" placeholder="{esc(placeholder)}" autocomplete="off" />
     <button type="submit">검색</button>
   </div>
-  <p class="muted">구매가이드 상품명, 생활용품 용도, 동네·계약 키워드를 같이 찾습니다.</p>
+  <p class="muted">{esc(helper)}</p>
 </form>'''
 
 
@@ -1479,7 +1482,10 @@ def deals_body(deals: list[dict]) -> str:
 </section>
 <section id="deal-search" class="panel soft search-panel lower-search">
   <div class="section-title"><h2>원하는 상품만 검색</h2><p>상품명, 용도, 예산, 사용 장소를 넣어 관련 비교글을 찾습니다.</p></div>
-  {search_form("예: 원룸 제습기, 모니터암, 사무용 의자, 블루투스 스피커")}
+  {search_form(
+      "예: 원룸 제습기, 모니터암, 사무용 의자, 블루투스 스피커",
+      "상품명, 용도, 예산, 사용 장소를 기준으로 쇼핑픽 비교글만 빠르게 좁혀봅니다.",
+  )}
 </section>
 <section id="category-blocks" class="landing-section">
   <div class="section-title"><h2>카테고리별 비교글 묶음</h2><p>생활가전, 재택 장비, 음향기기처럼 같은 의도끼리 묶어 빠르게 이동합니다.</p></div>

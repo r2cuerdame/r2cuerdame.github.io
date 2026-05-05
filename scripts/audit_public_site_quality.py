@@ -53,6 +53,12 @@ MANDATORY_PATHS = [
     "/search/",
 ]
 
+SECTION_MANDATORY_PATHS = {
+    "all": MANDATORY_PATHS,
+    "deals": ["/", "/deals/", "/search/"],
+    "radar": ["/", "/radar/", "/radar/cafe-contract-risk/", "/search/"],
+}
+
 
 class VisibleTextParser(HTMLParser):
     def __init__(self) -> None:
@@ -139,10 +145,15 @@ def page_kind(path: str) -> str:
     return "page"
 
 
-def local_pages(limit_articles: int) -> list[str]:
-    paths = list(MANDATORY_PATHS)
+def section_mandatory_paths(section: str) -> list[str]:
+    return list(SECTION_MANDATORY_PATHS.get(section, MANDATORY_PATHS))
+
+
+def local_pages(limit_articles: int, section: str = "all") -> list[str]:
+    paths = section_mandatory_paths(section)
     article_paths: list[str] = []
-    for root_name in ["radar", "deals"]:
+    root_names = ["radar", "deals"] if section == "all" else [section]
+    for root_name in root_names:
         base = ROOT / root_name
         if not base.exists():
             continue
@@ -154,16 +165,17 @@ def local_pages(limit_articles: int) -> list[str]:
     return paths
 
 
-def live_pages(base_url: str, limit_articles: int) -> list[str]:
-    paths = list(MANDATORY_PATHS)
+def live_pages(base_url: str, limit_articles: int, section: str = "all") -> list[str]:
+    paths = section_mandatory_paths(section)
+    allowed_prefixes = ("/radar/", "/deals/") if section == "all" else (f"/{section}/",)
     try:
         sitemap = fetch_url(urljoin(base_url.rstrip("/") + "/", "sitemap.xml?quality_audit=1"))
         for loc in re.findall(r"<loc>(.*?)</loc>", sitemap, flags=re.I | re.S):
             parsed = urlparse(html.unescape(loc.strip()))
             path = parsed.path or "/"
-            if path.startswith(("/radar/", "/deals/")) and path not in paths:
+            if path.startswith(allowed_prefixes) and path not in paths:
                 paths.append(path if path.endswith("/") else path + "/")
-            if len(paths) >= len(MANDATORY_PATHS) + limit_articles:
+            if len(paths) >= len(section_mandatory_paths(section)) + limit_articles:
                 break
     except Exception:
         # Mandatory pages still give a useful live audit if sitemap fetch is flaky.
@@ -322,8 +334,8 @@ def audit_html(path: str, page_html: str) -> list[str]:
     return failures
 
 
-def run_audit(*, base_url: str | None, limit_articles: int) -> dict[str, object]:
-    pages = live_pages(base_url, limit_articles) if base_url else local_pages(limit_articles)
+def run_audit(*, base_url: str | None, limit_articles: int, section: str = "all") -> dict[str, object]:
+    pages = live_pages(base_url, limit_articles, section=section) if base_url else local_pages(limit_articles, section=section)
     pages = list(dict.fromkeys(pages))
     checked: list[str] = []
     failures: list[str] = []
@@ -358,9 +370,10 @@ def main() -> int:
     parser.add_argument("--live", action="store_true", help="Audit the deployed GitHub Pages site")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--limit-articles", type=int, default=14)
+    parser.add_argument("--section", choices=sorted(SECTION_MANDATORY_PATHS), default="all", help="Audit all public sections or a single channel")
     args = parser.parse_args()
 
-    result = run_audit(base_url=args.base_url if args.live else None, limit_articles=args.limit_articles)
+    result = run_audit(base_url=args.base_url if args.live else None, limit_articles=args.limit_articles, section=args.section)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["ok"] else 1
 
