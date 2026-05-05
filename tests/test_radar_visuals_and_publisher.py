@@ -74,7 +74,7 @@ def test_adaptive_publisher_waits_after_daily_floor_when_queue_is_low(monkeypatc
 def test_publisher_stages_all_generated_static_outputs():
     publisher = load_module(ROOT / "scripts" / "publish_next_radar_candidate.py", "radar_publisher_paths")
 
-    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "data/seoul-commercial-areas.json", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
+    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "data/seoul-commercial-areas.json", "data/seoul-map-outline.json", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
         assert required in publisher.PUBLIC_ADD_PATHS
 
 
@@ -87,6 +87,10 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'id="commercial-check-tool"' in html
     assert 'data-seoul-density-tool-root' in html
     assert 'class="seoul-map-card"' in html
+    assert 'class="seoul-real-map"' in html
+    assert 'data-map-district="마포구"' in html
+    assert '서울 25개 구 행정경계' in html
+    assert 'OSM 한강' in html
     assert 'data-density-layer="cafe"' in html
     assert 'data-density-layer="population"' in html
     assert 'data-station-map="hongdae"' in html
@@ -114,6 +118,8 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'renderCompare' in js
     assert 'visitPlanFor' in js
     assert 'data-density-layer' in js
+    assert 'districtPaths' in js
+    assert 'data-map-district' in js
     assert '/data/seoul-commercial-areas.json' in js
     assert '/topics/cafe-commercial-lease-risk/' in js
     assert '/topics/jeonwolse-contract-check/' in js
@@ -123,6 +129,11 @@ def test_home_has_above_fold_seoul_density_tool():
     assert "KOSIS_API_KEY" not in data_text
     assert "Public OSM Overpass" not in data_text
     assert "비밀 키는 브라우저에 배포하지 않습니다" in data_text
+
+    outline = build_site.SEOUL_MAP_OUTLINE
+    assert len(outline["districts"]) == 25
+    assert outline["river"]["path"].startswith("M")
+    assert "KOSTAT" in json.dumps(outline, ensure_ascii=False)
 
 
 def test_public_audit_rejects_home_without_seoul_density_tool():

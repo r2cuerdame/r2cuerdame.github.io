@@ -242,7 +242,7 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-real-map", ".seoul-district", ".seoul-river", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
@@ -313,6 +313,9 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'id="commercial-check-tool"',
             'data-seoul-density-tool-root',
             'class="seoul-map-card"',
+            'class="seoul-real-map"',
+            'data-map-district="마포구"',
+            '서울 25개 구 행정경계',
             'data-density-layer="cafe"',
             'data-density-layer="population"',
             'data-station-map="hongdae"',
