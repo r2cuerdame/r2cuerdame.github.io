@@ -2438,6 +2438,10 @@ def commercial_check_tool_block() -> str:
         f'<option value="{esc(station["id"])}"{" selected" if station["id"] == default_station else ""}>{esc(station["name"])} · {esc(station["district"])} {esc(station["dong"])}</option>'
         for station in SEOUL_COMMERCIAL_AREAS["stations"]
     )
+    compare_options = "\n".join(
+        f'<option value="{esc(station["id"])}"{" selected" if station["id"] == "gangnam" else ""}>{esc(station["name"])} · {esc(station["district"])} {esc(station["dong"])}</option>'
+        for station in SEOUL_COMMERCIAL_AREAS["stations"]
+    )
     category_options = "\n".join(
         f'<option value="{esc(key)}"{" selected" if key == default_category else ""}>{esc(label)}</option>'
         for key, label in categories.items()
@@ -2471,6 +2475,7 @@ def commercial_check_tool_block() -> str:
   <div class="station-inspector" data-station-inspector>
     <form class="seoul-selector-form" data-station-tool>
       <label>역·동네 선택<select id="tool-station">{station_options}</select></label>
+      <label>비교 기준 역<select id="tool-compare-station">{compare_options}</select></label>
       <label>보고 싶은 업종<select id="tool-industry">{category_options}</select></label>
       <label>계약 용도<select id="tool-purpose"><option value="commercial">상가·카페 창업</option><option value="home">집·전월세 후보</option></select></label>
     </form>
@@ -2491,6 +2496,16 @@ def commercial_check_tool_block() -> str:
         <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록</a>
         <a href="/topics/jeonwolse-contract-check/">전월세 체크 글 목록</a>
       </div>
+    </article>
+    <article class="density-compare-card" data-compare-panel aria-live="polite">
+      <span>바로 비교</span>
+      <strong data-compare-title>홍대입구역 ↔ 강남역</strong>
+      <div class="compare-metric-row" data-compare-metrics>
+        <div><span>업종 차이</span><strong>0</strong></div>
+        <div><span>인구밀도</span><strong>0</strong></div>
+        <div><span>임대압력</span><strong>0</strong></div>
+      </div>
+      <p data-compare-note>다른 역과 업종·인구·임대 압력을 나란히 보고 후보지를 줄입니다.</p>
     </article>
   </div>
 </section>
@@ -3033,6 +3048,17 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .tool-risk-list li { padding-left: 4px; font-weight: 800; }
 .tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tool-link-row a { display: inline-flex; min-height: 36px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
+.density-compare-card { padding: 16px; border-radius: 24px; background: #101828; color: #fff; border: 1px solid rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+.density-compare-card > span { display: inline-flex; padding: 5px 9px; border-radius: 999px; background: rgba(255,255,255,.10); color: #cbd5e1; font-size: 11px; font-weight: 950; letter-spacing: .08em; }
+.density-compare-card > strong { display: block; margin: 9px 0 10px; font-size: clamp(19px, 2vw, 24px); line-height: 1.2; letter-spacing: -.035em; }
+.compare-metric-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 12px; }
+.compare-metric-row div { min-width: 0; padding: 10px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); }
+.compare-metric-row span, .compare-metric-row strong { display: block; }
+.compare-metric-row span { color: #cbd5e1; font-size: 11px; font-weight: 950; }
+.compare-metric-row strong { margin-top: 2px; font-size: 21px; line-height: 1; letter-spacing: -.045em; color: #fff; }
+.compare-metric-row .compare-up strong { color: #fde68a; }
+.compare-metric-row .compare-down strong { color: #bfdbfe; }
+.density-compare-card p { margin: 0; color: #dbeafe; font-size: 13px; font-weight: 800; }
 .situation-grid { margin-top: 18px; }
 .situation-card { min-height: 236px; }
 .case-study-list { margin-top: 34px; }
@@ -3544,10 +3570,18 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   border-top: 1px solid var(--line); color: #5f5652;
 }
 .muted { color: var(--muted); font-size: 14px; }
+@media (max-width: 1120px) and (min-width: 861px) {
+  .seoul-density-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .station-inspector { grid-column: 1 / -1; grid-template-columns: minmax(260px, .72fr) minmax(0, 1fr); align-items: start; }
+  .station-inspector .density-compare-card { grid-column: 1 / -1; }
+}
 @media (max-width: 860px) {
   .seoul-density-panel { grid-template-columns: 1fr; padding: 16px; border-radius: 26px; }
+  .station-inspector { grid-template-columns: 1fr; }
+  .station-inspector .density-compare-card { grid-column: auto; }
   .seoul-map-canvas { min-height: 330px; }
   .density-score-grid { grid-template-columns: 1fr; }
+  .compare-metric-row { grid-template-columns: 1fr; }
   .density-bar { grid-template-columns: 72px 1fr 38px; }
   .station-dot span { opacity: 0; top: calc(100% + 2px); font-size: 10px; pointer-events: none; transition: opacity .14s ease; }
   .station-dot[aria-pressed="true"] span, .station-dot:focus-visible span, .station-dot:hover span { opacity: 1; z-index: 4; background: rgba(15,23,42,.92); }
@@ -3724,6 +3758,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const root = document.querySelector('[data-seoul-density-tool-root]');
   if (!root) return;
   const stationSelect = root.querySelector('#tool-station');
+  const compareSelect = root.querySelector('#tool-compare-station');
   const industrySelect = root.querySelector('#tool-industry');
   const purposeSelect = root.querySelector('#tool-purpose');
   const mapLayerLabel = root.querySelector('[data-map-layer-label]');
@@ -3740,10 +3775,14 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
   const linksEl = root.querySelector('[data-recommend-links]');
+  const comparePanel = root.querySelector('[data-compare-panel]');
+  const compareTitleEl = root.querySelector('[data-compare-title]');
+  const compareMetricsEl = root.querySelector('[data-compare-metrics]');
+  const compareNoteEl = root.querySelector('[data-compare-note]');
   const sourceNoteEl = root.querySelector('[data-source-note]');
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
   const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
-  if (!stationSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
+  if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
@@ -3757,6 +3796,32 @@ COMMERCIAL_TOOL_JS = '''(() => {
     return Math.max(1, ...payload.stations.map((station) => Number(station.counts?.[key] || 0)));
   };
   const stationById = (id) => payload?.stations?.find((station) => station.id === id) || payload?.stations?.[0];
+  const valueFor = (station, industry) => industry === 'population'
+    ? Number(station.population_density_index || 0)
+    : Number(station.counts?.[industry] || 0);
+  const signed = (value) => `${value > 0 ? '+' : ''}${value}`;
+  const compareStationFor = (station) => {
+    let compare = stationById(compareSelect.value);
+    if (!compare || compare.id === station.id) {
+      compare = payload.stations.find((candidate) => candidate.id !== station.id) || station;
+      compareSelect.value = compare.id;
+    }
+    return compare;
+  };
+  const renderCompare = (station, compare, industry) => {
+    if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
+    const selectedDelta = valueFor(station, industry) - valueFor(compare, industry);
+    const popDelta = Number(station.population_density_index || 0) - Number(compare.population_density_index || 0);
+    const rentDelta = Number(station.rent_pressure_index || 0) - Number(compare.rent_pressure_index || 0);
+    const metric = (label, value) => `<div class="${value > 0 ? 'compare-up' : value < 0 ? 'compare-down' : 'compare-same'}"><span>${esc(label)}</span><strong>${signed(value)}</strong></div>`;
+    compareTitleEl.textContent = `${station.name} ↔ ${compare.name}`;
+    compareMetricsEl.innerHTML = [metric(categoryLabel(industry), selectedDelta), metric('인구밀도', popDelta), metric('임대압력', rentDelta)].join('');
+    compareNoteEl.textContent = rentDelta > 7
+      ? `${station.name}은 ${compare.name}보다 임대 압력이 높습니다. 권리금·고정비 회수 기간을 더 보수적으로 잡으세요.`
+      : rentDelta < -7
+        ? `${station.name}은 ${compare.name}보다 임대 압력이 낮습니다. 대신 목적 방문 이유와 반복 동선을 확인하세요.`
+        : `${station.name}과 ${compare.name}은 임대 압력이 비슷합니다. 업종 밀도와 생활 동선 차이를 우선 보세요.`;
+  };
   const gradeFor = (station, industry) => {
     const density = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.commercial_density_index || 0);
     const rent = Number(station.rent_pressure_index || 0);
@@ -3813,7 +3878,8 @@ COMMERCIAL_TOOL_JS = '''(() => {
     const station = stationById(stationSelect.value) || payload.stations[0];
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
-    const count = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.counts?.[industry] || 0);
+    const count = valueFor(station, industry);
+    const compare = compareStationFor(station);
     const grade = gradeFor(station, industry);
     root.dataset.grade = grade.grade;
     scoreRoot && (scoreRoot.dataset.grade = grade.grade);
@@ -3831,6 +3897,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
       : [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 검색')].join(''));
     renderBars(station);
+    renderCompare(station, compare, industry);
     updateMapHeat(industry);
   };
 
@@ -3842,6 +3909,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
   stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
   stationSelect.addEventListener('change', evaluate);
+  compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
 

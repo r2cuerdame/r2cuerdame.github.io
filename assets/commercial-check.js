@@ -2,6 +2,7 @@
   const root = document.querySelector('[data-seoul-density-tool-root]');
   if (!root) return;
   const stationSelect = root.querySelector('#tool-station');
+  const compareSelect = root.querySelector('#tool-compare-station');
   const industrySelect = root.querySelector('#tool-industry');
   const purposeSelect = root.querySelector('#tool-purpose');
   const mapLayerLabel = root.querySelector('[data-map-layer-label]');
@@ -18,10 +19,14 @@
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
   const linksEl = root.querySelector('[data-recommend-links]');
+  const comparePanel = root.querySelector('[data-compare-panel]');
+  const compareTitleEl = root.querySelector('[data-compare-title]');
+  const compareMetricsEl = root.querySelector('[data-compare-metrics]');
+  const compareNoteEl = root.querySelector('[data-compare-note]');
   const sourceNoteEl = root.querySelector('[data-source-note]');
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
   const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
-  if (!stationSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
+  if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
@@ -35,6 +40,32 @@
     return Math.max(1, ...payload.stations.map((station) => Number(station.counts?.[key] || 0)));
   };
   const stationById = (id) => payload?.stations?.find((station) => station.id === id) || payload?.stations?.[0];
+  const valueFor = (station, industry) => industry === 'population'
+    ? Number(station.population_density_index || 0)
+    : Number(station.counts?.[industry] || 0);
+  const signed = (value) => `${value > 0 ? '+' : ''}${value}`;
+  const compareStationFor = (station) => {
+    let compare = stationById(compareSelect.value);
+    if (!compare || compare.id === station.id) {
+      compare = payload.stations.find((candidate) => candidate.id !== station.id) || station;
+      compareSelect.value = compare.id;
+    }
+    return compare;
+  };
+  const renderCompare = (station, compare, industry) => {
+    if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
+    const selectedDelta = valueFor(station, industry) - valueFor(compare, industry);
+    const popDelta = Number(station.population_density_index || 0) - Number(compare.population_density_index || 0);
+    const rentDelta = Number(station.rent_pressure_index || 0) - Number(compare.rent_pressure_index || 0);
+    const metric = (label, value) => `<div class="${value > 0 ? 'compare-up' : value < 0 ? 'compare-down' : 'compare-same'}"><span>${esc(label)}</span><strong>${signed(value)}</strong></div>`;
+    compareTitleEl.textContent = `${station.name} ↔ ${compare.name}`;
+    compareMetricsEl.innerHTML = [metric(categoryLabel(industry), selectedDelta), metric('인구밀도', popDelta), metric('임대압력', rentDelta)].join('');
+    compareNoteEl.textContent = rentDelta > 7
+      ? `${station.name}은 ${compare.name}보다 임대 압력이 높습니다. 권리금·고정비 회수 기간을 더 보수적으로 잡으세요.`
+      : rentDelta < -7
+        ? `${station.name}은 ${compare.name}보다 임대 압력이 낮습니다. 대신 목적 방문 이유와 반복 동선을 확인하세요.`
+        : `${station.name}과 ${compare.name}은 임대 압력이 비슷합니다. 업종 밀도와 생활 동선 차이를 우선 보세요.`;
+  };
   const gradeFor = (station, industry) => {
     const density = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.commercial_density_index || 0);
     const rent = Number(station.rent_pressure_index || 0);
@@ -91,7 +122,8 @@
     const station = stationById(stationSelect.value) || payload.stations[0];
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
-    const count = industry === 'population' ? Number(station.population_density_index || 0) : Number(station.counts?.[industry] || 0);
+    const count = valueFor(station, industry);
+    const compare = compareStationFor(station);
     const grade = gradeFor(station, industry);
     root.dataset.grade = grade.grade;
     scoreRoot && (scoreRoot.dataset.grade = grade.grade);
@@ -109,6 +141,7 @@
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
       : [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 검색')].join(''));
     renderBars(station);
+    renderCompare(station, compare, industry);
     updateMapHeat(industry);
   };
 
@@ -120,6 +153,7 @@
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
   stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
   stationSelect.addEventListener('change', evaluate);
+  compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
 

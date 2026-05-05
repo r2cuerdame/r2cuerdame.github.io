@@ -91,10 +91,13 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-density-layer="population"' in html
     assert 'data-station-map="hongdae"' in html
     assert 'id="tool-station"' in html
+    assert 'id="tool-compare-station"' in html
     assert 'id="tool-industry"' in html
     assert 'data-density-count' in html
     assert 'data-pop-density' in html
     assert 'data-risk-list' in html
+    assert 'data-compare-panel' in html
+    assert 'data-compare-metrics' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
     assert 'href="/topics/jeonwolse-contract-check/"' in html
     assert '/data/seoul-commercial-areas.json?v=' in html
@@ -105,6 +108,9 @@ def test_home_has_above_fold_seoul_density_tool():
     assert len(build_site.SEOUL_COMMERCIAL_AREAS["stations"]) >= 12
     js = build_site.COMMERCIAL_TOOL_JS
     assert '[data-seoul-density-tool-root]' in js
+    assert 'tool-compare-station' in js
+    assert 'data-compare-panel' in js
+    assert 'renderCompare' in js
     assert 'data-density-layer' in js
     assert '/data/seoul-commercial-areas.json' in js
     assert '/topics/cafe-commercial-lease-risk/' in js
