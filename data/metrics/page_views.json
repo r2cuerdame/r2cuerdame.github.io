@@ -12,7 +12,7 @@
     },
     "/deals/": {
       "active_users": 2,
-      "views": 16
+      "views": 18
     },
     "/deals/2026-robot-vacuum-best4/": {
       "active_users": 1,
@@ -44,7 +44,7 @@
     },
     "/radar/": {
       "active_users": 2,
-      "views": 17
+      "views": 20
     },
     "/radar/cafe-contract-risk/": {
       "active_users": 1,
@@ -68,7 +68,7 @@
     },
     "/search/": {
       "active_users": 1,
-      "views": 6
+      "views": 9
     }
   },
   "property_configured": true,
@@ -78,12 +78,12 @@
     {
       "active_users": 2,
       "path": "/radar/",
-      "views": 17
+      "views": 20
     },
     {
       "active_users": 2,
       "path": "/deals/",
-      "views": 16
+      "views": 18
     },
     {
       "active_users": 3,
@@ -92,13 +92,13 @@
     },
     {
       "active_users": 1,
-      "path": "/guides/",
-      "views": 7
+      "path": "/search/",
+      "views": 9
     },
     {
       "active_users": 1,
-      "path": "/search/",
-      "views": 6
+      "path": "/guides/",
+      "views": 7
     },
     {
       "active_users": 1,
@@ -161,5 +161,5 @@
       "views": 1
     }
   ],
-  "updated_at": "2026-05-05T12:52:36+09:00"
+  "updated_at": "2026-05-05T16:48:35+09:00"
 }
