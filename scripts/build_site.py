@@ -1442,6 +1442,35 @@ def deals_by_growth_priority(deals: list[dict]) -> list[dict]:
     )
 
 
+ROOM_SCENES = {
+    "living": {
+        "label": "거실·책상",
+        "image": "/assets/deals/shopping-room-ai.webp",
+        "alt": "공기·청소·책상·음향 쇼핑픽 후보를 눌러볼 수 있는 거실 겸 작업 공간 이미지",
+    },
+    "kitchen": {
+        "label": "주방",
+        "image": "/assets/deals/shopping-room-kitchen-ai.webp",
+        "alt": "주방가전 쇼핑픽 후보를 눌러볼 수 있는 주방 이미지",
+    },
+    "care": {
+        "label": "욕실·케어",
+        "image": "/assets/deals/shopping-room-care-ai.webp",
+        "alt": "뷰티와 퍼스널케어 쇼핑픽 후보를 눌러볼 수 있는 욕실 선반 이미지",
+    },
+}
+ROOM_SCENE_ORDER = ("living", "kitchen", "care")
+ROOM_KIND_SCENE = {
+    "air": "living",
+    "desk": "living",
+    "sound": "living",
+    "clean": "living",
+    "daily": "living",
+    "kitchen": "kitchen",
+    "care": "care",
+}
+
+
 def shopping_room_kind(article: dict) -> tuple[str, str, str]:
     haystack = " ".join(
         [
@@ -1463,6 +1492,10 @@ def shopping_room_kind(article: dict) -> tuple[str, str, str]:
         if any(term.lower() in haystack.lower() for term in terms):
             return kind, scene, cue
     return "daily", "생활 코너", "오늘 후보"
+
+
+def shopping_room_scene_key(kind: str) -> str:
+    return ROOM_KIND_SCENE.get(kind, "living")
 
 
 def shopping_room_title(article: dict) -> str:
@@ -1502,10 +1535,13 @@ def shopping_room_scene(deals: list[dict]) -> str:
   <div class="room-empty"><strong>쇼핑룸 준비중</strong><p>새 상품 비교글이 올라오면 이 방에 물건처럼 하나씩 붙습니다.</p></div>
 </aside>'''
     toggles: list[str] = []
-    markers: list[str] = []
+    markers_by_scene: dict[str, list[str]] = {key: [] for key in ROOM_SCENE_ORDER}
+    scene_first_toggle: dict[str, str] = {}
     previews: list[str] = []
+    used_scenes: set[str] = set()
     for idx, article in enumerate(items, start=1):
         kind, scene, cue = shopping_room_kind(article)
+        scene_key = shopping_room_scene_key(kind)
         title = shopping_room_title(article)
         desc = short_text(article.get("description") or "", 74)
         checked = " checked" if idx == 1 else ""
@@ -1515,8 +1551,10 @@ def shopping_room_scene(deals: list[dict]) -> str:
         product_link = ""
         if deal_url:
             product_link = f'<a class="room-product-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">상품 바로가기</a>'
-        toggles.append(f'<input class="room-toggle" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
-        markers.append(f'''<label class="room-product pos-{idx} kind-{kind}" for="{toggle_id}" aria-label="{esc(title)} 소개 보기">
+        toggles.append(f'<input class="room-toggle scene-{scene_key}" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
+        used_scenes.add(scene_key)
+        scene_first_toggle.setdefault(scene_key, toggle_id)
+        markers_by_scene.setdefault(scene_key, []).append(f'''<label class="room-product pos-{idx} kind-{kind}" for="{toggle_id}" aria-label="{esc(title)} 소개 보기">
       <span class="room-hit-area" aria-hidden="true"></span>
       <span class="room-pulse" aria-hidden="true"></span>
       <span class="room-pin" aria-hidden="true"></span>
@@ -1528,17 +1566,29 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <p>{esc(desc)}</p>
       <div class="room-preview-actions">{product_link}<a class="text-link" href="{esc(article['path'])}">비교글 보기 →</a></div>
     </article>''')
+    scene_keys = [key for key in ROOM_SCENE_ORDER if key in used_scenes]
+    scene_nav = "".join(
+        f'<label class="room-page scene-{key}" for="{esc(scene_first_toggle[key])}">{esc(ROOM_SCENES[key]["label"])}</label>'
+        for key in scene_keys
+    )
+    scene_frames = []
+    for key in scene_keys:
+        info = ROOM_SCENES[key]
+        scene_frames.append(f'''<div class="room-visual room-scene scene-{key}">
+      <img class="room-photo" src="{esc(info['image'])}" alt="{esc(info['alt'])}" loading="eager" decoding="async" />
+      {''.join(markers_by_scene.get(key, []))}
+    </div>''')
     return f'''<aside class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
   <div class="room-card-head">
     <span class="tag pale">AI 쇼핑룸</span>
     <strong>방 사진 속 상품을 눌러보세요</strong>
-    <p>AI로 만든 생활공간 위에 쇼핑픽 후보 영역을 얹었습니다. 누르면 아래 비교글이 바로 바뀝니다.</p>
+    <p>상품 구역이 달라지면 사진도 거실·주방·케어 공간으로 넘어갑니다. 누르면 아래 비교글이 바로 바뀝니다.</p>
   </div>
   <div class="shopping-room-stage">
     {''.join(toggles)}
-    <div class="room-visual">
-      <img class="room-photo" src="/assets/deals/shopping-room-ai.webp" alt="쇼핑픽 후보를 고를 수 있는 생활공간 이미지" loading="eager" decoding="async" />
-      {''.join(markers)}
+    <div class="room-carousel-nav" aria-label="쇼핑룸 사진 페이지">{scene_nav}</div>
+    <div class="room-visual-stack">
+      {''.join(scene_frames)}
     </div>
     <div class="room-previews" aria-live="polite">
       {''.join(previews)}
@@ -1960,11 +2010,11 @@ def deal_article_product_link_block(article: dict) -> str:
     for item in links:
         items.append(
             f'<li><a class="quick-product-link" href="{esc(item["url"])}" target="_blank" rel="sponsored nofollow noopener">'
-            f'<span>{esc(item["label"])}</span><strong>쿠팡에서 보기</strong></a></li>'
+            f'<span>{esc(item["label"])}</span><strong>상품 페이지 보기</strong></a></li>'
         )
-    return f'''<div class="quick-product-links" aria-label="쿠팡 상품 페이지 바로가기">
+    return f'''<div class="quick-product-links" aria-label="상품 페이지 바로가기">
     <h3>마음에 드는 후보는 바로 확인</h3>
-    <p>쿠팡 파트너스 링크입니다. 가격·배송·후기는 쿠팡 상품 페이지에서 다시 확인하세요.</p>
+    <p>제휴 고지: 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·후기는 상품 페이지에서 다시 확인하세요.</p>
     <ul>{''.join(items)}</ul>
   </div>'''
 
@@ -3243,7 +3293,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-card-head p, .room-empty p { margin: 0; color: #6b625f; font-size: 13px; line-height: 1.5; font-weight: 750; }
 .shopping-room-stage { position: relative; margin-top: 12px; }
 .room-toggle { position: absolute; width: 1px; height: 1px; margin: 0; opacity: .001; pointer-events: none; }
-.room-visual { position: relative; min-height: clamp(390px, 36vw, 470px); overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.room-carousel-nav { display: flex; gap: 6px; margin: 9px 0 10px; padding: 4px; border-radius: 999px; background: rgba(244,235,226,.78); border: 1px solid rgba(234,223,212,.9); }
+.room-page { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 11px; border-radius: 999px; color: #6b625f; font-size: 12px; font-weight: 950; cursor: pointer; white-space: nowrap; transition: background .16s ease, color .16s ease, box-shadow .16s ease; }
+.room-page:hover { background: rgba(255,255,255,.86); color: #2f2724; }
+.room-toggle.scene-living:checked ~ .room-carousel-nav .scene-living, .room-toggle.scene-kitchen:checked ~ .room-carousel-nav .scene-kitchen, .room-toggle.scene-care:checked ~ .room-carousel-nav .scene-care { background: #111827; color: #fff; box-shadow: 0 8px 16px rgba(17,24,39,.12); }
+.room-visual-stack { position: relative; min-height: clamp(390px, 36vw, 470px); }
+.room-visual { display: none; position: relative; min-height: clamp(390px, 36vw, 470px); overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.room-toggle.scene-living:checked ~ .room-visual-stack .scene-living, .room-toggle.scene-kitchen:checked ~ .room-visual-stack .scene-kitchen, .room-toggle.scene-care:checked ~ .room-visual-stack .scene-care { display: block; }
 .room-photo { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.96) contrast(.98); transform: scale(1.01); }
 .room-visual::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(17,24,39,.10)), radial-gradient(circle at 50% 50%, transparent 0 62%, rgba(255,255,255,.26) 100%); }
 .room-product { position: absolute; z-index: 9; display: grid; place-items: center; width: 66px; height: 66px; border-radius: 999px; cursor: pointer; outline: none; transform: translate(-50%, -50%); }
@@ -3253,13 +3309,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-product.pos-4 { left: 82%; top: 54%; }
 .room-product.pos-5 { left: 13%; top: 64%; }
 .room-product.pos-6 { left: 82%; top: 25%; }
-.room-product.kind-air { left: 20%; top: 65%; }
-.room-product.kind-desk { left: 57%; top: 45%; }
-.room-product.kind-sound { left: 82%; top: 24%; }
-.room-product.kind-clean { left: 48%; top: 80%; }
-.room-product.kind-kitchen { left: 84%; top: 55%; }
-.room-product.kind-care { left: 80%; top: 78%; }
-.room-product.kind-daily { left: 66%; top: 67%; }
+.room-scene.scene-living .room-product.kind-air { left: 20%; top: 65%; }
+.room-scene.scene-living .room-product.kind-desk { left: 57%; top: 45%; }
+.room-scene.scene-living .room-product.kind-sound { left: 82%; top: 24%; }
+.room-scene.scene-living .room-product.kind-clean { left: 48%; top: 80%; }
+.room-scene.scene-living .room-product.kind-daily { left: 66%; top: 67%; }
+.room-scene.scene-kitchen .room-product.kind-kitchen { left: 55%; top: 57%; }
+.room-scene.scene-care .room-product.kind-care { left: 44%; top: 70%; }
 .room-hit-area { position: absolute; inset: 4px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 12px 24px rgba(17,24,39,.13), inset 0 1px 0 rgba(255,255,255,.72); opacity: .78; transform: scale(.74); transition: opacity .16s ease, transform .16s ease, border-color .16s ease, background .16s ease; }
 .room-pulse { position: absolute; width: 38px; height: 38px; border-radius: 999px; background: rgba(255,90,31,.12); border: 1px solid rgba(255,90,31,.38); box-shadow: 0 0 0 0 rgba(255,90,31,.18); transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
 .room-pin { position: relative; z-index: 2; width: 15px; height: 15px; border-radius: 999px; background: #ff5a1f; border: 3px solid #fff; box-shadow: 0 8px 18px rgba(17,24,39,.24); transition: transform .16s ease; }
@@ -3267,10 +3323,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-label strong, .room-label small { display: block; }
 .room-label strong { font-size: 12.5px; line-height: 1.25; word-break: keep-all; }
 .room-label small { margin-top: 3px; color: #fed7aa; font-size: 11px; font-weight: 900; }
-.room-product:hover .room-label, .room-product:focus .room-label, #shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-label, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-label, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-label, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-label, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-label, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-label { opacity: 1; transform: translateX(-50%) translateY(0); }
-.room-product:hover .room-hit-area, .room-product:focus .room-hit-area, #shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-hit-area, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-hit-area, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-hit-area, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-hit-area, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-hit-area, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-hit-area { opacity: 1; transform: scale(1); border-color: rgba(255,90,31,.64); background: rgba(255,255,255,.24); }
-#shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-pulse, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-pulse, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-pulse, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-pulse, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-pulse, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-pulse { background: rgba(255,90,31,.24); border-color: rgba(255,90,31,.78); box-shadow: 0 0 0 8px rgba(255,90,31,.10); }
-#shopping-room-pick-1:checked ~ .room-visual .pos-1 .room-pin, #shopping-room-pick-2:checked ~ .room-visual .pos-2 .room-pin, #shopping-room-pick-3:checked ~ .room-visual .pos-3 .room-pin, #shopping-room-pick-4:checked ~ .room-visual .pos-4 .room-pin, #shopping-room-pick-5:checked ~ .room-visual .pos-5 .room-pin, #shopping-room-pick-6:checked ~ .room-visual .pos-6 .room-pin { transform: scale(1.18); }
+.room-product:hover .room-label, .room-product:focus .room-label, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-label, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-label, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-label, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-label, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-label, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-label { opacity: 1; transform: translateX(-50%) translateY(0); }
+.room-product:hover .room-hit-area, .room-product:focus .room-hit-area, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-hit-area, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-hit-area, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-hit-area, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-hit-area, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-hit-area, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-hit-area { opacity: 1; transform: scale(1); border-color: rgba(255,90,31,.64); background: rgba(255,255,255,.24); }
+#shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-pulse, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-pulse, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-pulse, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-pulse, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-pulse, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-pulse { background: rgba(255,90,31,.24); border-color: rgba(255,90,31,.78); box-shadow: 0 0 0 8px rgba(255,90,31,.10); }
+#shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-pin, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-pin, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-pin, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-pin, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-pin, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-pin { transform: scale(1.18); }
 .room-previews { margin-top: 10px; }
 .room-preview { display: none; padding: 14px 15px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 10px 24px rgba(58,37,20,.06); }
 #shopping-room-pick-1:checked ~ .room-previews .preview-1, #shopping-room-pick-2:checked ~ .room-previews .preview-2, #shopping-room-pick-3:checked ~ .room-previews .preview-3, #shopping-room-pick-4:checked ~ .room-previews .preview-4, #shopping-room-pick-5:checked ~ .room-previews .preview-5, #shopping-room-pick-6:checked ~ .room-previews .preview-6 { display: block; }
@@ -3671,20 +3727,23 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .shopping-room-card { padding: 12px; }
   .room-card-head { gap: 5px; }
   .room-card-head p { font-size: 13px; }
-  .room-visual { min-height: 292px; border-radius: 20px; }
+  .room-carousel-nav { gap: 4px; margin: 8px 0 9px; border-radius: 18px; }
+  .room-page { min-height: 32px; padding: 0 8px; font-size: 11.5px; }
+  .room-visual-stack, .room-visual { min-height: 292px; }
+  .room-visual { border-radius: 20px; }
   .room-photo { object-position: center; }
   .room-label { display: none; }
   .room-product { width: 50px; height: 50px; }
   .room-hit-area { inset: 5px; transform: scale(.68); }
   .room-pulse { width: 34px; height: 34px; }
   .room-pin { width: 13px; height: 13px; border-width: 3px; }
-  .room-product.kind-air { left: 20%; top: 66%; }
-  .room-product.kind-desk { left: 57%; top: 45%; }
-  .room-product.kind-sound { left: 82%; top: 25%; }
-  .room-product.kind-clean { left: 48%; top: 80%; }
-  .room-product.kind-kitchen { left: 84%; top: 55%; }
-  .room-product.kind-care { left: 80%; top: 78%; }
-  .room-product.kind-daily { left: 66%; top: 67%; }
+  .room-scene.scene-living .room-product.kind-air { left: 20%; top: 66%; }
+  .room-scene.scene-living .room-product.kind-desk { left: 57%; top: 45%; }
+  .room-scene.scene-living .room-product.kind-sound { left: 82%; top: 25%; }
+  .room-scene.scene-living .room-product.kind-clean { left: 48%; top: 80%; }
+  .room-scene.scene-living .room-product.kind-daily { left: 66%; top: 67%; }
+  .room-scene.scene-kitchen .room-product.kind-kitchen { left: 54%; top: 57%; }
+  .room-scene.scene-care .room-product.kind-care { left: 42%; top: 69%; }
   .room-preview { padding: 13px; border-radius: 18px; }
   .room-preview-actions { display: grid; grid-template-columns: 1fr; gap: 7px; }
   .room-product-link, .room-preview .text-link { width: 100%; }
@@ -3715,7 +3774,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .deal-text-badge { min-height: 132px; padding: 10px; gap: 8px; font-size: 12px; border-bottom: 0; border-right: 1px solid var(--line); }
   .deal-fallback-icon { width: 48px; height: 48px; border-radius: 17px; font-size: 24px; }
   .deal-fallback-text { min-height: 26px; padding: 0 9px; font-size: 11px; }
-  .deal-count { left: 8px; top: 8px; font-size: 11px; padding: 5px 7px; }
+  .deal-count { left: 8px; top: 8px; max-width: 80px; white-space: nowrap; overflow: hidden; font-size: 11px; padding: 5px 7px; }
+  .deal-rank { left: 8px; right: auto; top: 38px; font-size: 11px; padding: 5px 8px; box-shadow: 0 8px 16px rgba(17,24,39,.14); }
   .deal-body { min-width: 0; padding: 14px; gap: 8px; }
   .deal-meta { align-items: flex-start; flex-direction: column; gap: 4px; font-size: 11px; }
   .deal-card h2 { font-size: 18px; line-height: 1.32; }
