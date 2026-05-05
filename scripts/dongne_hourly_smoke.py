@@ -230,6 +230,7 @@ def main() -> int:
         "scripts/publish_next_radar_candidate.py",
         "scripts/build_site.py",
     ]
+    py_files = [rel for rel in py_files if (ROOT / rel).exists()]
     py_files.extend(str(path.relative_to(ROOT)) for path in sorted((ROOT / "scripts").glob("*.py")) if str(path.relative_to(ROOT)) not in py_files)
     commands.append(run_command("py_compile", [sys.executable, "-m", "py_compile", *py_files]))
     commands.append(run_command("candidate_review", [sys.executable, "scripts/review_maturing_candidates.py"]))
