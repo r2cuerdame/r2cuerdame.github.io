@@ -205,9 +205,7 @@ STATIC_PAGES = [
 NAV = [
     ("동네 레이더", "/radar/", "nav-primary"),
     ("쇼핑픽", "/deals/", "nav-primary"),
-    ("주제별 보기", "/topics/", "nav-action"),
     ("검색", "/search/", "nav-action"),
-    ("읽는 순서", "/guides/", "nav-secondary"),
 ]
 
 TOPIC_HUBS = [
@@ -257,7 +255,6 @@ def deals_nav_html(page_path: str) -> str:
         ("쇼핑픽 홈", "/deals/", "nav-primary"),
         ("오늘 BEST", "/deals/#today-best", "nav-primary"),
         ("카테고리", "/deals/#category-blocks", "nav-secondary"),
-        ("주제별 보기", "/topics/", "nav-action"),
         ("검색", "/search/", "nav-action"),
     ]
     out = []
@@ -1797,27 +1794,20 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
   <h1>이사·월세·상가 계약 전, 동네 리스크부터 걸러냅니다.</h1>
   <p class="lead">동네 레이더는 “여기가 좋다”가 아니라 내 계약 조건에서 피해야 할 신호와 현장에서 다시 물어볼 질문을 먼저 정리합니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="/radar/">동네 레이더 먼저 보기</a>
-    <a class="button" href="/guides/">읽는 순서 보기</a>
+    <a class="button primary" href="/radar/">동네 레이더 보기</a>
     <a class="button" href="/deals/">쇼핑픽 보기</a>
   </div>
 </section>
-<section class="grid three">
+<section class="grid two">
   <article class="card accent-blue">
     <span class="tag">Primary</span>
     <h2>동네 레이더</h2>
     <p>월세·전세 계약, 통근 피로, 생활권, 밤길·소음·관리비, 상가 권리금 리스크를 계약 전 질문으로 바꿉니다.</p>
     <a href="/radar/">/radar/ 열기 →</a>
   </article>
-  <article class="card accent-green">
-    <span class="tag">Guide</span>
-    <h2>처음 읽는 순서</h2>
-    <p>이사 준비, 상가 계약, 생활 구매를 섞지 않고 목적별로 어떤 글을 먼저 볼지 정리합니다.</p>
-    <a href="/guides/">가이드 보기 →</a>
-  </article>
   <article class="card accent-orange">
-    <span class="tag">Separate</span>
-    <h2>쇼핑픽은 분리</h2>
+    <span class="tag">Shopping</span>
+    <h2>쇼핑픽</h2>
     <p>생활 상품 비교는 /deals/에서만 다룹니다. 동네 레이더 글에는 제휴 문맥을 섞지 않습니다.</p>
     <a href="/deals/">쇼핑픽 보기 →</a>
   </article>
@@ -1916,8 +1906,7 @@ def radar_body(radar: list[dict]) -> str:
   <h1>동네 레이더: 계약 전 리스크 체크</h1>
   <p class="lead">이사, 월세·전세, 통근, 생활권, 상가 계약 전에 “좋아 보이는 동네”보다 먼저 걸러야 할 신호와 현장 확인 질문을 정리합니다.</p>
   <div class="hero-actions">
-    <a class="button primary" href="/guides/">처음 읽는 순서</a>
-    <a class="button" href="/radar/dongne-signal-framework/">전월세 체크</a>
+    <a class="button primary" href="/radar/dongne-signal-framework/">전월세 체크</a>
     <a class="button" href="/radar/cafe-contract-risk/">상가 계약 체크</a>
   </div>
 </section>
