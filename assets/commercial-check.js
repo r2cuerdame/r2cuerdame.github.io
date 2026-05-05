@@ -20,6 +20,7 @@
   const popLabelEl = root.querySelector('[data-pop-label]');
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
+  const visitPlanEl = root.querySelector('[data-visit-plan]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
@@ -96,6 +97,27 @@
       `평일 점심·퇴근·주말 3번을 나눠 유입을 세고, 앵커시설 없이도 재방문 이유가 있는지 확인했나요?`
     ];
   };
+  const visitPlanFor = (station, industry, purpose) => {
+    const label = categoryLabel(industry);
+    if (purpose === 'home') {
+      return {
+        title: `${station.name} 집 후보는 시간대를 나눠 확인`,
+        items: [
+          '평일 출퇴근: 역에서 집까지 마지막 도보와 환승 피로',
+          '밤 10시 이후: 골목 밝기·소음·배달 동선',
+          '주말/비 오는 날: 장보기·배수·생활시설 접근'
+        ]
+      };
+    }
+    return {
+      title: `${station.name} ${label} 후보는 구매 순간을 직접 세기`,
+      items: [
+        '평일 점심: 지나가는 사람과 실제 결제 고객 구분',
+        '퇴근 18–20시: 목적 방문인지 귀가 동선인지 확인',
+        '주말 오후: 체류 시간·재방문 이유·경쟁점 분산 확인'
+      ]
+    };
+  };
   const updateMapHeat = (industry) => {
     const max = maxFor(industry);
     stationButtons.forEach((button) => {
@@ -144,6 +166,10 @@
     popLabelEl && (popLabelEl.textContent = station.population_density_label || '지수');
     summaryEl && (summaryEl.textContent = `${station.name}은 상권 밀도 ${station.commercial_density_label}, 인구밀도 ${station.population_density_label} 구간입니다. ${station.default_take || ''}`);
     riskListEl.innerHTML = questionsFor(station, industry, purpose).map((item) => `<li>${esc(item)}</li>`).join('');
+    if (visitPlanEl) {
+      const plan = visitPlanFor(station, industry, purpose);
+      visitPlanEl.innerHTML = `<span>현장 확인 시간</span><strong>${esc(plan.title)}</strong><ul>${plan.items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+    }
     linksEl && (linksEl.innerHTML = purpose === 'home'
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
       : [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 검색')].join(''));

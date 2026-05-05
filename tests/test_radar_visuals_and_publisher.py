@@ -96,6 +96,7 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-density-count' in html
     assert 'data-pop-density' in html
     assert 'data-risk-list' in html
+    assert 'data-visit-plan' in html
     assert 'data-compare-panel' in html
     assert 'data-compare-metrics' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
@@ -111,6 +112,7 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'tool-compare-station' in js
     assert 'data-compare-panel' in js
     assert 'renderCompare' in js
+    assert 'visitPlanFor' in js
     assert 'data-density-layer' in js
     assert '/data/seoul-commercial-areas.json' in js
     assert '/topics/cafe-commercial-lease-risk/' in js

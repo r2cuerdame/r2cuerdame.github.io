@@ -2181,7 +2181,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
   "version": "2026-05-seoul-density-mvp",
   "generated_at": "2026-05-06T02:00:00+09:00",
   "radius_m": 650,
-  "source_summary": "공개 POI 정적 집계 · 인구밀도는 공식 통계 연동 전 편집 지수 · 비밀 키 미배포",
+  "source_summary": "공개 POI 정적 집계 · 인구밀도는 공식 통계 연동 전 편집 지수 · 비밀 키는 브라우저에 배포하지 않습니다",
   "categories": {
     "cafe": "카페",
     "food": "음식점·주점",
@@ -2652,7 +2652,7 @@ def commercial_check_tool_block() -> str:
         <small data-map-focus-meta>마포구 서교동 · 카페 밀도 확인 중</small>
       </div>
     </div>
-    <p class="map-source-note" data-source-note>공개 POI 정적 집계 · 비밀 키 미배포</p>
+    <p class="map-source-note" data-source-note>공개 POI 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다</p>
   </div>
   <div class="station-inspector" data-station-inspector>
     <form class="seoul-selector-form" data-station-tool>
@@ -2674,6 +2674,10 @@ def commercial_check_tool_block() -> str:
       </div>
       <div class="density-bars" data-density-bars></div>
       <ol class="tool-risk-list" data-risk-list></ol>
+      <div class="field-visit-plan" data-visit-plan aria-live="polite">
+        <span>현장 확인 시간</span>
+        <strong>역과 업종을 고르면 방문 순서가 바뀝니다</strong>
+      </div>
       <div class="tool-link-row" data-recommend-links>
         <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록</a>
         <a href="/topics/jeonwolse-contract-check/">전월세 체크 글 목록</a>
@@ -3248,6 +3252,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .tool-risk-list { counter-reset: risk; display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .tool-risk-list li { position: relative; padding: 10px 10px 10px 38px; border-radius: 16px; background: #fffaf4; color: #3f3733; font-size: 13.5px; line-height: 1.48; font-weight: 850; }
 .tool-risk-list li::before { counter-increment: risk; content: counter(risk); position: absolute; left: 11px; top: 11px; display: grid; place-items: center; width: 19px; height: 19px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 950; }
+.field-visit-plan { margin-top: 14px; padding: 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; }
+.field-visit-plan > span { display: inline-flex; min-height: 26px; align-items: center; padding: 0 9px; border-radius: 999px; background: #e0f2fe; color: #075985; font-size: 11px; font-weight: 950; letter-spacing: .04em; }
+.field-visit-plan strong { display: block; margin-top: 8px; color: #172033; font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
+.field-visit-plan ul { display: grid; gap: 6px; margin: 9px 0 0; padding-left: 18px; }
+.field-visit-plan li { color: #475569; font-size: 13px; line-height: 1.45; font-weight: 850; }
 .tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tool-link-row a { display: inline-flex; min-height: 38px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
 .density-compare-card { padding: 18px; border-radius: 26px; background: linear-gradient(180deg, #101828, #0b1020); color: #fff; border: 1px solid rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 14px 34px rgba(15,23,42,.14); }
@@ -4018,6 +4027,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const popLabelEl = root.querySelector('[data-pop-label]');
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
+  const visitPlanEl = root.querySelector('[data-visit-plan]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
@@ -4094,6 +4104,27 @@ COMMERCIAL_TOOL_JS = '''(() => {
       `평일 점심·퇴근·주말 3번을 나눠 유입을 세고, 앵커시설 없이도 재방문 이유가 있는지 확인했나요?`
     ];
   };
+  const visitPlanFor = (station, industry, purpose) => {
+    const label = categoryLabel(industry);
+    if (purpose === 'home') {
+      return {
+        title: `${station.name} 집 후보는 시간대를 나눠 확인`,
+        items: [
+          '평일 출퇴근: 역에서 집까지 마지막 도보와 환승 피로',
+          '밤 10시 이후: 골목 밝기·소음·배달 동선',
+          '주말/비 오는 날: 장보기·배수·생활시설 접근'
+        ]
+      };
+    }
+    return {
+      title: `${station.name} ${label} 후보는 구매 순간을 직접 세기`,
+      items: [
+        '평일 점심: 지나가는 사람과 실제 결제 고객 구분',
+        '퇴근 18–20시: 목적 방문인지 귀가 동선인지 확인',
+        '주말 오후: 체류 시간·재방문 이유·경쟁점 분산 확인'
+      ]
+    };
+  };
   const updateMapHeat = (industry) => {
     const max = maxFor(industry);
     stationButtons.forEach((button) => {
@@ -4142,6 +4173,10 @@ COMMERCIAL_TOOL_JS = '''(() => {
     popLabelEl && (popLabelEl.textContent = station.population_density_label || '지수');
     summaryEl && (summaryEl.textContent = `${station.name}은 상권 밀도 ${station.commercial_density_label}, 인구밀도 ${station.population_density_label} 구간입니다. ${station.default_take || ''}`);
     riskListEl.innerHTML = questionsFor(station, industry, purpose).map((item) => `<li>${esc(item)}</li>`).join('');
+    if (visitPlanEl) {
+      const plan = visitPlanFor(station, industry, purpose);
+      visitPlanEl.innerHTML = `<span>현장 확인 시간</span><strong>${esc(plan.title)}</strong><ul>${plan.items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+    }
     linksEl && (linksEl.innerHTML = purpose === 'home'
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
       : [link('/topics/cafe-commercial-lease-risk/', '상가 계약 체크 글 목록'), link('/search/?q=%EC%83%81%EA%B0%80%20%EA%B3%84%EC%95%BD', '상가 계약 검색'), link('/search/?q=%EA%B6%8C%EB%A6%AC%EA%B8%88%20%EB%A6%AC%EC%8A%A4%ED%81%AC', '권리금 검색')].join(''));

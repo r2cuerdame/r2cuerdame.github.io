@@ -242,7 +242,7 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
@@ -322,6 +322,7 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'data-density-count',
             'data-pop-density',
             'data-risk-list',
+            'data-visit-plan',
             'data-compare-panel',
             'data-compare-metrics',
             'href="/topics/cafe-commercial-lease-risk/"',
