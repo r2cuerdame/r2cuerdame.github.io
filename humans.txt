@@ -5,4 +5,4 @@ Language: Korean
 Primary purpose: Dongne Radar — moving, rent, commute, living-area, on-site-check, and commercial-lease risk notes.
 Topic pages: /topics/ groups monthly-rent, jeonse, commute, night/noise, commercial-lease, and shopping-intent pages.
 Separate section: /deals/ for lifestyle shopping picks and affiliate-disclosed comparisons.
-Updated: 2026-05-06T08:52:27+09:00
+Updated: 2026-05-06T08:56:33+09:00
