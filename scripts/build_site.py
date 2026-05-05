@@ -950,6 +950,118 @@ def article_headings(body_html: str, limit: int = 5) -> list[str]:
     return headings
 
 
+def _radar_joined_text(article: dict) -> str:
+    return " ".join([
+        str(article.get("slug") or ""),
+        str(article.get("title") or ""),
+        str(article.get("description") or ""),
+        " ".join(str(tag) for tag in (article.get("tags") or [])),
+    ])
+
+
+def _radar_primary_photo(article: dict) -> str:
+    for item in article.get("field_examples") or []:
+        if isinstance(item, dict) and item.get("image_url"):
+            return str(item.get("image_url"))
+    return str(article.get("image_url") or "")
+
+
+def _radar_scene_profile(article: dict) -> dict[str, object]:
+    joined = _radar_joined_text(article)
+    slug = str(article.get("slug") or "")
+    if any(token in joined for token in ("버스정류장", "정류장", "bus-stop")):
+        scenes = [
+            ("예시 장면 A", "아침 8시 정류장 앞 대기열이 현관·창문 쪽으로 밀려오는지 봅니다.", "아침 8시", "출근 대기열"),
+            ("예시 장면 B", "밤 10시 버스 불빛·정차음·사람 시선이 집 안까지 들어오는지 상상합니다.", "밤 10시", "불빛과 소리"),
+            ("예시 장면 C", "정류장 바로 앞 후보와 한 블록 안쪽 후보의 한 달 피로를 비교합니다.", "비교", "가깝지만 피곤"),
+        ]
+        scan_labels = ["정류장", "현관", "창문", "대기열", "소음"]
+        good = "대기 공간과 생활 공간이 자연스럽게 분리되고, 창문 방향으로 시선이 오래 머물지 않습니다."
+        bad = "정류장이 공공 대기실처럼 현관·창문 앞까지 밀고 들어오면 편의보다 피로가 큽니다."
+    elif any(token in joined for token in ("카페", "상가", "권리", "상권", "유동", "cafe")):
+        scenes = [
+            ("예시 장면 A", "사람은 많지만 컵을 든 사람이 빠져나가는 길인지 봅니다.", "횡단보도 3분", "유동 ≠ 결제"),
+            ("예시 장면 B", "문 앞 대기줄이 생겨도 옆 가게로 새는 동선인지 봅니다.", "입구 1분", "대기열"),
+            ("예시 장면 C", "반경 50m 안 경쟁점의 메뉴·가격·좌석수를 같이 적습니다.", "경쟁점", "가격 그림자"),
+        ]
+        scan_labels = ["유동", "입구", "메뉴", "경쟁점", "회전"]
+        good = "손님이 멈추고, 메뉴판을 보고, 다시 들어오는 장면이 반복됩니다."
+        bad = "사람은 지나가지만 시선·대기·재방문 흔적이 없으면 유동인구 착시입니다."
+    elif any(token in joined for token in ("관리비", "고정비", "총액", "maintenance-fee")) or "monthly-rent" in slug:
+        scenes = [
+            ("예시 장면 A", "월세 숫자 옆에 관리비·교통비·계절비를 한 줄로 붙입니다.", "총액", "월 고정비"),
+            ("예시 장면 B", "관리비 항목표에서 공용전기·청소·수선비의 빈칸을 찾습니다.", "고지서", "빈칸"),
+            ("예시 장면 C", "싼 집 후보와 가까운 집 후보의 한 달 피로비를 비교합니다.", "비교", "싸지만 먼 집"),
+        ]
+        scan_labels = ["월세", "관리비", "교통비", "계절비", "총액"]
+        good = "가격표 밖 비용까지 적어도 감당 가능한 월 총액이 보입니다."
+        bad = "월세만 싸고 관리비·교통비·계절비가 흐리면 계약 후 비용이 튑니다."
+    elif any(token in joined for token in ("엘리베이터", "계단", "4층", "stair")):
+        scenes = [
+            ("예시 장면 A", "현관에서 4층 문 앞까지 장바구니를 든 채 올라가는 장면을 떠올립니다.", "4층", "매일 계단"),
+            ("예시 장면 B", "택배·생수·이삿짐이 계단참에서 막히는 구간을 확인합니다.", "짐", "무게 피로"),
+            ("예시 장면 C", "비 오는 날 미끄러운 계단과 조명 꺼진 계단참을 같이 봅니다.", "밤/비", "안전"),
+        ]
+        scan_labels = ["현관", "계단참", "3층", "4층", "짐"]
+        good = "계단 폭·조명·난간·택배 위치가 매일 오르내릴 수 있는 수준으로 설명됩니다."
+        bad = "낮에는 괜찮아 보여도 짐·비·밤이 겹치면 4층 피로가 급격히 커집니다."
+    elif any(token in joined for token in ("공동현관", "우편함", "게시판", "관리 신호", "shared-entrance")):
+        scenes = [
+            ("예시 장면 A", "공동현관 바닥·우편함·게시판이 방치됐는지 30초 안에 봅니다.", "입구", "관리 신호"),
+            ("예시 장면 B", "분리수거장과 택배가 현관 앞 동선을 막는지 확인합니다.", "동선", "쌓임"),
+            ("예시 장면 C", "CCTV·조명·잠금장치가 실제로 생활 공간을 지켜 주는지 봅니다.", "보안", "안심"),
+        ]
+        scan_labels = ["현관", "우편함", "게시판", "택배", "조명"]
+        good = "입구의 질서와 안내가 최근까지 관리된 흔적을 보여 줍니다."
+        bad = "현관 앞 방치물이 일상 동선을 막으면 관리 피로가 집 안으로 들어옵니다."
+    elif any(token in joined for token in ("비 오는", "비오는", "배수", "rainy")):
+        scenes = [
+            ("예시 장면 A", "비 오는 날 현관 앞 물고임과 배수구 방향을 봅니다.", "우천", "물길"),
+            ("예시 장면 B", "우산을 접고 들어올 때 신발장·엘리베이터 앞이 젖는지 봅니다.", "현관", "젖은 동선"),
+            ("예시 장면 C", "차도 물튀김과 보행자 우회 동선을 함께 비교합니다.", "보도", "튀김"),
+        ]
+        scan_labels = ["물길", "배수구", "현관", "보도", "튀김"]
+        good = "비가 와도 물길·보행·현관 진입이 자연스럽게 분리됩니다."
+        bad = "맑은 날 사진에는 안 보이던 물고임·튀김·우회가 반복되면 보류합니다."
+    elif any(token in joined for token in ("1층", "반지하", "ground-floor")):
+        scenes = [
+            ("예시 장면 A", "보도에서 창문까지 시선 높이가 바로 맞는지 확인합니다.", "창문", "시선 거리"),
+            ("예시 장면 B", "주차장·분리수거장·출입문 소리가 방 쪽으로 모이는지 듣습니다.", "소음", "생활 소리"),
+            ("예시 장면 C", "환기·습기·채광을 낮과 밤 기준으로 나눠 봅니다.", "환기", "습기"),
+        ]
+        scan_labels = ["창문", "보도", "주차", "환기", "시선"]
+        good = "시선·소리·습기가 한 방향으로 몰리지 않고 생활 공간이 분리됩니다."
+        bad = "싸고 편해 보여도 창문 앞 시선과 주차 소리가 매일 반복되면 피로가 큽니다."
+    elif any(token in joined for token in ("아침", "등교", "수거", "morning")):
+        scenes = [
+            ("예시 장면 A", "아침 8시 등교·출근·쓰레기 수거 동선이 겹치는지 봅니다.", "08시", "동선 충돌"),
+            ("예시 장면 B", "엘리베이터·현관·골목에서 사람이 멈추는 병목을 찾습니다.", "병목", "기다림"),
+            ("예시 장면 C", "아이들·차량·수거차가 동시에 움직일 때 소리 방향을 듣습니다.", "소음", "아침 피로"),
+        ]
+        scan_labels = ["등교", "수거", "출근", "현관", "소음"]
+        good = "아침 혼잡이 짧게 지나가고 집 앞 병목으로 남지 않습니다."
+        bad = "출근 전 20분마다 사람·차·수거 소리가 한꺼번에 겹치면 피로가 쌓입니다."
+    elif any(token in joined for token in ("밤", "소음", "골목", "퇴근", "역", "night", "after-work", "station-to-home")):
+        scenes = [
+            ("예시 장면 A", "역 출구부터 집 문 앞까지 불 꺼지는 구간을 표시합니다.", "밤길 지도", "어두운 7분"),
+            ("예시 장면 B", "창문을 열고 배달 오토바이·술집·차량 소리 방향을 듣습니다.", "22시", "소리 방향"),
+            ("예시 장면 C", "낮 사진에서 안 보이는 우회길·큰길 복귀 동선을 찾습니다.", "우회", "돌아가는 길"),
+        ]
+        scan_labels = ["출구", "큰길", "골목", "입구", "소음"]
+        good = "늦은 시간에도 큰길 복귀가 쉽고, 소리·시선·조명이 설명 가능합니다."
+        bad = "낮에는 멀쩡하지만 밤에는 골목·소음·우회가 한꺼번에 늘어납니다."
+    else:
+        scenes = [
+            ("예시 장면 A", "후보 집 앞 30초 사진처럼 현관·게시판·우편함 질서를 봅니다.", "입구", "관리 신호"),
+            ("예시 장면 B", "집에서 역·편의점·분리수거장까지 매일 걸을 선을 그립니다.", "동선", "반복 루트"),
+            ("예시 장면 C", "좋아 보이는 조건 옆에 계약 후 매일 겪을 반례를 붙입니다.", "비교", "좋음 vs 피곤"),
+        ]
+        scan_labels = ["입구", "큰길", "편의점", "분리수거", "소음"]
+        good = "좋은 조건과 불편한 반복 장면을 한 화면에서 같이 설명할 수 있습니다."
+        bad = "사진상 장점만 있고, 실제로 매일 부딪힐 장면이 비어 있으면 보류합니다."
+    return {"scenes": scenes, "scan_labels": scan_labels, "good": good, "bad": bad}
+
+
 def radar_experience_block(article: dict) -> str:
     target = short_text(article.get("target_audience") or "계약 전 후보 동네를 빠르게 거르고 싶은 독자", 86)
     suspicion = short_text(article.get("radar_suspicion") or article.get("description") or "", 96)
@@ -958,30 +1070,30 @@ def radar_experience_block(article: dict) -> str:
     toc = "".join(f'<li><span>{i:02d}</span>{esc(label)}</li>' for i, label in enumerate(headings, start=1))
     if not toc:
         toc = '<li><span>01</span>오늘의 의심을 먼저 보고 본문으로 들어갑니다.</li>'
+    profile = _radar_scene_profile(article)
+    scan_labels = list(profile["scan_labels"])[:5]
+    photo = _radar_primary_photo(article)
+    map_nodes = "".join(
+        f'<span class="map-node node-{i}"><b>{i}</b><em>{esc(label)}</em></span>'
+        for i, label in enumerate(scan_labels, start=1)
+    )
+    if photo:
+        scan_visual = f'''<div class="radar-map photo-scan" aria-label="AI 현장 예시 이미지로 보는 확인 순서">
+      <img class="scan-photo" src="{esc(photo)}" alt="{esc(article.get('title') or '동네 레이더')} AI 현장 예시 이미지" loading="eager" decoding="async" fetchpriority="high" />
+      <span class="map-label">AI 현장 예시 · 1→5 확인 순서</span>
+      {map_nodes}
+    </div>'''
+    else:
+        scan_visual = f'''<div class="radar-map photo-scan missing-photo" aria-label="AI 현장 예시 이미지 필요">
+      <span class="map-label">AI 현장 예시 이미지 필요</span>
+      {map_nodes}
+    </div>'''
     return f'''<section class="radar-experience-grid" aria-label="본문 전 시각 요약">
   <div class="radar-map-card">
     <p class="eyebrow">Visual Scan</p>
-    <h2>계약 전 20분 수사 루프</h2>
-    <p>좋은 동네를 찾는 척하지 말고, 계약 뒤 매일 반복될 불편을 먼저 잡습니다.</p>
-    <div class="radar-map" aria-hidden="true">
-      <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none" role="presentation" focusable="false">
-        <defs>
-          <marker id="radar-detail-route-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
-            <path d="M 0 0 L 10 5 L 0 10 Z" class="map-route-arrow"></path>
-          </marker>
-        </defs>
-        <path class="map-route-guide map-route-desktop" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66"></path>
-        <path class="map-route-path map-route-desktop" d="M 13 66 C 20 54 24 43 31 39 C 39 34 43 49 50 57 C 57 65 66 48 74 36 C 82 24 87 45 88 61 L 94 66" marker-end="url(#radar-detail-route-arrow)"></path>
-        <path class="map-route-guide map-route-mobile" d="M 17 26 C 32 16 47 18 58 28 C 71 38 82 34 82 47 C 82 65 55 59 38 66 C 48 76 58 88 72 83 L 89 78"></path>
-        <path class="map-route-path map-route-mobile" d="M 17 26 C 32 16 47 18 58 28 C 71 38 82 34 82 47 C 82 65 55 59 38 66 C 48 76 58 88 72 83 L 89 78" marker-end="url(#radar-detail-route-arrow)"></path>
-      </svg>
-      <span class="map-label">1→5 현장 순서</span>
-      <span class="map-node node-1"><b>1</b><em>출구</em></span>
-      <span class="map-node node-2"><b>2</b><em>큰길</em></span>
-      <span class="map-node node-3"><b>3</b><em>골목</em></span>
-      <span class="map-node node-4"><b>4</b><em>입구</em></span>
-      <span class="map-node node-5"><b>5</b><em>소음</em></span>
-    </div>
+    <h2>계약 전 먼저 볼 AI 현장 장면</h2>
+    <p>좋은 동네를 찾는 척하지 말고, 계약 뒤 매일 반복될 불편을 실제 장면처럼 먼저 떠올립니다.</p>
+    {scan_visual}
   </div>
   <div class="radar-brief-stack">
     <article class="brief-card hot"><span>SUSPECT</span><strong>오늘의 의심</strong><p>{esc(suspicion)}</p></article>
@@ -997,65 +1109,60 @@ def radar_experience_block(article: dict) -> str:
 
 
 def radar_example_gallery(article: dict) -> str:
-    joined = " ".join([
-        str(article.get("title") or ""),
-        str(article.get("description") or ""),
-        " ".join(str(tag) for tag in (article.get("tags") or [])),
-    ])
-    if any(token in joined for token in ("카페", "상가", "권리", "상권", "유동")):
-        scenes = [
-            ("예시 장면 A", "사람은 많지만 컵을 든 사람이 빠져나가는 길인지 본다", "횡단보도 3분", "유동 ≠ 결제"),
-            ("예시 장면 B", "문 앞 대기줄이 생겨도 옆 가게로 새는 동선인지 본다", "입구 1분", "대기열"),
-            ("예시 장면 C", "반경 50m 안 경쟁점의 메뉴·가격·좌석수를 같이 적는다", "경쟁점", "가격 그림자"),
-        ]
-        good = "손님이 멈추고, 메뉴판을 보고, 다시 들어오는 장면이 반복됩니다."
-        bad = "사람은 지나가지만 시선·대기·재방문 흔적이 없으면 유동인구 착시입니다."
-    elif any(token in joined for token in ("관리비", "월세", "보증금", "고정비", "총액")):
-        scenes = [
-            ("예시 장면 A", "월세 숫자 옆에 관리비·교통비·계절비를 한 줄로 붙인다", "총액", "월 고정비"),
-            ("예시 장면 B", "관리비 항목표에서 공용전기·청소·수선비의 빈칸을 찾는다", "고지서", "빈칸"),
-            ("예시 장면 C", "싼 집 후보와 가까운 집 후보의 한 달 피로비를 비교한다", "비교", "싸지만 먼 집"),
-        ]
-        good = "가격표 밖 비용까지 적어도 감당 가능한 월 총액이 보입니다."
-        bad = "월세만 싸고 관리비·교통비·계절비가 흐리면 계약 후 비용이 튑니다."
-    elif any(token in joined for token in ("밤", "소음", "골목", "퇴근", "역")):
-        scenes = [
-            ("예시 장면 A", "역 출구부터 집 문 앞까지 불 꺼지는 구간을 표시한다", "밤길 지도", "어두운 7분"),
-            ("예시 장면 B", "창문을 열고 배달 오토바이·술집·차량 소리 방향을 듣는다", "22시", "소리 방향"),
-            ("예시 장면 C", "낮 사진에서 안 보이는 우회길·큰길 복귀 동선을 찾는다", "우회", "돌아가는 길"),
-        ]
-        good = "늦은 시간에도 큰길 복귀가 쉽고, 소리·시선·조명이 설명 가능합니다."
-        bad = "낮에는 멀쩡하지만 밤에는 골목·소음·우회가 한꺼번에 늘어납니다."
-    else:
-        scenes = [
-            ("예시 장면 A", "후보 집 앞 30초 사진처럼 현관·게시판·우편함 질서를 본다", "입구", "관리 신호"),
-            ("예시 장면 B", "집에서 역·편의점·분리수거장까지 매일 걸을 선을 그린다", "동선 지도", "반복 루트"),
-            ("예시 장면 C", "좋아 보이는 조건 옆에 계약 후 매일 겪을 반례를 붙인다", "비교", "좋음 vs 피곤"),
-        ]
-        good = "좋은 조건과 불편한 반복 장면을 한 화면에서 같이 설명할 수 있습니다."
-        bad = "사진상 장점만 있고, 실제로 매일 부딪힐 장면이 비어 있으면 보류합니다."
+    profile = _radar_scene_profile(article)
+    default_photo = _radar_primary_photo(article)
+    raw_examples = article.get("field_examples") or []
+    examples: list[dict[str, str]] = []
+    if raw_examples:
+        for item in raw_examples:
+            if not isinstance(item, dict):
+                continue
+            examples.append({
+                "label": str(item.get("label") or f"예시 장면 {chr(65 + len(examples))}"),
+                "description": str(item.get("description") or "현장에서 먼저 떠올릴 반복 장면입니다."),
+                "badge": str(item.get("badge") or "AI 예시"),
+                "title": str(item.get("title") or item.get("punch") or "현장 장면"),
+                "image_url": str(item.get("image_url") or default_photo),
+                "alt": str(item.get("alt") or item.get("title") or article.get("title") or "동네 레이더 AI 예시 장면"),
+            })
+    if len(examples) < 3:
+        for label, desc, badge, punch in list(profile["scenes"])[len(examples):3]:
+            examples.append({
+                "label": label,
+                "description": desc,
+                "badge": badge,
+                "title": punch,
+                "image_url": default_photo,
+                "alt": f"{article.get('title') or '동네 레이더'} {punch} AI 예시 장면",
+            })
     cards = []
-    for idx, (label, desc, badge, punch) in enumerate(scenes, start=1):
+    for idx, item in enumerate(examples[:3], start=1):
+        image_url = item.get("image_url") or ""
+        img_html = ""
+        frame_class = "scene-frame photo-frame" if image_url else "scene-frame missing-photo"
+        if image_url:
+            img_html = f'<img class="scene-photo" src="{esc(image_url)}" alt="{esc(item.get("alt") or item.get("title") or "AI 예시 장면")}" loading="eager" decoding="async" />'
         cards.append(f'''<article class="example-scene-card scene-{idx}">
-      <div class="scene-frame" aria-hidden="true">
-        <span class="scene-skyline"></span><span class="scene-route"></span><span class="scene-pin pin-a">{idx}</span><span class="scene-pin pin-b"></span>
-        <span class="scene-badge">{esc(badge)}</span>
+      <div class="{frame_class}">
+        {img_html}
+        <span class="scene-pin pin-a">{idx}</span>
+        <span class="scene-badge">{esc(item.get('badge') or 'AI 예시')}</span>
       </div>
-      <div class="scene-copy"><span>{esc(label)}</span><strong>{esc(punch)}</strong><p>{esc(desc)}</p></div>
+      <div class="scene-copy"><span>{esc(item.get('label') or f'예시 장면 {idx}')}</span><strong>{esc(item.get('title') or '현장 장면')}</strong><p>{esc(item.get('description') or '')}</p></div>
     </article>''')
     question = short_text(article.get("field_mission") or article.get("radar_suspicion") or article.get("description") or "현장에서 20분 안에 직접 확인할 장면을 먼저 정합니다.", 110)
     return f'''<section class="radar-example-gallery" aria-label="본문 예시 이미지와 현장 시각화">
   <div class="example-gallery-head">
     <p class="eyebrow">Field Examples</p>
-    <h2>글을 읽기 전에 먼저 떠올릴 예시 장면</h2>
-    <p>그래프와 표만 보지 말고, 계약 뒤 매일 반복될 장면을 먼저 상상하게 만드는 현장형 시각 자료입니다.</p>
+    <h2>글을 읽기 전에 먼저 볼 AI 예시 장면</h2>
+    <p>아래 이미지는 실제 매물이 아니라, 계약 뒤 매일 반복될 장면을 먼저 떠올리기 위한 AI 현장 예시입니다.</p>
   </div>
   <div class="example-scene-grid">
     {''.join(cards)}
   </div>
   <div class="radar-situation-strip">
-    <article><span>좋은 신호</span><p>{esc(good)}</p></article>
-    <article><span>위험한 반례</span><p>{esc(bad)}</p></article>
+    <article><span>좋은 신호</span><p>{esc(profile['good'])}</p></article>
+    <article><span>위험한 반례</span><p>{esc(profile['bad'])}</p></article>
     <article class="field-question"><span>현장 질문</span><p>{esc(question)}</p></article>
   </div>
 </section>
@@ -2195,12 +2302,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-card-image { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: 64% center; transform: scale(1.012); filter: brightness(1.1) saturate(1.08) contrast(1.04); pointer-events: none; }
 .radar-card-visual::before { content: ""; position: absolute; inset: 16px; z-index: -2; border-radius: 28px; border: 1px solid rgba(255,255,255,.18); background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
 .radar-card-visual::after { content: ""; position: absolute; right: -54px; bottom: -70px; z-index: -1; width: 230px; height: 230px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.24), rgba(255,255,255,.05) 48%, transparent 68%); pointer-events: none; }
-.radar-card-visual.has-ai-thumb::before { inset: 0; z-index: 1; border: 0; border-radius: 0; background: linear-gradient(90deg, rgba(16,12,18,.44) 0%, rgba(16,12,18,.22) 30%, rgba(16,12,18,.03) 62%, rgba(16,12,18,0) 100%), linear-gradient(0deg, rgba(16,12,18,.16) 0%, rgba(16,12,18,.03) 48%, rgba(255,255,255,.02) 100%); }
-.radar-card-visual.has-ai-thumb::after { inset: 14px; z-index: 2; width: auto; height: auto; border-radius: 26px; border: 1px solid rgba(255,255,255,.22); background: linear-gradient(135deg, rgba(255,255,255,.05), transparent 34%, rgba(0,0,0,.06)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+.radar-card-visual.has-ai-thumb { min-height: 280px; }
+.radar-card-visual.has-ai-thumb::before { inset: 0; z-index: 1; border: 0; border-radius: 0; background: linear-gradient(0deg, rgba(16,12,18,.08) 0%, rgba(16,12,18,0) 42%); }
+.radar-card-visual.has-ai-thumb::after { inset: 14px; z-index: 2; width: auto; height: auto; border-radius: 26px; border: 1px solid rgba(255,255,255,.18); background: transparent; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
 .radar-card-visual.has-ai-thumb .radar-thumb-label,
-.radar-card-visual.has-ai-thumb .radar-card-badge { background: rgba(16,12,18,.46); border-color: rgba(255,255,255,.26); backdrop-filter: blur(10px); box-shadow: 0 12px 28px rgba(0,0,0,.16); }
 .radar-card-visual.has-ai-thumb .radar-thumb-title,
-.radar-card-visual.has-ai-thumb .radar-thumb-subline { display: none; }
+.radar-card-visual.has-ai-thumb .radar-thumb-subline,
+.radar-card-visual.has-ai-thumb .radar-card-badge { display: none; }
 .radar-thumb-label { position: relative; z-index: 3; display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); font-size: 11px; font-weight: 950; letter-spacing: .08em; }
 .radar-thumb-title { position: relative; z-index: 3; display: block; max-width: 205px; margin-top: 14px; font-size: clamp(29px, 4vw, 44px); line-height: .98; letter-spacing: -.06em; text-shadow: 0 14px 34px rgba(0,0,0,.28); }
 .radar-thumb-subline { position: relative; z-index: 3; display: block; max-width: 220px; margin-top: 9px; color: rgba(255,255,255,.84); font-size: 13px; line-height: 1.35; font-weight: 850; }
@@ -2387,15 +2495,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .radar-map-card { position: relative; overflow: hidden; padding: 24px; min-height: 430px; background: linear-gradient(145deg, #fffaf4 0%, #ffffff 52%, #fff1e7 100%); }
 .radar-map-card h2 { margin: 6px 0 8px; font-size: clamp(27px, 3.6vw, 42px); }
 .radar-map-card p:not(.eyebrow) { max-width: 560px; color: #5f5652; margin-bottom: 20px; }
-.radar-map { position: relative; min-height: 245px; margin-top: 12px; border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 18% 24%, rgba(255,90,31,.16), transparent 20%), radial-gradient(circle at 78% 70%, rgba(37,99,235,.14), transparent 22%), #241b20; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
-.radar-map::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 36px 36px; mask-image: radial-gradient(circle at center, #000 40%, transparent 88%); }
-.map-route { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.map-route-guide, .map-route-path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-.map-route-mobile { display: none; }
-.map-route-guide { stroke: rgba(255,255,255,.34); stroke-width: 12; }
-.map-route-path { stroke: #ff5a1f; stroke-width: 4.5; filter: drop-shadow(0 0 10px rgba(255,90,31,.52)); }
-.map-route-arrow { fill: #ff5a1f; }
-.map-label { position: absolute; left: 18px; top: 16px; z-index: 3; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.17); color: #fff; border: 1px solid rgba(255,255,255,.28); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); box-shadow: 0 10px 24px rgba(0,0,0,.16); }
+.radar-map { position: relative; min-height: 285px; margin-top: 12px; border-radius: 28px; overflow: hidden; background: #241b20; box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); }
+.radar-map.photo-scan::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(20,15,18,.22), rgba(20,15,18,.08) 45%, rgba(20,15,18,.68)); pointer-events: none; }
+.radar-map.photo-scan .scan-photo { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; max-height: none; margin: 0; border-radius: 0; object-fit: cover; object-position: center; filter: brightness(1.08) saturate(1.04) contrast(1.02); box-shadow: none; background: #211922; }
+.radar-map.photo-scan.missing-photo { background: linear-gradient(145deg, #211922, #3c2b34); }
+.map-label { position: absolute; left: 18px; top: 16px; z-index: 3; padding: 8px 12px; border-radius: 999px; background: rgba(20,15,18,.58); color: #fff; border: 1px solid rgba(255,255,255,.32); font-size: 12px; font-weight: 950; backdrop-filter: blur(8px); box-shadow: 0 10px 24px rgba(0,0,0,.20); }
 .map-node { position: absolute; z-index: 4; display: grid; gap: 6px; justify-items: center; color: #fff; font-size: 14px; font-weight: 950; transform: translate(-50%, -21px); }
 .map-node b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px; background: #fff; color: #211922; border: 3px solid #ffefe8; box-shadow: 0 12px 26px rgba(0,0,0,.30), 0 0 0 5px rgba(255,90,31,.20); }
 .map-node em { font-style: normal; line-height: 1; letter-spacing: 0; padding: 6px 12px; border-radius: 999px; background: rgba(21,17,22,.86); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(8px); box-shadow: 0 8px 18px rgba(0,0,0,.22); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
@@ -2417,13 +2521,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .example-gallery-head p:not(.eyebrow) { margin: 0 0 18px; color: #5f5652; line-height: 1.65; }
 .example-scene-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .example-scene-card { min-width: 0; overflow: hidden; border-radius: 24px; border: 1px solid rgba(234,223,212,.95); background: #fff; box-shadow: 0 10px 26px rgba(58,37,20,.07); }
-.scene-frame { position: relative; display: block; min-height: 145px; overflow: hidden; background: radial-gradient(circle at 22% 24%, rgba(255,90,31,.18), transparent 23%), radial-gradient(circle at 78% 78%, rgba(37,99,235,.18), transparent 25%), linear-gradient(145deg, #211922, #3c2b34); }
-.scene-skyline { position: absolute; left: 14px; right: 14px; bottom: 22px; height: 54px; background: linear-gradient(90deg, rgba(255,255,255,.22) 0 15%, transparent 15% 21%, rgba(255,255,255,.18) 21% 41%, transparent 41% 47%, rgba(255,255,255,.24) 47% 74%, transparent 74% 80%, rgba(255,255,255,.16) 80%); border-radius: 12px 12px 0 0; }
-.scene-route { position: absolute; left: 16px; right: -18px; top: 70px; height: 5px; border-radius: 999px; background: linear-gradient(90deg, #ff5a1f, #ffb020, #60a5fa); transform: rotate(-12deg); box-shadow: 0 0 18px rgba(255,90,31,.45); }
-.scene-pin { position: absolute; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: #fff; color: #211922; font-size: 13px; font-weight: 950; box-shadow: 0 10px 22px rgba(0,0,0,.24); }
+.scene-frame { position: relative; display: block; min-height: 178px; aspect-ratio: 16 / 9; overflow: hidden; background: #211922; }
+.scene-frame::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(20,15,18,.12), rgba(20,15,18,.02) 45%, rgba(20,15,18,.46)); pointer-events: none; }
+.scene-frame .scene-photo { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; max-height: none; margin: 0; border-radius: 0; object-fit: cover; object-position: center; transform: scale(1.01); filter: brightness(1.13) saturate(1.06) contrast(1.03); box-shadow: none; background: #211922; }
+.scene-frame.missing-photo { background: linear-gradient(145deg, #211922, #3c2b34); }
+.scene-pin { position: absolute; z-index: 3; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: #fff; color: #211922; font-size: 13px; font-weight: 950; box-shadow: 0 10px 22px rgba(0,0,0,.24); }
 .scene-pin.pin-a { left: 18px; top: 28px; }
-.scene-pin.pin-b { right: 22px; bottom: 36px; width: 20px; height: 20px; background: #ff5a1f; }
-.scene-badge { position: absolute; left: 14px; bottom: 12px; max-width: calc(100% - 28px); padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,.9); color: #2f2724; font-size: 12px; font-weight: 950; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scene-badge { position: absolute; z-index: 3; left: 14px; bottom: 12px; max-width: calc(100% - 28px); padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,.92); color: #2f2724; font-size: 12px; font-weight: 950; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 8px 20px rgba(0,0,0,.16); }
 .scene-copy { padding: 15px; }
 .scene-copy span { display: inline-flex; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 950; letter-spacing: .06em; }
 .scene-copy strong { display: block; font-size: 18px; letter-spacing: -.02em; }
@@ -2577,6 +2681,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .card, .panel, .notice, .list-card, .article-content, .related-radar { border-radius: 22px; padding: 22px; }
   .radar-card { padding: 0; }
   .radar-card-visual { min-height: 236px; padding: 19px; }
+  .radar-card-visual.has-ai-thumb { min-height: 320px; }
   .radar-thumb-title { max-width: 166px; font-size: clamp(27px, 8.1vw, 36px); }
   .radar-thumb-subline { max-width: 152px; font-size: 12px; line-height: 1.32; }
   .radar-thumb-art { width: min(45%, 168px); right: 10px; bottom: 22px; min-height: 126px; }
@@ -2623,15 +2728,12 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .quick-facts { gap: 8px; }
   .deal-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); border-radius: 22px; }
   .radar-example-gallery { padding: 18px; border-radius: 22px; }
-  .scene-frame { min-height: 132px; }
+  .scene-frame { min-height: 150px; }
   .scene-copy { padding: 13px; }
   .radar-situation-strip article { padding: 13px; }
   .radar-map-card { padding: 18px; }
   .radar-map { min-height: 420px; border-radius: 24px; }
-  .map-route-desktop { display: none; }
-  .map-route-mobile { display: block; }
-  .map-route-guide { stroke-width: 11; }
-  .map-route-path { stroke-width: 4.25; }
+
   .map-label { left: 12px; top: 12px; font-size: 12px; padding: 7px 10px; }
   .node-1 { left: 17%; top: 26%; } .node-2 { left: 58%; top: 28%; } .node-3 { left: 82%; top: 47%; } .node-4 { left: 38%; top: 66%; } .node-5 { left: 72%; top: 83%; }
   .map-node { font-size: 15px; transform: translate(-50%, -21px); }

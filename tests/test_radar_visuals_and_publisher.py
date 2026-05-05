@@ -86,6 +86,13 @@ def test_radar_articles_have_content_matched_webp_thumbnails():
         asset = ROOT / image_url.lstrip("/")
         assert asset.exists(), f"missing thumbnail asset for {path.name}: {asset}"
         assert asset.stat().st_size > 20_000, f"thumbnail asset too small for {path.name}: {asset.stat().st_size}"
+        for example in data.get("field_examples") or []:
+            example_url = str(example.get("image_url") or "")
+            assert example_url.startswith("/assets/radar/"), f"bad field example path for {path.name}: {example_url}"
+            assert example_url.endswith(".webp"), f"field example must be webp for {path.name}: {example_url}"
+            example_asset = ROOT / example_url.lstrip("/")
+            assert example_asset.exists(), f"missing field example asset for {path.name}: {example_asset}"
+            assert example_asset.stat().st_size > 20_000, f"field example asset too small for {path.name}: {example_asset.stat().st_size}"
 
 
 def test_radar_example_gallery_adds_scene_map_and_comparison_markers():
@@ -97,13 +104,22 @@ def test_radar_example_gallery_adds_scene_map_and_comparison_markers():
         "title": "버스정류장 앞 집, 편한 위치인지 피곤한 위치인지 보는 10분",
         "description": "정류장 가까움이 편의인지 소음과 대기열 피로인지 확인하는 글",
         "tags": ["버스정류장", "밤길", "소음", "생활권"],
+        "image_url": "/assets/radar/thumbs/bus-stop-front-home-check.webp",
         "body_html": "<h2>정류장 앞 장점과 반례</h2><p>현장 질문으로 확인합니다.</p>",
     }
 
     html = build_site.radar_example_gallery(article)
+    scan_html = build_site.radar_experience_block(article)
 
     assert 'class="radar-example-gallery"' in html
     assert html.count('class="example-scene-card') >= 3
+    assert html.count('class="scene-photo"') >= 3
     assert 'class="radar-situation-strip"' in html
+    assert 'class="radar-map photo-scan"' in scan_html
+    assert 'class="scan-photo"' in scan_html
+    assert "월 고정비" not in html
+    assert "출근 대기열" in html
     assert "예시 장면" in html
     assert "현장 질문" in html
+    assert "scene-skyline" not in html
+    assert "scene-route" not in html

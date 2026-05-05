@@ -229,9 +229,12 @@ def audit_css(css: str) -> list[str]:
     failures: list[str] = []
     if ".visual-checklist" not in css:
         failures.append("visual_checklist_class_missing")
-    for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip"]:
+    for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
+    for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
+        if removed_marker in css:
+            failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
     guard_match = re.search(r"\.article-content\s+\.checklist\s*\{([^}]*)\}", css, flags=re.S)
     guard_body = normalize_ws(guard_match.group(1)) if guard_match else ""
     if not guard_match or "width: 100%" not in guard_body or "max-width: none" not in guard_body:
@@ -301,11 +304,18 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_related_search_chips_too_few")
     if kind == "radar_article":
         example_cards = page_html.count('class="example-scene-card')
+        scene_photos = page_html.count('class="scene-photo"')
         for marker in ['class="radar-example-gallery"', 'class="radar-situation-strip"', "예시 장면", "현장 질문"]:
             if marker not in page_html:
                 failures.append(f"{path}:radar_example_visual_marker_missing:{marker}")
         if example_cards < 3:
             failures.append(f"{path}:radar_example_scene_cards_too_few:{example_cards}")
+        if scene_photos < 3:
+            failures.append(f"{path}:radar_example_ai_scene_photos_too_few:{scene_photos}")
+        if 'class="radar-map photo-scan' not in page_html or 'class="scan-photo"' not in page_html:
+            failures.append(f"{path}:radar_visual_scan_ai_photo_missing")
+        if 'scene-skyline' in page_html or 'scene-route' in page_html or '<svg class="map-route"' in page_html:
+            failures.append(f"{path}:radar_abstract_placeholder_visual_regression")
     if kind == "deal_article":
         quick_product_links = anchor_class_count(page_html, "quick-product-link")
         coupang_links = coupang_anchor_tags(page_html)
