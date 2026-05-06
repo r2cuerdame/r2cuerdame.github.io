@@ -325,6 +325,8 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'data-density-count',
             'data-pop-density',
             'data-risk-list',
+            'data-decision-question',
+            '먼저 물을 질문',
             'data-visit-plan',
             'data-compare-panel',
             'data-compare-metrics',

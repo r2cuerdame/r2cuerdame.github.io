@@ -20,6 +20,7 @@
   const popLabelEl = root.querySelector('[data-pop-label]');
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
+  const decisionQuestionEl = root.querySelector('[data-decision-question]');
   const visitPlanEl = root.querySelector('[data-visit-plan]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
@@ -119,6 +120,59 @@
       ]
     };
   };
+  const decisionQuestionFor = (station, industry, purpose) => {
+    const label = categoryLabel(industry);
+    const selectedCount = valueFor(station, industry);
+    const denseThreshold = maxFor(industry) * .72;
+    const thinThreshold = maxFor(industry) * .16;
+    if (purpose === 'home') {
+      if (Number(station.population_density_index || 0) >= 80) {
+        return {
+          label: '주거 1순위 질문',
+          question: `${station.name} 밤 10시 귀가길과 창문 밖 소음을 실제로 감당할 수 있나요?`,
+          reason: '인구밀도가 높을수록 낮의 편의가 밤의 피로로 바뀔 수 있습니다.'
+        };
+      }
+      if (Number(station.rent_pressure_index || 0) >= 80) {
+        return {
+          label: '주거 1순위 질문',
+          question: `${station.name} 월세·관리비·교통비 총액이 같은 예산 다른 역보다 낫나요?`,
+          reason: '임대 압력이 높으면 집값보다 매달 빠지는 총액을 먼저 봐야 합니다.'
+        };
+      }
+      return {
+        label: '주거 1순위 질문',
+        question: `${station.name} 역에서 현관까지 마지막 도보가 매일 반복 가능할까요?`,
+        reason: '숫자 점수보다 매일 걷는 마지막 7분이 계약 만족도를 가릅니다.'
+      };
+    }
+    if (industry !== 'population' && selectedCount >= denseThreshold) {
+      return {
+        label: '상가 1순위 질문',
+        question: `${station.name} 반경 안 ${label} ${selectedCount}개와 다른 재방문 이유가 있나요?`,
+        reason: '밀도가 높으면 유동인구보다 직접 경쟁과 반복 구매 이유가 먼저입니다.'
+      };
+    }
+    if (Number(station.rent_pressure_index || 0) >= 85) {
+      return {
+        label: '상가 1순위 질문',
+        question: `${station.name} 권리금·임대료 회수 기간을 보수적으로 잡아도 버틸 수 있나요?`,
+        reason: '임대 압력이 높은 후보는 매출 기대보다 고정비 회수 질문부터 봐야 합니다.'
+      };
+    }
+    if (industry !== 'population' && selectedCount <= thinThreshold) {
+      return {
+        label: '상가 1순위 질문',
+        question: `${station.name}에 일부러 찾아올 앵커 동선이나 목적 방문 이유가 있나요?`,
+        reason: '밀도가 낮은 후보는 한산함이 장점인지 수요 부족인지 나눠야 합니다.'
+      };
+    }
+    return {
+      label: '상가 1순위 질문',
+      question: `${station.name} 평일 점심·퇴근·주말에 실제 결제 고객을 몇 명 셀 수 있나요?`,
+      reason: '사람 수가 아니라 구매 순간을 세어야 상권 착시를 줄일 수 있습니다.'
+    };
+  };
   const updateMapHeat = (industry) => {
     const max = maxFor(industry);
     stationButtons.forEach((button) => {
@@ -166,6 +220,10 @@
     popDensityEl && (popDensityEl.textContent = String(station.population_density_index || 0));
     popLabelEl && (popLabelEl.textContent = station.population_density_label || '지수');
     summaryEl && (summaryEl.textContent = `${station.name}은 상권 밀도 ${station.commercial_density_label}, 인구밀도 ${station.population_density_label} 구간입니다. ${station.default_take || ''}`);
+    if (decisionQuestionEl) {
+      const decision = decisionQuestionFor(station, industry, purpose);
+      decisionQuestionEl.innerHTML = `<span>${esc(decision.label)}</span><strong>${esc(decision.question)}</strong><small>${esc(decision.reason)}</small>`;
+    }
     riskListEl.innerHTML = questionsFor(station, industry, purpose).map((item) => `<li>${esc(item)}</li>`).join('');
     if (visitPlanEl) {
       const plan = visitPlanFor(station, industry, purpose);

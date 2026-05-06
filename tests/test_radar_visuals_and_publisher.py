@@ -100,6 +100,8 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-density-count' in html
     assert 'data-pop-density' in html
     assert 'data-risk-list' in html
+    assert 'data-decision-question' in html
+    assert '먼저 물을 질문' in html
     assert 'data-visit-plan' in html
     assert 'data-compare-panel' in html
     assert 'data-compare-metrics' in html
@@ -117,6 +119,8 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-compare-panel' in js
     assert 'renderCompare' in js
     assert 'visitPlanFor' in js
+    assert 'decisionQuestionFor' in js
+    assert '[data-decision-question]' in js
     assert 'data-density-layer' in js
     assert 'districtPaths' in js
     assert 'data-map-district' in js

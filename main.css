@@ -150,6 +150,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 [data-grade="good"] .density-title-row > strong { background: #bbf7d0; color: #14532d; }
 [data-grade="hold"] .density-title-row > strong { background: #fecaca; color: #7f1d1d; }
 .density-result-card p { margin: 0 0 13px; color: #5f5652; font-weight: 750; }
+.decision-question-card { display: grid; gap: 6px; margin: 0 0 13px; padding: 14px 15px; border-radius: 20px; background: linear-gradient(135deg, #172033, #243b63); color: #fff; box-shadow: 0 14px 28px rgba(23,32,51,.16); }
+.decision-question-card span { display: inline-flex; width: fit-content; min-height: 25px; align-items: center; padding: 0 9px; border-radius: 999px; background: rgba(255,255,255,.12); color: #dbeafe; font-size: 11px; font-weight: 950; letter-spacing: .07em; }
+.decision-question-card strong { color: #fff; font-size: 16px; line-height: 1.35; letter-spacing: -.025em; }
+.decision-question-card small { color: #bfdbfe; font-size: 12.5px; line-height: 1.45; font-weight: 850; }
 .density-score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
 .density-score-grid div { min-width: 0; padding: 12px 10px; border-radius: 18px; background: linear-gradient(180deg, #fff7ed, #fff); border: 1px solid #f7d8c4; }
 .density-score-grid span, .density-score-grid small { display: block; color: #7c2d12; font-size: 11px; font-weight: 950; }
