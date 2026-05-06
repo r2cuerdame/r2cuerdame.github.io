@@ -47,7 +47,10 @@
   const setMapZoom = (nextZoom) => {
     mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
     if (mapViewport) mapViewport.style.setProperty('--map-zoom', mapZoom.toFixed(2));
-    if (mapCanvas) mapCanvas.dataset.zoomLevel = mapZoom.toFixed(2);
+    if (mapCanvas) {
+      mapCanvas.dataset.zoomLevel = mapZoom.toFixed(2);
+      mapCanvas.dataset.mapZoomLevel = mapZoom.toFixed(2);
+    }
     if (mapZoomValue) mapZoomValue.textContent = `${mapZoom.toFixed(1)}×`;
     mapZoomButtons.forEach((button) => {
       const action = button.dataset.mapZoom;
@@ -59,6 +62,7 @@
     const isVisible = Boolean(visible);
     if (layer === 'districts') mapCanvas.dataset.districtsVisible = String(isVisible);
     if (layer === 'subway') mapCanvas.dataset.subwayVisible = String(isVisible);
+    if (layer === 'labels') mapCanvas.dataset.labelsVisible = String(isVisible);
     mapLayerToggleButtons
       .filter((button) => button.dataset.mapToggle === layer)
       .forEach((button) => button.setAttribute('aria-pressed', String(isVisible)));
@@ -295,6 +299,7 @@
   setMapZoom(1);
   setMapLayerVisibility('districts', true);
   setMapLayerVisibility('subway', true);
+  setMapLayerVisibility('labels', true);
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))

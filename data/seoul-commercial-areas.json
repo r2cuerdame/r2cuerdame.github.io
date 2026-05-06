@@ -2,7 +2,7 @@
   "version": "2026-05-seoul-density-real-outline",
   "generated_at": "2026-05-06T02:00:00+09:00",
   "radius_m": 650,
-  "source_summary": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+  "source_summary": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
   "categories": {
     "cafe": "카페",
     "food": "음식점·주점",
@@ -38,7 +38,7 @@
       "map_x": 13.6,
       "map_y": 17.9,
       "commercial_density_index": 8,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -71,7 +71,7 @@
       "map_x": 41.3,
       "map_y": 25.2,
       "commercial_density_index": 93,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "과밀",
       "top_industries": [
         "retail",
@@ -104,7 +104,7 @@
       "map_x": 44.8,
       "map_y": 26.8,
       "commercial_density_index": 87,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "과밀",
       "top_industries": [
         "food",
@@ -137,7 +137,7 @@
       "map_x": 41.2,
       "map_y": 52.6,
       "commercial_density_index": 76,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -170,7 +170,7 @@
       "map_x": 32.8,
       "map_y": 55.5,
       "commercial_density_index": 67,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -203,7 +203,7 @@
       "map_x": 60.3,
       "map_y": 15.1,
       "commercial_density_index": 62,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -236,7 +236,7 @@
       "map_x": 78.8,
       "map_y": 34.9,
       "commercial_density_index": 27,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "food",
@@ -335,7 +335,7 @@
       "map_x": 57.6,
       "map_y": 87.2,
       "commercial_density_index": 24,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -368,7 +368,7 @@
       "map_x": 42.7,
       "map_y": 81.4,
       "commercial_density_index": 35,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -401,7 +401,7 @@
       "map_x": 91.4,
       "map_y": 59.0,
       "commercial_density_index": 38,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "보통",
       "top_industries": [
         "retail",

@@ -74,7 +74,7 @@ def test_adaptive_publisher_waits_after_daily_floor_when_queue_is_low(monkeypatc
 def test_publisher_stages_all_generated_static_outputs():
     publisher = load_module(ROOT / "scripts" / "publish_next_radar_candidate.py", "radar_publisher_paths")
 
-    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "data/seoul-commercial-areas.json", "data/seoul-map-outline.json", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
+    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "data/seoul-commercial-areas.json", "data/seoul-map-outline.json", "data/seoul-subway-network.json", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
         assert required in publisher.PUBLIC_ADD_PATHS
 
 
@@ -89,9 +89,14 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'class="seoul-map-card"' in html
     assert 'class="seoul-real-map"' in html
     assert 'class="seoul-subway-map"' in html
+    assert 'class="seoul-subway-line"' in html
+    assert 'class="seoul-subway-stations"' in html
+    assert 'data-subway-station-node=' in html
+    assert 'class="subway-line-key"' in html
     assert 'data-map-viewport' in html
     assert 'data-map-toggle="districts"' in html
     assert 'data-map-toggle="subway"' in html
+    assert 'data-map-toggle="labels"' in html
     assert 'data-map-zoom="in"' in html
     assert 'data-map-zoom="out"' in html
     assert '지하철·역' in html
@@ -134,6 +139,7 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'setMapZoom' in js
     assert 'setMapLayerVisibility' in js
     assert 'dataset.subwayVisible' in js
+    assert 'dataset.labelsVisible' in js
     assert 'districtPaths' in js
     assert 'data-map-district' in js
     assert '/data/seoul-commercial-areas.json' in js
@@ -156,6 +162,13 @@ def test_home_has_above_fold_seoul_density_tool():
     assert len(outline["districts"]) == 25
     assert outline["river"]["path"].startswith("M")
     assert "KOSTAT" in json.dumps(outline, ensure_ascii=False)
+
+    network = build_site.SEOUL_SUBWAY_NETWORK
+    assert network["stats"]["line_count"] >= 13
+    assert network["stats"]["station_count"] >= 300
+    assert network["stats"]["segment_count"] >= 250
+    assert any(line["id"] == "line2" and len(line["segments"]) >= 10 for line in network["lines"])
+    assert any(label["name"] == "강남" for label in network["labels"])
 
 
 def test_public_audit_rejects_home_without_seoul_density_tool():
