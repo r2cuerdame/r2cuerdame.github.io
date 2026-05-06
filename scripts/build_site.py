@@ -125,11 +125,12 @@ def configured_analytics_id() -> str:
 ANALYTICS_ID = configured_analytics_id()
 
 
-def analytics_snippet() -> str:
+def analytics_snippet(enhanced_affiliate: bool = False) -> str:
     if not ANALYTICS_ID:
         return ""
     mid = esc(ANALYTICS_ID)
-    return f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
+    if not enhanced_affiliate:
+        return f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){{dataLayer.push(arguments);}}
@@ -144,6 +145,40 @@ def analytics_snippet() -> str:
           event_category: 'outbound',
           outbound_domain: url.hostname,
           link_url: url.origin + url.pathname,
+          page_path: window.location.pathname,
+          transport_type: 'beacon'
+        }});
+      }} catch (error) {{}}
+    }}, true);
+  </script>'''
+    return f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', '{mid}', {{ anonymize_ip: true }});
+    document.addEventListener('click', function(event) {{
+      var link = event.target && event.target.closest ? event.target.closest('a[href*="coupang.com"]') : null;
+      if (!link || typeof gtag !== 'function') return;
+      try {{
+        var url = new URL(link.href, window.location.href);
+        var surface = link.getAttribute('data-affiliate-surface') || '';
+        if (!surface) {{
+          if (link.classList.contains('room-product-link')) surface = 'deals_showroom_preview';
+          else if (link.classList.contains('quick-product-link')) surface = 'deal_article_quick_product';
+          else if (link.classList.contains('deal-price-link')) surface = 'deals_card_price';
+          else if (link.classList.contains('coupang-event-link')) surface = 'deals_event_slot';
+          else if (link.closest('.article-content')) surface = 'deal_article_body';
+          else surface = 'coupang_anchor';
+        }}
+        var linkText = (link.getAttribute('aria-label') || link.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+        gtag('event', 'affiliate_click', {{
+          event_category: 'outbound',
+          outbound_domain: url.hostname,
+          link_url: url.origin + url.pathname,
+          link_surface: surface,
+          link_text: linkText,
+          has_lptag: url.href.toLowerCase().indexOf('lptag=') !== -1 || url.hostname === 'link.coupang.com',
           page_path: window.location.pathname,
           transport_type: 'beacon'
         }});
@@ -411,8 +446,9 @@ def normalize_coupang_outbound_links(body: str) -> str:
         kept = HREF_ATTR_RE.sub("", " " + attrs)
         kept = TARGET_REL_ATTR_RE.sub("", kept)
         kept = re.sub(r"\s+", " ", kept).strip()
+        surface_attr = "" if re.search(r"\bdata-affiliate-surface\s*=", kept, flags=re.I) else ' data-affiliate-surface="deal_article_body"'
         kept = f" {kept}" if kept else ""
-        return f'<a{kept} href="{esc(href)}" target="_blank" rel="sponsored nofollow noopener">'
+        return f'<a{kept}{surface_attr} href="{esc(href)}" target="_blank" rel="sponsored nofollow noopener">'
 
     return A_TAG_OPEN_RE.sub(replace_anchor, str(body or ""))
 
@@ -656,7 +692,7 @@ def layout(page: dict, body: str) -> str:
     brand_label = "쇼핑픽" if is_deals_page else "Recuerdame Lab"
     brand_sub = "구매 전 비교" if is_deals_page else "계약 전 동네 레이더"
     body_class = "deals-site" if is_deals_page else "standard-site"
-    analytics = analytics_snippet()
+    analytics = analytics_snippet(is_deals_page)
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -1216,7 +1252,7 @@ def deal_card(a: dict, rank: int | None = None) -> str:
     deal_url = a.get("primary_deal_url") or ""
     external = ""
     if deal_url:
-        external = f'<a class="deal-price-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인</a>'
+        external = f'<a class="deal-price-link" data-affiliate-surface="deals_card_price" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">가격 확인</a>'
     rank_badge = f'<span class="deal-rank">추천 {rank}</span>' if rank else ""
     if img:
         thumb = f'''<a class="deal-thumb" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
@@ -1556,7 +1592,7 @@ def coupang_event_strip() -> str:
   </div>
   <div class="coupang-event-action">
     <small>{esc(date_label)}</small>
-    <a class="coupang-event-link" href="{esc(event['landing_url'])}" target="_blank" rel="sponsored nofollow noopener">기획전 보기</a>
+    <a class="coupang-event-link" data-affiliate-surface="deals_event_slot" href="{esc(event['landing_url'])}" target="_blank" rel="sponsored nofollow noopener">기획전 보기</a>
   </div>
 </article>''')
     return f'''<section id="coupang-events" class="coupang-event-strip" aria-label="오늘의 쿠팡 기획전">
@@ -1674,7 +1710,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
         deal_url = str(article.get("primary_deal_url") or "").strip()
         product_link = ""
         if deal_url:
-            product_link = f'<a class="room-product-link" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">상품 바로가기</a>'
+            product_link = f'<a class="room-product-link" data-affiliate-surface="deals_showroom_preview" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">상품 바로가기</a>'
         toggles.append(f'<input class="room-toggle scene-{scene_key}" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
         used_scenes.add(scene_key)
         scene_first_toggle.setdefault(scene_key, toggle_id)
@@ -2133,7 +2169,7 @@ def deal_article_product_link_block(article: dict) -> str:
     items = []
     for item in links:
         items.append(
-            f'<li><a class="quick-product-link" href="{esc(item["url"])}" target="_blank" rel="sponsored nofollow noopener">'
+            f'<li><a class="quick-product-link" data-affiliate-surface="deal_article_quick_product" href="{esc(item["url"])}" target="_blank" rel="sponsored nofollow noopener">'
             f'<span>{esc(item["label"])}</span><strong>상품 페이지 보기</strong></a></li>'
         )
     return f'''<div class="quick-product-links" aria-label="상품 페이지 바로가기">
@@ -2151,7 +2187,7 @@ def deal_article_quick_block(article: dict) -> str:
     product_links = deal_article_product_link_block(article)
     external = ""
     if not product_links and article.get("primary_deal_url"):
-        external = f'<a class="deal-button ghost" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
+        external = f'<a class="deal-button ghost" data-affiliate-surface="deal_article_quick_fallback" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
     category_link = taxonomy_link(article.get("category") or "쇼핑픽", "quick-fact-link")
     return f'''<section class="deal-quick-box" aria-label="쇼핑픽 빠른 결론">
   <div class="quick-verdict">

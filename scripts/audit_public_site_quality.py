@@ -372,6 +372,10 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
         if coupang_links and "affiliate_click" not in page_html:
             failures.append(f"{path}:affiliate_click_tracking_missing")
+        if coupang_links and ("link_surface" not in page_html or "has_lptag" not in page_html):
+            failures.append(f"{path}:affiliate_click_surface_payload_missing")
+        if coupang_links and any(not attr_value(tag, "data-affiliate-surface") for tag in coupang_links):
+            failures.append(f"{path}:coupang_affiliate_surface_missing")
         if any(not coupang_href_has_tracking(attr_value(tag, "href")) for tag in coupang_links):
             failures.append(f"{path}:coupang_lptag_missing")
         for tag in coupang_links:
@@ -435,6 +439,10 @@ def audit_html(path: str, page_html: str) -> list[str]:
         coupang_links = coupang_anchor_tags(page_html)
         if coupang_links and "affiliate_click" not in page_html:
             failures.append(f"{path}:affiliate_click_tracking_missing")
+        if coupang_links and ("link_surface" not in page_html or "has_lptag" not in page_html):
+            failures.append(f"{path}:affiliate_click_surface_payload_missing")
+        if coupang_links and any(not attr_value(tag, "data-affiliate-surface") for tag in coupang_links):
+            failures.append(f"{path}:coupang_affiliate_surface_missing")
         if any(not coupang_href_has_tracking(attr_value(tag, "href")) for tag in coupang_links):
             failures.append(f"{path}:coupang_lptag_missing")
         if coupang_links and quick_product_links < min(3, len({attr_value(tag, 'href') for tag in coupang_links})):
