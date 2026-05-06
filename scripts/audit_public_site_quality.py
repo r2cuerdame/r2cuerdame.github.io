@@ -251,9 +251,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".coupang-event-strip", ".coupang-event-card", ".coupang-event-link", ".event-disclosure"]:
         if marker not in css:
             failures.append(f"coupang_event_css_missing:{marker}")
-    if "grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr)" not in css:
+    if "grid-template-columns: minmax(300px, .66fr) minmax(460px, 1.34fr)" not in css:
         failures.append("shopping_room_desktop_width_weight_guard_missing")
-    if "min-height: clamp(390px, 36vw, 470px)" not in css:
+    if "min-height: clamp(430px, 39vw, 540px)" not in css:
         failures.append("shopping_room_large_visual_guard_missing")
     if "scroll-margin-top: 96px" not in css:
         failures.append("shopping_room_anchor_scroll_margin_missing")
@@ -384,7 +384,7 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_products_too_few:{room_products}")
         if 'shopping-room-pick-1' not in page_html or 'room-previews' not in page_html:
             failures.append(f"{path}:shopping_room_toggle_preview_missing")
-        for marker in ("주황색 점을 누르면", "상품 페이지 바로가기", "비교 기준 보기"):
+        for marker in ("방에서 상품 후보 보기", "주황색 점을 누르면", "상품 페이지 바로가기", "비교 기준 보기"):
             if marker not in text:
                 failures.append(f"{path}:shopping_room_clear_cta_copy_missing:{marker}")
         room_label_titles = [normalize_ws(label) for label in re.findall(r'<span class="room-label">\s*<strong>(.*?)</strong>', page_html, flags=re.S)]

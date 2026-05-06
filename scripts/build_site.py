@@ -1741,8 +1741,8 @@ def shopping_room_scene(deals: list[dict]) -> str:
     return f'''<aside id="shopping-room" class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
   <div class="room-card-head">
     <span class="tag pale">AI 쇼핑룸</span>
-    <strong>방 사진 속 상품을 눌러보세요</strong>
-    <p>주황색 점을 누르면 아래 흰 추천 카드가 해당 후보로 바뀝니다. 상품 구역이 달라지면 사진도 거실·주방·케어 공간으로 넘어갑니다.</p>
+    <strong>주황색 점으로 후보를 바꿔보세요</strong>
+    <p>주황색 점을 누르면 아래 흰 추천 카드가 바로 바뀝니다. 마음에 드는 후보는 상품 페이지로, 더 고민되면 비교 기준으로 이동하세요.</p>
   </div>
   <div class="shopping-room-stage">
     {''.join(toggles)}
@@ -3042,7 +3042,7 @@ def deals_body(deals: list[dict]) -> str:
     <h1>필요한 제품만 빠르게 비교</h1>
     <p class="lead">생활가전·책상 장비·음향기기를 가격대, 사용 장면, 관리 부담 기준으로 짧게 정리합니다. 오늘 살 만한 후보만 먼저 보고, 자세한 가격은 상품 페이지에서 다시 확인하세요.</p>
     <div class="hero-actions compact-actions">
-      <a class="button primary" href="#shopping-room">쇼핑룸에서 고르기</a>
+      <a class="button primary" href="#shopping-room">방에서 상품 후보 보기</a>
       <a class="button" href="#deal-search">상품 검색하기</a>
     </div>
     <div class="deal-flow" aria-label="쇼핑픽 이용 순서">
@@ -3822,9 +3822,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .text-link { color: var(--orange-dark); font-weight: 950; display: inline-flex; align-items: center; min-height: 44px; }
 .deals-site { background: #f6f5f4; }
 .deals-site .site-header { background: rgba(255,255,255,.96); border-bottom-color: rgba(0,0,0,.08); }
-.deals-site main { width: min(1240px, calc(100% - 32px)); }
+.deals-site main { width: min(1320px, calc(100% - 32px)); }
 .deal-landing-hero {
-  display: grid; grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr); gap: clamp(18px, 2.6vw, 28px);
+  display: grid; grid-template-columns: minmax(300px, .66fr) minmax(460px, 1.34fr); gap: clamp(16px, 2.2vw, 26px);
   align-items: stretch;
   margin: clamp(20px, 3.2vw, 36px) 0 12px;
   padding: clamp(22px, 3.4vw, 34px);
@@ -3838,8 +3838,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   min-width: 0; max-width: 100%; box-sizing: border-box;
 }
 .deal-hero-copy { align-self: start; padding: clamp(4px, .9vw, 10px) 0 0; background: transparent; border: 0; box-shadow: none; }
-.deal-hero-copy h1 { max-width: 600px; margin-top: 8px; margin-bottom: 12px; font-size: clamp(37px, 4.15vw, 52px); letter-spacing: -.055em; }
-.deal-hero-copy .lead { max-width: 590px; color: #4b5563; font-size: clamp(15.5px, 1.45vw, 18px); line-height: 1.62; }
+.deal-hero-copy h1 { max-width: 520px; margin-top: 8px; margin-bottom: 12px; font-size: clamp(34px, 3.7vw, 48px); letter-spacing: -.055em; }
+.deal-hero-copy .lead { max-width: 500px; color: #4b5563; font-size: clamp(15px, 1.32vw, 17px); line-height: 1.6; }
 .compact-actions { margin-top: 18px; }
 .compact-actions .button { min-height: 44px; border-radius: 14px; }
 .deal-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 560px; margin-top: 16px; }
@@ -3865,8 +3865,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-page { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 11px; border-radius: 999px; color: #6b625f; font-size: 12px; font-weight: 950; cursor: pointer; white-space: nowrap; transition: background .16s ease, color .16s ease, box-shadow .16s ease; }
 .room-page:hover { background: rgba(255,255,255,.86); color: #2f2724; }
 .room-toggle.scene-living:checked ~ .room-carousel-nav .scene-living, .room-toggle.scene-kitchen:checked ~ .room-carousel-nav .scene-kitchen, .room-toggle.scene-care:checked ~ .room-carousel-nav .scene-care { background: #111827; color: #fff; box-shadow: 0 8px 16px rgba(17,24,39,.12); }
-.room-visual-stack { position: relative; min-height: clamp(390px, 36vw, 470px); }
-.room-visual { display: none; position: relative; min-height: clamp(390px, 36vw, 470px); overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.room-visual-stack { position: relative; min-height: clamp(430px, 39vw, 540px); }
+.room-visual { display: none; position: relative; min-height: clamp(430px, 39vw, 540px); overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
 .room-toggle.scene-living:checked ~ .room-visual-stack .scene-living, .room-toggle.scene-kitchen:checked ~ .room-visual-stack .scene-kitchen, .room-toggle.scene-care:checked ~ .room-visual-stack .scene-care { display: block; }
 .room-photo { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.96) contrast(.98); transform: scale(1.01); }
 .room-visual::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(17,24,39,.10)), radial-gradient(circle at 50% 50%, transparent 0 62%, rgba(255,255,255,.26) 100%); }
