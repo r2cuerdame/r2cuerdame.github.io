@@ -322,7 +322,19 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_to_deals_link_missing")
     if kind == "home":
         required_markers = [
-            'href="#commercial-check-tool"',
+            'id="contract-question-start"',
+            'class="panel soft contract-question-start"',
+            '전월세 계약 질문',
+            '상가 계약 질문',
+            '오늘은 이 질문 6개만 먼저 봅니다.',
+            'href="/topics/cafe-commercial-lease-risk/"',
+            'href="/topics/jeonwolse-contract-check/"',
+            'href="/radar/"',
+        ]
+        for marker in required_markers:
+            if marker not in page_html:
+                failures.append(f"{path}:home_contract_question_marker_missing:{marker}")
+        forbidden_map_markers = [
             'id="commercial-check-tool"',
             'data-seoul-density-tool-root',
             'class="seoul-map-card"',
@@ -331,32 +343,17 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'data-map-viewport',
             'data-map-toggle=',
             'data-map-zoom=',
-            'data-district-filter',
             'data-map-clusters',
             'data-density-layer=',
-            'id="tool-station"',
-            '/data/seoul-commercial-areas.json?v=',
             '/assets/commercial-check.js?v=',
-            'id="contract-question-start"',
-            'class="panel soft contract-question-start"',
-            '전월세 질문',
-            '상가 질문',
-            '지도 다음에는 이 질문 6개만 봅니다.',
-            'href="/topics/cafe-commercial-lease-risk/"',
-            'href="/topics/jeonwolse-contract-check/"',
-            'href="/radar/"',
         ]
-        for marker in required_markers:
-            if marker not in page_html:
-                failures.append(f"{path}:home_seoul_tool_marker_missing:{marker}")
+        for marker in forbidden_map_markers:
+            if marker in page_html:
+                failures.append(f"{path}:home_map_section_should_be_removed:{marker}")
         if '분리 운영 중인 쇼핑픽' in page_html:
             failures.append(f"{path}:home_shopping_section_should_not_compete_with_radar")
-        if 'id="commercial-check-tool"' not in page_html or 'id="contract-question-start"' not in page_html or page_html.find('id="commercial-check-tool"') > page_html.find('id="contract-question-start"'):
-            failures.append(f"{path}:home_seoul_tool_not_before_contract_questions")
         if 'id="contract-question-start"' not in page_html or page_html.find('id="contract-question-start"') > page_html.find('사례로 더 보기'):
             failures.append(f"{path}:contract_question_panel_not_before_case_articles")
-        if 'href="/radar/cafe-contract-risk/"' in page_html.split('id="contract-question-start"', 1)[0]:
-            failures.append(f"{path}:home_commercial_tool_direct_article_link:/radar/cafe-contract-risk/")
     if kind == "radar":
         for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
             if f'href="{href}"' not in page_html:

@@ -2955,21 +2955,19 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
     return f'''
 <section class="hero home-hero product-hero">
-  <p class="eyebrow">Dongne Radar · 서울 후보지 먼저 거르기</p>
-  <h1>지도에서 후보를 줄이고, 계약 질문으로 보류선을 잡습니다.</h1>
-  <p class="lead">서울 역·업종밀도·인구밀도를 먼저 보고 전월세·상가 계약 전에 답해야 할 질문으로 바로 좁힙니다.</p>
+  <p class="eyebrow">Dongne Radar · 계약 질문 먼저 보기</p>
+  <h1>지도 없이, 계약 전에 물을 질문부터 좁힙니다.</h1>
+  <p class="lead">서울 후보지는 예쁜 점수보다 현장에서 다시 확인할 질문이 먼저입니다. 전월세·상가 계약 전에 바로 볼 체크리스트만 남겼습니다.</p>
   <div class="hero-actions compact-actions">
-    <a class="button primary" href="#commercial-check-tool">서울 상권 지도 보기</a>
-    <a class="button" href="/topics/jeonwolse-contract-check/">전월세 질문</a>
-    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 질문</a>
+    <a class="button primary" href="/topics/jeonwolse-contract-check/">전월세 계약 질문</a>
+    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 계약 질문</a>
   </div>
 </section>
-{commercial_check_tool_block()}
 <section id="contract-question-start" class="panel soft contract-question-start" aria-label="지도 대신 확인할 계약 질문">
   <div class="section-title compact-title">
-    <p class="eyebrow">After map · 질문으로 보류선 잡기</p>
-    <h2>지도 다음에는 이 질문 6개만 봅니다.</h2>
-    <p>점수로 확정하지 않고, 실제 계약 전에 답이 없으면 보류할 질문으로 이동합니다.</p>
+    <p class="eyebrow">No map · 질문 우선</p>
+    <h2>오늘은 이 질문 6개만 먼저 봅니다.</h2>
+    <p>후보지를 꾸미지 않고, 실제 계약 전에 답이 없으면 보류할 질문으로 바로 이동합니다.</p>
   </div>
   <div class="question-route-grid">
     <article class="question-route-card accent-blue">
@@ -3034,7 +3032,6 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
   <div class="section-title"><h2>사례로 더 보기</h2><p>도구에서 걸린 신호를 실제 현장 질문으로 바꾼 글입니다.</p></div>
   {radar_html}
 </section>
-<script src="/assets/commercial-check.js?v={asset_version(COMMERCIAL_TOOL_JS)}" defer></script>
 '''
 
 def deals_body(deals: list[dict]) -> str:

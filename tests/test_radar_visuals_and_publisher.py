@@ -78,43 +78,45 @@ def test_publisher_stages_all_generated_static_outputs():
         assert required in publisher.PUBLIC_ADD_PATHS
 
 
-def test_home_surfaces_seoul_map_tool_and_contract_question_paths():
+def test_home_removes_map_and_surfaces_contract_question_paths():
     build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_home_tool")
 
     html = build_site.home_body([], [])
 
-    assert 'href="#commercial-check-tool"' in html
-    assert 'id="commercial-check-tool"' in html
-    assert 'data-seoul-density-tool-root' in html
-    assert 'class="seoul-map-card"' in html
-    assert 'class="seoul-real-map"' in html
-    assert 'class="seoul-subway-map"' in html
-    assert 'data-map-viewport' in html
-    assert 'data-map-toggle=' in html
-    assert 'data-map-zoom=' in html
-    assert 'data-district-filter' in html
-    assert 'data-map-clusters' in html
-    assert 'data-station-map=' in html
-    assert 'data-density-layer=' in html
-    assert 'id="tool-station"' in html
-    assert 'data-map-reading-guide' in html
-    assert '지도 읽는 순서' in html
-    assert '/data/seoul-commercial-areas.json?v=' in html
-    assert '/assets/commercial-check.js?v=' in html
     assert 'id="contract-question-start"' in html
     assert 'href="/topics/jeonwolse-contract-check/"' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
     assert 'href="/radar/"' in html
-    assert html.index('id="commercial-check-tool"') < html.index('id="contract-question-start"') < html.index('사례로 더 보기')
-    assert 'href="/radar/cafe-contract-risk/"' not in html.split('id="contract-question-start"', 1)[0]
+    assert html.index('id="contract-question-start"') < html.index('사례로 더 보기')
     assert '분리 운영 중인 쇼핑픽' not in html
+
+    removed_markers = [
+        'href="#commercial-check-tool"',
+        'id="commercial-check-tool"',
+        'data-seoul-density-tool-root',
+        'class="seoul-map-card"',
+        'class="seoul-real-map"',
+        'class="seoul-subway-map"',
+        'data-map-viewport',
+        'data-map-toggle=',
+        'data-map-zoom=',
+        'data-district-filter',
+        'data-map-clusters',
+        'data-station-map=',
+        'data-density-layer=',
+        'id="tool-station"',
+        'data-map-reading-guide',
+        '지도 읽는 순서',
+        '/data/seoul-commercial-areas.json?v=',
+        '/assets/commercial-check.js?v=',
+    ]
+    for marker in removed_markers:
+        assert marker not in html
 
     css = build_site.CSS
     assert ".contract-question-start" in css
     assert ".question-route-card" in css
     assert ".question-route-grid" in css
-    assert ".seoul-density-panel" in css
-    assert ".map-cluster-dot" in css
     assert "@media (max-width: 720px)" in css
 
     data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
@@ -123,7 +125,7 @@ def test_home_surfaces_seoul_map_tool_and_contract_question_paths():
     assert "비밀 키는 브라우저에 배포하지 않습니다" in data_text
 
 
-def test_public_audit_rejects_home_when_seoul_map_tool_missing():
+def test_public_audit_rejects_home_when_map_returns():
     audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_home_tool")
     html = (
         '<!doctype html><html><head><title>Recuerdame Lab 홈</title>'
@@ -131,13 +133,14 @@ def test_public_audit_rejects_home_when_seoul_map_tool_missing():
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<link rel="stylesheet" href="/main.css?v=test"></head><body><main>'
         '<h1>이사·월세·상가 계약 전</h1>'
-        '<section id="contract-question-start" class="contract-question-start"><h2>지도 다음 계약 질문</h2></section>'
+        '<section id="contract-question-start" class="contract-question-start"><h2>지도 대신 계약 질문</h2></section>'
+        '<section id="commercial-check-tool" class="seoul-density-panel"><div class="seoul-map-card"></div></section>'
         '</main></body></html>'
     )
 
     failures = audit.audit_html("/", html)
 
-    assert any("home_seoul_tool_marker_missing" in failure for failure in failures)
+    assert any("home_map_section_should_be_removed" in failure for failure in failures)
 
 
 def test_radar_contract_check_entrypoints_are_topic_lists():
