@@ -265,6 +265,8 @@ def audit_css(css: str) -> list[str]:
         failures.append("shopping_room_large_visual_guard_missing")
     if "scroll-margin-top: 96px" not in css:
         failures.append("shopping_room_anchor_scroll_margin_missing")
+    if "min-width: 104px; max-width: 152px" not in css:
+        failures.append("shopping_room_short_hotspot_label_css_guard_missing")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
@@ -403,6 +405,12 @@ def audit_html(path: str, page_html: str) -> list[str]:
         for marker in ("주황색 점을 누르면", "상품 페이지 바로가기", "비교 기준 보기"):
             if marker not in text:
                 failures.append(f"{path}:shopping_room_clear_cta_copy_missing:{marker}")
+        room_label_titles = [normalize_ws(label) for label in re.findall(r'<span class="room-label">\s*<strong>(.*?)</strong>', page_html, flags=re.S)]
+        if not room_label_titles:
+            failures.append(f"{path}:shopping_room_hotspot_labels_missing")
+        for label in room_label_titles:
+            if len(label) > 12 or any(term in label for term in ("추천", "TOP", "BEST", "비교", "구매가이드")):
+                failures.append(f"{path}:shopping_room_hotspot_label_not_short:{label}")
         if room_product_links < min(4, room_products):
             failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
         if coupang_links and "affiliate_click" not in page_html:

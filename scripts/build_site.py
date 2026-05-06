@@ -1718,7 +1718,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <span class="room-hit-area" aria-hidden="true"></span>
       <span class="room-pulse" aria-hidden="true"></span>
       <span class="room-pin" aria-hidden="true"></span>
-      <span class="room-label"><strong>{esc(title)}</strong><small>{esc(cue)}</small></span>
+      <span class="room-label"><strong>{esc(scene)}</strong><small>{esc(cue)}</small></span>
     </label>''')
         previews.append(f'''<article class="room-preview preview-{idx}">
       <span class="tag pale">{esc(scene)} · {esc(count)}</span>
@@ -3772,9 +3772,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-hit-area { position: absolute; inset: 4px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 12px 24px rgba(17,24,39,.13), inset 0 1px 0 rgba(255,255,255,.72); opacity: .78; transform: scale(.74); transition: opacity .16s ease, transform .16s ease, border-color .16s ease, background .16s ease; }
 .room-pulse { position: absolute; width: 38px; height: 38px; border-radius: 999px; background: rgba(255,90,31,.12); border: 1px solid rgba(255,90,31,.38); box-shadow: 0 0 0 0 rgba(255,90,31,.18); transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
 .room-pin { position: relative; z-index: 2; width: 15px; height: 15px; border-radius: 999px; background: #ff5a1f; border: 3px solid #fff; box-shadow: 0 8px 18px rgba(17,24,39,.24); transition: transform .16s ease; }
-.room-label { position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 4; min-width: 144px; max-width: 190px; transform: translateX(-50%) translateY(6px); padding: 9px 10px; border-radius: 14px; background: rgba(17,24,39,.94); color: #fff; box-shadow: 0 14px 28px rgba(17,24,39,.22); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
+.room-label { position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 4; min-width: 104px; max-width: 152px; transform: translateX(-50%) translateY(6px); padding: 8px 10px; border-radius: 14px; background: rgba(17,24,39,.94); color: #fff; box-shadow: 0 14px 28px rgba(17,24,39,.22); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
 .room-label strong, .room-label small { display: block; }
-.room-label strong { font-size: 12.5px; line-height: 1.25; word-break: keep-all; }
+.room-label strong { font-size: 13px; line-height: 1.2; word-break: keep-all; }
 .room-label small { margin-top: 3px; color: #fed7aa; font-size: 11px; font-weight: 900; }
 .room-product:hover .room-label, .room-product:focus .room-label, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-label, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-label, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-label, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-label, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-label, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-label { opacity: 1; transform: translateX(-50%) translateY(0); }
 .room-product:hover .room-hit-area, .room-product:focus .room-hit-area, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-hit-area, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-hit-area, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-hit-area, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-hit-area, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-hit-area, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-hit-area { opacity: 1; transform: scale(1); border-color: rgba(255,90,31,.64); background: rgba(255,255,255,.24); }
