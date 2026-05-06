@@ -1710,7 +1710,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
         deal_url = str(article.get("primary_deal_url") or "").strip()
         product_link = ""
         if deal_url:
-            product_link = f'<a class="room-product-link" data-affiliate-surface="deals_showroom_preview" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">상품 바로가기</a>'
+            product_link = f'<a class="room-product-link" data-affiliate-surface="deals_showroom_preview" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="{esc(title)} 상품 페이지 바로가기">상품 페이지 바로가기</a>'
         toggles.append(f'<input class="room-toggle scene-{scene_key}" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
         used_scenes.add(scene_key)
         scene_first_toggle.setdefault(scene_key, toggle_id)
@@ -1724,7 +1724,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <span class="tag pale">{esc(scene)} · {esc(count)}</span>
       <h3>{esc(title)}</h3>
       <p>{esc(desc)}</p>
-      <div class="room-preview-actions">{product_link}<a class="text-link" href="{esc(article['path'])}">비교글 보기 →</a></div>
+      <div class="room-preview-actions">{product_link}<a class="text-link" href="{esc(article['path'])}">비교 기준 보기 →</a></div>
     </article>''')
     scene_keys = [key for key in ROOM_SCENE_ORDER if key in used_scenes]
     scene_nav = "".join(
@@ -1742,7 +1742,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
   <div class="room-card-head">
     <span class="tag pale">AI 쇼핑룸</span>
     <strong>방 사진 속 상품을 눌러보세요</strong>
-    <p>상품 구역이 달라지면 사진도 거실·주방·케어 공간으로 넘어갑니다. 누르면 아래 비교글이 바로 바뀝니다.</p>
+    <p>주황색 점을 누르면 아래 흰 추천 카드가 해당 후보로 바뀝니다. 상품 구역이 달라지면 사진도 거실·주방·케어 공간으로 넘어갑니다.</p>
   </div>
   <div class="shopping-room-stage">
     {''.join(toggles)}

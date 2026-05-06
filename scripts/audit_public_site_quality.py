@@ -389,6 +389,9 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_products_too_few:{room_products}")
         if 'shopping-room-pick-1' not in page_html or 'room-previews' not in page_html:
             failures.append(f"{path}:shopping_room_toggle_preview_missing")
+        for marker in ("주황색 점을 누르면", "상품 페이지 바로가기", "비교 기준 보기"):
+            if marker not in text:
+                failures.append(f"{path}:shopping_room_clear_cta_copy_missing:{marker}")
         if room_product_links < min(4, room_products):
             failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
         if coupang_links and "affiliate_click" not in page_html:
