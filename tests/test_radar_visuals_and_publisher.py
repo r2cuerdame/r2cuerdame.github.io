@@ -97,6 +97,9 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-map-toggle="districts"' in html
     assert 'data-map-toggle="subway"' in html
     assert 'data-map-toggle="labels"' in html
+    assert 'data-subway-visible="false"' in html
+    assert 'data-labels-visible="false"' in html
+    assert 'aria-label="지하철·역 보조 레이어" aria-pressed="false"' in html
     assert 'data-map-zoom="in"' in html
     assert 'data-map-zoom="out"' in html
     assert '지하철·역' in html

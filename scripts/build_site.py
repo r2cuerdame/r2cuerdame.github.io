@@ -2217,7 +2217,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
   "version": "2026-05-seoul-density-real-outline",
   "generated_at": "2026-05-06T02:00:00+09:00",
   "radius_m": 650,
-  "source_summary": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+  "source_summary": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
   "categories": {
     "cafe": "카페",
     "food": "음식점·주점",
@@ -2253,7 +2253,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 13.6,
       "map_y": 17.9,
       "commercial_density_index": 8,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -2286,7 +2286,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 41.3,
       "map_y": 25.2,
       "commercial_density_index": 93,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "과밀",
       "top_industries": [
         "retail",
@@ -2319,7 +2319,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 44.8,
       "map_y": 26.8,
       "commercial_density_index": 87,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "과밀",
       "top_industries": [
         "food",
@@ -2352,7 +2352,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 41.2,
       "map_y": 52.6,
       "commercial_density_index": 76,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -2385,7 +2385,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 32.8,
       "map_y": 55.5,
       "commercial_density_index": 67,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -2418,7 +2418,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 60.3,
       "map_y": 15.1,
       "commercial_density_index": 62,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -2451,7 +2451,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 78.8,
       "map_y": 34.9,
       "commercial_density_index": 27,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "food",
@@ -2483,7 +2483,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "total_poi_count": 576,
       "map_x": 82.6,
       "map_y": 38.2,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_index": 41,
       "commercial_density_label": "보통",
       "top_industries": [
@@ -2516,7 +2516,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "total_poi_count": 958,
       "map_x": 70.7,
       "map_y": 70.8,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_index": 66,
       "commercial_density_label": "높음",
       "top_industries": [
@@ -2550,7 +2550,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 57.6,
       "map_y": 87.2,
       "commercial_density_index": 24,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -2583,7 +2583,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 42.7,
       "map_y": 81.4,
       "commercial_density_index": 35,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -2616,7 +2616,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 91.4,
       "map_y": 59.0,
       "commercial_density_index": 38,
-      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "보통",
       "top_industries": [
         "retail",
@@ -2832,25 +2832,25 @@ def commercial_check_tool_block() -> str:
     return f'''
 <section id="commercial-check-tool" class="seoul-density-panel" data-seoul-density-tool-root data-commercial-tool-root data-density-src="/data/seoul-commercial-areas.json?v={data_version}" aria-label="서울 역세권 업종 밀도 지도">
   <div class="seoul-tool-copy">
-    <p class="eyebrow">Seoul Density Radar · OSM 지하철 노선망</p>
-    <h2>서울 후보지를 실제 지하철 노선망 위에서 먼저 좁힙니다.</h2>
-    <p>참고 사이트처럼 장식용 버블맵이 아니라 서울 25개 구 행정경계·한강·OSM 지하철/광역철도 geometry를 정적으로 묶었습니다. 주요역 라벨과 후보역을 켜고 끄며, 계약 전 “이 동네가 어느 노선 축에 붙는지”부터 확인합니다.</p>
-    <div class="tool-badges"><span>KOSTAT 25개 구 outline</span><span>OSM subway {subway_line_count} lines</span><span>역 노드 {subway_station_count}개</span><span>비밀 키 미배포</span></div>
+    <p class="eyebrow">Seoul Density Radar · 역세권 밀도 보기</p>
+    <h2>서울 지도에서 업종 밀도와 인구밀도를 같이 봅니다.</h2>
+    <p>복잡한 노선 전체를 먼저 깔지 않고, 서울 경계·한강·후보역 좌표 위에 업종 POI를 큰 원으로 정리했습니다. 필요할 때만 지하철 보조선을 켜서 노선 축을 확인합니다.</p>
+    <div class="tool-badges"><span>서울 25개 구 행정경계</span><span>후보역 실제 좌표</span><span>POI 650m 집계</span><span>노선은 보조 레이어</span></div>
   </div>
   <div class="seoul-map-card" data-seoul-map>
     <div class="map-card-head">
-      <div><span>REAL SEOUL SUBWAY MAP</span><strong data-map-layer-label>카페 밀도</strong></div>
-      <small>실제 OSM 노선 geometry 위에 후보역·업종 POI를 겹쳐 봅니다</small>
+      <div><span>SEOUL DENSITY MAP</span><strong data-map-layer-label>카페 밀도</strong></div>
+      <small>원 크기는 선택 업종 POI 수, 배경은 서울 경계와 한강 기준입니다</small>
     </div>
     <div class="density-layer-tabs" role="tablist" aria-label="업종 밀도 레이어">
       {layer_buttons}
     </div>
-    <div class="seoul-map-canvas" data-map-canvas data-districts-visible="true" data-subway-visible="true" data-labels-visible="true" data-map-zoom-level="1">
+    <div class="seoul-map-canvas" data-map-canvas data-districts-visible="true" data-subway-visible="false" data-labels-visible="false" data-map-zoom-level="1">
       <div class="map-toolbar" aria-label="지도 조작">
         <div class="map-layer-toggles" role="group" aria-label="지도 레이어 켜고 끄기">
-          <button type="button" data-map-toggle="districts" aria-pressed="true">구 경계</button>
-          <button type="button" data-map-toggle="subway" aria-pressed="true">지하철·역</button>
-          <button type="button" data-map-toggle="labels" aria-pressed="true">역명</button>
+          <button type="button" data-map-toggle="districts" aria-pressed="true">경계</button>
+          <button type="button" data-map-toggle="subway" aria-label="지하철·역 보조 레이어" aria-pressed="false">노선</button>
+          <button type="button" data-map-toggle="labels" aria-pressed="false">역명</button>
         </div>
         <div class="map-zoom-controls" role="group" aria-label="지도 확대 축소">
           <button type="button" data-map-zoom="out" aria-label="지도 축소">−</button>
@@ -2865,19 +2865,19 @@ def commercial_check_tool_block() -> str:
         {station_buttons}
       </div>
       {subway_legend}
-      <div class="map-data-chips" aria-hidden="true"><span data-map-chip="districts">서울 25구 경계</span><span>한강 OSM</span><span data-map-chip="subway">OSM 지하철 {subway_line_count}개 노선</span><span data-map-chip="labels">주요역 라벨</span></div>
-      <div class="map-legend-card" aria-hidden="true"><span><i></i> 실선 = OSM 지하철/광역철도 geometry</span><span><i></i> 작은 점 = 역 노드 {subway_station_count}개</span><span><i></i> 주황 타깃 = 계약 후보역 POI 밀도</span></div>
+      <div class="map-data-chips" aria-hidden="true"><span data-map-chip="districts">서울 25개 구 행정경계</span><span>한강</span><span data-map-chip="subway">지하철 보조선</span><span data-map-chip="labels">역명 보조</span></div>
+      <div class="map-legend-card" aria-hidden="true"><span><i></i> 원 크기 = 선택 업종 POI 수</span><span><i></i> 배경 = 서울 경계·한강</span><span><i></i> 노선/역명은 필요할 때만 켜기</span></div>
       <div class="map-focus-card" aria-live="polite">
         <span>현재 후보</span>
         <strong data-map-focus-name>홍대입구역</strong>
         <small data-map-focus-meta>마포구 서교동 · 카페 밀도 확인 중</small>
       </div>
     </div>
-    <p class="map-source-note" data-source-note>서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다</p>
+    <p class="map-source-note" data-source-note>서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다</p>
     <details class="density-data-note">
       <summary>데이터 기준과 한계</summary>
       <ul>
-        <li>지도 경계·한강·지하철은 공개 데이터를 빌드 시점에 정적 파일로 묶어 브라우저에는 결과 JSON만 보냅니다.</li>
+        <li>지도 경계·한강·후보역 좌표와 보조 노선은 공개 데이터를 빌드 시점에 정적 파일로 묶어 브라우저에는 결과 JSON만 보냅니다.</li>
         <li>업종 수와 인구밀도 지수는 후보를 줄이는 신호이며, 실제 계약 전에는 평일 점심·퇴근·주말 현장 확인이 필요합니다.</li>
         <li>점수가 높아도 권리금·관리비·소음·야간 동선 질문에 답이 없으면 보류합니다.</li>
       </ul>
@@ -3446,24 +3446,24 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .density-layer-tabs button { flex: 0 0 auto; min-height: 42px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 0 14px; background: rgba(255,255,255,.07); color: #e5e7eb; font: inherit; font-size: 13px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
 .density-layer-tabs button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.34); }
 .density-layer-tabs button[aria-pressed="true"] { background: #ff5a1f; border-color: #ff5a1f; color: #fff; box-shadow: 0 12px 24px rgba(255,90,31,.24); }
-.seoul-map-canvas { position: relative; flex: 1 1 auto; min-height: clamp(520px, 43vw, 660px); border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 54% 38%, rgba(96,165,250,.24), transparent 25%), linear-gradient(145deg, #111827, #0b1020 76%); border: 1px solid rgba(255,255,255,.12); isolation: isolate; }
+.seoul-map-canvas { position: relative; flex: 1 1 auto; min-height: clamp(500px, 42vw, 620px); border-radius: 30px; overflow: hidden; background: radial-gradient(circle at 48% 42%, rgba(51,65,85,.46), transparent 34%), radial-gradient(circle at 58% 50%, rgba(96,165,250,.16), transparent 32%), linear-gradient(145deg, #101827, #070b15 78%); border: 1px solid rgba(255,255,255,.12); isolation: isolate; }
 .seoul-map-canvas::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(circle at 50% 50%, #000 0 72%, transparent 100%); }
 .seoul-map-viewport { position: absolute; inset: 0; z-index: 1; transform-origin: var(--focus-x, 50%) var(--focus-y, 50%); transform: scale(var(--map-zoom, 1)); transition: transform .18s ease; will-change: transform; }
-.map-toolbar { position: absolute; z-index: 9; top: 14px; right: 14px; display: grid; gap: 7px; justify-items: end; pointer-events: auto; }
-.map-layer-toggles, .map-zoom-controls { display: inline-flex; align-items: center; gap: 5px; padding: 5px; border-radius: 999px; background: rgba(15,23,42,.74); border: 1px solid rgba(255,255,255,.15); box-shadow: 0 12px 28px rgba(0,0,0,.22); backdrop-filter: blur(14px); }
-.map-layer-toggles button, .map-zoom-controls button { min-width: 34px; min-height: 34px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.08); color: #e5e7eb; font: inherit; font-size: 12px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease, opacity .16s ease; }
-.map-layer-toggles button { padding: 0 10px; white-space: nowrap; }
-.map-zoom-controls button:hover, .map-layer-toggles button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.35); }
-.map-layer-toggles button[aria-pressed="true"] { background: #ff5a1f; border-color: #ff5a1f; color: #fff; box-shadow: 0 8px 18px rgba(255,90,31,.20); }
-.map-layer-toggles button[aria-pressed="false"] { color: #94a3b8; text-decoration: line-through; }
-.map-zoom-controls strong { min-width: 42px; color: #dbeafe; font-size: 12px; line-height: 1; font-weight: 950; text-align: center; }
-.map-zoom-controls button:disabled { opacity: .38; cursor: default; transform: none; }
+.map-toolbar { position: absolute; z-index: 9; top: 14px; right: 14px; display: flex; gap: 6px; align-items: center; justify-content: flex-end; pointer-events: auto; }
+.map-layer-toggles, .map-zoom-controls { display: inline-flex; align-items: center; gap: 4px; padding: 3px; border-radius: 999px; background: rgba(2,6,23,.48); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 10px 24px rgba(0,0,0,.18); backdrop-filter: blur(14px); }
+.map-layer-toggles button, .map-zoom-controls button { min-width: 30px; min-height: 30px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; background: rgba(255,255,255,.055); color: #dbeafe; font: inherit; font-size: 11px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease, opacity .16s ease; }
+.map-layer-toggles button { padding: 0 8px; white-space: nowrap; }
+.map-zoom-controls button:hover, .map-layer-toggles button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.28); }
+.map-layer-toggles button[aria-pressed="true"] { background: rgba(255,90,31,.94); border-color: rgba(255,90,31,.98); color: #fff; box-shadow: 0 8px 16px rgba(255,90,31,.16); }
+.map-layer-toggles button[aria-pressed="false"] { color: #94a3b8; opacity: .66; }
+.map-zoom-controls strong { min-width: 38px; color: #dbeafe; font-size: 11px; line-height: 1; font-weight: 950; text-align: center; }
+.map-zoom-controls button:disabled { opacity: .35; cursor: default; transform: none; }
 /* Reference-grade subway map layer: real OSM geometry stays dense, labels stay selective. */
 .seoul-districts, .seoul-map-labels, .seoul-subway-layer, .seoul-subway-stations, .seoul-subway-labels, .station-dot { transition: opacity .16s ease; }
 .seoul-map-canvas[data-districts-visible="false"] .seoul-districts, .seoul-map-canvas[data-districts-visible="false"] .seoul-map-labels { opacity: 0; pointer-events: none; }
-.seoul-map-canvas[data-subway-visible="false"] .seoul-subway-layer, .seoul-map-canvas[data-subway-visible="false"] .seoul-subway-stations, .seoul-map-canvas[data-subway-visible="false"] .station-dot { opacity: 0; pointer-events: none; }
+.seoul-map-canvas[data-subway-visible="false"] .seoul-subway-layer, .seoul-map-canvas[data-subway-visible="false"] .seoul-subway-stations { opacity: 0; pointer-events: none; }
 .seoul-map-canvas[data-labels-visible="false"] .seoul-subway-labels { opacity: 0; pointer-events: none; }
-.seoul-map-canvas[data-districts-visible="false"] [data-map-chip="districts"], .seoul-map-canvas[data-subway-visible="false"] [data-map-chip="subway"], .seoul-map-canvas[data-labels-visible="false"] [data-map-chip="labels"] { opacity: .36; text-decoration: line-through; }
+.seoul-map-canvas[data-districts-visible="false"] [data-map-chip="districts"], .seoul-map-canvas[data-subway-visible="false"] [data-map-chip="subway"], .seoul-map-canvas[data-labels-visible="false"] [data-map-chip="labels"] { opacity: .38; }
 .seoul-real-map { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 24px 48px rgba(0,0,0,.26)); opacity: .96; }
 .seoul-district { fill: rgba(15,23,42,.44); stroke: rgba(226,232,240,.22); stroke-width: 1.6; vector-effect: non-scaling-stroke; transition: fill .16s ease, stroke .16s ease, opacity .16s ease; }
 .seoul-district:nth-child(3n) { fill: rgba(37,99,235,.10); }
@@ -3472,34 +3472,34 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .seoul-river { fill: none; stroke: rgba(125,211,252,.62); stroke-width: 17; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .78; filter: drop-shadow(0 0 16px rgba(56,189,248,.24)); }
 .seoul-map-labels { font-size: 16px; font-weight: 950; letter-spacing: -.05em; fill: rgba(226,232,240,.44); text-anchor: middle; paint-order: stroke; stroke: rgba(15,23,42,.72); stroke-width: 4px; stroke-linejoin: round; }
 .seoul-subway-map { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.seoul-subway-line-halo { fill: none; stroke: rgba(2,6,23,.74); stroke-width: 9.6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .70; }
-.seoul-subway-line { fill: none; stroke: var(--line-color, #60a5fa); stroke-width: 4.15; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .92; filter: drop-shadow(0 0 7px color-mix(in srgb, var(--line-color, #60a5fa) 56%, transparent)); }
-.seoul-subway-stations { opacity: .94; }
-.seoul-station-node { fill: #f8fafc; stroke: rgba(15,23,42,.96); stroke-width: 1.6; vector-effect: non-scaling-stroke; opacity: .82; }
-.transfer-station-node { fill: #fff7ed; stroke: #f8fafc; stroke-width: 2.2; filter: drop-shadow(0 0 5px rgba(255,255,255,.28)); opacity: .98; }
-.major-station-node { fill: #fff; stroke: #ff5a1f; stroke-width: 2.8; filter: drop-shadow(0 0 9px rgba(255,90,31,.45)); opacity: 1; }
+.seoul-subway-line-halo { fill: none; stroke: rgba(2,6,23,.44); stroke-width: 5.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .20; }
+.seoul-subway-line { fill: none; stroke: var(--line-color, #60a5fa); stroke-width: 2.05; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .34; filter: none; }
+.seoul-subway-stations { opacity: .18; }
+.seoul-station-node { fill: #e2e8f0; stroke: rgba(15,23,42,.82); stroke-width: 1.1; vector-effect: non-scaling-stroke; opacity: .42; }
+.transfer-station-node { fill: #f8fafc; stroke: rgba(226,232,240,.9); stroke-width: 1.5; filter: none; opacity: .52; }
+.major-station-node { fill: #fff; stroke: rgba(255,90,31,.9); stroke-width: 2; filter: drop-shadow(0 0 5px rgba(255,90,31,.24)); opacity: .72; }
 .seoul-subway-labels { opacity: 1; }
 .subway-station-label { font-size: 13px; font-weight: 950; letter-spacing: -.04em; fill: #fff; paint-order: stroke; stroke: rgba(2,6,23,.88); stroke-width: 5px; stroke-linejoin: round; }
 .subway-station-label[data-label-level="transfer"] { font-size: 14px; }
 .subway-station-label .label-line { fill: #bfdbfe; font-size: 10px; letter-spacing: 0; }
 .subway-label-leader { stroke: rgba(226,232,240,.48); stroke-width: 1.1; vector-effect: non-scaling-stroke; stroke-dasharray: 3 4; }
-.subway-line-key { position: absolute; z-index: 6; left: 16px; top: 50px; right: 270px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.subway-line-key { display: none; position: absolute; z-index: 6; left: 16px; top: 50px; right: 270px; flex-wrap: wrap; gap: 6px; pointer-events: none; }
 .subway-line-key span { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 0 8px; border-radius: 999px; background: rgba(2,6,23,.68); border: 1px solid rgba(255,255,255,.13); color: #e2e8f0; font-size: 10.5px; font-weight: 950; backdrop-filter: blur(12px); }
 .subway-line-key i { width: 13px; height: 4px; border-radius: 999px; background: var(--line-color); box-shadow: 0 0 10px color-mix(in srgb, var(--line-color) 52%, transparent); }
-.map-data-chips { position: absolute; z-index: 6; left: 16px; top: 16px; right: 270px; display: flex; flex-wrap: wrap; gap: 7px; pointer-events: none; }
+.map-data-chips { display: none; position: absolute; z-index: 6; left: 16px; top: 16px; right: 270px; flex-wrap: wrap; gap: 7px; pointer-events: none; }
 .map-data-chips span { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 999px; background: rgba(15,23,42,.68); border: 1px solid rgba(255,255,255,.13); color: #dbeafe; font-size: 11px; font-weight: 950; backdrop-filter: blur(12px); }
-.station-dot { --heat: .5; --size: clamp(22px, calc(18px + var(--heat) * 16px), 36px); position: absolute; z-index: 7; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: var(--size); height: var(--size); border: 2px solid rgba(255,255,255,.96); border-radius: 999px; background: radial-gradient(circle at 38% 32%, rgba(255,255,255,1) 0 10%, rgba(255,90,31,.98) 11% 68%, rgba(154,52,18,.98) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(3px + var(--heat) * 7px) rgba(255,90,31, calc(.05 + var(--heat) * .11)), 0 12px 24px rgba(0,0,0,.32); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease; }
-.station-dot i { position: absolute; left: 25%; top: 23%; width: 20%; height: 20%; border-radius: 999px; background: #fff; box-shadow: 0 3px 9px rgba(0,0,0,.22); }
-.station-dot:hover, .station-dot:focus-visible, .station-dot[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.22); z-index: 10; box-shadow: 0 0 0 calc(7px + var(--heat) * 10px) rgba(255,90,31,.18), 0 22px 42px rgba(0,0,0,.42); }
-.station-dot b { position: absolute; left: 50%; top: calc(100% + 7px); transform: translateX(-50%); max-width: 132px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 9px; border-radius: 999px; background: rgba(2,6,23,.92); color: #fff; font-size: 12px; font-weight: 950; opacity: 0; pointer-events: none; transition: opacity .14s ease; box-shadow: 0 10px 22px rgba(0,0,0,.22); }
+.station-dot { --heat: .5; --size: clamp(42px, calc(30px + var(--heat) * 48px), 80px); position: absolute; z-index: 8; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: var(--size); height: var(--size); border: 3px solid rgba(255,246,238,.96); border-radius: 999px; background: radial-gradient(circle at 33% 25%, rgba(255,255,255,1) 0 10%, rgba(255,97,36,.98) 11% 68%, rgba(199,63,22,.98) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(8px + var(--heat) * 14px) rgba(255,90,31, calc(.08 + var(--heat) * .12)), 0 22px 42px rgba(0,0,0,.34); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease; }
+.station-dot i { position: absolute; left: 24%; top: 22%; width: 18%; height: 18%; border-radius: 999px; background: #fff; box-shadow: 0 3px 9px rgba(0,0,0,.22); }
+.station-dot:hover, .station-dot:focus-visible, .station-dot[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.08); z-index: 10; box-shadow: 0 0 0 calc(12px + var(--heat) * 18px) rgba(255,90,31,.18), 0 26px 50px rgba(0,0,0,.42); }
+.station-dot b { position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); max-width: 142px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 5px 10px; border-radius: 999px; background: rgba(2,6,23,.92); color: #fff; font-size: 13px; font-weight: 950; opacity: 0; pointer-events: none; transition: opacity .14s ease; box-shadow: 0 10px 22px rgba(0,0,0,.22); }
 .station-dot[aria-pressed="true"] b, .station-dot:focus-visible b, .station-dot:hover b { opacity: 1; }
-.station-dot small { position: relative; z-index: 1; font-size: clamp(8px, calc(7px + var(--heat) * 3px), 11px); font-weight: 950; letter-spacing: -.03em; text-shadow: 0 2px 8px rgba(0,0,0,.42); }
+.station-dot small { position: relative; z-index: 1; font-size: clamp(13px, calc(10px + var(--heat) * 8px), 22px); font-weight: 950; letter-spacing: -.04em; text-shadow: 0 2px 8px rgba(0,0,0,.42); }
 .map-legend-card { position: absolute; z-index: 6; right: 16px; bottom: 16px; display: grid; gap: 7px; width: min(264px, 46%); padding: 13px 14px; border-radius: 20px; background: rgba(2,6,23,.72); border: 1px solid rgba(255,255,255,.14); color: #dbeafe; backdrop-filter: blur(16px); box-shadow: 0 18px 40px rgba(0,0,0,.20); }
 .map-legend-card span { display: flex; align-items: center; gap: 8px; font-size: 11px; line-height: 1.25; font-weight: 900; }
 .map-legend-card i { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 999px; background: #ff5a1f; box-shadow: 0 0 0 4px rgba(255,90,31,.16); }
-.map-focus-card { position: absolute; z-index: 7; left: 16px; bottom: 16px; width: min(286px, calc(100% - 32px)); padding: 14px 16px; border-radius: 22px; background: rgba(2,6,23,.78); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(18px); box-shadow: 0 18px 42px rgba(0,0,0,.26); }
+.map-focus-card { position: absolute; z-index: 7; left: 18px; right: 18px; bottom: 18px; width: auto; min-height: 64px; display: flex; align-items: baseline; gap: 14px; padding: 14px 20px; border-radius: 24px; background: rgba(2,6,23,.82); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(18px); box-shadow: 0 18px 42px rgba(0,0,0,.26); }
 .map-focus-card span, .map-focus-card small { display: block; color: #cbd5e1; font-size: 12px; font-weight: 900; }
-.map-focus-card strong { display: block; margin: 2px 0 3px; color: #fff; font-size: 25px; line-height: 1.05; letter-spacing: -.045em; }
+.map-focus-card strong { display: block; margin: 0; color: #fff; font-size: clamp(24px, 2.7vw, 34px); line-height: 1.05; letter-spacing: -.045em; }
 .map-source-note { position: relative; z-index: 2; margin: 12px 2px 0; color: #cbd5e1; font-size: 12px; line-height: 1.45; font-weight: 750; }
 .density-data-note { position: relative; z-index: 2; margin: 10px 2px 0; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: rgba(2,6,23,.42); color: #dbeafe; overflow: hidden; }
 .density-data-note summary { min-height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 13px; color: #fff; cursor: pointer; font-size: 12px; font-weight: 950; list-style: none; }
@@ -4106,31 +4106,29 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .map-card-head small { max-width: none; text-align: left; }
   .density-layer-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; overflow: visible; padding: 0; margin: 0 0 12px; }
   .density-layer-tabs button { width: 100%; min-height: 38px; padding: 0 6px; font-size: 12px; letter-spacing: -.04em; }
-  .seoul-map-canvas { min-height: min(112vw, 492px); border-radius: 24px; }
-  .map-toolbar { left: 10px; right: 10px; top: 10px; display: grid; grid-template-columns: 1fr; justify-items: stretch; gap: 7px; }
-  .map-layer-toggles, .map-zoom-controls { width: 100%; justify-content: center; gap: 4px; padding: 4px; border-radius: 18px; background: rgba(2,6,23,.74); }
-  .map-layer-toggles { flex-wrap: nowrap; max-width: none; }
-  .map-layer-toggles button { flex: 1 1 0; min-width: 0; padding: 0 5px; letter-spacing: -.05em; }
-  .map-layer-toggles button, .map-zoom-controls button { min-height: 40px; font-size: 10.5px; }
-  .map-zoom-controls button { min-width: 42px; }
-  .map-zoom-controls strong { min-width: 34px; font-size: 10.5px; }
-  .map-zoom-controls button[data-map-zoom="reset"] { display: none; }
+  .seoul-map-canvas { min-height: min(108vw, 470px); border-radius: 24px; }
+  .map-toolbar { left: auto; right: 10px; top: 10px; display: flex; gap: 5px; align-items: center; justify-content: flex-end; }
+  .map-layer-toggles { flex-wrap: nowrap; max-width: none; gap: 3px; padding: 3px; border-radius: 999px; background: rgba(2,6,23,.58); }
+  .map-zoom-controls { display: none; }
+  .map-layer-toggles button { min-width: 34px; min-height: 32px; padding: 0 8px; letter-spacing: -.04em; font-size: 10.5px; }
   .seoul-real-map { inset: 0; width: 100%; height: 100%; }
-  .seoul-subway-line-halo { stroke-width: 6.6; opacity: .62; }
-  .seoul-subway-line { stroke-width: 2.7; }
-  .seoul-station-node { stroke-width: 1.2; }
-  .subway-station-label { font-size: 10px; stroke-width: 4px; }
+  .seoul-subway-line-halo { stroke-width: 3.2; opacity: .10; }
+  .seoul-subway-line { stroke-width: 1.15; opacity: .18; }
+  .seoul-station-node { stroke-width: .75; opacity: .20; }
+  .seoul-subway-stations { opacity: .10; }
+  .seoul-subway-labels { display: none; }
+  .subway-station-label { font-size: 9px; stroke-width: 3.6px; }
   .subway-line-key { display: none; }
   .seoul-map-labels { font-size: 13px; opacity: .74; }
   .seoul-river { stroke-width: 15; }
   .map-data-chips { display: none; }
   .map-data-chips span { min-height: 24px; padding: 0 7px; font-size: 9.5px; }
-  .station-dot { width: clamp(22px, calc(18px + var(--heat) * 14px), 34px); height: clamp(22px, calc(18px + var(--heat) * 14px), 34px); border-width: 1.8px; box-shadow: 0 0 0 calc(3px + var(--heat) * 6px) rgba(255,90,31, calc(.04 + var(--heat) * .08)), 0 10px 20px rgba(0,0,0,.30); }
-  .station-dot:not([aria-pressed="true"]) { opacity: .78; }
-  .station-dot:not([aria-pressed="true"]) small { width: 8px; height: 8px; border-radius: 999px; background: #fff; font-size: 0; box-shadow: 0 2px 7px rgba(0,0,0,.24); }
+  .station-dot { width: clamp(34px, calc(24px + var(--heat) * 34px), 58px); height: clamp(34px, calc(24px + var(--heat) * 34px), 58px); border-width: 2.4px; box-shadow: 0 0 0 calc(5px + var(--heat) * 9px) rgba(255,90,31, calc(.06 + var(--heat) * .10)), 0 12px 24px rgba(0,0,0,.32); }
+  .station-dot:not([aria-pressed="true"]) { opacity: .92; }
+  .station-dot:not([aria-pressed="true"]) small { font-size: clamp(10px, calc(8px + var(--heat) * 6px), 16px); }
   .station-dot[aria-pressed="true"] { opacity: 1; }
-  .station-dot b { top: calc(100% + 4px); max-width: 96px; font-size: 10px; }
-  .station-dot small { font-size: clamp(10px, calc(8px + var(--heat) * 4px), 14px); }
+  .station-dot b { top: calc(100% + 5px); max-width: 104px; font-size: 10.5px; }
+  .station-dot small { font-size: clamp(11px, calc(8px + var(--heat) * 6px), 17px); }
   .map-focus-card { left: 10px; right: 10px; bottom: 10px; width: auto; padding: 8px 10px; border-radius: 16px; display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 8px; }
   .map-legend-card { display: none; }
   .map-focus-card span { font-size: 10px; }
@@ -4617,9 +4615,9 @@ COMMERCIAL_TOOL_JS = '''(() => {
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
   setMapZoom(1);
-  setMapLayerVisibility('districts', true);
-  setMapLayerVisibility('subway', true);
-  setMapLayerVisibility('labels', true);
+  setMapLayerVisibility('districts', mapCanvas?.dataset.districtsVisible !== 'false');
+  setMapLayerVisibility('subway', mapCanvas?.dataset.subwayVisible === 'true');
+  setMapLayerVisibility('labels', mapCanvas?.dataset.labelsVisible === 'true');
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))

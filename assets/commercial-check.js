@@ -297,9 +297,9 @@
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
   setMapZoom(1);
-  setMapLayerVisibility('districts', true);
-  setMapLayerVisibility('subway', true);
-  setMapLayerVisibility('labels', true);
+  setMapLayerVisibility('districts', mapCanvas?.dataset.districtsVisible !== 'false');
+  setMapLayerVisibility('subway', mapCanvas?.dataset.subwayVisible === 'true');
+  setMapLayerVisibility('labels', mapCanvas?.dataset.labelsVisible === 'true');
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))
