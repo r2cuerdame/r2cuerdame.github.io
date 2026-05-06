@@ -242,20 +242,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".district-picker-row", ".map-layer-toggles", ".map-zoom-controls", ".map-cluster-layer", ".map-cluster-dot", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".candidate-memo-card", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".compare-verdict", ".density-data-note", ".map-reading-guide"]:
+    for marker in [".contract-question-start", ".question-route-grid", ".question-route-card", ".question-route-kicker", ".question-route-list"]:
         if marker not in css:
-            failures.append(f"seoul_density_tool_css_missing:{marker}")
-    for guard in [
-        "@media (max-width: 1120px) and (min-width: 861px)",
-        ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }",
-        ".seoul-map-canvas { min-height: 560px; }",
-        ".seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px));",
-        ".density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex;",
-        ".seoul-map-card { bottom: auto; height: 820px; min-height: 820px;",
-        "  .station-inspector { top: 840px; left: 14px; right: 14px;",
-    ]:
-        if guard not in css:
-            failures.append(f"seoul_density_desktop_layout_guard_missing:{guard}")
+            failures.append(f"home_contract_question_css_missing:{marker}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
@@ -333,69 +322,38 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_to_deals_link_missing")
     if kind == "home":
         required_markers = [
+            'id="contract-question-start"',
+            'class="panel soft contract-question-start"',
+            '전월세 계약 질문',
+            '상가 계약 질문',
+            '오늘은 이 질문 6개만 먼저 봅니다.',
+            'href="/topics/cafe-commercial-lease-risk/"',
+            'href="/topics/jeonwolse-contract-check/"',
+            'href="/radar/"',
+        ]
+        for marker in required_markers:
+            if marker not in page_html:
+                failures.append(f"{path}:home_contract_question_marker_missing:{marker}")
+        forbidden_map_markers = [
             'id="commercial-check-tool"',
             'data-seoul-density-tool-root',
             'class="seoul-map-card"',
             'class="seoul-real-map"',
             'class="seoul-subway-map"',
-            'class="seoul-subway-line"',
-            'class="seoul-subway-stations"',
-            'data-subway-station-node=',
-            'class="subway-line-key"',
             'data-map-viewport',
-            'data-map-toggle="districts"',
-            'data-map-toggle="subway"',
-            'data-map-toggle="labels"',
-            'data-subway-visible="true"',
-            'data-labels-visible="false"',
-            'data-cluster-mode="cluster"',
-            'data-map-zoom-level="1.02"',
-            'aria-label="지하철·역 보조 레이어" aria-pressed="true"',
-            'data-map-zoom="in"',
-            'data-map-zoom="out"',
-            'data-district-filter',
-            'data-district-summary',
+            'data-map-toggle=',
+            'data-map-zoom=',
             'data-map-clusters',
-            'data-map-district="마포구"',
-            'data-map-district="강남구"',
-            'role="button" tabindex="0"',
-            'data-district="마포구"',
-            '서울 25개 구 행정경계',
-            'data-density-layer="cafe"',
-            'data-density-layer="population"',
-            'data-station-map="hongdae"',
-            'id="tool-station"',
-            'id="tool-compare-station"',
-            'id="tool-industry"',
-            'data-density-count',
-            'data-pop-density',
-            'data-risk-list',
-            'data-decision-question',
-            '먼저 물을 질문',
-            'data-visit-plan',
-            'data-candidate-memo',
-            '후보 메모',
-            'data-compare-panel',
-            'data-compare-metrics',
-            'data-compare-verdict',
-            '먼저 볼 후보',
-            'class="density-data-note"',
-            'data-map-reading-guide',
-            '지도 읽는 순서',
-            '오른쪽 첫 질문에 답 없으면 보류합니다',
-            '데이터 기준과 한계',
-            'href="/topics/cafe-commercial-lease-risk/"',
-            'href="/topics/jeonwolse-contract-check/"',
-            '/data/seoul-commercial-areas.json?v=',
+            'data-density-layer=',
             '/assets/commercial-check.js?v=',
         ]
-        for marker in required_markers:
-            if marker not in page_html:
-                failures.append(f"{path}:seoul_density_tool_marker_missing:{marker}")
+        for marker in forbidden_map_markers:
+            if marker in page_html:
+                failures.append(f"{path}:home_map_section_should_be_removed:{marker}")
         if '분리 운영 중인 쇼핑픽' in page_html:
             failures.append(f"{path}:home_shopping_section_should_not_compete_with_radar")
-        if page_html.find('id="commercial-check-tool"') > page_html.find('사례로 더 보기'):
-            failures.append(f"{path}:seoul_density_tool_not_before_case_articles")
+        if 'id="contract-question-start"' not in page_html or page_html.find('id="contract-question-start"') > page_html.find('사례로 더 보기'):
+            failures.append(f"{path}:contract_question_panel_not_before_case_articles")
     if kind == "radar":
         for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
             if f'href="{href}"' not in page_html:

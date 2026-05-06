@@ -78,146 +78,54 @@ def test_publisher_stages_all_generated_static_outputs():
         assert required in publisher.PUBLIC_ADD_PATHS
 
 
-def test_home_has_above_fold_seoul_density_tool():
+def test_home_removes_map_and_surfaces_contract_question_paths():
     build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_home_tool")
 
     html = build_site.home_body([], [])
 
-    assert 'href="#commercial-check-tool"' in html
-    assert 'id="commercial-check-tool"' in html
-    assert 'data-seoul-density-tool-root' in html
-    assert 'class="seoul-map-card"' in html
-    assert 'class="seoul-real-map"' in html
-    assert 'class="seoul-subway-map"' in html
-    assert 'class="seoul-subway-line"' in html
-    assert 'class="seoul-subway-stations"' in html
-    assert 'data-subway-station-node=' in html
-    assert 'class="subway-line-key"' in html
-    assert 'data-map-viewport' in html
-    assert 'data-map-toggle="districts"' in html
-    assert 'data-map-toggle="subway"' in html
-    assert 'data-map-toggle="labels"' in html
-    assert 'data-subway-visible="true"' in html
-    assert 'data-labels-visible="false"' in html
-    assert 'aria-label="지하철·역 보조 레이어" aria-pressed="true"' in html
-    assert 'data-cluster-mode="cluster"' in html
-    assert 'data-map-zoom-level="1.02"' in html
-    assert 'data-map-zoom="in"' in html
-    assert 'data-map-zoom="out"' in html
-    assert '지하철·역' in html
-    assert 'data-district-filter' in html
-    assert 'data-district-summary' in html
-    assert 'data-map-clusters' in html
-    assert 'data-map-district="마포구"' in html
-    assert 'data-map-district="강남구"' in html
-    assert 'role="button" tabindex="0"' in html
-    assert 'data-district="마포구"' in html
-    assert '서울 25개 구 행정경계' in html
-    assert 'OSM 한강' in html
-    assert 'data-density-layer="cafe"' in html
-    assert 'data-density-layer="population"' in html
-    assert 'data-station-map="hongdae"' in html
-    assert 'id="tool-station"' in html
-    assert 'id="tool-compare-station"' in html
-    assert 'id="tool-industry"' in html
-    assert 'data-density-count' in html
-    assert 'data-pop-density' in html
-    assert 'data-risk-list' in html
-    assert 'data-decision-question' in html
-    assert '먼저 물을 질문' in html
-    assert 'data-visit-plan' in html
-    assert 'data-candidate-memo' in html
-    assert '후보 메모' in html
-    assert 'data-compare-panel' in html
-    assert 'data-compare-metrics' in html
-    assert 'data-compare-verdict' in html
-    assert '먼저 볼 후보' in html
-    assert 'class="density-data-note"' in html
-    assert 'data-map-reading-guide' in html
-    assert '지도 읽는 순서' in html
-    assert '오른쪽 첫 질문에 답 없으면 보류합니다' in html
-    assert '데이터 기준과 한계' in html
-    assert '브라우저에는 결과 JSON만 보냅니다' in html
-    assert 'href="/topics/cafe-commercial-lease-risk/"' in html
+    assert 'id="contract-question-start"' in html
     assert 'href="/topics/jeonwolse-contract-check/"' in html
-    assert '/data/seoul-commercial-areas.json?v=' in html
-    assert '/assets/commercial-check.js?v=' in html
-    assert html.index('id="commercial-check-tool"') < html.index('사례로 더 보기')
+    assert 'href="/topics/cafe-commercial-lease-risk/"' in html
+    assert 'href="/radar/"' in html
+    assert html.index('id="contract-question-start"') < html.index('사례로 더 보기')
     assert '분리 운영 중인 쇼핑픽' not in html
 
-    assert len(build_site.SEOUL_COMMERCIAL_AREAS["stations"]) >= 12
-    js = build_site.COMMERCIAL_TOOL_JS
-    assert '[data-seoul-density-tool-root]' in js
-    assert 'tool-compare-station' in js
-    assert 'data-compare-panel' in js
-    assert 'renderCompare' in js
-    assert 'compareVerdictFor' in js
-    assert 'data-compare-verdict' in js
-    assert 'visitPlanFor' in js
-    assert 'decisionQuestionFor' in js
-    assert 'candidateMemoFor' in js
-    assert '[data-decision-question]' in js
-    assert 'data-candidate-memo' in js
-    assert 'data-density-layer' in js
-    assert 'data-map-toggle' in js
-    assert 'data-map-zoom' in js
-    assert 'setMapZoom' in js
-    assert 'setMapLayerVisibility' in js
-    assert 'setSelectedDistrict' in js
-    assert 'renderClusters' in js
-    assert 'dataset.clusterMode' in js
-    assert 'data-map-clusters' in js
-    assert 'data-district-filter' in js
-    assert 'data-district-hidden' in js
-    assert 'dataset.subwayVisible' in js
-    assert 'dataset.labelsVisible' in js
-    assert 'districtPaths' in js
-    assert 'data-map-district' in js
-    assert '/data/seoul-commercial-areas.json' in js
-    assert '/topics/cafe-commercial-lease-risk/' in js
-    assert '/topics/jeonwolse-contract-check/' in js
-    assert '/radar/cafe-contract-risk/' not in js
-    assert '/radar/monthly-rent-contract-check/' not in js
+    removed_markers = [
+        'href="#commercial-check-tool"',
+        'id="commercial-check-tool"',
+        'data-seoul-density-tool-root',
+        'class="seoul-map-card"',
+        'class="seoul-real-map"',
+        'class="seoul-subway-map"',
+        'data-map-viewport',
+        'data-map-toggle=',
+        'data-map-zoom=',
+        'data-district-filter',
+        'data-map-clusters',
+        'data-station-map=',
+        'data-density-layer=',
+        'id="tool-station"',
+        'data-map-reading-guide',
+        '지도 읽는 순서',
+        '/data/seoul-commercial-areas.json?v=',
+        '/assets/commercial-check.js?v=',
+    ]
+    for marker in removed_markers:
+        assert marker not in html
+
     css = build_site.CSS
-    assert "@media (max-width: 1120px) and (min-width: 861px)" in css
-    assert ".density-data-note" in css
-    assert ".compare-verdict" in css
-    assert ".map-reading-guide" in css
-    assert ".map-reading-guide ol { grid-template-columns: 1fr; gap: 6px; }" in css
-    assert ".candidate-memo-card" in css
-    assert ".district-picker-row" in css
-    assert ".map-cluster-dot" in css
-    assert ".seoul-district[data-selected=\"true\"]" in css
-    assert ".seoul-map-canvas[data-cluster-mode=\"cluster\"] .station-dot" in css
-    assert ".density-score-grid { display: none;" in css
-    assert ".tool-link-row a:nth-child(n+2) { display: none; }" in css
-    assert ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }" in css
-    assert ".seoul-map-canvas { min-height: 560px; }" in css
-    assert ".seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px));" in css
-    assert ".density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex;" in css
-    assert 'data-density-layer="population"' in html
-    assert ".seoul-map-card { bottom: auto; height: 820px; min-height: 820px;" in css
-    assert "  .station-inspector { top: 840px; left: 14px; right: 14px;" in css
+    assert ".contract-question-start" in css
+    assert ".question-route-card" in css
+    assert ".question-route-grid" in css
+    assert "@media (max-width: 720px)" in css
 
     data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
     assert "KOSIS_API_KEY" not in data_text
     assert "Public OSM Overpass" not in data_text
     assert "비밀 키는 브라우저에 배포하지 않습니다" in data_text
 
-    outline = build_site.SEOUL_MAP_OUTLINE
-    assert len(outline["districts"]) == 25
-    assert outline["river"]["path"].startswith("M")
-    assert "KOSTAT" in json.dumps(outline, ensure_ascii=False)
 
-    network = build_site.SEOUL_SUBWAY_NETWORK
-    assert network["stats"]["line_count"] >= 13
-    assert network["stats"]["station_count"] >= 300
-    assert network["stats"]["segment_count"] >= 250
-    assert any(line["id"] == "line2" and len(line["segments"]) >= 10 for line in network["lines"])
-    assert any(label["name"] == "강남" for label in network["labels"])
-
-
-def test_public_audit_rejects_home_without_seoul_density_tool():
+def test_public_audit_rejects_home_when_map_returns():
     audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_home_tool")
     html = (
         '<!doctype html><html><head><title>Recuerdame Lab 홈</title>'
@@ -225,13 +133,14 @@ def test_public_audit_rejects_home_without_seoul_density_tool():
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<link rel="stylesheet" href="/main.css?v=test"></head><body><main>'
         '<h1>이사·월세·상가 계약 전</h1>'
-        '<section><h2>동네 레이더 최신 글</h2></section>'
+        '<section id="contract-question-start" class="contract-question-start"><h2>지도 대신 계약 질문</h2></section>'
+        '<section id="commercial-check-tool" class="seoul-density-panel"><div class="seoul-map-card"></div></section>'
         '</main></body></html>'
     )
 
     failures = audit.audit_html("/", html)
 
-    assert any("seoul_density_tool_marker_missing" in failure for failure in failures)
+    assert any("home_map_section_should_be_removed" in failure for failure in failures)
 
 
 def test_radar_contract_check_entrypoints_are_topic_lists():

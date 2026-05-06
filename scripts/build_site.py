@@ -2955,15 +2955,53 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
     return f'''
 <section class="hero home-hero product-hero">
-  <p class="eyebrow">Dongne Radar · 서울 후보지 체크</p>
-  <h1>블로그가 아니라, 계약 전 서울 후보지를 먼저 거르는 도구.</h1>
-  <p class="lead">역세권 업종 밀도, 인구밀도, 매장 수를 보고 “집으로 볼지, 상가로 볼지, 보류할지”를 30초 안에 가릅니다.</p>
+  <p class="eyebrow">Dongne Radar · 계약 질문 먼저 보기</p>
+  <h1>지도 없이, 계약 전에 물을 질문부터 좁힙니다.</h1>
+  <p class="lead">서울 후보지는 예쁜 점수보다 현장에서 다시 확인할 질문이 먼저입니다. 전월세·상가 계약 전에 바로 볼 체크리스트만 남겼습니다.</p>
   <div class="hero-actions compact-actions">
-    <a class="button primary" href="#commercial-check-tool">서울 지도에서 후보지 보기</a>
-    <a class="button" href="/topics/jeonwolse-contract-check/">계약 질문 목록</a>
+    <a class="button primary" href="/topics/jeonwolse-contract-check/">전월세 계약 질문</a>
+    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 계약 질문</a>
   </div>
 </section>
-{commercial_check_tool_block()}
+<section id="contract-question-start" class="panel soft contract-question-start" aria-label="지도 대신 확인할 계약 질문">
+  <div class="section-title compact-title">
+    <p class="eyebrow">No map · 질문 우선</p>
+    <h2>오늘은 이 질문 6개만 먼저 봅니다.</h2>
+    <p>후보지를 꾸미지 않고, 실제 계약 전에 답이 없으면 보류할 질문으로 바로 이동합니다.</p>
+  </div>
+  <div class="question-route-grid">
+    <article class="question-route-card accent-blue">
+      <span class="question-route-kicker">전월세</span>
+      <h3>집을 보기 전에</h3>
+      <ul class="question-route-list">
+        <li>관리비 포함 월 고정비가 상한선 안에 들어오는가?</li>
+        <li>역에서 집까지 밤길·소음·공용부 피로가 버틸 만한가?</li>
+        <li>계약서 특약으로 다시 적어야 할 리스크가 남았는가?</li>
+      </ul>
+      <a href="/topics/jeonwolse-contract-check/">전월세 질문 목록 →</a>
+    </article>
+    <article class="question-route-card accent-orange">
+      <span class="question-route-kicker">상가·카페</span>
+      <h3>상가 계약 전에</h3>
+      <ul class="question-route-list">
+        <li>권리금·월세·관리비를 감당할 매출 근거가 있는가?</li>
+        <li>같은 업종 경쟁점과 회전율을 평일·주말에 확인했는가?</li>
+        <li>점포 앞 동선이 실제 구매 순간으로 이어지는가?</li>
+      </ul>
+      <a href="/topics/cafe-commercial-lease-risk/">상가 질문 목록 →</a>
+    </article>
+    <article class="question-route-card accent-green">
+      <span class="question-route-kicker">현장 확인</span>
+      <h3>사례로 검증하기</h3>
+      <ul class="question-route-list">
+        <li>낮·밤·비 오는 날의 신호가 같은가?</li>
+        <li>대체 후보를 남겨 협상 여지가 있는가?</li>
+        <li>좋아 보이는 이유보다 포기할 기준이 선명한가?</li>
+      </ul>
+      <a href="/radar/">사례 글로 더 보기 →</a>
+    </article>
+  </div>
+</section>
 <section class="grid three situation-grid" aria-label="오늘 볼 후보지 유형">
   <article class="card accent-blue situation-card">
     <span class="tag">집 보러 가기 전</span>
@@ -2994,7 +3032,6 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
   <div class="section-title"><h2>사례로 더 보기</h2><p>도구에서 걸린 신호를 실제 현장 질문으로 바꾼 글입니다.</p></div>
   {radar_html}
 </section>
-<script src="/assets/commercial-check.js?v={asset_version(COMMERCIAL_TOOL_JS)}" defer></script>
 '''
 
 def deals_body(deals: list[dict]) -> str:
@@ -3431,6 +3468,30 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .product-hero h1 { max-width: 920px; font-size: clamp(32px, 4.7vw, 54px); margin-bottom: 12px; }
 .product-hero .lead { max-width: 760px; font-size: clamp(17px, 1.8vw, 21px); }
 .product-hero .hero-actions { margin-top: 18px; }
+.contract-question-start {
+  margin: 20px 0 48px;
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid rgba(234, 223, 212, .95);
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,247,239,.9));
+  box-shadow: 0 18px 50px rgba(58, 37, 20, .08);
+}
+.contract-question-start .compact-title { margin-bottom: 18px; }
+.contract-question-start .compact-title h2 { margin: 4px 0 6px; font-size: clamp(26px, 3.8vw, 42px); }
+.contract-question-start .compact-title p:last-child { max-width: 720px; color: var(--muted); font-weight: 750; }
+.question-route-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.question-route-card {
+  display: flex; flex-direction: column; gap: 12px;
+  min-height: 280px; padding: 22px; border-radius: 28px;
+  border: 1px solid rgba(234, 223, 212, .9); background: #fff;
+  box-shadow: 0 14px 36px rgba(58, 37, 20, .07);
+}
+.question-route-card h3 { margin: 0; font-size: clamp(22px, 2.5vw, 30px); letter-spacing: -.045em; }
+.question-route-card a { margin-top: auto; font-weight: 950; color: var(--orange-dark); }
+.question-route-kicker { width: max-content; padding: 7px 10px; border-radius: 999px; background: #fff2e8; color: var(--orange-dark); font-size: 12px; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
+.question-route-list { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: #5f5652; font-weight: 750; line-height: 1.55; }
+.question-route-list li::marker { color: var(--orange); }
+@media (max-width: 980px) { .question-route-grid { grid-template-columns: 1fr; } .question-route-card { min-height: auto; } }
+@media (max-width: 720px) { .contract-question-start { margin-top: 12px; padding: 18px; border-radius: 26px; } .question-route-card { padding: 18px; border-radius: 22px; } }
 .seoul-density-panel {
   position: relative; scroll-margin-top: 92px;
   display: grid; grid-template-columns: minmax(0, 1fr);
