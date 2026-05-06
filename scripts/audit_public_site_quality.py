@@ -245,6 +245,14 @@ def audit_css(css: str) -> list[str]:
     for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".map-layer-toggles", ".map-zoom-controls", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
+    for guard in [
+        "@media (max-width: 1120px) and (min-width: 861px)",
+        ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }",
+        ".seoul-map-canvas { min-height: 560px; }",
+        ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }",
+    ]:
+        if guard not in css:
+            failures.append(f"seoul_density_desktop_layout_guard_missing:{guard}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")

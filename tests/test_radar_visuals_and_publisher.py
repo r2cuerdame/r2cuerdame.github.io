@@ -141,6 +141,12 @@ def test_home_has_above_fold_seoul_density_tool():
     assert '/topics/jeonwolse-contract-check/' in js
     assert '/radar/cafe-contract-risk/' not in js
     assert '/radar/monthly-rent-contract-check/' not in js
+    css = build_site.CSS
+    assert "@media (max-width: 1120px) and (min-width: 861px)" in css
+    assert ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }" in css
+    assert ".seoul-map-canvas { min-height: 560px; }" in css
+    assert ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }" in css
+
     data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
     assert "KOSIS_API_KEY" not in data_text
     assert "Public OSM Overpass" not in data_text
