@@ -97,9 +97,11 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-map-toggle="districts"' in html
     assert 'data-map-toggle="subway"' in html
     assert 'data-map-toggle="labels"' in html
-    assert 'data-subway-visible="false"' in html
+    assert 'data-subway-visible="true"' in html
     assert 'data-labels-visible="false"' in html
-    assert 'aria-label="지하철·역 보조 레이어" aria-pressed="false"' in html
+    assert 'aria-label="지하철·역 보조 레이어" aria-pressed="true"' in html
+    assert 'data-cluster-mode="cluster"' in html
+    assert 'data-map-zoom-level="1.02"' in html
     assert 'data-map-zoom="in"' in html
     assert 'data-map-zoom="out"' in html
     assert '지하철·역' in html
@@ -173,9 +175,6 @@ def test_home_has_above_fold_seoul_density_tool():
     assert '/radar/cafe-contract-risk/' not in js
     assert '/radar/monthly-rent-contract-check/' not in js
     css = build_site.CSS
-    assert "@media (min-width: 1121px)" in css
-    assert ".station-inspector { display: contents; }" in css
-    assert ".density-result-card { grid-column: 1 / -1; grid-row: 3; }" in css
     assert "@media (max-width: 1120px) and (min-width: 861px)" in css
     assert ".density-data-note" in css
     assert ".map-reading-guide" in css
@@ -185,9 +184,13 @@ def test_home_has_above_fold_seoul_density_tool():
     assert ".map-cluster-dot" in css
     assert ".seoul-district[data-selected=\"true\"]" in css
     assert ".seoul-map-canvas[data-cluster-mode=\"cluster\"] .station-dot" in css
+    assert ".density-score-grid { display: none;" in css
+    assert ".tool-link-row a:nth-child(n+2) { display: none; }" in css
     assert ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }" in css
     assert ".seoul-map-canvas { min-height: 560px; }" in css
-    assert ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }" in css
+    assert ".seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px));" in css
+    assert ".density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex;" in css
+    assert ".density-layer-tabs button:nth-child(n+5) { display: none; }" in css
 
     data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
     assert "KOSIS_API_KEY" not in data_text

@@ -46,7 +46,7 @@
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
-  let mapZoom = 1;
+  let mapZoom = 1.02;
   let selectedDistrict = 'all';
 
   const setMapZoom = (nextZoom) => {
@@ -61,7 +61,7 @@
       const action = button.dataset.mapZoom;
       button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
     });
-    if (mapCanvas) mapCanvas.dataset.clusterMode = mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station';
+    if (mapCanvas) mapCanvas.dataset.clusterMode = mapZoom < 1.08 ? 'cluster' : mapZoom < 1.32 ? 'mixed' : 'station';
     renderClusters();
   };
   const setMapLayerVisibility = (layer, visible) => {
@@ -138,7 +138,7 @@
     if (districtSummary) {
       const total = candidates.length;
       districtSummary.textContent = next === 'all'
-        ? `서울 전체 ${total}개 후보 · 줌아웃은 권역 합치기, 줌인은 구/개별 역`
+        ? `서울 전체 ${total}개 후보 · 노선망 위에서 후보역/구 밀도를 같이 보는 중`
         : `${next} 후보 ${total}개 · 선택 구만 강조해서 보는 중`;
     }
     renderClusters();
@@ -430,7 +430,7 @@
     const action = button.dataset.mapZoom;
     if (action === 'in') setMapZoom(mapZoom + .25);
     if (action === 'out') setMapZoom(mapZoom - .25);
-    if (action === 'reset') setMapZoom(1);
+    if (action === 'reset') setMapZoom(1.02);
   }));
   mapLayerToggleButtons.forEach((button) => button.addEventListener('click', () => {
     const layer = button.dataset.mapToggle || '';
@@ -445,10 +445,10 @@
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
-  setMapZoom(1);
+  setMapZoom(1.02);
   setMapLayerVisibility('districts', mapCanvas?.dataset.districtsVisible !== 'false');
-  setMapLayerVisibility('subway', mapCanvas?.dataset.subwayVisible === 'true');
-  setMapLayerVisibility('labels', mapCanvas?.dataset.labelsVisible === 'true');
+  setMapLayerVisibility('subway', mapCanvas?.dataset.subwayVisible !== 'false');
+  setMapLayerVisibility('labels', mapCanvas?.dataset.labelsVisible !== 'false');
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))

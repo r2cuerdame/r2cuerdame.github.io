@@ -246,13 +246,12 @@ def audit_css(css: str) -> list[str]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
     for guard in [
-        "@media (min-width: 1121px)",
-        ".station-inspector { display: contents; }",
-        ".density-result-card { grid-column: 1 / -1; grid-row: 3; }",
         "@media (max-width: 1120px) and (min-width: 861px)",
         ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }",
         ".seoul-map-canvas { min-height: 560px; }",
-        ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }",
+        ".seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px));",
+        ".density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex;",
+        ".density-layer-tabs button:nth-child(n+5) { display: none; }",
     ]:
         if guard not in css:
             failures.append(f"seoul_density_desktop_layout_guard_missing:{guard}")
@@ -338,9 +337,11 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'data-map-toggle="districts"',
             'data-map-toggle="subway"',
             'data-map-toggle="labels"',
-            'data-subway-visible="false"',
+            'data-subway-visible="true"',
             'data-labels-visible="false"',
-            'aria-label="지하철·역 보조 레이어" aria-pressed="false"',
+            'data-cluster-mode="cluster"',
+            'data-map-zoom-level="1.02"',
+            'aria-label="지하철·역 보조 레이어" aria-pressed="true"',
             'data-map-zoom="in"',
             'data-map-zoom="out"',
             'data-district-filter',
