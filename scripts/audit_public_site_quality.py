@@ -269,6 +269,14 @@ def audit_css(css: str) -> list[str]:
         failures.append("shopping_room_anchor_scroll_margin_missing")
     if "min-width: 104px; max-width: 152px" not in css:
         failures.append("shopping_room_short_hotspot_label_css_guard_missing")
+    for guard in [
+        ".room-product { position: absolute; z-index: 9; display: grid; place-items: center; width: 58px; height: 58px;",
+        ".room-hit-area { position: absolute; inset: 9px;",
+        ".room-pulse { position: absolute; width: 31px; height: 31px;",
+        "box-shadow: 0 0 0 5px rgba(255,90,31,.08);",
+    ]:
+        if guard not in css:
+            failures.append(f"shopping_room_quiet_hotspot_css_guard_missing:{guard}")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
