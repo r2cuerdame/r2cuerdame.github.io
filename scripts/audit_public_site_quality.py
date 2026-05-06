@@ -263,6 +263,8 @@ def audit_css(css: str) -> list[str]:
         failures.append("shopping_room_desktop_width_weight_guard_missing")
     if "min-height: clamp(390px, 36vw, 470px)" not in css:
         failures.append("shopping_room_large_visual_guard_missing")
+    if "scroll-margin-top: 96px" not in css:
+        failures.append("shopping_room_anchor_scroll_margin_missing")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
@@ -386,6 +388,8 @@ def audit_html(path: str, page_html: str) -> list[str]:
         coupang_links = coupang_anchor_tags(page_html)
         if 'class="shopping-room-card"' not in page_html:
             failures.append(f"{path}:shopping_room_interactive_card_missing")
+        if 'id="shopping-room"' not in page_html or 'href="#shopping-room"' not in page_html:
+            failures.append(f"{path}:shopping_room_hero_anchor_missing")
         if 'shopping-room-ai.webp' not in page_html or 'class="room-photo"' not in page_html:
             failures.append(f"{path}:shopping_room_ai_photo_missing")
         if 'class="room-hit-area"' not in page_html:

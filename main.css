@@ -405,7 +405,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-hero-panel .microcopy { margin: 14px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; font-weight: 850; }
 .playful-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .playful-badges span { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 13px; font-weight: 950; }
-.shopping-room-card { align-self: stretch; min-width: 0; padding: clamp(14px, 1.9vw, 18px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
+.shopping-room-card { align-self: stretch; min-width: 0; scroll-margin-top: 96px; padding: clamp(14px, 1.9vw, 18px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
 .room-card-head { display: grid; gap: 7px; }
 .room-card-head > strong { display: block; color: #111827; font-size: clamp(21px, 2.1vw, 26px); line-height: 1.15; letter-spacing: -.035em; }
 .room-card-head p, .room-empty p { margin: 0; color: #6b625f; font-size: 13px; line-height: 1.5; font-weight: 750; }

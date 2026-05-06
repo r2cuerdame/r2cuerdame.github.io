@@ -1691,7 +1691,7 @@ def shopping_room_deals(deals: list[dict], limit: int = 6) -> list[dict]:
 def shopping_room_scene(deals: list[dict]) -> str:
     items = shopping_room_deals(deals)
     if not items:
-        return '''<aside class="shopping-room-card" aria-label="쇼핑픽 쇼룸">
+        return '''<aside id="shopping-room" class="shopping-room-card" aria-label="쇼핑픽 쇼룸">
   <div class="room-empty"><strong>쇼핑룸 준비중</strong><p>새 상품 비교글이 올라오면 이 방에 물건처럼 하나씩 붙습니다.</p></div>
 </aside>'''
     toggles: list[str] = []
@@ -1738,7 +1738,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <img class="room-photo" src="{esc(info['image'])}" alt="{esc(info['alt'])}" loading="eager" decoding="async" />
       {''.join(markers_by_scene.get(key, []))}
     </div>''')
-    return f'''<aside class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
+    return f'''<aside id="shopping-room" class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
   <div class="room-card-head">
     <span class="tag pale">AI 쇼핑룸</span>
     <strong>방 사진 속 상품을 눌러보세요</strong>
@@ -2986,7 +2986,7 @@ def deals_body(deals: list[dict]) -> str:
     <h1>필요한 제품만 빠르게 비교</h1>
     <p class="lead">생활가전·책상 장비·음향기기를 가격대, 사용 장면, 관리 부담 기준으로 짧게 정리합니다. 오늘 살 만한 후보만 먼저 보고, 자세한 가격은 상품 페이지에서 다시 확인하세요.</p>
     <div class="hero-actions compact-actions">
-      <a class="button primary" href="#today-best">오늘 추천 보기</a>
+      <a class="button primary" href="#shopping-room">쇼핑룸에서 고르기</a>
       <a class="button" href="#deal-search">상품 검색하기</a>
     </div>
     <div class="deal-flow" aria-label="쇼핑픽 이용 순서">
@@ -3731,7 +3731,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-hero-panel .microcopy { margin: 14px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; font-weight: 850; }
 .playful-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .playful-badges span { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 13px; font-weight: 950; }
-.shopping-room-card { align-self: stretch; min-width: 0; padding: clamp(14px, 1.9vw, 18px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
+.shopping-room-card { align-self: stretch; min-width: 0; scroll-margin-top: 96px; padding: clamp(14px, 1.9vw, 18px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
 .room-card-head { display: grid; gap: 7px; }
 .room-card-head > strong { display: block; color: #111827; font-size: clamp(21px, 2.1vw, 26px); line-height: 1.15; letter-spacing: -.035em; }
 .room-card-head p, .room-empty p { margin: 0; color: #6b625f; font-size: 13px; line-height: 1.5; font-weight: 750; }
