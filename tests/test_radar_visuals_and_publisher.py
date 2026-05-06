@@ -103,7 +103,13 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-map-zoom="in"' in html
     assert 'data-map-zoom="out"' in html
     assert '지하철·역' in html
+    assert 'data-district-filter' in html
+    assert 'data-district-summary' in html
+    assert 'data-map-clusters' in html
     assert 'data-map-district="마포구"' in html
+    assert 'data-map-district="강남구"' in html
+    assert 'role="button" tabindex="0"' in html
+    assert 'data-district="마포구"' in html
     assert '서울 25개 구 행정경계' in html
     assert 'OSM 한강' in html
     assert 'data-density-layer="cafe"' in html
@@ -148,6 +154,12 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-map-zoom' in js
     assert 'setMapZoom' in js
     assert 'setMapLayerVisibility' in js
+    assert 'setSelectedDistrict' in js
+    assert 'renderClusters' in js
+    assert 'dataset.clusterMode' in js
+    assert 'data-map-clusters' in js
+    assert 'data-district-filter' in js
+    assert 'data-district-hidden' in js
     assert 'dataset.subwayVisible' in js
     assert 'dataset.labelsVisible' in js
     assert 'districtPaths' in js
@@ -161,6 +173,10 @@ def test_home_has_above_fold_seoul_density_tool():
     assert "@media (max-width: 1120px) and (min-width: 861px)" in css
     assert ".density-data-note" in css
     assert ".candidate-memo-card" in css
+    assert ".district-picker-row" in css
+    assert ".map-cluster-dot" in css
+    assert ".seoul-district[data-selected=\"true\"]" in css
+    assert ".seoul-map-canvas[data-cluster-mode=\"cluster\"] .station-dot" in css
     assert ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }" in css
     assert ".seoul-map-canvas { min-height: 560px; }" in css
     assert ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }" in css

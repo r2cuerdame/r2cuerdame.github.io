@@ -37,6 +37,9 @@
   const mapZoomButtons = Array.from(root.querySelectorAll('[data-map-zoom]'));
   const mapZoomValue = root.querySelector('[data-map-zoom-value]');
   const mapLayerToggleButtons = Array.from(root.querySelectorAll('[data-map-toggle]'));
+  const districtFilter = root.querySelector('[data-district-filter]');
+  const districtSummary = root.querySelector('[data-district-summary]');
+  const clusterLayer = root.querySelector('[data-map-clusters]');
   if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
@@ -44,6 +47,7 @@
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
   let mapZoom = 1;
+  let selectedDistrict = 'all';
 
   const setMapZoom = (nextZoom) => {
     mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
@@ -57,6 +61,8 @@
       const action = button.dataset.mapZoom;
       button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
     });
+    if (mapCanvas) mapCanvas.dataset.clusterMode = mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station';
+    renderClusters();
   };
   const setMapLayerVisibility = (layer, visible) => {
     if (!mapCanvas || !layer) return;
@@ -87,6 +93,107 @@
       compareSelect.value = compare.id;
     }
     return compare;
+  };
+  const pctNumber = (value, fallback = 50) => {
+    const parsed = Number(String(value || '').replace('%', '').trim());
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  const stationButtonFor = (id) => stationButtons.find((button) => button.dataset.stationMap === id);
+  const stationsForDistrict = (district) => {
+    const stations = payload?.stations || [];
+    return district && district !== 'all' ? stations.filter((station) => station.district === district) : stations;
+  };
+  const selectedStationSet = () => stationsForDistrict(selectedDistrict);
+  const clusterValueFor = (station, industry) => industry === 'population'
+    ? Number(station.population_density_index || 0)
+    : Number(station.counts?.[industry] || 0);
+  const districtRegion = {
+    '강서구': '서남권', '마포구': '서북권', '서대문구': '서북권', '영등포구': '서남권',
+    '종로구': '도심권', '성동구': '동북권', '광진구': '동북권',
+    '동작구': '동남권', '관악구': '서남권', '강남구': '동남권', '송파구': '동남권'
+  };
+  const regionForStation = (station, x, y) => districtRegion[station.district] || (x < 42 ? (y > 52 ? '서남권' : '서북권') : x > 64 ? '동남권' : '도심권');
+  const setSelectedDistrict = (district, options = {}) => {
+    const next = district && district !== 'all' ? String(district) : 'all';
+    selectedDistrict = next;
+    root.dataset.selectedDistrict = next;
+    if (mapCanvas) mapCanvas.dataset.selectedDistrict = next;
+    if (districtFilter) {
+      const hasOption = Array.from(districtFilter.options || []).some((option) => option.value === next);
+      districtFilter.value = hasOption ? next : 'all';
+    }
+    const candidates = stationsForDistrict(next);
+    if (next !== 'all' && options.syncStation !== false && candidates.length && !candidates.some((station) => station.id === stationSelect.value)) {
+      stationSelect.value = candidates[0].id;
+    }
+    stationButtons.forEach((button) => {
+      button.setAttribute('data-district-hidden', next !== 'all' && button.dataset.district !== next ? 'true' : 'false');
+    });
+    districtPaths.forEach((path) => {
+      const isSelected = next !== 'all' && path.dataset.mapDistrict === next;
+      path.dataset.selected = String(isSelected);
+      path.setAttribute('data-district-hidden', next !== 'all' && path.dataset.mapDistrict !== next ? 'true' : 'false');
+      path.setAttribute('aria-pressed', String(isSelected));
+    });
+    if (districtSummary) {
+      const total = candidates.length;
+      districtSummary.textContent = next === 'all'
+        ? `서울 전체 ${total}개 후보 · 줌아웃은 권역 합치기, 줌인은 구/개별 역`
+        : `${next} 후보 ${total}개 · 선택 구만 강조해서 보는 중`;
+    }
+    renderClusters();
+  };
+  const renderClusters = () => {
+    if (!clusterLayer || !payload?.stations?.length) return;
+    const industry = industrySelect.value || 'cafe';
+    const mode = mapCanvas?.dataset.clusterMode || (mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station');
+    if (mode === 'station') {
+      clusterLayer.innerHTML = '';
+      return;
+    }
+    const groups = new Map();
+    selectedStationSet().forEach((station) => {
+      const button = stationButtonFor(station.id);
+      const x = pctNumber(button?.style.getPropertyValue('--x'), 50);
+      const y = pctNumber(button?.style.getPropertyValue('--y'), 50);
+      const key = mode === 'cluster' && selectedDistrict === 'all'
+        ? regionForStation(station, x, y)
+        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.id : (station.district || station.id));
+      const label = mode === 'cluster' && selectedDistrict === 'all'
+        ? key
+        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.name : (station.district || station.name));
+      const district = mode === 'cluster' && selectedDistrict === 'all' ? '' : (station.district || '');
+      const current = groups.get(key) || {key, label, district, stations: [], x: 0, y: 0, value: 0};
+      current.stations.push(station);
+      current.x += x;
+      current.y += y;
+      current.value += clusterValueFor(station, industry);
+      groups.set(key, current);
+    });
+    const clusters = Array.from(groups.values()).map((group) => ({
+      ...group,
+      x: group.x / Math.max(1, group.stations.length),
+      y: group.y / Math.max(1, group.stations.length),
+      stationId: group.stations.length === 1 ? group.stations[0].id : ''
+    }));
+    const maxValue = Math.max(1, ...clusters.map((cluster) => cluster.value));
+    clusterLayer.innerHTML = clusters.map((cluster) => {
+      const heat = Math.max(.18, Math.min(1, cluster.value / maxValue));
+      const label = cluster.label.endsWith('구') ? cluster.label.slice(0, -1) : cluster.label;
+      const aria = `${cluster.label} ${categoryLabel(industry)} ${cluster.value} · ${cluster.stations.length}개 후보`;
+      return `<button type="button" class="map-cluster-dot" data-cluster-bubble data-district="${esc(cluster.district)}" data-station-id="${esc(cluster.stationId)}" style="--x:${cluster.x.toFixed(2)}%;--y:${cluster.y.toFixed(2)}%;--heat:${heat.toFixed(2)}" aria-label="${esc(aria)}"><b>${esc(cluster.value)}</b><small>${esc(label)} ${cluster.stations.length}곳</small></button>`;
+    }).join('');
+    Array.from(clusterLayer.querySelectorAll('[data-cluster-bubble]')).forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.district) {
+          setSelectedDistrict(button.dataset.district || 'all');
+        } else {
+          setMapZoom(Math.max(mapZoom, 1.25));
+        }
+        if (button.dataset.stationId) stationSelect.value = button.dataset.stationId;
+        evaluate();
+      });
+    });
   };
   const renderCompare = (station, compare, industry) => {
     if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
@@ -227,6 +334,7 @@
       const small = button.querySelector('small');
       if (small) small.textContent = industry === 'population' ? `${station.population_density_index}` : `${raw}`;
       button.title = `${station.name} · ${industry === 'population' ? '인구밀도' : categoryLabel(industry)} ${raw}`;
+      button.setAttribute('data-district-hidden', selectedDistrict !== 'all' && station.district !== selectedDistrict ? 'true' : 'false');
       button.setAttribute('aria-pressed', station.id === stationSelect.value ? 'true' : 'false');
     });
     layerButtons.forEach((button) => button.setAttribute('aria-pressed', button.dataset.densityLayer === industry ? 'true' : 'false'));
@@ -243,6 +351,9 @@
   const evaluate = () => {
     if (!payload?.stations?.length) return;
     const station = stationById(stationSelect.value) || payload.stations[0];
+    if (station?.district && selectedDistrict !== 'all' && station.district !== selectedDistrict) {
+      setSelectedDistrict(station.district, {syncStation: false});
+    }
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
     const count = valueFor(station, industry);
@@ -289,15 +400,32 @@
     renderBars(station);
     renderCompare(station, compare, industry);
     updateMapHeat(industry);
+    renderClusters();
   };
 
   const hydrate = (data) => {
     payload = data;
     if (payload?.source_summary && sourceNoteEl) sourceNoteEl.textContent = payload.source_summary;
+    setSelectedDistrict(selectedDistrict, {syncStation: false});
     evaluate();
   };
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
-  stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  stationButtons.forEach((button) => button.addEventListener('click', () => {
+    stationSelect.value = button.dataset.stationMap || stationSelect.value;
+    setSelectedDistrict(button.dataset.district || 'all', {syncStation: false});
+    evaluate();
+  }));
+  if (districtFilter) districtFilter.addEventListener('change', () => { setSelectedDistrict(districtFilter.value || 'all'); evaluate(); });
+  districtPaths.forEach((path) => {
+    const choose = () => { setSelectedDistrict(path.dataset.mapDistrict || 'all'); evaluate(); };
+    path.addEventListener('click', choose);
+    path.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
   mapZoomButtons.forEach((button) => button.addEventListener('click', () => {
     const action = button.dataset.mapZoom;
     if (action === 'in') setMapZoom(mapZoom + .25);
@@ -309,7 +437,11 @@
     const visible = button.getAttribute('aria-pressed') !== 'true';
     setMapLayerVisibility(layer, visible);
   }));
-  stationSelect.addEventListener('change', evaluate);
+  stationSelect.addEventListener('change', () => {
+    const station = stationById(stationSelect.value);
+    if (station?.district) setSelectedDistrict(station.district, {syncStation: false});
+    evaluate();
+  });
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);

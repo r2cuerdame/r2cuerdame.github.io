@@ -2773,8 +2773,9 @@ def seoul_map_outline_svg() -> str:
     district_labels = []
     for district in outline.get("districts", []):
         name = str(district.get("name", ""))
+        has_candidates = name in station_districts
         district_paths.append(
-            f'<path class="seoul-district" data-map-district="{esc(name)}" d="{esc(district.get("path", ""))}"><title>{esc(name)} 실제 행정경계</title></path>'
+            f'<path class="seoul-district" data-map-district="{esc(name)}" data-has-candidates="{str(has_candidates).lower()}" role="button" tabindex="0" aria-pressed="false" d="{esc(district.get("path", ""))}"><title>{esc(name)} 실제 행정경계 선택</title></path>'
         )
         if name in station_districts:
             label = name[:-1] if name.endswith("구") else name
@@ -2788,7 +2789,7 @@ def seoul_map_outline_svg() -> str:
         <defs>
           <filter id="seoulMapGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <g class="seoul-districts" aria-hidden="true">{''.join(district_paths)}</g>
+        <g class="seoul-districts">{''.join(district_paths)}</g>
         <path class="seoul-river" d="{river_path}" aria-label="한강 OSM geometry" />
         <g class="seoul-map-labels" aria-hidden="true">{''.join(district_labels)}</g>
       </svg>
@@ -2809,11 +2810,17 @@ def commercial_check_tool_block() -> str:
         for key, label in categories.items()
         if key in {"cafe", "food", "convenience", "beauty", "clinic", "academy", "population"}
     )
+    district_names = [str(district.get("name", "")) for district in (SEOUL_MAP_OUTLINE.get("districts", []) if isinstance(SEOUL_MAP_OUTLINE, dict) else []) if district.get("name")]
+    if not district_names:
+        district_names = sorted({str(station.get("district", "")) for station in SEOUL_COMMERCIAL_AREAS["stations"] if station.get("district")})
+    district_options = '<option value="all" selected>서울 전체</option>' + "\n".join(
+        f'<option value="{esc(name)}">{esc(name)}</option>' for name in district_names
+    )
     station_button_items = []
     for station in SEOUL_COMMERCIAL_AREAS["stations"]:
         map_x, map_y = seoul_station_map_position(station)
         station_button_items.append(
-            f'<button type="button" class="station-dot commercial-station-dot" data-subway-station data-station-map="{esc(station["id"])}" data-lat="{station["lat"]}" data-lng="{station["lng"]}" style="--x: {map_x:.2f}%; --y: {map_y:.2f}%;" aria-label="{esc(station["name"])} 실제 지도 위치 상권 보기"><i aria-hidden="true"></i><b>{esc(station["name"])}</b><small>{esc(station["commercial_density_label"])}</small></button>'
+            f'<button type="button" class="station-dot commercial-station-dot" data-subway-station data-station-map="{esc(station["id"])}" data-district="{esc(station["district"])}" data-lat="{station["lat"]}" data-lng="{station["lng"]}" style="--x: {map_x:.2f}%; --y: {map_y:.2f}%;" aria-label="{esc(station["name"])} 실제 지도 위치 상권 보기"><i aria-hidden="true"></i><b>{esc(station["name"])}</b><small>{esc(station["commercial_density_label"])}</small></button>'
         )
     station_buttons = "\n".join(station_button_items)
     station_options = "\n".join(
@@ -2845,8 +2852,12 @@ def commercial_check_tool_block() -> str:
     <div class="density-layer-tabs" role="tablist" aria-label="업종 밀도 레이어">
       {layer_buttons}
     </div>
-    <div class="seoul-map-canvas" data-map-canvas data-districts-visible="true" data-subway-visible="false" data-labels-visible="false" data-map-zoom-level="1">
+    <div class="seoul-map-canvas" data-map-canvas data-districts-visible="true" data-subway-visible="false" data-labels-visible="false" data-map-zoom-level="1" data-cluster-mode="cluster" data-selected-district="all">
       <div class="map-toolbar" aria-label="지도 조작">
+        <div class="district-picker-row">
+          <label>자치구 선택<select data-district-filter aria-label="서울 자치구 선택">{district_options}</select></label>
+          <span data-district-summary>서울 전체 후보를 권역 단위로 묶어 보는 중</span>
+        </div>
         <div class="map-layer-toggles" role="group" aria-label="지도 레이어 켜고 끄기">
           <button type="button" data-map-toggle="districts" aria-pressed="true">경계</button>
           <button type="button" data-map-toggle="subway" aria-label="지하철·역 보조 레이어" aria-pressed="false">노선</button>
@@ -2862,6 +2873,7 @@ def commercial_check_tool_block() -> str:
       <div class="seoul-map-viewport" data-map-viewport style="--map-zoom: 1; --focus-x: 50%; --focus-y: 50%;">
         {seoul_map_outline_svg()}
         {seoul_subway_overlay_svg()}
+        <div class="map-cluster-layer" data-map-clusters aria-live="polite"></div>
         {station_buttons}
       </div>
       {subway_legend}
@@ -3454,7 +3466,12 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .seoul-map-canvas { position: relative; flex: 1 1 auto; min-height: clamp(500px, 42vw, 620px); border-radius: 30px; overflow: hidden; background: radial-gradient(circle at 48% 42%, rgba(51,65,85,.46), transparent 34%), radial-gradient(circle at 58% 50%, rgba(96,165,250,.16), transparent 32%), linear-gradient(145deg, #101827, #070b15 78%); border: 1px solid rgba(255,255,255,.12); isolation: isolate; }
 .seoul-map-canvas::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(circle at 50% 50%, #000 0 72%, transparent 100%); }
 .seoul-map-viewport { position: absolute; inset: 0; z-index: 1; transform-origin: var(--focus-x, 50%) var(--focus-y, 50%); transform: scale(var(--map-zoom, 1)); transition: transform .18s ease; will-change: transform; }
-.map-toolbar { position: absolute; z-index: 9; top: 14px; right: 14px; display: flex; gap: 6px; align-items: center; justify-content: flex-end; pointer-events: auto; }
+.map-toolbar { position: absolute; z-index: 9; top: 14px; left: 14px; right: 14px; display: flex; flex-wrap: wrap; gap: 7px; align-items: flex-start; justify-content: space-between; pointer-events: auto; }
+.district-picker-row { flex: 1 1 330px; max-width: min(480px, 100%); display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 999px; background: rgba(2,6,23,.56); border: 1px solid rgba(255,255,255,.13); box-shadow: 0 10px 24px rgba(0,0,0,.18); backdrop-filter: blur(14px); }
+.district-picker-row label { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding-left: 9px; color: #dbeafe; font-size: 11px; font-weight: 950; white-space: nowrap; }
+.district-picker-row select { min-height: 30px; max-width: 132px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 0 24px 0 10px; background: rgba(255,255,255,.08); color: #fff; font: inherit; font-size: 11px; font-weight: 950; }
+.district-picker-row select option { color: #111827; background: #fff; }
+.district-picker-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #bfdbfe; font-size: 11px; font-weight: 850; }
 .map-layer-toggles, .map-zoom-controls { display: inline-flex; align-items: center; gap: 4px; padding: 3px; border-radius: 999px; background: rgba(2,6,23,.48); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 10px 24px rgba(0,0,0,.18); backdrop-filter: blur(14px); }
 .map-layer-toggles button, .map-zoom-controls button { min-width: 30px; min-height: 30px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; background: rgba(255,255,255,.055); color: #dbeafe; font: inherit; font-size: 11px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease, opacity .16s ease; }
 .map-layer-toggles button { padding: 0 8px; white-space: nowrap; }
@@ -3470,12 +3487,17 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .seoul-map-canvas[data-labels-visible="false"] .seoul-subway-labels { opacity: 0; pointer-events: none; }
 .seoul-map-canvas[data-districts-visible="false"] [data-map-chip="districts"], .seoul-map-canvas[data-subway-visible="false"] [data-map-chip="subway"], .seoul-map-canvas[data-labels-visible="false"] [data-map-chip="labels"] { opacity: .38; }
 .seoul-real-map { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 24px 48px rgba(0,0,0,.26)); opacity: .96; }
-.seoul-district { fill: rgba(15,23,42,.44); stroke: rgba(226,232,240,.22); stroke-width: 1.6; vector-effect: non-scaling-stroke; transition: fill .16s ease, stroke .16s ease, opacity .16s ease; }
+.seoul-district { fill: rgba(15,23,42,.44); stroke: rgba(226,232,240,.22); stroke-width: 1.6; vector-effect: non-scaling-stroke; cursor: pointer; pointer-events: visiblePainted; transition: fill .16s ease, stroke .16s ease, opacity .16s ease; }
 .seoul-district:nth-child(3n) { fill: rgba(37,99,235,.10); }
 .seoul-district:nth-child(4n) { fill: rgba(15,118,110,.10); }
+.seoul-district:hover, .seoul-district:focus-visible { fill: rgba(96,165,250,.18); stroke: rgba(191,219,254,.86); }
+.seoul-district[data-district-hidden="true"] { opacity: .22; }
+.seoul-district[data-selected="true"] { fill: rgba(255,90,31,.30); stroke: rgba(255,237,213,.96); stroke-width: 3.4; filter: url(#seoulMapGlow); opacity: 1; }
 .seoul-district[data-active="true"] { fill: rgba(255,90,31,.22); stroke: rgba(255,237,213,.92); stroke-width: 3; filter: url(#seoulMapGlow); }
+.seoul-district[data-has-candidates="false"] { opacity: .44; }
 .seoul-river { fill: none; stroke: rgba(125,211,252,.62); stroke-width: 17; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .78; filter: drop-shadow(0 0 16px rgba(56,189,248,.24)); }
 .seoul-map-labels { font-size: 16px; font-weight: 950; letter-spacing: -.05em; fill: rgba(226,232,240,.44); text-anchor: middle; paint-order: stroke; stroke: rgba(15,23,42,.72); stroke-width: 4px; stroke-linejoin: round; }
+.seoul-map-canvas[data-cluster-mode="cluster"] .seoul-map-labels { opacity: .34; }
 .seoul-subway-map { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .seoul-subway-line-halo { fill: none; stroke: rgba(2,6,23,.44); stroke-width: 5.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .20; }
 .seoul-subway-line { fill: none; stroke: var(--line-color, #60a5fa); stroke-width: 2.05; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .34; filter: none; }
@@ -3493,7 +3515,16 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .subway-line-key i { width: 13px; height: 4px; border-radius: 999px; background: var(--line-color); box-shadow: 0 0 10px color-mix(in srgb, var(--line-color) 52%, transparent); }
 .map-data-chips { display: none; position: absolute; z-index: 6; left: 16px; top: 16px; right: 270px; flex-wrap: wrap; gap: 7px; pointer-events: none; }
 .map-data-chips span { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 999px; background: rgba(15,23,42,.68); border: 1px solid rgba(255,255,255,.13); color: #dbeafe; font-size: 11px; font-weight: 950; backdrop-filter: blur(12px); }
-.station-dot { --heat: .5; --size: clamp(42px, calc(30px + var(--heat) * 48px), 80px); position: absolute; z-index: 8; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: var(--size); height: var(--size); border: 3px solid rgba(255,246,238,.96); border-radius: 999px; background: radial-gradient(circle at 33% 25%, rgba(255,255,255,1) 0 10%, rgba(255,97,36,.98) 11% 68%, rgba(199,63,22,.98) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(8px + var(--heat) * 14px) rgba(255,90,31, calc(.08 + var(--heat) * .12)), 0 22px 42px rgba(0,0,0,.34); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease; }
+.map-cluster-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+.map-cluster-dot { --heat: .5; --size: clamp(58px, calc(48px + var(--heat) * 58px), 112px); position: absolute; left: var(--x); top: var(--y); width: var(--size); height: var(--size); transform: translate(-50%, -50%); display: grid; place-items: center; border: 2.5px solid rgba(255,237,213,.92); border-radius: 999px; background: radial-gradient(circle at 34% 24%, rgba(255,255,255,.95) 0 8%, rgba(251,146,60,.98) 9% 58%, rgba(194,65,12,.98) 100%); color: #fff; cursor: pointer; pointer-events: auto; box-shadow: 0 0 0 calc(10px + var(--heat) * 18px) rgba(251,146,60,.16), 0 22px 42px rgba(0,0,0,.34); transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease; }
+.map-cluster-dot:hover, .map-cluster-dot:focus-visible { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 0 0 calc(14px + var(--heat) * 22px) rgba(251,146,60,.20), 0 28px 52px rgba(0,0,0,.42); }
+.map-cluster-dot b, .map-cluster-dot small { position: relative; z-index: 1; display: block; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,.40); }
+.map-cluster-dot b { font-size: clamp(13px, calc(11px + var(--heat) * 7px), 21px); line-height: 1; font-weight: 950; letter-spacing: -.04em; }
+.map-cluster-dot small { margin-top: 4px; max-width: 86px; color: #ffedd5; font-size: 10.5px; line-height: 1.05; font-weight: 950; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seoul-map-canvas[data-cluster-mode="cluster"] .station-dot { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(.68); }
+.seoul-map-canvas[data-cluster-mode="mixed"] .station-dot { opacity: .28; }
+.station-dot[data-district-hidden="true"] { opacity: .10; pointer-events: none; }
+.station-dot { --heat: .5; --size: clamp(42px, calc(30px + var(--heat) * 48px), 80px); position: absolute; z-index: 8; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: var(--size); height: var(--size); border: 3px solid rgba(255,246,238,.96); border-radius: 999px; background: radial-gradient(circle at 33% 25%, rgba(255,255,255,1) 0 10%, rgba(255,97,36,.98) 11% 68%, rgba(199,63,22,.98) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(8px + var(--heat) * 14px) rgba(255,90,31, calc(.08 + var(--heat) * .12)), 0 22px 42px rgba(0,0,0,.34); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease, opacity .16s ease; }
 .station-dot i { position: absolute; left: 24%; top: 22%; width: 18%; height: 18%; border-radius: 999px; background: #fff; box-shadow: 0 3px 9px rgba(0,0,0,.22); }
 .station-dot:hover, .station-dot:focus-visible, .station-dot[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.08); z-index: 10; box-shadow: 0 0 0 calc(12px + var(--heat) * 18px) rgba(255,90,31,.18), 0 26px 50px rgba(0,0,0,.42); }
 .station-dot b { position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); max-width: 142px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 5px 10px; border-radius: 999px; background: rgba(2,6,23,.92); color: #fff; font-size: 13px; font-weight: 950; opacity: 0; pointer-events: none; transition: opacity .14s ease; box-shadow: 0 10px 22px rgba(0,0,0,.22); }
@@ -4116,10 +4147,15 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .density-layer-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; overflow: visible; padding: 0; margin: 0 0 12px; }
   .density-layer-tabs button { width: 100%; min-height: 38px; padding: 0 6px; font-size: 12px; letter-spacing: -.04em; }
   .seoul-map-canvas { min-height: min(108vw, 470px); border-radius: 24px; }
-  .map-toolbar { left: auto; right: 10px; top: 10px; display: flex; gap: 5px; align-items: center; justify-content: flex-end; }
-  .map-layer-toggles { flex-wrap: nowrap; max-width: none; gap: 3px; padding: 3px; border-radius: 999px; background: rgba(2,6,23,.58); }
-  .map-zoom-controls { display: none; }
-  .map-layer-toggles button { min-width: 34px; min-height: 32px; padding: 0 8px; letter-spacing: -.04em; font-size: 10.5px; }
+  .map-toolbar { left: 10px; right: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; justify-content: space-between; }
+  .district-picker-row { order: 1; flex: 1 1 100%; max-width: none; border-radius: 18px; gap: 6px; padding: 4px; }
+  .district-picker-row label { min-height: 30px; padding-left: 7px; font-size: 10px; }
+  .district-picker-row select { max-width: 112px; min-height: 28px; font-size: 10px; }
+  .district-picker-row span { font-size: 10px; }
+  .map-layer-toggles { order: 2; flex-wrap: nowrap; max-width: none; gap: 3px; padding: 3px; border-radius: 999px; background: rgba(2,6,23,.58); }
+  .map-zoom-controls { order: 3; display: inline-flex; }
+  .map-zoom-controls strong { min-width: 30px; font-size: 10px; }
+  .map-layer-toggles button, .map-zoom-controls button { min-width: 30px; min-height: 30px; padding: 0 7px; letter-spacing: -.04em; font-size: 10px; }
   .seoul-real-map { inset: 0; width: 100%; height: 100%; }
   .seoul-subway-line-halo { stroke-width: 3.2; opacity: .10; }
   .seoul-subway-line { stroke-width: 1.15; opacity: .18; }
@@ -4128,10 +4164,14 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .seoul-subway-labels { display: none; }
   .subway-station-label { font-size: 9px; stroke-width: 3.6px; }
   .subway-line-key { display: none; }
-  .seoul-map-labels { font-size: 13px; opacity: .74; }
+  .seoul-map-labels { font-size: 12px; opacity: .42; }
+  .seoul-map-canvas[data-cluster-mode="cluster"] .seoul-map-labels { opacity: .18; }
   .seoul-river { stroke-width: 15; }
   .map-data-chips { display: none; }
   .map-data-chips span { min-height: 24px; padding: 0 7px; font-size: 9.5px; }
+  .map-cluster-dot { --size: clamp(48px, calc(38px + var(--heat) * 42px), 86px); border-width: 2px; }
+  .map-cluster-dot b { font-size: clamp(12px, calc(10px + var(--heat) * 5px), 17px); }
+  .map-cluster-dot small { max-width: 68px; font-size: 9px; }
   .station-dot { width: clamp(34px, calc(24px + var(--heat) * 34px), 58px); height: clamp(34px, calc(24px + var(--heat) * 34px), 58px); border-width: 2.4px; box-shadow: 0 0 0 calc(5px + var(--heat) * 9px) rgba(255,90,31, calc(.06 + var(--heat) * .10)), 0 12px 24px rgba(0,0,0,.32); }
   .station-dot:not([aria-pressed="true"]) { opacity: .92; }
   .station-dot:not([aria-pressed="true"]) small { font-size: clamp(10px, calc(8px + var(--heat) * 6px), 16px); }
@@ -4364,6 +4404,9 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const mapZoomButtons = Array.from(root.querySelectorAll('[data-map-zoom]'));
   const mapZoomValue = root.querySelector('[data-map-zoom-value]');
   const mapLayerToggleButtons = Array.from(root.querySelectorAll('[data-map-toggle]'));
+  const districtFilter = root.querySelector('[data-district-filter]');
+  const districtSummary = root.querySelector('[data-district-summary]');
+  const clusterLayer = root.querySelector('[data-map-clusters]');
   if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
@@ -4371,6 +4414,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
   let mapZoom = 1;
+  let selectedDistrict = 'all';
 
   const setMapZoom = (nextZoom) => {
     mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
@@ -4384,6 +4428,8 @@ COMMERCIAL_TOOL_JS = '''(() => {
       const action = button.dataset.mapZoom;
       button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
     });
+    if (mapCanvas) mapCanvas.dataset.clusterMode = mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station';
+    renderClusters();
   };
   const setMapLayerVisibility = (layer, visible) => {
     if (!mapCanvas || !layer) return;
@@ -4414,6 +4460,107 @@ COMMERCIAL_TOOL_JS = '''(() => {
       compareSelect.value = compare.id;
     }
     return compare;
+  };
+  const pctNumber = (value, fallback = 50) => {
+    const parsed = Number(String(value || '').replace('%', '').trim());
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  const stationButtonFor = (id) => stationButtons.find((button) => button.dataset.stationMap === id);
+  const stationsForDistrict = (district) => {
+    const stations = payload?.stations || [];
+    return district && district !== 'all' ? stations.filter((station) => station.district === district) : stations;
+  };
+  const selectedStationSet = () => stationsForDistrict(selectedDistrict);
+  const clusterValueFor = (station, industry) => industry === 'population'
+    ? Number(station.population_density_index || 0)
+    : Number(station.counts?.[industry] || 0);
+  const districtRegion = {
+    '강서구': '서남권', '마포구': '서북권', '서대문구': '서북권', '영등포구': '서남권',
+    '종로구': '도심권', '성동구': '동북권', '광진구': '동북권',
+    '동작구': '동남권', '관악구': '서남권', '강남구': '동남권', '송파구': '동남권'
+  };
+  const regionForStation = (station, x, y) => districtRegion[station.district] || (x < 42 ? (y > 52 ? '서남권' : '서북권') : x > 64 ? '동남권' : '도심권');
+  const setSelectedDistrict = (district, options = {}) => {
+    const next = district && district !== 'all' ? String(district) : 'all';
+    selectedDistrict = next;
+    root.dataset.selectedDistrict = next;
+    if (mapCanvas) mapCanvas.dataset.selectedDistrict = next;
+    if (districtFilter) {
+      const hasOption = Array.from(districtFilter.options || []).some((option) => option.value === next);
+      districtFilter.value = hasOption ? next : 'all';
+    }
+    const candidates = stationsForDistrict(next);
+    if (next !== 'all' && options.syncStation !== false && candidates.length && !candidates.some((station) => station.id === stationSelect.value)) {
+      stationSelect.value = candidates[0].id;
+    }
+    stationButtons.forEach((button) => {
+      button.setAttribute('data-district-hidden', next !== 'all' && button.dataset.district !== next ? 'true' : 'false');
+    });
+    districtPaths.forEach((path) => {
+      const isSelected = next !== 'all' && path.dataset.mapDistrict === next;
+      path.dataset.selected = String(isSelected);
+      path.setAttribute('data-district-hidden', next !== 'all' && path.dataset.mapDistrict !== next ? 'true' : 'false');
+      path.setAttribute('aria-pressed', String(isSelected));
+    });
+    if (districtSummary) {
+      const total = candidates.length;
+      districtSummary.textContent = next === 'all'
+        ? `서울 전체 ${total}개 후보 · 줌아웃은 권역 합치기, 줌인은 구/개별 역`
+        : `${next} 후보 ${total}개 · 선택 구만 강조해서 보는 중`;
+    }
+    renderClusters();
+  };
+  const renderClusters = () => {
+    if (!clusterLayer || !payload?.stations?.length) return;
+    const industry = industrySelect.value || 'cafe';
+    const mode = mapCanvas?.dataset.clusterMode || (mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station');
+    if (mode === 'station') {
+      clusterLayer.innerHTML = '';
+      return;
+    }
+    const groups = new Map();
+    selectedStationSet().forEach((station) => {
+      const button = stationButtonFor(station.id);
+      const x = pctNumber(button?.style.getPropertyValue('--x'), 50);
+      const y = pctNumber(button?.style.getPropertyValue('--y'), 50);
+      const key = mode === 'cluster' && selectedDistrict === 'all'
+        ? regionForStation(station, x, y)
+        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.id : (station.district || station.id));
+      const label = mode === 'cluster' && selectedDistrict === 'all'
+        ? key
+        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.name : (station.district || station.name));
+      const district = mode === 'cluster' && selectedDistrict === 'all' ? '' : (station.district || '');
+      const current = groups.get(key) || {key, label, district, stations: [], x: 0, y: 0, value: 0};
+      current.stations.push(station);
+      current.x += x;
+      current.y += y;
+      current.value += clusterValueFor(station, industry);
+      groups.set(key, current);
+    });
+    const clusters = Array.from(groups.values()).map((group) => ({
+      ...group,
+      x: group.x / Math.max(1, group.stations.length),
+      y: group.y / Math.max(1, group.stations.length),
+      stationId: group.stations.length === 1 ? group.stations[0].id : ''
+    }));
+    const maxValue = Math.max(1, ...clusters.map((cluster) => cluster.value));
+    clusterLayer.innerHTML = clusters.map((cluster) => {
+      const heat = Math.max(.18, Math.min(1, cluster.value / maxValue));
+      const label = cluster.label.endsWith('구') ? cluster.label.slice(0, -1) : cluster.label;
+      const aria = `${cluster.label} ${categoryLabel(industry)} ${cluster.value} · ${cluster.stations.length}개 후보`;
+      return `<button type="button" class="map-cluster-dot" data-cluster-bubble data-district="${esc(cluster.district)}" data-station-id="${esc(cluster.stationId)}" style="--x:${cluster.x.toFixed(2)}%;--y:${cluster.y.toFixed(2)}%;--heat:${heat.toFixed(2)}" aria-label="${esc(aria)}"><b>${esc(cluster.value)}</b><small>${esc(label)} ${cluster.stations.length}곳</small></button>`;
+    }).join('');
+    Array.from(clusterLayer.querySelectorAll('[data-cluster-bubble]')).forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.district) {
+          setSelectedDistrict(button.dataset.district || 'all');
+        } else {
+          setMapZoom(Math.max(mapZoom, 1.25));
+        }
+        if (button.dataset.stationId) stationSelect.value = button.dataset.stationId;
+        evaluate();
+      });
+    });
   };
   const renderCompare = (station, compare, industry) => {
     if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
@@ -4554,6 +4701,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
       const small = button.querySelector('small');
       if (small) small.textContent = industry === 'population' ? `${station.population_density_index}` : `${raw}`;
       button.title = `${station.name} · ${industry === 'population' ? '인구밀도' : categoryLabel(industry)} ${raw}`;
+      button.setAttribute('data-district-hidden', selectedDistrict !== 'all' && station.district !== selectedDistrict ? 'true' : 'false');
       button.setAttribute('aria-pressed', station.id === stationSelect.value ? 'true' : 'false');
     });
     layerButtons.forEach((button) => button.setAttribute('aria-pressed', button.dataset.densityLayer === industry ? 'true' : 'false'));
@@ -4570,6 +4718,9 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const evaluate = () => {
     if (!payload?.stations?.length) return;
     const station = stationById(stationSelect.value) || payload.stations[0];
+    if (station?.district && selectedDistrict !== 'all' && station.district !== selectedDistrict) {
+      setSelectedDistrict(station.district, {syncStation: false});
+    }
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
     const count = valueFor(station, industry);
@@ -4616,15 +4767,32 @@ COMMERCIAL_TOOL_JS = '''(() => {
     renderBars(station);
     renderCompare(station, compare, industry);
     updateMapHeat(industry);
+    renderClusters();
   };
 
   const hydrate = (data) => {
     payload = data;
     if (payload?.source_summary && sourceNoteEl) sourceNoteEl.textContent = payload.source_summary;
+    setSelectedDistrict(selectedDistrict, {syncStation: false});
     evaluate();
   };
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
-  stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  stationButtons.forEach((button) => button.addEventListener('click', () => {
+    stationSelect.value = button.dataset.stationMap || stationSelect.value;
+    setSelectedDistrict(button.dataset.district || 'all', {syncStation: false});
+    evaluate();
+  }));
+  if (districtFilter) districtFilter.addEventListener('change', () => { setSelectedDistrict(districtFilter.value || 'all'); evaluate(); });
+  districtPaths.forEach((path) => {
+    const choose = () => { setSelectedDistrict(path.dataset.mapDistrict || 'all'); evaluate(); };
+    path.addEventListener('click', choose);
+    path.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        choose();
+      }
+    });
+  });
   mapZoomButtons.forEach((button) => button.addEventListener('click', () => {
     const action = button.dataset.mapZoom;
     if (action === 'in') setMapZoom(mapZoom + .25);
@@ -4636,7 +4804,11 @@ COMMERCIAL_TOOL_JS = '''(() => {
     const visible = button.getAttribute('aria-pressed') !== 'true';
     setMapLayerVisibility(layer, visible);
   }));
-  stationSelect.addEventListener('change', evaluate);
+  stationSelect.addEventListener('change', () => {
+    const station = stationById(stationSelect.value);
+    if (station?.district) setSelectedDistrict(station.district, {syncStation: false});
+    evaluate();
+  });
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
