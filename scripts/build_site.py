@@ -2914,6 +2914,7 @@ def commercial_check_tool_block() -> str:
         <strong>역·업종을 고르면 첫 계약 질문이 바뀝니다</strong>
         <small>점수보다 이 질문에 답이 없으면 보류합니다</small>
       </div>
+      <p class="compare-verdict" data-compare-verdict aria-live="polite"><span>먼저 볼 후보</span><strong>비교 역을 고르면 우선순위가 바뀝니다</strong><small>같은 업종이라도 임대압력과 생활 피로를 같이 봅니다</small></p>
       <div class="density-score-grid">
         <div><span>선택 업종</span><strong data-density-count>0</strong><small data-density-label>카페</small></div>
         <div><span>상권 밀도</span><strong data-commercial-density>0</strong><small>/100</small></div>
@@ -3454,8 +3455,6 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .tool-badges { display: none; flex-wrap: wrap; gap: 6px; margin-top: 1px; }
 .tool-badges span { display: inline-flex; align-items: center; justify-content: center; min-height: 26px; padding: 0 8px; border-radius: 999px; background: #eef6ff; border: 1px solid #dbeafe; color: #1e3a8a; font-size: 10.5px; font-weight: 950; white-space: nowrap; }
 .tool-badges span:nth-child(n+3) { display: none; }
-.density-layer-tabs button:nth-child(n+6) { display: none; }
-.seoul-selector-form label:nth-child(2), .seoul-selector-form label:nth-child(4) { display: none; }
 .tool-risk-list li:nth-child(n+3) { display: none; }
 .seoul-map-card { grid-column: 1 / -1; position: absolute; inset: 0; z-index: 2; display: block; min-height: 100%; padding: 0; border-radius: inherit; background: #07111f; color: #fff; box-shadow: none; overflow: hidden; }
 .seoul-map-card::before { content: ""; position: absolute; inset: 0; z-index: 2; background: radial-gradient(circle at 54% 48%, transparent 0 46%, rgba(2,6,23,.14) 65%, rgba(2,6,23,.55) 100%); pointer-events: none; }
@@ -3613,6 +3612,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .compare-metric-row .compare-up strong { color: #fde68a; }
 .compare-metric-row .compare-down strong { color: #bfdbfe; }
 .density-compare-card p { margin: 0; color: #dbeafe; font-size: 12.5px; line-height: 1.46; font-weight: 800; }
+.compare-verdict { display: grid; gap: 4px; margin: 0 0 9px !important; padding: 10px 11px; border-radius: 16px; background: #eff6ff; border: 1px solid #bfdbfe; }
+.compare-verdict span { display: inline-flex; width: fit-content; min-height: 22px; align-items: center; padding: 0 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 10px; font-weight: 950; letter-spacing: .06em; }
+.compare-verdict strong { color: #172033; font-size: 13.5px; line-height: 1.35; letter-spacing: -.02em; }
+.compare-verdict small { color: #475569; font-size: 12px; line-height: 1.42; font-weight: 850; }
 .situation-grid { margin-top: 18px; }
 .situation-card { min-height: 236px; }
 .case-study-list { margin-top: 34px; }
@@ -4155,7 +4158,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .station-inspector .density-compare-card { grid-column: 1 / -1; }
 }
 @media (max-width: 860px) {
-  .seoul-density-panel { grid-template-columns: 1fr; min-height: 860px; padding: 0; border-radius: 28px; gap: 0; }
+  .seoul-density-panel { grid-template-columns: 1fr; min-height: 1620px; padding: 0; border-radius: 28px; gap: 0; }
+  .seoul-map-card { bottom: auto; height: 820px; min-height: 820px; padding: 0; border-radius: 28px; }
   .seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px)); grid-template-columns: 1fr; gap: 4px; padding: 10px 12px; }
   .tool-badges { justify-content: flex-start; }
   .station-inspector { grid-template-columns: 1fr; }
@@ -4166,7 +4170,6 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .map-card-head small { max-width: none; text-align: left; }
   .density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden; padding: 0 0 2px; margin: 0; }
   .density-layer-tabs button { width: auto; min-width: max-content; min-height: 34px; padding: 0 10px; font-size: 11.5px; letter-spacing: -.04em; }
-  .density-layer-tabs button:nth-child(n+5) { display: none; }
   .seoul-map-canvas { min-height: 100%; border-radius: 28px; }
   .map-toolbar { left: 14px; right: auto; top: 116px; width: min(206px, calc(100% - 28px)); display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; justify-content: flex-start; }
   .district-picker-row { order: 1; flex: 1 1 100%; max-width: none; border-radius: 18px; gap: 6px; padding: 4px; }
@@ -4199,7 +4202,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .station-dot[aria-pressed="true"] { opacity: 1; }
   .station-dot b { top: calc(100% + 5px); max-width: 104px; font-size: 10.5px; }
   .station-dot small { font-size: clamp(11px, calc(8px + var(--heat) * 6px), 17px); }
-  .station-inspector { top: 166px; left: 14px; right: 14px; bottom: auto; width: auto; max-height: none; overflow: visible; padding-right: 0; }
+  .station-inspector { top: 840px; left: 14px; right: 14px; bottom: auto; width: auto; max-height: none; overflow: visible; padding-right: 0; }
   .map-focus-card { left: 10px; right: 10px; bottom: 10px; width: auto; padding: 8px 10px; border-radius: 16px; display: none; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 8px; }
   .map-legend-card { display: none; }
   .map-focus-card span { font-size: 10px; }
@@ -4416,6 +4419,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
   const compareMetricsEl = root.querySelector('[data-compare-metrics]');
+  const compareVerdictEl = root.querySelector('[data-compare-verdict]');
   const compareNoteEl = root.querySelector('[data-compare-note]');
   const sourceNoteEl = root.querySelector('[data-source-note]');
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
@@ -4584,7 +4588,32 @@ COMMERCIAL_TOOL_JS = '''(() => {
       });
     });
   };
-  const renderCompare = (station, compare, industry) => {
+  const compareVerdictFor = (station, compare, industry, purpose) => {
+    const stationGrade = gradeFor(station, industry);
+    const compareGrade = gradeFor(compare, industry);
+    const stationPressure = Number(station.rent_pressure_index || 0) + (purpose === 'home' ? Number(station.population_density_index || 0) * .45 : 0);
+    const comparePressure = Number(compare.rent_pressure_index || 0) + (purpose === 'home' ? Number(compare.population_density_index || 0) * .45 : 0);
+    const first = purpose === 'home'
+      ? (stationPressure <= comparePressure ? station : compare)
+      : (stationGrade.score >= compareGrade.score ? station : compare);
+    const other = first.id === station.id ? compare : station;
+    const firstGrade = first.id === station.id ? stationGrade : compareGrade;
+    if (purpose === 'home') {
+      return {
+        title: `${first.name}부터 걷고, ${other.name}은 월 고정비로 재비교`,
+        detail: `${first.name}은 비교 후보 중 생활 피로 압력이 낮은 쪽입니다. 그래도 밤길·소음·관리비 답이 없으면 보류하세요.`
+      };
+    }
+    const label = categoryLabel(industry);
+    const count = valueFor(first, industry);
+    return {
+      title: `${first.name} 먼저 보기 · ${firstGrade.label} ${firstGrade.score}`,
+      detail: industry === 'population'
+        ? `인구밀도 ${count} 기준입니다. 실제 구매 동선과 임대료 회수기간 답이 없으면 ${other.name}도 같이 보류하세요.`
+        : `${label} ${count}개 기준입니다. 경쟁점과 다른 재방문 이유가 없으면 ${other.name}보다 좋아 보여도 보류하세요.`
+    };
+  };
+  const renderCompare = (station, compare, industry, purpose) => {
     if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
     const selectedDelta = valueFor(station, industry) - valueFor(compare, industry);
     const popDelta = Number(station.population_density_index || 0) - Number(compare.population_density_index || 0);
@@ -4592,6 +4621,10 @@ COMMERCIAL_TOOL_JS = '''(() => {
     const metric = (label, value) => `<div class="${value > 0 ? 'compare-up' : value < 0 ? 'compare-down' : 'compare-same'}"><span>${esc(label)}</span><strong>${signed(value)}</strong></div>`;
     compareTitleEl.textContent = `${station.name} ↔ ${compare.name}`;
     compareMetricsEl.innerHTML = [metric(categoryLabel(industry), selectedDelta), metric('인구밀도', popDelta), metric('임대압력', rentDelta)].join('');
+    if (compareVerdictEl) {
+      const verdict = compareVerdictFor(station, compare, industry, purpose);
+      compareVerdictEl.innerHTML = `<span>먼저 볼 후보</span><strong>${esc(verdict.title)}</strong><small>${esc(verdict.detail)}</small>`;
+    }
     compareNoteEl.textContent = rentDelta > 7
       ? `${station.name}은 ${compare.name}보다 임대 압력이 높습니다. 권리금·고정비 회수 기간을 더 보수적으로 잡으세요.`
       : rentDelta < -7
@@ -4787,7 +4820,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
     sourceNoteEl && (sourceNoteEl.textContent = payload.source_summary || station.source_note || sourceNoteEl.textContent);
     districtPaths.forEach((path) => { path.dataset.active = path.dataset.mapDistrict === station.district ? 'true' : 'false'; });
     renderBars(station);
-    renderCompare(station, compare, industry);
+    renderCompare(station, compare, industry, purpose);
     updateMapHeat(industry);
     renderClusters();
   };

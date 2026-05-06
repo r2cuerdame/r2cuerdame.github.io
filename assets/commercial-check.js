@@ -27,6 +27,7 @@
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
   const compareMetricsEl = root.querySelector('[data-compare-metrics]');
+  const compareVerdictEl = root.querySelector('[data-compare-verdict]');
   const compareNoteEl = root.querySelector('[data-compare-note]');
   const sourceNoteEl = root.querySelector('[data-source-note]');
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
@@ -195,7 +196,32 @@
       });
     });
   };
-  const renderCompare = (station, compare, industry) => {
+  const compareVerdictFor = (station, compare, industry, purpose) => {
+    const stationGrade = gradeFor(station, industry);
+    const compareGrade = gradeFor(compare, industry);
+    const stationPressure = Number(station.rent_pressure_index || 0) + (purpose === 'home' ? Number(station.population_density_index || 0) * .45 : 0);
+    const comparePressure = Number(compare.rent_pressure_index || 0) + (purpose === 'home' ? Number(compare.population_density_index || 0) * .45 : 0);
+    const first = purpose === 'home'
+      ? (stationPressure <= comparePressure ? station : compare)
+      : (stationGrade.score >= compareGrade.score ? station : compare);
+    const other = first.id === station.id ? compare : station;
+    const firstGrade = first.id === station.id ? stationGrade : compareGrade;
+    if (purpose === 'home') {
+      return {
+        title: `${first.name}부터 걷고, ${other.name}은 월 고정비로 재비교`,
+        detail: `${first.name}은 비교 후보 중 생활 피로 압력이 낮은 쪽입니다. 그래도 밤길·소음·관리비 답이 없으면 보류하세요.`
+      };
+    }
+    const label = categoryLabel(industry);
+    const count = valueFor(first, industry);
+    return {
+      title: `${first.name} 먼저 보기 · ${firstGrade.label} ${firstGrade.score}`,
+      detail: industry === 'population'
+        ? `인구밀도 ${count} 기준입니다. 실제 구매 동선과 임대료 회수기간 답이 없으면 ${other.name}도 같이 보류하세요.`
+        : `${label} ${count}개 기준입니다. 경쟁점과 다른 재방문 이유가 없으면 ${other.name}보다 좋아 보여도 보류하세요.`
+    };
+  };
+  const renderCompare = (station, compare, industry, purpose) => {
     if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
     const selectedDelta = valueFor(station, industry) - valueFor(compare, industry);
     const popDelta = Number(station.population_density_index || 0) - Number(compare.population_density_index || 0);
@@ -203,6 +229,10 @@
     const metric = (label, value) => `<div class="${value > 0 ? 'compare-up' : value < 0 ? 'compare-down' : 'compare-same'}"><span>${esc(label)}</span><strong>${signed(value)}</strong></div>`;
     compareTitleEl.textContent = `${station.name} ↔ ${compare.name}`;
     compareMetricsEl.innerHTML = [metric(categoryLabel(industry), selectedDelta), metric('인구밀도', popDelta), metric('임대압력', rentDelta)].join('');
+    if (compareVerdictEl) {
+      const verdict = compareVerdictFor(station, compare, industry, purpose);
+      compareVerdictEl.innerHTML = `<span>먼저 볼 후보</span><strong>${esc(verdict.title)}</strong><small>${esc(verdict.detail)}</small>`;
+    }
     compareNoteEl.textContent = rentDelta > 7
       ? `${station.name}은 ${compare.name}보다 임대 압력이 높습니다. 권리금·고정비 회수 기간을 더 보수적으로 잡으세요.`
       : rentDelta < -7
@@ -398,7 +428,7 @@
     sourceNoteEl && (sourceNoteEl.textContent = payload.source_summary || station.source_note || sourceNoteEl.textContent);
     districtPaths.forEach((path) => { path.dataset.active = path.dataset.mapDistrict === station.district ? 'true' : 'false'; });
     renderBars(station);
-    renderCompare(station, compare, industry);
+    renderCompare(station, compare, industry, purpose);
     updateMapHeat(industry);
     renderClusters();
   };

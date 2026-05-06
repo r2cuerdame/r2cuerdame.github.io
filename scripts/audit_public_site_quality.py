@@ -242,7 +242,7 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".district-picker-row", ".map-layer-toggles", ".map-zoom-controls", ".map-cluster-layer", ".map-cluster-dot", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".candidate-memo-card", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".density-data-note", ".map-reading-guide"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".district-picker-row", ".map-layer-toggles", ".map-zoom-controls", ".map-cluster-layer", ".map-cluster-dot", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".candidate-memo-card", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".compare-verdict", ".density-data-note", ".map-reading-guide"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
     for guard in [
@@ -251,7 +251,8 @@ def audit_css(css: str) -> list[str]:
         ".seoul-map-canvas { min-height: 560px; }",
         ".seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px));",
         ".density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex;",
-        ".density-layer-tabs button:nth-child(n+5) { display: none; }",
+        ".seoul-map-card { bottom: auto; height: 820px; min-height: 820px;",
+        "  .station-inspector { top: 840px; left: 14px; right: 14px;",
     ]:
         if guard not in css:
             failures.append(f"seoul_density_desktop_layout_guard_missing:{guard}")
@@ -376,6 +377,8 @@ def audit_html(path: str, page_html: str) -> list[str]:
             '후보 메모',
             'data-compare-panel',
             'data-compare-metrics',
+            'data-compare-verdict',
+            '먼저 볼 후보',
             'class="density-data-note"',
             'data-map-reading-guide',
             '지도 읽는 순서',

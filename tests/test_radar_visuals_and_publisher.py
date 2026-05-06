@@ -130,6 +130,8 @@ def test_home_has_above_fold_seoul_density_tool():
     assert '후보 메모' in html
     assert 'data-compare-panel' in html
     assert 'data-compare-metrics' in html
+    assert 'data-compare-verdict' in html
+    assert '먼저 볼 후보' in html
     assert 'class="density-data-note"' in html
     assert 'data-map-reading-guide' in html
     assert '지도 읽는 순서' in html
@@ -149,6 +151,8 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'tool-compare-station' in js
     assert 'data-compare-panel' in js
     assert 'renderCompare' in js
+    assert 'compareVerdictFor' in js
+    assert 'data-compare-verdict' in js
     assert 'visitPlanFor' in js
     assert 'decisionQuestionFor' in js
     assert 'candidateMemoFor' in js
@@ -177,6 +181,7 @@ def test_home_has_above_fold_seoul_density_tool():
     css = build_site.CSS
     assert "@media (max-width: 1120px) and (min-width: 861px)" in css
     assert ".density-data-note" in css
+    assert ".compare-verdict" in css
     assert ".map-reading-guide" in css
     assert ".map-reading-guide ol { grid-template-columns: 1fr; gap: 6px; }" in css
     assert ".candidate-memo-card" in css
@@ -190,7 +195,9 @@ def test_home_has_above_fold_seoul_density_tool():
     assert ".seoul-map-canvas { min-height: 560px; }" in css
     assert ".seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px));" in css
     assert ".density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex;" in css
-    assert ".density-layer-tabs button:nth-child(n+5) { display: none; }" in css
+    assert 'data-density-layer="population"' in html
+    assert ".seoul-map-card { bottom: auto; height: 820px; min-height: 820px;" in css
+    assert "  .station-inspector { top: 840px; left: 14px; right: 14px;" in css
 
     data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
     assert "KOSIS_API_KEY" not in data_text
