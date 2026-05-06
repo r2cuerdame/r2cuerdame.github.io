@@ -129,6 +129,9 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-compare-panel' in html
     assert 'data-compare-metrics' in html
     assert 'class="density-data-note"' in html
+    assert 'data-map-reading-guide' in html
+    assert '지도 읽는 순서' in html
+    assert '오른쪽 첫 질문에 답 없으면 보류합니다' in html
     assert '데이터 기준과 한계' in html
     assert '브라우저에는 결과 JSON만 보냅니다' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
@@ -170,8 +173,13 @@ def test_home_has_above_fold_seoul_density_tool():
     assert '/radar/cafe-contract-risk/' not in js
     assert '/radar/monthly-rent-contract-check/' not in js
     css = build_site.CSS
+    assert "@media (min-width: 1121px)" in css
+    assert ".station-inspector { display: contents; }" in css
+    assert ".density-result-card { grid-column: 1 / -1; grid-row: 3; }" in css
     assert "@media (max-width: 1120px) and (min-width: 861px)" in css
     assert ".density-data-note" in css
+    assert ".map-reading-guide" in css
+    assert ".map-reading-guide ol { grid-template-columns: 1fr; gap: 6px; }" in css
     assert ".candidate-memo-card" in css
     assert ".district-picker-row" in css
     assert ".map-cluster-dot" in css

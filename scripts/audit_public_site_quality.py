@@ -242,10 +242,13 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".district-picker-row", ".map-layer-toggles", ".map-zoom-controls", ".map-cluster-layer", ".map-cluster-dot", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".candidate-memo-card", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".density-data-note"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".district-picker-row", ".map-layer-toggles", ".map-zoom-controls", ".map-cluster-layer", ".map-cluster-dot", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".candidate-memo-card", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".density-data-note", ".map-reading-guide"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
     for guard in [
+        "@media (min-width: 1121px)",
+        ".station-inspector { display: contents; }",
+        ".density-result-card { grid-column: 1 / -1; grid-row: 3; }",
         "@media (max-width: 1120px) and (min-width: 861px)",
         ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }",
         ".seoul-map-canvas { min-height: 560px; }",
@@ -365,6 +368,9 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'data-compare-panel',
             'data-compare-metrics',
             'class="density-data-note"',
+            'data-map-reading-guide',
+            '지도 읽는 순서',
+            '오른쪽 첫 질문에 답 없으면 보류합니다',
             '데이터 기준과 한계',
             'href="/topics/cafe-commercial-lease-risk/"',
             'href="/topics/jeonwolse-contract-check/"',
