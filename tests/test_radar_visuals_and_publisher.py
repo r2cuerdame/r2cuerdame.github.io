@@ -88,6 +88,13 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-seoul-density-tool-root' in html
     assert 'class="seoul-map-card"' in html
     assert 'class="seoul-real-map"' in html
+    assert 'class="seoul-subway-map"' in html
+    assert 'data-map-viewport' in html
+    assert 'data-map-toggle="districts"' in html
+    assert 'data-map-toggle="subway"' in html
+    assert 'data-map-zoom="in"' in html
+    assert 'data-map-zoom="out"' in html
+    assert '지하철·역' in html
     assert 'data-map-district="마포구"' in html
     assert '서울 25개 구 행정경계' in html
     assert 'OSM 한강' in html
@@ -122,6 +129,11 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'decisionQuestionFor' in js
     assert '[data-decision-question]' in js
     assert 'data-density-layer' in js
+    assert 'data-map-toggle' in js
+    assert 'data-map-zoom' in js
+    assert 'setMapZoom' in js
+    assert 'setMapLayerVisibility' in js
+    assert 'dataset.subwayVisible' in js
     assert 'districtPaths' in js
     assert 'data-map-district' in js
     assert '/data/seoul-commercial-areas.json' in js

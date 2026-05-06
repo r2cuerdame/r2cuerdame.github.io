@@ -2669,6 +2669,59 @@ def seoul_station_map_position(station: dict[str, Any]) -> tuple[float, float]:
         return float(station.get("map_x", 50)), float(station.get("map_y", 50))
 
 
+SEOUL_SUBWAY_LINES: list[dict[str, Any]] = [
+    {
+        "id": "line2",
+        "label": "2호선 주요 후보축",
+        "color": "#22c55e",
+        "stations": ["hongdae", "sinchon", "seongsu", "konkuk", "jamsil", "gangnam", "sadang", "sillim", "mullae", "hongdae"],
+    },
+    {
+        "id": "airport",
+        "label": "공항철도 후보축",
+        "color": "#60a5fa",
+        "stations": ["magoknaru", "hongdae"],
+    },
+    {
+        "id": "downtown",
+        "label": "도심 환승 후보축",
+        "color": "#a78bfa",
+        "stations": ["yeouido", "jongno3", "seongsu"],
+    },
+]
+
+
+def seoul_subway_overlay_svg() -> str:
+    station_lookup = {str(station.get("id")): station for station in SEOUL_COMMERCIAL_AREAS["stations"]}
+    line_paths: list[str] = []
+    for line in SEOUL_SUBWAY_LINES:
+        points: list[tuple[float, float]] = []
+        for station_id in line.get("stations", []):
+            station = station_lookup.get(str(station_id))
+            if station:
+                points.append(seoul_station_map_position(station))
+        if len(points) < 2:
+            continue
+        d = "M " + " L ".join(f"{x:.2f} {y:.2f}" for x, y in points)
+        line_paths.append(
+            f'<path class="seoul-subway-line" data-subway-line="{esc(str(line.get("id", "")))}" style="--line-color: {esc(str(line.get("color", "#60a5fa")))}" d="{esc(d)}"><title>{esc(str(line.get("label", "지하철 후보축")))}</title></path>'
+        )
+    nodes = []
+    for station in SEOUL_COMMERCIAL_AREAS["stations"]:
+        x, y = seoul_station_map_position(station)
+        nodes.append(
+            f'<circle class="seoul-subway-node" data-subway-node="{esc(str(station.get("id", "")))}" cx="{x:.2f}" cy="{y:.2f}" r="1.15"><title>{esc(str(station.get("name", "")))} 지하철 후보역</title></circle>'
+        )
+    return f'''
+      <svg class="seoul-subway-map" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="서울 주요 지하철 후보축과 역 위치">
+        <g class="seoul-subway-layer" aria-hidden="true">
+          {''.join(line_paths)}
+          {''.join(nodes)}
+        </g>
+      </svg>
+'''
+
+
 def seoul_map_outline_svg() -> str:
     outline = SEOUL_MAP_OUTLINE
     if not outline:
@@ -2715,7 +2768,7 @@ def commercial_check_tool_block() -> str:
     for station in SEOUL_COMMERCIAL_AREAS["stations"]:
         map_x, map_y = seoul_station_map_position(station)
         station_button_items.append(
-            f'<button type="button" class="station-dot" data-station-map="{esc(station["id"])}" data-lat="{station["lat"]}" data-lng="{station["lng"]}" style="--x: {map_x:.2f}%; --y: {map_y:.2f}%;" aria-label="{esc(station["name"])} 실제 지도 위치 상권 보기"><i aria-hidden="true"></i><b>{esc(station["name"])}</b><small>{esc(station["commercial_density_label"])}</small></button>'
+            f'<button type="button" class="station-dot" data-subway-station data-station-map="{esc(station["id"])}" data-lat="{station["lat"]}" data-lng="{station["lng"]}" style="--x: {map_x:.2f}%; --y: {map_y:.2f}%;" aria-label="{esc(station["name"])} 실제 지도 위치 상권 보기"><i aria-hidden="true"></i><b>{esc(station["name"])}</b><small>{esc(station["commercial_density_label"])}</small></button>'
         )
     station_buttons = "\n".join(station_button_items)
     station_options = "\n".join(
@@ -2747,11 +2800,26 @@ def commercial_check_tool_block() -> str:
     <div class="density-layer-tabs" role="tablist" aria-label="업종 밀도 레이어">
       {layer_buttons}
     </div>
-    <div class="seoul-map-canvas" data-map-canvas>
-      {seoul_map_outline_svg()}
-      {station_buttons}
-      <div class="map-data-chips" aria-hidden="true"><span>서울 25구 경계</span><span>한강 OSM</span><span>역 실제 좌표</span></div>
-      <div class="map-legend-card" aria-hidden="true"><span><i></i> 원 크기 = 선택 업종 POI 수</span><span><i></i> 선 = 실제 구 경계 outline</span><span><i></i> 파란 선 = OSM 한강 geometry</span></div>
+    <div class="seoul-map-canvas" data-map-canvas data-districts-visible="true" data-subway-visible="true" data-map-zoom-level="1">
+      <div class="map-toolbar" aria-label="지도 조작">
+        <div class="map-layer-toggles" role="group" aria-label="지도 레이어 켜고 끄기">
+          <button type="button" data-map-toggle="districts" aria-pressed="true">구 경계</button>
+          <button type="button" data-map-toggle="subway" aria-pressed="true">지하철·역</button>
+        </div>
+        <div class="map-zoom-controls" role="group" aria-label="지도 확대 축소">
+          <button type="button" data-map-zoom="out" aria-label="지도 축소">−</button>
+          <strong data-map-zoom-value>1.0×</strong>
+          <button type="button" data-map-zoom="in" aria-label="지도 확대">＋</button>
+          <button type="button" data-map-zoom="reset" aria-label="지도 확대 초기화">초기화</button>
+        </div>
+      </div>
+      <div class="seoul-map-viewport" data-map-viewport style="--map-zoom: 1; --focus-x: 50%; --focus-y: 50%;">
+        {seoul_map_outline_svg()}
+        {seoul_subway_overlay_svg()}
+        {station_buttons}
+      </div>
+      <div class="map-data-chips" aria-hidden="true"><span data-map-chip="districts">서울 25구 경계</span><span>한강 OSM</span><span data-map-chip="subway">지하철·역 좌표</span></div>
+      <div class="map-legend-card" aria-hidden="true"><span><i></i> 원 크기 = 선택 업종 POI 수</span><span><i></i> 선 = 실제 구 경계 outline</span><span><i></i> 초록/보라/파랑 = 지하철 후보축</span></div>
       <div class="map-focus-card" aria-live="polite">
         <span>현재 후보</span>
         <strong data-map-focus-name>홍대입구역</strong>
@@ -3320,6 +3388,23 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .density-layer-tabs button[aria-pressed="true"] { background: #ff5a1f; border-color: #ff5a1f; color: #fff; box-shadow: 0 12px 24px rgba(255,90,31,.24); }
 .seoul-map-canvas { position: relative; flex: 1 1 auto; min-height: clamp(430px, 40vw, 540px); border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 54% 38%, rgba(96,165,250,.24), transparent 25%), linear-gradient(145deg, #111827, #0b1020 76%); border: 1px solid rgba(255,255,255,.12); isolation: isolate; }
 .seoul-map-canvas::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(circle at 50% 50%, #000 0 72%, transparent 100%); }
+.seoul-map-viewport { position: absolute; inset: 0; z-index: 1; transform-origin: var(--focus-x, 50%) var(--focus-y, 50%); transform: scale(var(--map-zoom, 1)); transition: transform .18s ease; will-change: transform; }
+.map-toolbar { position: absolute; z-index: 9; top: 14px; right: 14px; display: grid; gap: 7px; justify-items: end; pointer-events: auto; }
+.map-layer-toggles, .map-zoom-controls { display: inline-flex; align-items: center; gap: 5px; padding: 5px; border-radius: 999px; background: rgba(15,23,42,.74); border: 1px solid rgba(255,255,255,.15); box-shadow: 0 12px 28px rgba(0,0,0,.22); backdrop-filter: blur(14px); }
+.map-layer-toggles button, .map-zoom-controls button { min-width: 34px; min-height: 34px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.08); color: #e5e7eb; font: inherit; font-size: 12px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease, opacity .16s ease; }
+.map-layer-toggles button { padding: 0 10px; white-space: nowrap; }
+.map-zoom-controls button:hover, .map-layer-toggles button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.35); }
+.map-layer-toggles button[aria-pressed="true"] { background: #ff5a1f; border-color: #ff5a1f; color: #fff; box-shadow: 0 8px 18px rgba(255,90,31,.20); }
+.map-layer-toggles button[aria-pressed="false"] { color: #94a3b8; text-decoration: line-through; }
+.map-zoom-controls strong { min-width: 42px; color: #dbeafe; font-size: 12px; line-height: 1; font-weight: 950; text-align: center; }
+.map-zoom-controls button:disabled { opacity: .38; cursor: default; transform: none; }
+.seoul-districts, .seoul-map-labels, .seoul-subway-layer, .station-dot { transition: opacity .16s ease; }
+.seoul-map-canvas[data-districts-visible="false"] .seoul-districts, .seoul-map-canvas[data-districts-visible="false"] .seoul-map-labels { opacity: 0; pointer-events: none; }
+.seoul-map-canvas[data-subway-visible="false"] .seoul-subway-layer, .seoul-map-canvas[data-subway-visible="false"] .station-dot { opacity: 0; pointer-events: none; }
+.seoul-map-canvas[data-districts-visible="false"] [data-map-chip="districts"], .seoul-map-canvas[data-subway-visible="false"] [data-map-chip="subway"] { opacity: .36; text-decoration: line-through; }
+.seoul-subway-map { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; overflow: visible; pointer-events: none; filter: drop-shadow(0 0 14px rgba(34,197,94,.18)); }
+.seoul-subway-line { fill: none; stroke: var(--line-color, #60a5fa); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .84; filter: drop-shadow(0 0 10px rgba(96,165,250,.24)); }
+.seoul-subway-node { fill: #e0f2fe; stroke: rgba(15,23,42,.88); stroke-width: .42; vector-effect: non-scaling-stroke; opacity: .90; }
 .seoul-real-map { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 22px 42px rgba(0,0,0,.22)); opacity: .98; }
 .seoul-district { fill: rgba(30,41,59,.68); stroke: rgba(226,232,240,.34); stroke-width: 2.4; vector-effect: non-scaling-stroke; transition: fill .16s ease, stroke .16s ease, opacity .16s ease; }
 .seoul-district:nth-child(3n) { fill: rgba(37,99,235,.17); }
@@ -3327,7 +3412,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .seoul-district[data-active="true"] { fill: rgba(255,90,31,.32); stroke: rgba(255,237,213,.94); stroke-width: 3.5; filter: url(#seoulMapGlow); }
 .seoul-river { fill: none; stroke: rgba(125,211,252,.80); stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .82; filter: drop-shadow(0 0 18px rgba(56,189,248,.25)); }
 .seoul-map-labels { font-size: 18px; font-weight: 950; letter-spacing: -.05em; fill: rgba(226,232,240,.62); text-anchor: middle; paint-order: stroke; stroke: rgba(15,23,42,.80); stroke-width: 4px; stroke-linejoin: round; }
-.map-data-chips { position: absolute; z-index: 5; left: 16px; top: 16px; right: 16px; display: flex; flex-wrap: wrap; gap: 7px; pointer-events: none; }
+.map-data-chips { position: absolute; z-index: 5; left: 16px; top: 16px; right: 250px; display: flex; flex-wrap: wrap; gap: 7px; pointer-events: none; }
 .map-data-chips span { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 999px; background: rgba(15,23,42,.62); border: 1px solid rgba(255,255,255,.13); color: #dbeafe; font-size: 11px; font-weight: 950; backdrop-filter: blur(12px); }
 .station-dot { --heat: .5; --size: clamp(30px, calc(24px + var(--heat) * 30px), 60px); position: absolute; z-index: 4; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: var(--size); height: var(--size); border: 2px solid rgba(255,255,255,.94); border-radius: 999px; background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.98) 0 10%, rgba(255,90,31,.96) 11% 67%, rgba(154,52,18,.98) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(4px + var(--heat) * 11px) rgba(255,90,31, calc(.05 + var(--heat) * .11)), 0 14px 26px rgba(0,0,0,.34); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease; }
 .station-dot i { position: absolute; left: 24%; top: 22%; width: 18%; height: 18%; border-radius: 999px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.22); }
@@ -3934,10 +4019,18 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .density-layer-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; overflow: visible; padding: 0; margin: 0 0 12px; }
   .density-layer-tabs button { width: 100%; min-height: 38px; padding: 0 6px; font-size: 12px; letter-spacing: -.04em; }
   .seoul-map-canvas { min-height: min(112vw, 492px); border-radius: 24px; }
+  .map-toolbar { left: 10px; right: 10px; top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+  .map-layer-toggles, .map-zoom-controls { gap: 4px; padding: 4px; border-radius: 18px; }
+  .map-layer-toggles { flex-wrap: wrap; max-width: 178px; }
+  .map-layer-toggles button, .map-zoom-controls button { min-width: 44px; min-height: 44px; font-size: 11px; }
+  .map-layer-toggles button { padding: 0 7px; }
+  .map-zoom-controls strong { min-width: 34px; font-size: 10.5px; }
+  .map-zoom-controls button[data-map-zoom="reset"] { display: none; }
   .seoul-real-map { inset: 0; width: 100%; height: 100%; }
+  .seoul-subway-line { stroke-width: 2.1; }
   .seoul-map-labels { font-size: 13px; opacity: .74; }
   .seoul-river { stroke-width: 15; }
-  .map-data-chips { left: 10px; top: 10px; right: 10px; gap: 5px; }
+  .map-data-chips { display: none; }
   .map-data-chips span { min-height: 24px; padding: 0 7px; font-size: 9.5px; }
   .station-dot { width: clamp(30px, calc(24px + var(--heat) * 20px), 48px); height: clamp(30px, calc(24px + var(--heat) * 20px), 48px); border-width: 1.8px; box-shadow: 0 0 0 calc(3px + var(--heat) * 7px) rgba(255,90,31, calc(.04 + var(--heat) * .08)), 0 10px 20px rgba(0,0,0,.30); }
   .station-dot:not([aria-pressed="true"]) { opacity: .78; }
@@ -4164,12 +4257,38 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
   const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
   const districtPaths = Array.from(root.querySelectorAll('[data-map-district]'));
+  const mapCanvas = root.querySelector('[data-map-canvas]');
+  const mapViewport = root.querySelector('[data-map-viewport]');
+  const mapZoomButtons = Array.from(root.querySelectorAll('[data-map-zoom]'));
+  const mapZoomValue = root.querySelector('[data-map-zoom-value]');
+  const mapLayerToggleButtons = Array.from(root.querySelectorAll('[data-map-toggle]'));
   if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
+  let mapZoom = 1;
+
+  const setMapZoom = (nextZoom) => {
+    mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
+    if (mapViewport) mapViewport.style.setProperty('--map-zoom', mapZoom.toFixed(2));
+    if (mapCanvas) mapCanvas.dataset.zoomLevel = mapZoom.toFixed(2);
+    if (mapZoomValue) mapZoomValue.textContent = `${mapZoom.toFixed(1)}×`;
+    mapZoomButtons.forEach((button) => {
+      const action = button.dataset.mapZoom;
+      button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
+    });
+  };
+  const setMapLayerVisibility = (layer, visible) => {
+    if (!mapCanvas || !layer) return;
+    const isVisible = Boolean(visible);
+    if (layer === 'districts') mapCanvas.dataset.districtsVisible = String(isVisible);
+    if (layer === 'subway') mapCanvas.dataset.subwayVisible = String(isVisible);
+    mapLayerToggleButtons
+      .filter((button) => button.dataset.mapToggle === layer)
+      .forEach((button) => button.setAttribute('aria-pressed', String(isVisible)));
+  };
 
   const categoryLabel = (key) => (payload?.categories?.[key] || ({population: '인구밀도'}[key]) || key);
   const maxFor = (key) => {
@@ -4346,6 +4465,11 @@ COMMERCIAL_TOOL_JS = '''(() => {
     stationTitle.textContent = `${station.name} ${layerLabel}`;
     mapFocusName && (mapFocusName.textContent = station.name);
     mapFocusMeta && (mapFocusMeta.textContent = `${station.district} ${station.dong} · ${focusMetric}`);
+    const selectedMapButton = stationButtons.find((button) => button.dataset.stationMap === station.id);
+    if (selectedMapButton && mapViewport) {
+      mapViewport.style.setProperty('--focus-x', selectedMapButton.style.getPropertyValue('--x') || '50%');
+      mapViewport.style.setProperty('--focus-y', selectedMapButton.style.getPropertyValue('--y') || '50%');
+    }
     gradeEl && (gradeEl.textContent = `${grade.label} ${grade.score}`);
     countEl && (countEl.textContent = String(count));
     countLabelEl && (countLabelEl.textContent = categoryLabel(industry));
@@ -4379,10 +4503,24 @@ COMMERCIAL_TOOL_JS = '''(() => {
   };
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
   stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  mapZoomButtons.forEach((button) => button.addEventListener('click', () => {
+    const action = button.dataset.mapZoom;
+    if (action === 'in') setMapZoom(mapZoom + .25);
+    if (action === 'out') setMapZoom(mapZoom - .25);
+    if (action === 'reset') setMapZoom(1);
+  }));
+  mapLayerToggleButtons.forEach((button) => button.addEventListener('click', () => {
+    const layer = button.dataset.mapToggle || '';
+    const visible = button.getAttribute('aria-pressed') !== 'true';
+    setMapLayerVisibility(layer, visible);
+  }));
   stationSelect.addEventListener('change', evaluate);
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
+  setMapZoom(1);
+  setMapLayerVisibility('districts', true);
+  setMapLayerVisibility('subway', true);
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))

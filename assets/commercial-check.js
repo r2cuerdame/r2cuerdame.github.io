@@ -31,12 +31,38 @@
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
   const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
   const districtPaths = Array.from(root.querySelectorAll('[data-map-district]'));
+  const mapCanvas = root.querySelector('[data-map-canvas]');
+  const mapViewport = root.querySelector('[data-map-viewport]');
+  const mapZoomButtons = Array.from(root.querySelectorAll('[data-map-zoom]'));
+  const mapZoomValue = root.querySelector('[data-map-zoom-value]');
+  const mapLayerToggleButtons = Array.from(root.querySelectorAll('[data-map-toggle]'));
   if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
+  let mapZoom = 1;
+
+  const setMapZoom = (nextZoom) => {
+    mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
+    if (mapViewport) mapViewport.style.setProperty('--map-zoom', mapZoom.toFixed(2));
+    if (mapCanvas) mapCanvas.dataset.zoomLevel = mapZoom.toFixed(2);
+    if (mapZoomValue) mapZoomValue.textContent = `${mapZoom.toFixed(1)}×`;
+    mapZoomButtons.forEach((button) => {
+      const action = button.dataset.mapZoom;
+      button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
+    });
+  };
+  const setMapLayerVisibility = (layer, visible) => {
+    if (!mapCanvas || !layer) return;
+    const isVisible = Boolean(visible);
+    if (layer === 'districts') mapCanvas.dataset.districtsVisible = String(isVisible);
+    if (layer === 'subway') mapCanvas.dataset.subwayVisible = String(isVisible);
+    mapLayerToggleButtons
+      .filter((button) => button.dataset.mapToggle === layer)
+      .forEach((button) => button.setAttribute('aria-pressed', String(isVisible)));
+  };
 
   const categoryLabel = (key) => (payload?.categories?.[key] || ({population: '인구밀도'}[key]) || key);
   const maxFor = (key) => {
@@ -213,6 +239,11 @@
     stationTitle.textContent = `${station.name} ${layerLabel}`;
     mapFocusName && (mapFocusName.textContent = station.name);
     mapFocusMeta && (mapFocusMeta.textContent = `${station.district} ${station.dong} · ${focusMetric}`);
+    const selectedMapButton = stationButtons.find((button) => button.dataset.stationMap === station.id);
+    if (selectedMapButton && mapViewport) {
+      mapViewport.style.setProperty('--focus-x', selectedMapButton.style.getPropertyValue('--x') || '50%');
+      mapViewport.style.setProperty('--focus-y', selectedMapButton.style.getPropertyValue('--y') || '50%');
+    }
     gradeEl && (gradeEl.textContent = `${grade.label} ${grade.score}`);
     countEl && (countEl.textContent = String(count));
     countLabelEl && (countLabelEl.textContent = categoryLabel(industry));
@@ -246,10 +277,24 @@
   };
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
   stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  mapZoomButtons.forEach((button) => button.addEventListener('click', () => {
+    const action = button.dataset.mapZoom;
+    if (action === 'in') setMapZoom(mapZoom + .25);
+    if (action === 'out') setMapZoom(mapZoom - .25);
+    if (action === 'reset') setMapZoom(1);
+  }));
+  mapLayerToggleButtons.forEach((button) => button.addEventListener('click', () => {
+    const layer = button.dataset.mapToggle || '';
+    const visible = button.getAttribute('aria-pressed') !== 'true';
+    setMapLayerVisibility(layer, visible);
+  }));
   stationSelect.addEventListener('change', evaluate);
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
+  setMapZoom(1);
+  setMapLayerVisibility('districts', true);
+  setMapLayerVisibility('subway', true);
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))
