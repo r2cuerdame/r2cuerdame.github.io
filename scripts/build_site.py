@@ -2912,6 +2912,11 @@ def commercial_check_tool_block() -> str:
         <span>현장 확인 시간</span>
         <strong>역과 업종을 고르면 방문 순서가 바뀝니다</strong>
       </div>
+      <div class="candidate-memo-card" data-candidate-memo aria-live="polite">
+        <span>후보 메모</span>
+        <strong>역·업종을 고르면 비교 메모가 바뀝니다</strong>
+        <small>상담·임장 전에 이 한 줄로 후보를 나란히 비교하세요</small>
+      </div>
       <div class="tool-link-row" data-recommend-links>
         <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록</a>
         <a href="/topics/jeonwolse-contract-check/">전월세 체크 글 목록</a>
@@ -3540,6 +3545,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .field-visit-plan strong { display: block; margin-top: 8px; color: #172033; font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
 .field-visit-plan ul { display: grid; gap: 6px; margin: 9px 0 0; padding-left: 18px; }
 .field-visit-plan li { color: #475569; font-size: 13px; line-height: 1.45; font-weight: 850; }
+.candidate-memo-card { margin-top: 12px; padding: 14px 15px; border-radius: 20px; background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fed7aa; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+.candidate-memo-card > span { display: inline-flex; min-height: 26px; align-items: center; padding: 0 9px; border-radius: 999px; background: #ffedd5; color: #9a3412; font-size: 11px; font-weight: 950; letter-spacing: .04em; }
+.candidate-memo-card strong { display: block; margin-top: 8px; color: #7c2d12; font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
+.candidate-memo-card small { display: block; margin-top: 5px; color: #9a3412; font-size: 12.5px; line-height: 1.45; font-weight: 850; }
 .tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tool-link-row a { display: inline-flex; min-height: 38px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
 .density-compare-card { padding: 18px; border-radius: 26px; background: rgba(15,23,42,.80); color: #fff; border: 1px solid rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.16); backdrop-filter: blur(16px); }
@@ -4340,6 +4349,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const barsEl = root.querySelector('[data-density-bars]');
   const decisionQuestionEl = root.querySelector('[data-decision-question]');
   const visitPlanEl = root.querySelector('[data-visit-plan]');
+  const candidateMemoEl = root.querySelector('[data-candidate-memo]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
@@ -4468,6 +4478,18 @@ COMMERCIAL_TOOL_JS = '''(() => {
       ]
     };
   };
+  const candidateMemoFor = (station, industry, purpose, count, grade) => {
+    const label = categoryLabel(industry);
+    const mode = purpose === 'home' ? '주거 후보' : '상가 후보';
+    const metric = industry === 'population' ? `인구밀도 ${count}` : `${label} ${count}개`;
+    const blocker = purpose === 'home'
+      ? '밤길·소음·월 고정비 답이 없으면 보류'
+      : '권리금·임대료 회수기간 답이 없으면 보류';
+    return {
+      title: `${station.name} · ${mode} · ${metric} · ${grade.label} ${grade.score}`,
+      detail: `${station.district} ${station.dong} / 상권 ${station.commercial_density_label}, 인구 ${station.population_density_label} / ${blocker}`
+    };
+  };
   const decisionQuestionFor = (station, industry, purpose) => {
     const label = categoryLabel(industry);
     const selectedCount = valueFor(station, industry);
@@ -4581,6 +4603,10 @@ COMMERCIAL_TOOL_JS = '''(() => {
     if (visitPlanEl) {
       const plan = visitPlanFor(station, industry, purpose);
       visitPlanEl.innerHTML = `<span>현장 확인 시간</span><strong>${esc(plan.title)}</strong><ul>${plan.items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+    }
+    if (candidateMemoEl) {
+      const memo = candidateMemoFor(station, industry, purpose, count, grade);
+      candidateMemoEl.innerHTML = `<span>후보 메모</span><strong>${esc(memo.title)}</strong><small>${esc(memo.detail)}</small>`;
     }
     linksEl && (linksEl.innerHTML = purpose === 'home'
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')

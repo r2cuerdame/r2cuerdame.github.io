@@ -214,6 +214,10 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .field-visit-plan strong { display: block; margin-top: 8px; color: #172033; font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
 .field-visit-plan ul { display: grid; gap: 6px; margin: 9px 0 0; padding-left: 18px; }
 .field-visit-plan li { color: #475569; font-size: 13px; line-height: 1.45; font-weight: 850; }
+.candidate-memo-card { margin-top: 12px; padding: 14px 15px; border-radius: 20px; background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fed7aa; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+.candidate-memo-card > span { display: inline-flex; min-height: 26px; align-items: center; padding: 0 9px; border-radius: 999px; background: #ffedd5; color: #9a3412; font-size: 11px; font-weight: 950; letter-spacing: .04em; }
+.candidate-memo-card strong { display: block; margin-top: 8px; color: #7c2d12; font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
+.candidate-memo-card small { display: block; margin-top: 5px; color: #9a3412; font-size: 12.5px; line-height: 1.45; font-weight: 850; }
 .tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tool-link-row a { display: inline-flex; min-height: 38px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
 .density-compare-card { padding: 18px; border-radius: 26px; background: rgba(15,23,42,.80); color: #fff; border: 1px solid rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.16); backdrop-filter: blur(16px); }

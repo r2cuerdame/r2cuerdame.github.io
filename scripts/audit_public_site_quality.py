@@ -242,7 +242,7 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".map-layer-toggles", ".map-zoom-controls", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".density-data-note"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-map-viewport", ".map-toolbar", ".map-layer-toggles", ".map-zoom-controls", ".seoul-real-map", ".seoul-district", ".seoul-river", ".seoul-subway-map", ".seoul-subway-line", ".seoul-subway-line-halo", ".seoul-subway-stations", ".seoul-station-node", ".subway-station-label", ".subway-line-key", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".candidate-memo-card", ".tool-link-row", ".density-compare-card", ".compare-metric-row", ".density-data-note"]:
         if marker not in css:
             failures.append(f"seoul_density_tool_css_missing:{marker}")
     for guard in [
@@ -352,6 +352,8 @@ def audit_html(path: str, page_html: str) -> list[str]:
             'data-decision-question',
             '먼저 물을 질문',
             'data-visit-plan',
+            'data-candidate-memo',
+            '후보 메모',
             'data-compare-panel',
             'data-compare-metrics',
             'class="density-data-note"',

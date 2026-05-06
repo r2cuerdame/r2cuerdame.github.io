@@ -22,6 +22,7 @@
   const barsEl = root.querySelector('[data-density-bars]');
   const decisionQuestionEl = root.querySelector('[data-decision-question]');
   const visitPlanEl = root.querySelector('[data-visit-plan]');
+  const candidateMemoEl = root.querySelector('[data-candidate-memo]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
@@ -150,6 +151,18 @@
       ]
     };
   };
+  const candidateMemoFor = (station, industry, purpose, count, grade) => {
+    const label = categoryLabel(industry);
+    const mode = purpose === 'home' ? '주거 후보' : '상가 후보';
+    const metric = industry === 'population' ? `인구밀도 ${count}` : `${label} ${count}개`;
+    const blocker = purpose === 'home'
+      ? '밤길·소음·월 고정비 답이 없으면 보류'
+      : '권리금·임대료 회수기간 답이 없으면 보류';
+    return {
+      title: `${station.name} · ${mode} · ${metric} · ${grade.label} ${grade.score}`,
+      detail: `${station.district} ${station.dong} / 상권 ${station.commercial_density_label}, 인구 ${station.population_density_label} / ${blocker}`
+    };
+  };
   const decisionQuestionFor = (station, industry, purpose) => {
     const label = categoryLabel(industry);
     const selectedCount = valueFor(station, industry);
@@ -263,6 +276,10 @@
     if (visitPlanEl) {
       const plan = visitPlanFor(station, industry, purpose);
       visitPlanEl.innerHTML = `<span>현장 확인 시간</span><strong>${esc(plan.title)}</strong><ul>${plan.items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+    }
+    if (candidateMemoEl) {
+      const memo = candidateMemoFor(station, industry, purpose, count, grade);
+      candidateMemoEl.innerHTML = `<span>후보 메모</span><strong>${esc(memo.title)}</strong><small>${esc(memo.detail)}</small>`;
     }
     linksEl && (linksEl.innerHTML = purpose === 'home'
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')

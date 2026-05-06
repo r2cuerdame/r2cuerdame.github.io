@@ -118,6 +118,8 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-decision-question' in html
     assert '먼저 물을 질문' in html
     assert 'data-visit-plan' in html
+    assert 'data-candidate-memo' in html
+    assert '후보 메모' in html
     assert 'data-compare-panel' in html
     assert 'data-compare-metrics' in html
     assert 'class="density-data-note"' in html
@@ -138,7 +140,9 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'renderCompare' in js
     assert 'visitPlanFor' in js
     assert 'decisionQuestionFor' in js
+    assert 'candidateMemoFor' in js
     assert '[data-decision-question]' in js
+    assert 'data-candidate-memo' in js
     assert 'data-density-layer' in js
     assert 'data-map-toggle' in js
     assert 'data-map-zoom' in js
@@ -156,6 +160,7 @@ def test_home_has_above_fold_seoul_density_tool():
     css = build_site.CSS
     assert "@media (max-width: 1120px) and (min-width: 861px)" in css
     assert ".density-data-note" in css
+    assert ".candidate-memo-card" in css
     assert ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }" in css
     assert ".seoul-map-canvas { min-height: 560px; }" in css
     assert ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }" in css
