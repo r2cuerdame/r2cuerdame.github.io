@@ -117,6 +117,9 @@ def test_home_has_above_fold_seoul_density_tool():
     assert 'data-visit-plan' in html
     assert 'data-compare-panel' in html
     assert 'data-compare-metrics' in html
+    assert 'class="density-data-note"' in html
+    assert '데이터 기준과 한계' in html
+    assert '브라우저에는 결과 JSON만 보냅니다' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
     assert 'href="/topics/jeonwolse-contract-check/"' in html
     assert '/data/seoul-commercial-areas.json?v=' in html
@@ -149,6 +152,7 @@ def test_home_has_above_fold_seoul_density_tool():
     assert '/radar/monthly-rent-contract-check/' not in js
     css = build_site.CSS
     assert "@media (max-width: 1120px) and (min-width: 861px)" in css
+    assert ".density-data-note" in css
     assert ".seoul-map-card { grid-column: 1 / -1; min-height: 690px; }" in css
     assert ".seoul-map-canvas { min-height: 560px; }" in css
     assert ".seoul-tool-copy { grid-template-columns: 1fr; gap: 14px; }" in css

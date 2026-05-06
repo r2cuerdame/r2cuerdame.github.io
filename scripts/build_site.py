@@ -2874,6 +2874,14 @@ def commercial_check_tool_block() -> str:
       </div>
     </div>
     <p class="map-source-note" data-source-note>서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강·지하철 노선망(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다</p>
+    <details class="density-data-note">
+      <summary>데이터 기준과 한계</summary>
+      <ul>
+        <li>지도 경계·한강·지하철은 공개 데이터를 빌드 시점에 정적 파일로 묶어 브라우저에는 결과 JSON만 보냅니다.</li>
+        <li>업종 수와 인구밀도 지수는 후보를 줄이는 신호이며, 실제 계약 전에는 평일 점심·퇴근·주말 현장 확인이 필요합니다.</li>
+        <li>점수가 높아도 권리금·관리비·소음·야간 동선 질문에 답이 없으면 보류합니다.</li>
+      </ul>
+    </details>
   </div>
   <div class="station-inspector" data-station-inspector>
     <form class="seoul-selector-form" data-station-tool>
@@ -3493,6 +3501,13 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .map-focus-card span, .map-focus-card small { display: block; color: #cbd5e1; font-size: 12px; font-weight: 900; }
 .map-focus-card strong { display: block; margin: 2px 0 3px; color: #fff; font-size: 25px; line-height: 1.05; letter-spacing: -.045em; }
 .map-source-note { position: relative; z-index: 2; margin: 12px 2px 0; color: #cbd5e1; font-size: 12px; line-height: 1.45; font-weight: 750; }
+.density-data-note { position: relative; z-index: 2; margin: 10px 2px 0; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: rgba(2,6,23,.42); color: #dbeafe; overflow: hidden; }
+.density-data-note summary { min-height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 13px; color: #fff; cursor: pointer; font-size: 12px; font-weight: 950; list-style: none; }
+.density-data-note summary::-webkit-details-marker { display: none; }
+.density-data-note summary::after { content: "+"; margin-left: auto; color: #93c5fd; font-size: 16px; line-height: 1; }
+.density-data-note[open] summary::after { content: "−"; }
+.density-data-note ul { display: grid; gap: 6px; margin: 0; padding: 0 14px 14px 32px; }
+.density-data-note li { color: #cbd5e1; font-size: 12px; line-height: 1.45; font-weight: 800; }
 .station-inspector { display: grid; align-content: start; gap: 14px; }
 .seoul-selector-form { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 18px; border-radius: 26px; background: rgba(15,23,42,.72); border: 1px solid rgba(255,255,255,.10); box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 14px 34px rgba(0,0,0,.16); backdrop-filter: blur(16px); }
 .seoul-selector-form label { display: grid; gap: 6px; color: #cbd5e1; font-size: 13px; font-weight: 950; }
