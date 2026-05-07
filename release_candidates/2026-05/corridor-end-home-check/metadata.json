@@ -1,0 +1,67 @@
+{
+  "slug": "corridor-end-home-check",
+  "title": "복도 끝 집, 조용함인지 사각지대인지 보는 밤 12분",
+  "description": "서울·수도권 25~39세 전월세·이사 독자가 복도 끝 집의 조용함을 밤 귀가 시야·문 앞 머무름·방 안 소리 질문으로 바꾸는 글입니다.",
+  "status": "published_to_pages",
+  "created_at": "2026-05-05T20:46:51+09:00",
+  "updated_at": "2026-05-08T00:42:12+09:00",
+  "mature_started_at": "2026-05-05T20:46:51+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "복도 끝 집",
+    "밤 귀가",
+    "공용부",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "복도 끝 집은 조용한 장점이 있지만 시야와 사람 흐름이 끊기면 밤 귀가 피로가 커질 수 있습니다.",
+  "field_mission": "밤 귀가 시간에 복도 시작점부터 현관까지 12분 동안 조명·시야·문 앞 머무름·좋은 반례를 확인합니다.",
+  "editorial_positioning": "복도 끝 세대의 조용함과 사각지대 피로를 독자가 현장에서 바로 나누게 만드는 동네 레이더 글",
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-05T20:46:51+09:00",
+    "visible_prose_chars": 6999,
+    "reader_visual_count": 15,
+    "target_fit": true,
+    "reviewed_at": "2026-05-07T21:42:28+09:00",
+    "hourly_replenishment_status": "new_clean_candidate",
+    "last_hourly_polish": "2026-05-07T17:44:54+09:00 — added follow-up click card/section so corridor-end readers send the remaining concern to exactly one next comparison axis: outside route, doorway pause, or in-room sound",
+    "hourly_polish_2026_05_07_2137": "tightened search meta description so 서울·수도권 25~39세 전월세·이사 reader sees the 밤 귀가 시야·문 앞 머무름·방 안 소리 decision before opening",
+    "last_visual_asset_fix": "2026-05-08T00:42:12+09:00 — added thumbnail plus 3 AI field-example WebP assets so public card/gallery/photo-scan gates pass for the published corridor article"
+  },
+  "last_review": "ready=7 hard=0 soft=0; corridor public visual assets added; target_fit=True",
+  "pages_published_at": "2026-05-08T00:34:49+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/corridor-end-home-check/",
+  "image_url": "/assets/radar/thumbs/corridor-end-home-check.webp",
+  "field_examples": [
+    {
+      "label": "예시 장면 1",
+      "badge": "AI 예시",
+      "title": "복도 시작점에서 끝 집 시야가 끊기는 순간",
+      "description": "밤 귀가 시간에 복도 시작점·계단실·내 현관이 한눈에 이어지는지 먼저 봅니다.",
+      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-night-sightline-v1.webp",
+      "alt": "복도 끝 집 밤 귀가 시야를 확인하는 AI 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 2",
+      "badge": "AI 예시",
+      "title": "문 앞에 잠깐 머물 때 피로가 커지는 구간",
+      "description": "택배 확인·열쇠 찾기처럼 문 앞에 멈추는 시간이 시야 사각지대와 겹치는지 확인합니다.",
+      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-doorway-pause-v1.webp",
+      "alt": "복도 끝 집 문 앞 머무름과 조명 사각을 보여주는 AI 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 3",
+      "badge": "AI 예시",
+      "title": "방 안에서 복도 끝 소리가 어떻게 들리는지",
+      "description": "조용함이 실제 장점인지, 문 닫힘·계단실 울림이 방 안까지 들어오는지 소리 방향을 나눕니다.",
+      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-room-sound-v1.webp",
+      "alt": "복도 끝 집 방 안 소리 방향을 점검하는 AI 현장 예시 이미지"
+    }
+  ]
+}
