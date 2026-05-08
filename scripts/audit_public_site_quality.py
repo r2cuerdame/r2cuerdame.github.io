@@ -243,8 +243,8 @@ def audit_css(css: str) -> list[str]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
     for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-real-map", ".seoul-district", ".seoul-river", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
-        if marker not in css:
-            failures.append(f"seoul_density_tool_css_missing:{marker}")
+        if marker in css:
+            failures.append(f"rejected_home_map_css_regression:{marker}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
@@ -310,36 +310,39 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_to_deals_link_missing")
     if kind == "home":
         required_markers = [
-            'id="commercial-check-tool"',
-            'data-seoul-density-tool-root',
-            'class="seoul-map-card"',
-            'class="seoul-real-map"',
-            'data-map-district="마포구"',
-            '서울 25개 구 행정경계',
-            'data-density-layer="cafe"',
-            'data-density-layer="population"',
-            'data-station-map="hongdae"',
-            'id="tool-station"',
-            'id="tool-compare-station"',
-            'id="tool-industry"',
-            'data-density-count',
-            'data-pop-density',
-            'data-risk-list',
-            'data-visit-plan',
-            'data-compare-panel',
-            'data-compare-metrics',
+            '지도 없이, 계약 전에 물을 질문부터 좁힙니다',
+            'href="#contract-question-path"',
+            'id="contract-question-path"',
             'href="/topics/cafe-commercial-lease-risk/"',
             'href="/topics/jeonwolse-contract-check/"',
-            '/data/seoul-commercial-areas.json?v=',
-            '/assets/commercial-check.js?v=',
+            '사례로 더 보기',
         ]
         for marker in required_markers:
             if marker not in page_html:
-                failures.append(f"{path}:seoul_density_tool_marker_missing:{marker}")
+                failures.append(f"{path}:home_question_path_marker_missing:{marker}")
+        rejected_map_markers = [
+            'id="commercial-check-tool"',
+            'data-seoul-density-tool-root',
+            'data-commercial-tool-root',
+            'class="seoul-map-card"',
+            'class="seoul-real-map"',
+            'data-map-district=',
+            'data-density-layer=',
+            'data-station-map=',
+            'id="tool-station"',
+            '/data/seoul-commercial-areas.json',
+            '/data/seoul-map-outline.json',
+            '/assets/commercial-check.js',
+            '서울 25개 구 행정경계',
+            'SEOUL DENSITY RADAR',
+        ]
+        for marker in rejected_map_markers:
+            if marker in page_html:
+                failures.append(f"{path}:rejected_home_map_regression:{marker}")
         if '분리 운영 중인 쇼핑픽' in page_html:
             failures.append(f"{path}:home_shopping_section_should_not_compete_with_radar")
-        if page_html.find('id="commercial-check-tool"') > page_html.find('사례로 더 보기'):
-            failures.append(f"{path}:seoul_density_tool_not_before_case_articles")
+        if page_html.find('id="contract-question-path"') > page_html.find('사례로 더 보기'):
+            failures.append(f"{path}:home_question_path_not_before_case_articles")
     if kind == "radar":
         for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
             if f'href="{href}"' not in page_html:

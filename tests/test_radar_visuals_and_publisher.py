@@ -74,83 +74,67 @@ def test_adaptive_publisher_waits_after_daily_floor_when_queue_is_low(monkeypatc
 def test_publisher_stages_all_generated_static_outputs():
     publisher = load_module(ROOT / "scripts" / "publish_next_radar_candidate.py", "radar_publisher_paths")
 
-    for required in ["404.html", "main.css", "assets/search.js", "assets/commercial-check.js", "assets/radar", "data/seoul-commercial-areas.json", "data/seoul-map-outline.json", "scripts/publish_next_radar_candidate.py", "deals", "radar", "topics", "search/index.html"]:
+    for required in ["404.html", "main.css", "assets/search.js", "assets/radar", "scripts/build_site.py", "scripts/audit_public_site_quality.py", "scripts/publish_next_radar_candidate.py", "tests/test_radar_visuals_and_publisher.py", "deals", "radar", "topics", "search/index.html"]:
         assert required in publisher.PUBLIC_ADD_PATHS
+    for removed in ["assets/commercial-check.js", "data/seoul-commercial-areas.json", "data/seoul-map-outline.json"]:
+        assert removed not in publisher.PUBLIC_ADD_PATHS
 
 
-def test_home_has_above_fold_seoul_density_tool():
-    build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_home_tool")
+def test_home_removes_rejected_seoul_map_tool():
+    build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_home_without_map")
 
     html = build_site.home_body([], [])
 
-    assert 'href="#commercial-check-tool"' in html
-    assert 'id="commercial-check-tool"' in html
-    assert 'data-seoul-density-tool-root' in html
-    assert 'class="seoul-map-card"' in html
-    assert 'class="seoul-real-map"' in html
-    assert 'data-map-district="마포구"' in html
-    assert '서울 25개 구 행정경계' in html
-    assert 'OSM 한강' in html
-    assert 'data-density-layer="cafe"' in html
-    assert 'data-density-layer="population"' in html
-    assert 'data-station-map="hongdae"' in html
-    assert 'id="tool-station"' in html
-    assert 'id="tool-compare-station"' in html
-    assert 'id="tool-industry"' in html
-    assert 'data-density-count' in html
-    assert 'data-pop-density' in html
-    assert 'data-risk-list' in html
-    assert 'data-visit-plan' in html
-    assert 'data-compare-panel' in html
-    assert 'data-compare-metrics' in html
+    assert 'href="#contract-question-path"' in html
+    assert 'id="contract-question-path"' in html
+    assert '지도 없이, 계약 전에 물을 질문부터 좁힙니다' in html
     assert 'href="/topics/cafe-commercial-lease-risk/"' in html
     assert 'href="/topics/jeonwolse-contract-check/"' in html
-    assert '/data/seoul-commercial-areas.json?v=' in html
-    assert '/assets/commercial-check.js?v=' in html
-    assert html.index('id="commercial-check-tool"') < html.index('사례로 더 보기')
+    assert html.index('id="contract-question-path"') < html.index('사례로 더 보기')
     assert '분리 운영 중인 쇼핑픽' not in html
 
-    assert len(build_site.SEOUL_COMMERCIAL_AREAS["stations"]) >= 12
-    js = build_site.COMMERCIAL_TOOL_JS
-    assert '[data-seoul-density-tool-root]' in js
-    assert 'tool-compare-station' in js
-    assert 'data-compare-panel' in js
-    assert 'renderCompare' in js
-    assert 'visitPlanFor' in js
-    assert 'data-density-layer' in js
-    assert 'districtPaths' in js
-    assert 'data-map-district' in js
-    assert '/data/seoul-commercial-areas.json' in js
-    assert '/topics/cafe-commercial-lease-risk/' in js
-    assert '/topics/jeonwolse-contract-check/' in js
-    assert '/radar/cafe-contract-risk/' not in js
-    assert '/radar/monthly-rent-contract-check/' not in js
-    data_text = json.dumps(build_site.SEOUL_COMMERCIAL_AREAS, ensure_ascii=False)
-    assert "KOSIS_API_KEY" not in data_text
-    assert "Public OSM Overpass" not in data_text
-    assert "비밀 키는 브라우저에 배포하지 않습니다" in data_text
-
-    outline = build_site.SEOUL_MAP_OUTLINE
-    assert len(outline["districts"]) == 25
-    assert outline["river"]["path"].startswith("M")
-    assert "KOSTAT" in json.dumps(outline, ensure_ascii=False)
+    forbidden = [
+        'href="#commercial-check-tool"',
+        'id="commercial-check-tool"',
+        'data-seoul-density-tool-root',
+        'class="seoul-map-card"',
+        'class="seoul-real-map"',
+        'data-map-district',
+        'data-density-layer',
+        'data-station-map',
+        'id="tool-station"',
+        '/data/seoul-commercial-areas.json',
+        '/data/seoul-map-outline.json',
+        '/assets/commercial-check.js',
+        '서울 25개 구 행정경계',
+        'SEOUL DENSITY RADAR',
+    ]
+    for marker in forbidden:
+        assert marker not in html
+    assert not hasattr(build_site, "COMMERCIAL_TOOL_JS")
 
 
-def test_public_audit_rejects_home_without_seoul_density_tool():
-    audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_home_tool")
+def test_public_audit_rejects_home_with_seoul_map_regression():
+    audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_home_map_removed")
     html = (
         '<!doctype html><html><head><title>Recuerdame Lab 홈</title>'
         '<meta name="description" content="이사 월세 전세 상가 계약 전 동네 리스크를 확인하는 홈입니다.">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<link rel="stylesheet" href="/main.css?v=test"></head><body><main>'
-        '<h1>이사·월세·상가 계약 전</h1>'
-        '<section><h2>동네 레이더 최신 글</h2></section>'
+        '<h1>지도 없이, 계약 전에 물을 질문부터 좁힙니다.</h1>'
+        '<a href="#contract-question-path">질문으로 후보 줄이기</a>'
+        '<section id="contract-question-path"><a href="/topics/cafe-commercial-lease-risk/">상가</a>'
+        '<a href="/topics/jeonwolse-contract-check/">전월세</a></section>'
+        '<section><h2>사례로 더 보기</h2></section>'
+        '<section id="commercial-check-tool" class="seoul-density-panel" data-seoul-density-tool-root>'
+        '<div class="seoul-map-card"><svg class="seoul-real-map"></svg></div>'
+        '<script src="/assets/commercial-check.js?v=test" defer></script>'
         '</main></body></html>'
     )
 
     failures = audit.audit_html("/", html)
 
-    assert any("seoul_density_tool_marker_missing" in failure for failure in failures)
+    assert any("rejected_home_map_regression" in failure for failure in failures)
 
 
 def test_radar_contract_check_entrypoints_are_topic_lists():
