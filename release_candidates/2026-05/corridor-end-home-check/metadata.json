@@ -37,31 +37,31 @@
   "last_review": "ready=7 hard=0 soft=0; corridor public visual assets added; target_fit=True",
   "pages_published_at": "2026-05-08T00:34:49+09:00",
   "pages_url": "https://r2cuerdame.github.io/radar/corridor-end-home-check/",
-  "image_url": "/assets/radar/thumbs/corridor-end-home-check.webp",
+  "image_url": "/assets/radar/thumbs/corridor-end-home-check-v2.webp",
   "field_examples": [
     {
       "label": "예시 장면 1",
-      "badge": "AI 예시",
+      "badge": "AI 실사 예시",
       "title": "복도 시작점에서 끝 집 시야가 끊기는 순간",
       "description": "밤 귀가 시간에 복도 시작점·계단실·내 현관이 한눈에 이어지는지 먼저 봅니다.",
-      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-night-sightline-v1.webp",
-      "alt": "복도 끝 집 밤 귀가 시야를 확인하는 AI 현장 예시 이미지"
+      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-night-sightline-v2.webp",
+      "alt": "복도 끝 집 밤 귀가 시야를 확인하는 AI 실사 현장 예시 이미지"
     },
     {
       "label": "예시 장면 2",
-      "badge": "AI 예시",
+      "badge": "AI 실사 예시",
       "title": "문 앞에 잠깐 머물 때 피로가 커지는 구간",
       "description": "택배 확인·열쇠 찾기처럼 문 앞에 멈추는 시간이 시야 사각지대와 겹치는지 확인합니다.",
-      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-doorway-pause-v1.webp",
-      "alt": "복도 끝 집 문 앞 머무름과 조명 사각을 보여주는 AI 현장 예시 이미지"
+      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-doorway-pause-v2.webp",
+      "alt": "복도 끝 집 문 앞 머무름과 조명 사각을 보여주는 AI 실사 현장 예시 이미지"
     },
     {
       "label": "예시 장면 3",
-      "badge": "AI 예시",
+      "badge": "AI 실사 예시",
       "title": "방 안에서 복도 끝 소리가 어떻게 들리는지",
       "description": "조용함이 실제 장점인지, 문 닫힘·계단실 울림이 방 안까지 들어오는지 소리 방향을 나눕니다.",
-      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-room-sound-v1.webp",
-      "alt": "복도 끝 집 방 안 소리 방향을 점검하는 AI 현장 예시 이미지"
+      "image_url": "/assets/radar/corridor-end-home-check/examples/corridor-end-home-check-room-sound-v2.webp",
+      "alt": "복도 끝 집 방 안 소리 방향을 점검하는 AI 실사 현장 예시 이미지"
     }
   ]
 }

@@ -1,10 +1,11 @@
 {
   "slug": "one-block-inside-main-road-check",
   "title": "대로변 한 블록 안쪽 집, 조용함인지 고립감인지 보는 밤 12분",
-  "description": "큰길과 골목 사이 집이 안전한 조용함인지 고립감인지 밤 동선과 5칸 기록표로 확인하는 체크 글입니다.",
+  "description": "큰길과 골목 사이 집이 생활에 맞는 조용함인지 밤 귀가·우회 피로인지 현장 질문으로 확인하는 체크 글입니다.",
+  "image_url": "/assets/radar/thumbs/one-block-inside-main-road-check-v2.webp",
   "status": "published_to_pages",
   "created_at": "2026-05-05T19:37:36+09:00",
-  "updated_at": "2026-05-08T09:37:37+09:00",
+  "updated_at": "2026-05-07T00:31:47+09:00",
   "mature_started_at": "2026-05-05T19:37:36+09:00",
   "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
   "tags": [
@@ -17,34 +18,7 @@
   ],
   "radar_suspicion": "대로변 한 블록 안쪽 집은 조용해 보이지만, 마지막 골목의 빛·사람 흐름·우회 동선이 약하면 밤마다 고립감이 커집니다.",
   "field_mission": "퇴근 후와 밤 10시에 큰길에서 현관까지 12분을 걸으며 빛·시야·우회 가능성·머무는 가게를 같이 확인합니다.",
-  "editorial_positioning": "큰길 접근성과 골목 고립감을 독자가 현장 루트와 5칸 기록표로 비교하게 만드는 동네 레이더 글",
-  "image_url": "/assets/radar/thumbs/one-block-inside-main-road-check.webp",
-  "field_examples": [
-    {
-      "label": "밤 10시 마지막 회전",
-      "title": "큰길 불빛이 골목 회전 뒤에도 이어지는지 보기",
-      "badge": "밤 10시",
-      "description": "큰길에서 한 블록 들어온 뒤 첫 회전에서 사람 흐름, 가로등, 주차 차량 때문에 시야가 끊기는지 확인합니다.",
-      "image_url": "/assets/radar/one-block-inside-main-road-check/examples/one-block-inside-main-road-check-night-turn-v1.webp",
-      "alt": "밤 10시 대로변 한 블록 안쪽 골목에서 마지막 회전 뒤 불빛과 시야를 확인하는 AI 현장 예시 장면"
-    },
-    {
-      "label": "현관 앞 불빛과 머무름",
-      "title": "조용한 입구가 관리된 조용함인지 보기",
-      "badge": "현관 앞",
-      "description": "공동현관 관리등, 호출벨 주변, 잠깐 머무는 사람 위치를 보며 조용함이 안정감인지 고립감인지 나눕니다.",
-      "image_url": "/assets/radar/one-block-inside-main-road-check/examples/one-block-inside-main-road-check-entrance-light-v1.webp",
-      "alt": "대로변 한 블록 안쪽 집의 공동현관 앞 관리등과 머무름을 비교하는 AI 현장 예시 장면"
-    },
-    {
-      "label": "비 오는 날 우회 루트",
-      "title": "택시 하차 후 우회할 길이 남는지 보기",
-      "badge": "비 오는 저녁",
-      "description": "비 오는 날 택시에서 내려 현관까지 갈 때 한 길만 남는지, 큰길로 다시 빠질 수 있는 우회가 있는지 확인합니다.",
-      "image_url": "/assets/radar/one-block-inside-main-road-check/examples/one-block-inside-main-road-check-rain-detour-v1.webp",
-      "alt": "비 오는 저녁 대로변 한 블록 안쪽 집에서 택시 하차 후 우회 루트를 확인하는 AI 현장 예시 장면"
-    }
-  ],
+  "editorial_positioning": "큰길 접근성과 골목 고립감을 독자가 현장 루트로 검증하게 만드는 동네 레이더 글",
   "quality_snapshot": {
     "visible_prose_chars_min": 4500,
     "reader_visual_count_min": 8,
@@ -52,13 +26,40 @@
     "soft_issues": 0,
     "target_fit_required": true,
     "created_by_hourly_replenishment": "2026-05-05T19:37:36+09:00",
-    "visible_prose_chars": 5013,
-    "reader_visual_count": 9,
+    "visible_prose_chars": 5723,
+    "reader_visual_count": 11,
     "target_fit": true,
-    "reviewed_at": "2026-05-06T18:05:25+09:00",
-    "hourly_replenishment_status": "clean_candidate_polished"
+    "reviewed_at": "2026-05-06T21:44:35+09:00",
+    "hourly_replenishment_status": "polished_clean_candidate",
+    "last_hourly_polish": "2026-05-06T21:44:35+09:00 — added a three-slot field-record section, one reader-facing visual card, and a decision table so the main-road-inside article ends with concrete 기록 칸 rather than a broad quiet/safety impression; meta description was lowered from safety wording to 생활 리듬 확인"
   },
-  "last_review": "ready=4 hard=0 soft=0; this candidate chars=5013 visuals=9 target_fit=True",
-  "pages_published_at": "2026-05-08T09:37:37+09:00",
-  "pages_url": "https://r2cuerdame.github.io/radar/one-block-inside-main-road-check/"
+  "last_review": "ready=6 hard=0 soft=0; this candidate chars=5723 visuals=11 target_fit=True",
+  "pages_published_at": "2026-05-07T00:31:47+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/one-block-inside-main-road-check/",
+  "field_examples": [
+    {
+      "label": "예시 장면 1",
+      "badge": "AI 실사 예시",
+      "title": "큰길에서 한 블록 안쪽으로 꺾이는 첫 모퉁이",
+      "description": "밝은 대로에서 집 방향 골목으로 들어서는 순간, 조도와 사람 흐름이 끊기는지 봅니다.",
+      "image_url": "/assets/radar/one-block-inside-main-road-check/examples/one-block-inside-main-road-check-main-road-corner-v1.webp",
+      "alt": "대로에서 한 블록 안쪽 주거 골목으로 들어서는 밤길 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 2",
+      "badge": "AI 실사 예시",
+      "title": "차 소리는 줄지만 고립감이 생기는 창가 거리감",
+      "description": "대로 소음이 약해지는 대신 밤 귀가·창밖 시야가 너무 비어 보이지 않는지 확인합니다.",
+      "image_url": "/assets/radar/one-block-inside-main-road-check/examples/one-block-inside-main-road-check-window-distance-v1.webp",
+      "alt": "한 블록 안쪽 집 창가에서 대로 불빛과 조용한 골목을 보는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 3",
+      "badge": "AI 실사 예시",
+      "title": "조금 돌아도 밝게 이어지는 반례 동선",
+      "description": "한 블록 안쪽이어도 편의점 불빛·가로등·넓은 길이 이어지는 좋은 반례가 있는지 봅니다.",
+      "image_url": "/assets/radar/one-block-inside-main-road-check/examples/one-block-inside-main-road-check-lit-route-v1.webp",
+      "alt": "가로등과 생활시설 불빛이 이어지는 한 블록 안쪽 귀가길 AI 실사 현장 예시 이미지"
+    }
+  ]
 }

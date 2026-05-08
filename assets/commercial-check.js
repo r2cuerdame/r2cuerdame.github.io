@@ -20,61 +20,22 @@
   const popLabelEl = root.querySelector('[data-pop-label]');
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
-  const decisionQuestionEl = root.querySelector('[data-decision-question]');
   const visitPlanEl = root.querySelector('[data-visit-plan]');
-  const candidateMemoEl = root.querySelector('[data-candidate-memo]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
   const compareMetricsEl = root.querySelector('[data-compare-metrics]');
-  const compareVerdictEl = root.querySelector('[data-compare-verdict]');
   const compareNoteEl = root.querySelector('[data-compare-note]');
   const sourceNoteEl = root.querySelector('[data-source-note]');
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
   const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
   const districtPaths = Array.from(root.querySelectorAll('[data-map-district]'));
-  const mapCanvas = root.querySelector('[data-map-canvas]');
-  const mapViewport = root.querySelector('[data-map-viewport]');
-  const mapZoomButtons = Array.from(root.querySelectorAll('[data-map-zoom]'));
-  const mapZoomValue = root.querySelector('[data-map-zoom-value]');
-  const mapLayerToggleButtons = Array.from(root.querySelectorAll('[data-map-toggle]'));
-  const districtFilter = root.querySelector('[data-district-filter]');
-  const districtSummary = root.querySelector('[data-district-summary]');
-  const clusterLayer = root.querySelector('[data-map-clusters]');
   if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
-  let mapZoom = 1.02;
-  let selectedDistrict = 'all';
-
-  const setMapZoom = (nextZoom) => {
-    mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
-    if (mapViewport) mapViewport.style.setProperty('--map-zoom', mapZoom.toFixed(2));
-    if (mapCanvas) {
-      mapCanvas.dataset.zoomLevel = mapZoom.toFixed(2);
-      mapCanvas.dataset.mapZoomLevel = mapZoom.toFixed(2);
-    }
-    if (mapZoomValue) mapZoomValue.textContent = `${mapZoom.toFixed(1)}×`;
-    mapZoomButtons.forEach((button) => {
-      const action = button.dataset.mapZoom;
-      button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
-    });
-    if (mapCanvas) mapCanvas.dataset.clusterMode = mapZoom < 1.08 ? 'cluster' : mapZoom < 1.32 ? 'mixed' : 'station';
-    renderClusters();
-  };
-  const setMapLayerVisibility = (layer, visible) => {
-    if (!mapCanvas || !layer) return;
-    const isVisible = Boolean(visible);
-    if (layer === 'districts') mapCanvas.dataset.districtsVisible = String(isVisible);
-    if (layer === 'subway') mapCanvas.dataset.subwayVisible = String(isVisible);
-    if (layer === 'labels') mapCanvas.dataset.labelsVisible = String(isVisible);
-    mapLayerToggleButtons
-      .filter((button) => button.dataset.mapToggle === layer)
-      .forEach((button) => button.setAttribute('aria-pressed', String(isVisible)));
-  };
 
   const categoryLabel = (key) => (payload?.categories?.[key] || ({population: '인구밀도'}[key]) || key);
   const maxFor = (key) => {
@@ -95,133 +56,7 @@
     }
     return compare;
   };
-  const pctNumber = (value, fallback = 50) => {
-    const parsed = Number(String(value || '').replace('%', '').trim());
-    return Number.isFinite(parsed) ? parsed : fallback;
-  };
-  const stationButtonFor = (id) => stationButtons.find((button) => button.dataset.stationMap === id);
-  const stationsForDistrict = (district) => {
-    const stations = payload?.stations || [];
-    return district && district !== 'all' ? stations.filter((station) => station.district === district) : stations;
-  };
-  const selectedStationSet = () => stationsForDistrict(selectedDistrict);
-  const clusterValueFor = (station, industry) => industry === 'population'
-    ? Number(station.population_density_index || 0)
-    : Number(station.counts?.[industry] || 0);
-  const districtRegion = {
-    '강서구': '서남권', '마포구': '서북권', '서대문구': '서북권', '영등포구': '서남권',
-    '종로구': '도심권', '성동구': '동북권', '광진구': '동북권',
-    '동작구': '동남권', '관악구': '서남권', '강남구': '동남권', '송파구': '동남권'
-  };
-  const regionForStation = (station, x, y) => districtRegion[station.district] || (x < 42 ? (y > 52 ? '서남권' : '서북권') : x > 64 ? '동남권' : '도심권');
-  const setSelectedDistrict = (district, options = {}) => {
-    const next = district && district !== 'all' ? String(district) : 'all';
-    selectedDistrict = next;
-    root.dataset.selectedDistrict = next;
-    if (mapCanvas) mapCanvas.dataset.selectedDistrict = next;
-    if (districtFilter) {
-      const hasOption = Array.from(districtFilter.options || []).some((option) => option.value === next);
-      districtFilter.value = hasOption ? next : 'all';
-    }
-    const candidates = stationsForDistrict(next);
-    if (next !== 'all' && options.syncStation !== false && candidates.length && !candidates.some((station) => station.id === stationSelect.value)) {
-      stationSelect.value = candidates[0].id;
-    }
-    stationButtons.forEach((button) => {
-      button.setAttribute('data-district-hidden', next !== 'all' && button.dataset.district !== next ? 'true' : 'false');
-    });
-    districtPaths.forEach((path) => {
-      const isSelected = next !== 'all' && path.dataset.mapDistrict === next;
-      path.dataset.selected = String(isSelected);
-      path.setAttribute('data-district-hidden', next !== 'all' && path.dataset.mapDistrict !== next ? 'true' : 'false');
-      path.setAttribute('aria-pressed', String(isSelected));
-    });
-    if (districtSummary) {
-      const total = candidates.length;
-      districtSummary.textContent = next === 'all'
-        ? `서울 전체 ${total}개 후보 · 노선망 위에서 후보역/구 밀도를 같이 보는 중`
-        : `${next} 후보 ${total}개 · 선택 구만 강조해서 보는 중`;
-    }
-    renderClusters();
-  };
-  const renderClusters = () => {
-    if (!clusterLayer || !payload?.stations?.length) return;
-    const industry = industrySelect.value || 'cafe';
-    const mode = mapCanvas?.dataset.clusterMode || (mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station');
-    if (mode === 'station') {
-      clusterLayer.innerHTML = '';
-      return;
-    }
-    const groups = new Map();
-    selectedStationSet().forEach((station) => {
-      const button = stationButtonFor(station.id);
-      const x = pctNumber(button?.style.getPropertyValue('--x'), 50);
-      const y = pctNumber(button?.style.getPropertyValue('--y'), 50);
-      const key = mode === 'cluster' && selectedDistrict === 'all'
-        ? regionForStation(station, x, y)
-        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.id : (station.district || station.id));
-      const label = mode === 'cluster' && selectedDistrict === 'all'
-        ? key
-        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.name : (station.district || station.name));
-      const district = mode === 'cluster' && selectedDistrict === 'all' ? '' : (station.district || '');
-      const current = groups.get(key) || {key, label, district, stations: [], x: 0, y: 0, value: 0};
-      current.stations.push(station);
-      current.x += x;
-      current.y += y;
-      current.value += clusterValueFor(station, industry);
-      groups.set(key, current);
-    });
-    const clusters = Array.from(groups.values()).map((group) => ({
-      ...group,
-      x: group.x / Math.max(1, group.stations.length),
-      y: group.y / Math.max(1, group.stations.length),
-      stationId: group.stations.length === 1 ? group.stations[0].id : ''
-    }));
-    const maxValue = Math.max(1, ...clusters.map((cluster) => cluster.value));
-    clusterLayer.innerHTML = clusters.map((cluster) => {
-      const heat = Math.max(.18, Math.min(1, cluster.value / maxValue));
-      const label = cluster.label.endsWith('구') ? cluster.label.slice(0, -1) : cluster.label;
-      const aria = `${cluster.label} ${categoryLabel(industry)} ${cluster.value} · ${cluster.stations.length}개 후보`;
-      return `<button type="button" class="map-cluster-dot" data-cluster-bubble data-district="${esc(cluster.district)}" data-station-id="${esc(cluster.stationId)}" style="--x:${cluster.x.toFixed(2)}%;--y:${cluster.y.toFixed(2)}%;--heat:${heat.toFixed(2)}" aria-label="${esc(aria)}"><b>${esc(cluster.value)}</b><small>${esc(label)} ${cluster.stations.length}곳</small></button>`;
-    }).join('');
-    Array.from(clusterLayer.querySelectorAll('[data-cluster-bubble]')).forEach((button) => {
-      button.addEventListener('click', () => {
-        if (button.dataset.district) {
-          setSelectedDistrict(button.dataset.district || 'all');
-        } else {
-          setMapZoom(Math.max(mapZoom, 1.25));
-        }
-        if (button.dataset.stationId) stationSelect.value = button.dataset.stationId;
-        evaluate();
-      });
-    });
-  };
-  const compareVerdictFor = (station, compare, industry, purpose) => {
-    const stationGrade = gradeFor(station, industry);
-    const compareGrade = gradeFor(compare, industry);
-    const stationPressure = Number(station.rent_pressure_index || 0) + (purpose === 'home' ? Number(station.population_density_index || 0) * .45 : 0);
-    const comparePressure = Number(compare.rent_pressure_index || 0) + (purpose === 'home' ? Number(compare.population_density_index || 0) * .45 : 0);
-    const first = purpose === 'home'
-      ? (stationPressure <= comparePressure ? station : compare)
-      : (stationGrade.score >= compareGrade.score ? station : compare);
-    const other = first.id === station.id ? compare : station;
-    const firstGrade = first.id === station.id ? stationGrade : compareGrade;
-    if (purpose === 'home') {
-      return {
-        title: `${first.name}부터 걷고, ${other.name}은 월 고정비로 재비교`,
-        detail: `${first.name}은 비교 후보 중 생활 피로 압력이 낮은 쪽입니다. 그래도 밤길·소음·관리비 답이 없으면 보류하세요.`
-      };
-    }
-    const label = categoryLabel(industry);
-    const count = valueFor(first, industry);
-    return {
-      title: `${first.name} 먼저 보기 · ${firstGrade.label} ${firstGrade.score}`,
-      detail: industry === 'population'
-        ? `인구밀도 ${count} 기준입니다. 실제 구매 동선과 임대료 회수기간 답이 없으면 ${other.name}도 같이 보류하세요.`
-        : `${label} ${count}개 기준입니다. 경쟁점과 다른 재방문 이유가 없으면 ${other.name}보다 좋아 보여도 보류하세요.`
-    };
-  };
-  const renderCompare = (station, compare, industry, purpose) => {
+  const renderCompare = (station, compare, industry) => {
     if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
     const selectedDelta = valueFor(station, industry) - valueFor(compare, industry);
     const popDelta = Number(station.population_density_index || 0) - Number(compare.population_density_index || 0);
@@ -229,10 +64,6 @@
     const metric = (label, value) => `<div class="${value > 0 ? 'compare-up' : value < 0 ? 'compare-down' : 'compare-same'}"><span>${esc(label)}</span><strong>${signed(value)}</strong></div>`;
     compareTitleEl.textContent = `${station.name} ↔ ${compare.name}`;
     compareMetricsEl.innerHTML = [metric(categoryLabel(industry), selectedDelta), metric('인구밀도', popDelta), metric('임대압력', rentDelta)].join('');
-    if (compareVerdictEl) {
-      const verdict = compareVerdictFor(station, compare, industry, purpose);
-      compareVerdictEl.innerHTML = `<span>먼저 볼 후보</span><strong>${esc(verdict.title)}</strong><small>${esc(verdict.detail)}</small>`;
-    }
     compareNoteEl.textContent = rentDelta > 7
       ? `${station.name}은 ${compare.name}보다 임대 압력이 높습니다. 권리금·고정비 회수 기간을 더 보수적으로 잡으세요.`
       : rentDelta < -7
@@ -288,71 +119,6 @@
       ]
     };
   };
-  const candidateMemoFor = (station, industry, purpose, count, grade) => {
-    const label = categoryLabel(industry);
-    const mode = purpose === 'home' ? '주거 후보' : '상가 후보';
-    const metric = industry === 'population' ? `인구밀도 ${count}` : `${label} ${count}개`;
-    const blocker = purpose === 'home'
-      ? '밤길·소음·월 고정비 답이 없으면 보류'
-      : '권리금·임대료 회수기간 답이 없으면 보류';
-    return {
-      title: `${station.name} · ${mode} · ${metric} · ${grade.label} ${grade.score}`,
-      detail: `${station.district} ${station.dong} / 상권 ${station.commercial_density_label}, 인구 ${station.population_density_label} / ${blocker}`
-    };
-  };
-  const decisionQuestionFor = (station, industry, purpose) => {
-    const label = categoryLabel(industry);
-    const selectedCount = valueFor(station, industry);
-    const denseThreshold = maxFor(industry) * .72;
-    const thinThreshold = maxFor(industry) * .16;
-    if (purpose === 'home') {
-      if (Number(station.population_density_index || 0) >= 80) {
-        return {
-          label: '주거 1순위 질문',
-          question: `${station.name} 밤 10시 귀가길과 창문 밖 소음을 실제로 감당할 수 있나요?`,
-          reason: '인구밀도가 높을수록 낮의 편의가 밤의 피로로 바뀔 수 있습니다.'
-        };
-      }
-      if (Number(station.rent_pressure_index || 0) >= 80) {
-        return {
-          label: '주거 1순위 질문',
-          question: `${station.name} 월세·관리비·교통비 총액이 같은 예산 다른 역보다 낫나요?`,
-          reason: '임대 압력이 높으면 집값보다 매달 빠지는 총액을 먼저 봐야 합니다.'
-        };
-      }
-      return {
-        label: '주거 1순위 질문',
-        question: `${station.name} 역에서 현관까지 마지막 도보가 매일 반복 가능할까요?`,
-        reason: '숫자 점수보다 매일 걷는 마지막 7분이 계약 만족도를 가릅니다.'
-      };
-    }
-    if (industry !== 'population' && selectedCount >= denseThreshold) {
-      return {
-        label: '상가 1순위 질문',
-        question: `${station.name} 반경 안 ${label} ${selectedCount}개와 다른 재방문 이유가 있나요?`,
-        reason: '밀도가 높으면 유동인구보다 직접 경쟁과 반복 구매 이유가 먼저입니다.'
-      };
-    }
-    if (Number(station.rent_pressure_index || 0) >= 85) {
-      return {
-        label: '상가 1순위 질문',
-        question: `${station.name} 권리금·임대료 회수 기간을 보수적으로 잡아도 버틸 수 있나요?`,
-        reason: '임대 압력이 높은 후보는 매출 기대보다 고정비 회수 질문부터 봐야 합니다.'
-      };
-    }
-    if (industry !== 'population' && selectedCount <= thinThreshold) {
-      return {
-        label: '상가 1순위 질문',
-        question: `${station.name}에 일부러 찾아올 앵커 동선이나 목적 방문 이유가 있나요?`,
-        reason: '밀도가 낮은 후보는 한산함이 장점인지 수요 부족인지 나눠야 합니다.'
-      };
-    }
-    return {
-      label: '상가 1순위 질문',
-      question: `${station.name} 평일 점심·퇴근·주말에 실제 결제 고객을 몇 명 셀 수 있나요?`,
-      reason: '사람 수가 아니라 구매 순간을 세어야 상권 착시를 줄일 수 있습니다.'
-    };
-  };
   const updateMapHeat = (industry) => {
     const max = maxFor(industry);
     stationButtons.forEach((button) => {
@@ -364,7 +130,6 @@
       const small = button.querySelector('small');
       if (small) small.textContent = industry === 'population' ? `${station.population_density_index}` : `${raw}`;
       button.title = `${station.name} · ${industry === 'population' ? '인구밀도' : categoryLabel(industry)} ${raw}`;
-      button.setAttribute('data-district-hidden', selectedDistrict !== 'all' && station.district !== selectedDistrict ? 'true' : 'false');
       button.setAttribute('aria-pressed', station.id === stationSelect.value ? 'true' : 'false');
     });
     layerButtons.forEach((button) => button.setAttribute('aria-pressed', button.dataset.densityLayer === industry ? 'true' : 'false'));
@@ -381,9 +146,6 @@
   const evaluate = () => {
     if (!payload?.stations?.length) return;
     const station = stationById(stationSelect.value) || payload.stations[0];
-    if (station?.district && selectedDistrict !== 'all' && station.district !== selectedDistrict) {
-      setSelectedDistrict(station.district, {syncStation: false});
-    }
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
     const count = valueFor(station, industry);
@@ -397,11 +159,6 @@
     stationTitle.textContent = `${station.name} ${layerLabel}`;
     mapFocusName && (mapFocusName.textContent = station.name);
     mapFocusMeta && (mapFocusMeta.textContent = `${station.district} ${station.dong} · ${focusMetric}`);
-    const selectedMapButton = stationButtons.find((button) => button.dataset.stationMap === station.id);
-    if (selectedMapButton && mapViewport) {
-      mapViewport.style.setProperty('--focus-x', selectedMapButton.style.getPropertyValue('--x') || '50%');
-      mapViewport.style.setProperty('--focus-y', selectedMapButton.style.getPropertyValue('--y') || '50%');
-    }
     gradeEl && (gradeEl.textContent = `${grade.label} ${grade.score}`);
     countEl && (countEl.textContent = String(count));
     countLabelEl && (countLabelEl.textContent = categoryLabel(industry));
@@ -409,18 +166,10 @@
     popDensityEl && (popDensityEl.textContent = String(station.population_density_index || 0));
     popLabelEl && (popLabelEl.textContent = station.population_density_label || '지수');
     summaryEl && (summaryEl.textContent = `${station.name}은 상권 밀도 ${station.commercial_density_label}, 인구밀도 ${station.population_density_label} 구간입니다. ${station.default_take || ''}`);
-    if (decisionQuestionEl) {
-      const decision = decisionQuestionFor(station, industry, purpose);
-      decisionQuestionEl.innerHTML = `<span>${esc(decision.label)}</span><strong>${esc(decision.question)}</strong><small>${esc(decision.reason)}</small>`;
-    }
     riskListEl.innerHTML = questionsFor(station, industry, purpose).map((item) => `<li>${esc(item)}</li>`).join('');
     if (visitPlanEl) {
       const plan = visitPlanFor(station, industry, purpose);
       visitPlanEl.innerHTML = `<span>현장 확인 시간</span><strong>${esc(plan.title)}</strong><ul>${plan.items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
-    }
-    if (candidateMemoEl) {
-      const memo = candidateMemoFor(station, industry, purpose, count, grade);
-      candidateMemoEl.innerHTML = `<span>후보 메모</span><strong>${esc(memo.title)}</strong><small>${esc(memo.detail)}</small>`;
     }
     linksEl && (linksEl.innerHTML = purpose === 'home'
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
@@ -428,57 +177,21 @@
     sourceNoteEl && (sourceNoteEl.textContent = payload.source_summary || station.source_note || sourceNoteEl.textContent);
     districtPaths.forEach((path) => { path.dataset.active = path.dataset.mapDistrict === station.district ? 'true' : 'false'; });
     renderBars(station);
-    renderCompare(station, compare, industry, purpose);
+    renderCompare(station, compare, industry);
     updateMapHeat(industry);
-    renderClusters();
   };
 
   const hydrate = (data) => {
     payload = data;
     if (payload?.source_summary && sourceNoteEl) sourceNoteEl.textContent = payload.source_summary;
-    setSelectedDistrict(selectedDistrict, {syncStation: false});
     evaluate();
   };
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
-  stationButtons.forEach((button) => button.addEventListener('click', () => {
-    stationSelect.value = button.dataset.stationMap || stationSelect.value;
-    setSelectedDistrict(button.dataset.district || 'all', {syncStation: false});
-    evaluate();
-  }));
-  if (districtFilter) districtFilter.addEventListener('change', () => { setSelectedDistrict(districtFilter.value || 'all'); evaluate(); });
-  districtPaths.forEach((path) => {
-    const choose = () => { setSelectedDistrict(path.dataset.mapDistrict || 'all'); evaluate(); };
-    path.addEventListener('click', choose);
-    path.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        choose();
-      }
-    });
-  });
-  mapZoomButtons.forEach((button) => button.addEventListener('click', () => {
-    const action = button.dataset.mapZoom;
-    if (action === 'in') setMapZoom(mapZoom + .25);
-    if (action === 'out') setMapZoom(mapZoom - .25);
-    if (action === 'reset') setMapZoom(1.02);
-  }));
-  mapLayerToggleButtons.forEach((button) => button.addEventListener('click', () => {
-    const layer = button.dataset.mapToggle || '';
-    const visible = button.getAttribute('aria-pressed') !== 'true';
-    setMapLayerVisibility(layer, visible);
-  }));
-  stationSelect.addEventListener('change', () => {
-    const station = stationById(stationSelect.value);
-    if (station?.district) setSelectedDistrict(station.district, {syncStation: false});
-    evaluate();
-  });
+  stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  stationSelect.addEventListener('change', evaluate);
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
-  setMapZoom(1.02);
-  setMapLayerVisibility('districts', mapCanvas?.dataset.districtsVisible !== 'false');
-  setMapLayerVisibility('subway', mapCanvas?.dataset.subwayVisible !== 'false');
-  setMapLayerVisibility('labels', mapCanvas?.dataset.labelsVisible !== 'false');
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))

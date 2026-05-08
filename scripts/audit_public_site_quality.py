@@ -242,31 +242,19 @@ def audit_css(css: str) -> list[str]:
     for marker in [".radar-example-gallery", ".example-scene-card", ".radar-situation-strip", ".photo-scan", ".scene-photo"]:
         if marker not in css:
             failures.append(f"radar_example_visual_css_missing:{marker}")
-    for marker in [".contract-question-start", ".question-route-grid", ".question-route-card", ".question-route-kicker", ".question-route-list"]:
+    for marker in [".seoul-density-panel", ".seoul-map-card", ".seoul-map-canvas", ".seoul-real-map", ".seoul-district", ".seoul-river", ".map-data-chips", ".station-dot", ".density-layer-tabs", ".density-score-grid", ".density-bar", ".tool-risk-list", ".field-visit-plan", ".tool-link-row", ".density-compare-card", ".compare-metric-row"]:
         if marker not in css:
-            failures.append(f"home_contract_question_css_missing:{marker}")
+            failures.append(f"seoul_density_tool_css_missing:{marker}")
     for marker in [".shopping-room-card", ".room-product", ".room-photo", ".room-hit-area", ".room-preview", ".room-preview-actions", ".room-product-link"]:
         if marker not in css:
             failures.append(f"shopping_room_css_missing:{marker}")
     for marker in [".coupang-event-strip", ".coupang-event-card", ".coupang-event-link", ".event-disclosure"]:
         if marker not in css:
             failures.append(f"coupang_event_css_missing:{marker}")
-    if "grid-template-columns: minmax(300px, .66fr) minmax(460px, 1.34fr)" not in css:
+    if "grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr)" not in css:
         failures.append("shopping_room_desktop_width_weight_guard_missing")
-    if "min-height: clamp(430px, 39vw, 540px)" not in css:
+    if "min-height: clamp(390px, 36vw, 470px)" not in css:
         failures.append("shopping_room_large_visual_guard_missing")
-    if "scroll-margin-top: 96px" not in css:
-        failures.append("shopping_room_anchor_scroll_margin_missing")
-    if "min-width: 104px; max-width: 152px" not in css:
-        failures.append("shopping_room_short_hotspot_label_css_guard_missing")
-    for guard in [
-        ".room-product { position: absolute; z-index: 9; display: grid; place-items: center; width: 58px; height: 58px;",
-        ".room-hit-area { position: absolute; inset: 9px;",
-        ".room-pulse { position: absolute; width: 31px; height: 31px;",
-        "box-shadow: 0 0 0 5px rgba(255,90,31,.08);",
-    ]:
-        if guard not in css:
-            failures.append(f"shopping_room_quiet_hotspot_css_guard_missing:{guard}")
     for removed_marker in [".scene-skyline", ".scene-route", ".map-route"]:
         if removed_marker in css:
             failures.append(f"radar_abstract_placeholder_css_regression:{removed_marker}")
@@ -322,38 +310,36 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:radar_to_deals_link_missing")
     if kind == "home":
         required_markers = [
-            'id="contract-question-start"',
-            'class="panel soft contract-question-start"',
-            '전월세 계약 질문',
-            '상가 계약 질문',
-            '오늘은 이 질문 6개만 먼저 봅니다.',
-            'href="/topics/cafe-commercial-lease-risk/"',
-            'href="/topics/jeonwolse-contract-check/"',
-            'href="/radar/"',
-        ]
-        for marker in required_markers:
-            if marker not in page_html:
-                failures.append(f"{path}:home_contract_question_marker_missing:{marker}")
-        forbidden_map_markers = [
             'id="commercial-check-tool"',
             'data-seoul-density-tool-root',
             'class="seoul-map-card"',
             'class="seoul-real-map"',
-            'class="seoul-subway-map"',
-            'data-map-viewport',
-            'data-map-toggle=',
-            'data-map-zoom=',
-            'data-map-clusters',
-            'data-density-layer=',
+            'data-map-district="마포구"',
+            '서울 25개 구 행정경계',
+            'data-density-layer="cafe"',
+            'data-density-layer="population"',
+            'data-station-map="hongdae"',
+            'id="tool-station"',
+            'id="tool-compare-station"',
+            'id="tool-industry"',
+            'data-density-count',
+            'data-pop-density',
+            'data-risk-list',
+            'data-visit-plan',
+            'data-compare-panel',
+            'data-compare-metrics',
+            'href="/topics/cafe-commercial-lease-risk/"',
+            'href="/topics/jeonwolse-contract-check/"',
+            '/data/seoul-commercial-areas.json?v=',
             '/assets/commercial-check.js?v=',
         ]
-        for marker in forbidden_map_markers:
-            if marker in page_html:
-                failures.append(f"{path}:home_map_section_should_be_removed:{marker}")
+        for marker in required_markers:
+            if marker not in page_html:
+                failures.append(f"{path}:seoul_density_tool_marker_missing:{marker}")
         if '분리 운영 중인 쇼핑픽' in page_html:
             failures.append(f"{path}:home_shopping_section_should_not_compete_with_radar")
-        if 'id="contract-question-start"' not in page_html or page_html.find('id="contract-question-start"') > page_html.find('사례로 더 보기'):
-            failures.append(f"{path}:contract_question_panel_not_before_case_articles")
+        if page_html.find('id="commercial-check-tool"') > page_html.find('사례로 더 보기'):
+            failures.append(f"{path}:seoul_density_tool_not_before_case_articles")
     if kind == "radar":
         for href in ('/topics/jeonwolse-contract-check/', '/topics/cafe-commercial-lease-risk/'):
             if f'href="{href}"' not in page_html:
@@ -374,8 +360,6 @@ def audit_html(path: str, page_html: str) -> list[str]:
         coupang_links = coupang_anchor_tags(page_html)
         if 'class="shopping-room-card"' not in page_html:
             failures.append(f"{path}:shopping_room_interactive_card_missing")
-        if 'id="shopping-room"' not in page_html or 'href="#shopping-room"' not in page_html:
-            failures.append(f"{path}:shopping_room_hero_anchor_missing")
         if 'shopping-room-ai.webp' not in page_html or 'class="room-photo"' not in page_html:
             failures.append(f"{path}:shopping_room_ai_photo_missing")
         if 'class="room-hit-area"' not in page_html:
@@ -384,15 +368,6 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_products_too_few:{room_products}")
         if 'shopping-room-pick-1' not in page_html or 'room-previews' not in page_html:
             failures.append(f"{path}:shopping_room_toggle_preview_missing")
-        for marker in ("방에서 상품 후보 보기", "주황색 점을 누르면", "상품 페이지 바로가기", "비교 기준 보기"):
-            if marker not in text:
-                failures.append(f"{path}:shopping_room_clear_cta_copy_missing:{marker}")
-        room_label_titles = [normalize_ws(label) for label in re.findall(r'<span class="room-label">\s*<strong>(.*?)</strong>', page_html, flags=re.S)]
-        if not room_label_titles:
-            failures.append(f"{path}:shopping_room_hotspot_labels_missing")
-        for label in room_label_titles:
-            if len(label) > 12 or any(term in label for term in ("추천", "TOP", "BEST", "비교", "구매가이드")):
-                failures.append(f"{path}:shopping_room_hotspot_label_not_short:{label}")
         if room_product_links < min(4, room_products):
             failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
         if coupang_links and "affiliate_click" not in page_html:
@@ -435,6 +410,14 @@ def audit_html(path: str, page_html: str) -> list[str]:
     if kind == "radar_article" and anchor_class_count(page_html, "search-chip") < 2:
         failures.append(f"{path}:radar_related_search_chips_too_few")
     if kind == "radar_article":
+        article_body_match = re.search(
+            r'<section\b[^>]*id=["\']article-body["\'][^>]*class=["\'][^"\']*\barticle-content\b[^"\']*["\'][^>]*>([\s\S]*?)</section>',
+            page_html,
+            flags=re.I,
+        )
+        article_body_html = article_body_match.group(1) if article_body_match else ""
+        if "field-visual" in article_body_html or re.search(r"<\s*svg\b", article_body_html, flags=re.I) or re.search(r"\.svg(?:[\"'?#\s>]|$)", article_body_html, flags=re.I):
+            failures.append(f"{path}:radar_body_pictogram_svg_visual_regression")
         has_gallery = 'class="radar-example-gallery"' in page_html
         if not has_gallery:
             failures.append(f"{path}:radar_example_gallery_missing")

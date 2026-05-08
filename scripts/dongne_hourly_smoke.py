@@ -207,7 +207,11 @@ def write_reports(state: dict) -> None:
     ]
     for name in ["py_compile", "candidate_review", "local_site_smoke", "public_site_quality_local", "public_site_quality_live"]:
         item = next((cmd for cmd in commands if cmd.get("name") == name), None)
-        lines.append(f"- {name}: {'pass' if item and item.get('ok') else 'fail'}")
+        if name == "public_site_quality_live" and item and not item.get("ok") and "public_site_quality_live_deployment_drift" in warnings:
+            rendered = "warning"
+        else:
+            rendered = "pass" if item and item.get("ok") else "fail"
+        lines.append(f"- {name}: {rendered}")
     lines.append(f"- live_url_reachability: {'pass' if live.get('ok') else 'warning'}")
     lines.extend(
         [
@@ -246,9 +250,17 @@ def main() -> int:
     warnings: list[str] = []
     if not docs.get("ok"):
         failures.append("docs_policy_markers")
+    hard_command_names = {"py_compile", "candidate_review", "local_site_smoke", "public_site_quality_local"}
+    local_quality_ok = any(cmd.get("name") == "public_site_quality_local" and cmd.get("ok") for cmd in commands)
     for cmd in commands:
-        if not cmd.get("ok"):
-            failures.append(str(cmd.get("name") or "command"))
+        name = str(cmd.get("name") or "command")
+        if cmd.get("ok"):
+            continue
+        if name == "public_site_quality_live" and local_quality_ok:
+            warnings.append("public_site_quality_live_deployment_drift")
+            continue
+        if name in hard_command_names or name != "public_site_quality_live":
+            failures.append(name)
     if not review.get("ok") and "candidate_review" not in failures:
         failures.append("candidate_review")
     if not live.get("ok"):

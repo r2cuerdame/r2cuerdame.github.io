@@ -504,6 +504,12 @@ def validate_article(section: str, data: dict, path: Path) -> dict:
         raise BuildError(f"{path}: slug/title/body_html required")
     if "<script" in body.lower():
         raise BuildError(f"{path}: script tags are forbidden in article bodies")
+    if section == "radar" and (
+        re.search(r"<\s*svg\b", body, flags=re.I)
+        or "field-visual" in body
+        or re.search(r"\.svg(?:[\"'?#\s>]|$)", body, flags=re.I)
+    ):
+        raise BuildError(f"{path}: radar pictogram/svg visuals forbidden; use AI-photo field_examples webp assets")
     description = str(data.get("description") or short_text(body, 170)).strip()
     date = str(data.get("date") or data.get("published_at") or TODAY)
     dt = parse_dt(date)
@@ -1691,7 +1697,7 @@ def shopping_room_deals(deals: list[dict], limit: int = 6) -> list[dict]:
 def shopping_room_scene(deals: list[dict]) -> str:
     items = shopping_room_deals(deals)
     if not items:
-        return '''<aside id="shopping-room" class="shopping-room-card" aria-label="쇼핑픽 쇼룸">
+        return '''<aside class="shopping-room-card" aria-label="쇼핑픽 쇼룸">
   <div class="room-empty"><strong>쇼핑룸 준비중</strong><p>새 상품 비교글이 올라오면 이 방에 물건처럼 하나씩 붙습니다.</p></div>
 </aside>'''
     toggles: list[str] = []
@@ -1710,7 +1716,7 @@ def shopping_room_scene(deals: list[dict]) -> str:
         deal_url = str(article.get("primary_deal_url") or "").strip()
         product_link = ""
         if deal_url:
-            product_link = f'<a class="room-product-link" data-affiliate-surface="deals_showroom_preview" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="{esc(title)} 상품 페이지 바로가기">상품 페이지 바로가기</a>'
+            product_link = f'<a class="room-product-link" data-affiliate-surface="deals_showroom_preview" href="{esc(deal_url)}" target="_blank" rel="sponsored nofollow noopener">상품 바로가기</a>'
         toggles.append(f'<input class="room-toggle scene-{scene_key}" type="radio" name="shopping-room-pick" id="{toggle_id}"{checked} />')
         used_scenes.add(scene_key)
         scene_first_toggle.setdefault(scene_key, toggle_id)
@@ -1718,13 +1724,13 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <span class="room-hit-area" aria-hidden="true"></span>
       <span class="room-pulse" aria-hidden="true"></span>
       <span class="room-pin" aria-hidden="true"></span>
-      <span class="room-label"><strong>{esc(scene)}</strong><small>{esc(cue)}</small></span>
+      <span class="room-label"><strong>{esc(title)}</strong><small>{esc(cue)}</small></span>
     </label>''')
         previews.append(f'''<article class="room-preview preview-{idx}">
       <span class="tag pale">{esc(scene)} · {esc(count)}</span>
       <h3>{esc(title)}</h3>
       <p>{esc(desc)}</p>
-      <div class="room-preview-actions">{product_link}<a class="text-link" href="{esc(article['path'])}">비교 기준 보기 →</a></div>
+      <div class="room-preview-actions">{product_link}<a class="text-link" href="{esc(article['path'])}">비교글 보기 →</a></div>
     </article>''')
     scene_keys = [key for key in ROOM_SCENE_ORDER if key in used_scenes]
     scene_nav = "".join(
@@ -1738,11 +1744,11 @@ def shopping_room_scene(deals: list[dict]) -> str:
       <img class="room-photo" src="{esc(info['image'])}" alt="{esc(info['alt'])}" loading="eager" decoding="async" />
       {''.join(markers_by_scene.get(key, []))}
     </div>''')
-    return f'''<aside id="shopping-room" class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
+    return f'''<aside class="shopping-room-card" aria-label="클릭해서 보는 쇼핑픽 룸">
   <div class="room-card-head">
     <span class="tag pale">AI 쇼핑룸</span>
-    <strong>주황색 점으로 후보를 바꿔보세요</strong>
-    <p>주황색 점을 누르면 아래 흰 추천 카드가 바로 바뀝니다. 마음에 드는 후보는 상품 페이지로, 더 고민되면 비교 기준으로 이동하세요.</p>
+    <strong>방 사진 속 상품을 눌러보세요</strong>
+    <p>상품 구역이 달라지면 사진도 거실·주방·케어 공간으로 넘어갑니다. 누르면 아래 비교글이 바로 바뀝니다.</p>
   </div>
   <div class="shopping-room-stage">
     {''.join(toggles)}
@@ -2217,7 +2223,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
   "version": "2026-05-seoul-density-real-outline",
   "generated_at": "2026-05-06T02:00:00+09:00",
   "radius_m": 650,
-  "source_summary": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+  "source_summary": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
   "categories": {
     "cafe": "카페",
     "food": "음식점·주점",
@@ -2253,7 +2259,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 13.6,
       "map_y": 17.9,
       "commercial_density_index": 8,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -2286,7 +2292,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 41.3,
       "map_y": 25.2,
       "commercial_density_index": 93,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "과밀",
       "top_industries": [
         "retail",
@@ -2319,7 +2325,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 44.8,
       "map_y": 26.8,
       "commercial_density_index": 87,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "과밀",
       "top_industries": [
         "food",
@@ -2352,7 +2358,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 41.2,
       "map_y": 52.6,
       "commercial_density_index": 76,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -2385,7 +2391,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 32.8,
       "map_y": 55.5,
       "commercial_density_index": 67,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -2418,7 +2424,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 60.3,
       "map_y": 15.1,
       "commercial_density_index": 62,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "높음",
       "top_industries": [
         "food",
@@ -2451,7 +2457,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 78.8,
       "map_y": 34.9,
       "commercial_density_index": 27,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "food",
@@ -2483,7 +2489,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "total_poi_count": 576,
       "map_x": 82.6,
       "map_y": 38.2,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_index": 41,
       "commercial_density_label": "보통",
       "top_industries": [
@@ -2516,7 +2522,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "total_poi_count": 958,
       "map_x": 70.7,
       "map_y": 70.8,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 600m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_index": 66,
       "commercial_density_label": "높음",
       "top_industries": [
@@ -2550,7 +2556,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 57.6,
       "map_y": 87.2,
       "commercial_density_index": 24,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -2583,7 +2589,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 42.7,
       "map_y": 81.4,
       "commercial_density_index": 35,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "낮음",
       "top_industries": [
         "retail",
@@ -2616,7 +2622,7 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
       "map_x": 91.4,
       "map_y": 59.0,
       "commercial_density_index": 38,
-      "source_note": "서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
+      "source_note": "서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + OSM POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다",
       "commercial_density_label": "보통",
       "top_industries": [
         "retail",
@@ -2630,7 +2636,6 @@ SEOUL_COMMERCIAL_AREAS = json.loads(r'''
 ''')
 
 SEOUL_MAP_OUTLINE_PATH = ROOT / "data" / "seoul-map-outline.json"
-SEOUL_SUBWAY_NETWORK_PATH = ROOT / "data" / "seoul-subway-network.json"
 
 
 def load_seoul_map_outline() -> dict[str, Any]:
@@ -2645,23 +2650,7 @@ def load_seoul_map_outline() -> dict[str, Any]:
     return data
 
 
-def load_seoul_subway_network() -> dict[str, Any]:
-    if not SEOUL_SUBWAY_NETWORK_PATH.exists():
-        return {}
-    try:
-        data = json.loads(SEOUL_SUBWAY_NETWORK_PATH.read_text(encoding="utf-8-sig"))
-    except Exception:
-        return {}
-    if not isinstance(data, dict) or not data.get("lines"):
-        return {}
-    stats = data.get("stats") if isinstance(data.get("stats"), dict) else {}
-    if int(stats.get("line_count") or 0) < 9 or int(stats.get("station_count") or 0) < 180:
-        return {}
-    return data
-
-
 SEOUL_MAP_OUTLINE = load_seoul_map_outline()
-SEOUL_SUBWAY_NETWORK = load_seoul_subway_network()
 
 
 def seoul_station_map_position(station: dict[str, Any]) -> tuple[float, float]:
@@ -2686,83 +2675,6 @@ def seoul_station_map_position(station: dict[str, Any]) -> tuple[float, float]:
         return float(station.get("map_x", 50)), float(station.get("map_y", 50))
 
 
-def seoul_subway_legend_html() -> str:
-    network = SEOUL_SUBWAY_NETWORK
-    if not network:
-        return ""
-    priority = ["line1", "line2", "line3", "line4", "line5", "line6", "line7", "line8", "line9", "airport", "gyeongui", "bundang", "sinbundang"]
-    line_by_id = {str(line.get("id")): line for line in network.get("lines", [])}
-    items = []
-    for line_id in priority:
-        line = line_by_id.get(line_id)
-        if not line:
-            continue
-        items.append(
-            f'<span data-subway-key="{esc(line_id)}" style="--line-color:{esc(str(line.get("color", "#60a5fa")))}"><i></i>{esc(str(line.get("short") or line.get("label") or line_id))}</span>'
-        )
-    return f'<div class="subway-line-key" aria-label="서울 지하철 노선 색상표">{"".join(items)}</div>'
-
-
-def seoul_subway_overlay_svg() -> str:
-    network = SEOUL_SUBWAY_NETWORK
-    if not network:
-        return '''
-      <svg class="seoul-subway-map seoul-subway-map-empty" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="서울 지하철 노선 데이터 없음"></svg>
-'''
-    view_box = esc(str(network.get("view_box") or "0 0 1000 680"))
-    line_paths: list[str] = []
-    for line in network.get("lines", []):
-        line_id = esc(str(line.get("id", "")))
-        label = esc(str(line.get("label", "지하철 노선")))
-        color = esc(str(line.get("color", "#60a5fa")))
-        short = esc(str(line.get("short", "")))
-        for index, segment in enumerate(line.get("segments", [])):
-            d = esc(str(segment))
-            if not d:
-                continue
-            title = f"{label} 실제 OSM geometry" if index == 0 else label
-            line_paths.append(f'<path class="seoul-subway-line-halo" data-subway-line="{line_id}" d="{d}" />')
-            line_paths.append(
-                f'<path class="seoul-subway-line" data-subway-line="{line_id}" data-line-short="{short}" style="--line-color:{color}" d="{d}"><title>{esc(title)}</title></path>'
-            )
-    station_nodes: list[str] = []
-    for station in network.get("stations", []):
-        x = float(station.get("x", 0))
-        y = float(station.get("y", 0))
-        name = esc(str(station.get("name", "")))
-        classes = ["seoul-station-node"]
-        if station.get("major"):
-            classes.append("major-station-node")
-        if station.get("transfer"):
-            classes.append("transfer-station-node")
-        radius = "4.6" if station.get("major") else ("3.2" if station.get("transfer") else "1.55")
-        station_nodes.append(
-            f'<circle class="{" ".join(classes)}" data-subway-station-node="{name}" cx="{x:.1f}" cy="{y:.1f}" r="{radius}"><title>{name}역</title></circle>'
-        )
-    labels: list[str] = []
-    for label in network.get("labels", []):
-        x = float(label.get("x", 0))
-        y = float(label.get("y", 0))
-        dx = float(label.get("dx", 16))
-        dy = float(label.get("dy", -18))
-        lx = x + dx
-        ly = y + dy
-        name = esc(str(label.get("name", "")))
-        line_text = esc(str(label.get("line", "")))
-        level = esc(str(label.get("level", "major")))
-        labels.append(
-            f'<g class="subway-station-label" data-label-level="{level}" data-subway-label="{name}"><line class="subway-label-leader" x1="{x:.1f}" y1="{y:.1f}" x2="{lx:.1f}" y2="{ly:.1f}"/><text x="{lx:.1f}" y="{ly:.1f}"><tspan class="label-name">{name}</tspan><tspan class="label-line" dx="6">{line_text}</tspan></text></g>'
-        )
-    stats = network.get("stats") if isinstance(network.get("stats"), dict) else {}
-    aria = f"서울 지하철 실제 OSM 노선망 {stats.get('line_count', 0)}개 노선, {stats.get('station_count', 0)}개 역"
-    return f'''
-      <svg class="seoul-subway-map" viewBox="{view_box}" preserveAspectRatio="none" role="img" aria-label="{esc(aria)}">
-        <g class="seoul-subway-layer" aria-hidden="true">{''.join(line_paths)}</g>
-        <g class="seoul-subway-stations" aria-hidden="true">{''.join(station_nodes)}</g>
-        <g class="seoul-subway-labels" aria-hidden="true">{''.join(labels)}</g>
-      </svg>
-'''
-
 def seoul_map_outline_svg() -> str:
     outline = SEOUL_MAP_OUTLINE
     if not outline:
@@ -2773,9 +2685,8 @@ def seoul_map_outline_svg() -> str:
     district_labels = []
     for district in outline.get("districts", []):
         name = str(district.get("name", ""))
-        has_candidates = name in station_districts
         district_paths.append(
-            f'<path class="seoul-district" data-map-district="{esc(name)}" data-has-candidates="{str(has_candidates).lower()}" role="button" tabindex="0" aria-pressed="false" d="{esc(district.get("path", ""))}"><title>{esc(name)} 실제 행정경계 선택</title></path>'
+            f'<path class="seoul-district" data-map-district="{esc(name)}" d="{esc(district.get("path", ""))}"><title>{esc(name)} 실제 행정경계</title></path>'
         )
         if name in station_districts:
             label = name[:-1] if name.endswith("구") else name
@@ -2789,7 +2700,7 @@ def seoul_map_outline_svg() -> str:
         <defs>
           <filter id="seoulMapGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <g class="seoul-districts">{''.join(district_paths)}</g>
+        <g class="seoul-districts" aria-hidden="true">{''.join(district_paths)}</g>
         <path class="seoul-river" d="{river_path}" aria-label="한강 OSM geometry" />
         <g class="seoul-map-labels" aria-hidden="true">{''.join(district_labels)}</g>
       </svg>
@@ -2799,10 +2710,6 @@ def seoul_map_outline_svg() -> str:
 def commercial_check_tool_block() -> str:
     data_version = asset_version(json.dumps(SEOUL_COMMERCIAL_AREAS, ensure_ascii=False, sort_keys=True))
     categories = SEOUL_COMMERCIAL_AREAS["categories"]
-    subway_stats = SEOUL_SUBWAY_NETWORK.get("stats", {}) if isinstance(SEOUL_SUBWAY_NETWORK, dict) else {}
-    subway_line_count = int(subway_stats.get("line_count") or 0)
-    subway_station_count = int(subway_stats.get("station_count") or 0)
-    subway_legend = seoul_subway_legend_html()
     default_category = "cafe"
     default_station = "hongdae"
     layer_buttons = "\n".join(
@@ -2810,17 +2717,11 @@ def commercial_check_tool_block() -> str:
         for key, label in categories.items()
         if key in {"cafe", "food", "convenience", "beauty", "clinic", "academy", "population"}
     )
-    district_names = [str(district.get("name", "")) for district in (SEOUL_MAP_OUTLINE.get("districts", []) if isinstance(SEOUL_MAP_OUTLINE, dict) else []) if district.get("name")]
-    if not district_names:
-        district_names = sorted({str(station.get("district", "")) for station in SEOUL_COMMERCIAL_AREAS["stations"] if station.get("district")})
-    district_options = '<option value="all" selected>서울 전체</option>' + "\n".join(
-        f'<option value="{esc(name)}">{esc(name)}</option>' for name in district_names
-    )
     station_button_items = []
     for station in SEOUL_COMMERCIAL_AREAS["stations"]:
         map_x, map_y = seoul_station_map_position(station)
         station_button_items.append(
-            f'<button type="button" class="station-dot commercial-station-dot" data-subway-station data-station-map="{esc(station["id"])}" data-district="{esc(station["district"])}" data-lat="{station["lat"]}" data-lng="{station["lng"]}" style="--x: {map_x:.2f}%; --y: {map_y:.2f}%;" aria-label="{esc(station["name"])} 실제 지도 위치 상권 보기"><i aria-hidden="true"></i><b>{esc(station["name"])}</b><small>{esc(station["commercial_density_label"])}</small></button>'
+            f'<button type="button" class="station-dot" data-station-map="{esc(station["id"])}" data-lat="{station["lat"]}" data-lng="{station["lng"]}" style="--x: {map_x:.2f}%; --y: {map_y:.2f}%;" aria-label="{esc(station["name"])} 실제 지도 위치 상권 보기"><i aria-hidden="true"></i><b>{esc(station["name"])}</b><small>{esc(station["commercial_density_label"])}</small></button>'
         )
     station_buttons = "\n".join(station_button_items)
     station_options = "\n".join(
@@ -2839,62 +2740,31 @@ def commercial_check_tool_block() -> str:
     return f'''
 <section id="commercial-check-tool" class="seoul-density-panel" data-seoul-density-tool-root data-commercial-tool-root data-density-src="/data/seoul-commercial-areas.json?v={data_version}" aria-label="서울 역세권 업종 밀도 지도">
   <div class="seoul-tool-copy">
-    <p class="eyebrow">Seoul Density Radar · 역세권 밀도 보기</p>
-    <h2>서울 상권을 지도 위에서 먼저 거릅니다.</h2>
-    <p>행정경계·한강·실제 노선망 위에 후보역 밀도만 얹고, 계약 질문으로 바로 줄입니다.</p>
-    <div class="tool-badges"><span>실제 서울 경계</span><span>OSM 노선망</span><span>650m POI</span></div>
+    <p class="eyebrow">Seoul Density Radar · 실제 지도 outline</p>
+    <h2>서울 후보지를 실제 지도 경계 위에서 먼저 좁힙니다.</h2>
+    <p>장식용 버블맵이 아니라 서울 25개 구 행정경계와 한강 geometry 위에 역 좌표·업종 POI 집계를 올렸습니다. “여기가 진짜 어디쯤인지”부터 보고 계약 질문을 뽑습니다.</p>
+    <div class="tool-badges"><span>KOSTAT 25개 구 outline</span><span>OSM 한강 geometry</span><span>OSM POI 650m 집계</span><span>비밀 키 미배포</span></div>
   </div>
   <div class="seoul-map-card" data-seoul-map>
     <div class="map-card-head">
-      <div><span>SEOUL DENSITY MAP</span><strong data-map-layer-label>카페 밀도</strong></div>
-      <small>숫자=선택 업종 밀집 수 · 역명은 필요할 때만</small>
+      <div><span>REAL SEOUL MAP BASE</span><strong data-map-layer-label>카페 밀도</strong></div>
+      <small>경계·하천은 실제 공개 지도 데이터, 원 크기는 선택 업종 POI 수입니다</small>
     </div>
     <div class="density-layer-tabs" role="tablist" aria-label="업종 밀도 레이어">
       {layer_buttons}
     </div>
-    <div class="seoul-map-canvas" data-map-canvas data-districts-visible="true" data-subway-visible="true" data-labels-visible="false" data-map-zoom-level="1.02" data-cluster-mode="cluster" data-selected-district="all">
-      <div class="map-toolbar" aria-label="지도 조작">
-        <div class="district-picker-row">
-          <label>자치구 선택<select data-district-filter aria-label="서울 자치구 선택">{district_options}</select></label>
-          <span data-district-summary>서울 전체 후보 · 노선망 위에 후보역 밀도를 겹쳐 보는 중</span>
-        </div>
-        <div class="map-layer-toggles" role="group" aria-label="지도 레이어 켜고 끄기">
-          <button type="button" data-map-toggle="districts" aria-pressed="true">경계</button>
-          <button type="button" data-map-toggle="subway" aria-label="지하철·역 보조 레이어" aria-pressed="true">노선</button>
-          <button type="button" data-map-toggle="labels" aria-pressed="false">역명</button>
-        </div>
-        <div class="map-zoom-controls" role="group" aria-label="지도 확대 축소">
-          <button type="button" data-map-zoom="out" aria-label="지도 축소">−</button>
-          <strong data-map-zoom-value>1.0×</strong>
-          <button type="button" data-map-zoom="in" aria-label="지도 확대">＋</button>
-          <button type="button" data-map-zoom="reset" aria-label="지도 확대 초기화">초기화</button>
-        </div>
-      </div>
-      <div class="seoul-map-viewport" data-map-viewport style="--map-zoom: 1.02; --focus-x: 50%; --focus-y: 50%;">
-        {seoul_map_outline_svg()}
-        {seoul_subway_overlay_svg()}
-        <div class="map-cluster-layer" data-map-clusters aria-live="polite"></div>
-        {station_buttons}
-      </div>
-      {subway_legend}
-      <div class="map-data-chips" aria-hidden="true"><span data-map-chip="districts">서울 25개 구 행정경계</span><span>한강</span><span data-map-chip="subway">지하철 보조선</span><span data-map-chip="labels">역명 보조</span></div>
-      <div class="map-reading-guide" data-map-reading-guide aria-hidden="true"><strong>지도 읽는 순서</strong><ol><li>큰 숫자는 선택 업종 밀집 수입니다.</li><li>경계·노선은 위치 감각만 보조합니다.</li><li>오른쪽 첫 질문에 답 없으면 보류합니다.</li></ol></div>
-      <div class="map-legend-card" aria-hidden="true"><span><i></i> 선택 업종 POI 수</span></div>
+    <div class="seoul-map-canvas" data-map-canvas>
+      {seoul_map_outline_svg()}
+      {station_buttons}
+      <div class="map-data-chips" aria-hidden="true"><span>서울 25구 경계</span><span>한강 OSM</span><span>역 실제 좌표</span></div>
+      <div class="map-legend-card" aria-hidden="true"><span><i></i> 원 크기 = 선택 업종 POI 수</span><span><i></i> 선 = 실제 구 경계 outline</span><span><i></i> 파란 선 = OSM 한강 geometry</span></div>
       <div class="map-focus-card" aria-live="polite">
         <span>현재 후보</span>
         <strong data-map-focus-name>홍대입구역</strong>
         <small data-map-focus-meta>마포구 서교동 · 카페 밀도 확인 중</small>
       </div>
     </div>
-    <p class="map-source-note" data-source-note>서울 25개 구 경계(KOSTAT) + 한강(OSM) + 후보역 좌표 + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다</p>
-    <details class="density-data-note">
-      <summary>데이터 기준과 한계</summary>
-      <ul>
-        <li>지도 경계·한강·후보역 좌표와 보조 노선은 공개 데이터를 빌드 시점에 정적 파일로 묶어 브라우저에는 결과 JSON만 보냅니다.</li>
-        <li>업종 수와 인구밀도 지수는 후보를 줄이는 신호이며, 실제 계약 전에는 평일 점심·퇴근·주말 현장 확인이 필요합니다.</li>
-        <li>점수가 높아도 권리금·관리비·소음·야간 동선 질문에 답이 없으면 보류합니다.</li>
-      </ul>
-    </details>
+    <p class="map-source-note" data-source-note>서울 25개 구 행정경계(KOSTAT GeoJSON) + 한강(OSM Overpass) + 공개 POI 650m 정적 집계 · 비밀 키는 브라우저에 배포하지 않습니다</p>
   </div>
   <div class="station-inspector" data-station-inspector>
     <form class="seoul-selector-form" data-station-tool>
@@ -2909,12 +2779,6 @@ def commercial_check_tool_block() -> str:
         <strong data-risk-grade>주의</strong>
       </div>
       <p data-risk-summary>역을 선택하면 업종별 매장 수, 인구밀도 지수, 계약 전 질문이 같이 바뀝니다.</p>
-      <div class="decision-question-card" data-decision-question aria-live="polite">
-        <span>먼저 물을 질문</span>
-        <strong>역·업종을 고르면 첫 계약 질문이 바뀝니다</strong>
-        <small>점수보다 이 질문에 답이 없으면 보류합니다</small>
-      </div>
-      <p class="compare-verdict" data-compare-verdict aria-live="polite"><span>먼저 볼 후보</span><strong>비교 역을 고르면 우선순위가 바뀝니다</strong><small>같은 업종이라도 임대압력과 생활 피로를 같이 봅니다</small></p>
       <div class="density-score-grid">
         <div><span>선택 업종</span><strong data-density-count>0</strong><small data-density-label>카페</small></div>
         <div><span>상권 밀도</span><strong data-commercial-density>0</strong><small>/100</small></div>
@@ -2925,11 +2789,6 @@ def commercial_check_tool_block() -> str:
       <div class="field-visit-plan" data-visit-plan aria-live="polite">
         <span>현장 확인 시간</span>
         <strong>역과 업종을 고르면 방문 순서가 바뀝니다</strong>
-      </div>
-      <div class="candidate-memo-card" data-candidate-memo aria-live="polite">
-        <span>후보 메모</span>
-        <strong>역·업종을 고르면 비교 메모가 바뀝니다</strong>
-        <small>상담·임장 전에 이 한 줄로 후보를 나란히 비교하세요</small>
       </div>
       <div class="tool-link-row" data-recommend-links>
         <a href="/topics/cafe-commercial-lease-risk/">상가 계약 체크 글 목록</a>
@@ -2955,53 +2814,15 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
     radar_html = article_cards(radar[:4], "첫 동네 레이더 글 준비중")
     return f'''
 <section class="hero home-hero product-hero">
-  <p class="eyebrow">Dongne Radar · 계약 질문 먼저 보기</p>
-  <h1>지도 없이, 계약 전에 물을 질문부터 좁힙니다.</h1>
-  <p class="lead">서울 후보지는 예쁜 점수보다 현장에서 다시 확인할 질문이 먼저입니다. 전월세·상가 계약 전에 바로 볼 체크리스트만 남겼습니다.</p>
+  <p class="eyebrow">Dongne Radar · 서울 후보지 체크</p>
+  <h1>블로그가 아니라, 계약 전 서울 후보지를 먼저 거르는 도구.</h1>
+  <p class="lead">역세권 업종 밀도, 인구밀도, 매장 수를 보고 “집으로 볼지, 상가로 볼지, 보류할지”를 30초 안에 가릅니다.</p>
   <div class="hero-actions compact-actions">
-    <a class="button primary" href="/topics/jeonwolse-contract-check/">전월세 계약 질문</a>
-    <a class="button" href="/topics/cafe-commercial-lease-risk/">상가 계약 질문</a>
+    <a class="button primary" href="#commercial-check-tool">서울 지도에서 후보지 보기</a>
+    <a class="button" href="/topics/jeonwolse-contract-check/">계약 질문 목록</a>
   </div>
 </section>
-<section id="contract-question-start" class="panel soft contract-question-start" aria-label="지도 대신 확인할 계약 질문">
-  <div class="section-title compact-title">
-    <p class="eyebrow">No map · 질문 우선</p>
-    <h2>오늘은 이 질문 6개만 먼저 봅니다.</h2>
-    <p>후보지를 꾸미지 않고, 실제 계약 전에 답이 없으면 보류할 질문으로 바로 이동합니다.</p>
-  </div>
-  <div class="question-route-grid">
-    <article class="question-route-card accent-blue">
-      <span class="question-route-kicker">전월세</span>
-      <h3>집을 보기 전에</h3>
-      <ul class="question-route-list">
-        <li>관리비 포함 월 고정비가 상한선 안에 들어오는가?</li>
-        <li>역에서 집까지 밤길·소음·공용부 피로가 버틸 만한가?</li>
-        <li>계약서 특약으로 다시 적어야 할 리스크가 남았는가?</li>
-      </ul>
-      <a href="/topics/jeonwolse-contract-check/">전월세 질문 목록 →</a>
-    </article>
-    <article class="question-route-card accent-orange">
-      <span class="question-route-kicker">상가·카페</span>
-      <h3>상가 계약 전에</h3>
-      <ul class="question-route-list">
-        <li>권리금·월세·관리비를 감당할 매출 근거가 있는가?</li>
-        <li>같은 업종 경쟁점과 회전율을 평일·주말에 확인했는가?</li>
-        <li>점포 앞 동선이 실제 구매 순간으로 이어지는가?</li>
-      </ul>
-      <a href="/topics/cafe-commercial-lease-risk/">상가 질문 목록 →</a>
-    </article>
-    <article class="question-route-card accent-green">
-      <span class="question-route-kicker">현장 확인</span>
-      <h3>사례로 검증하기</h3>
-      <ul class="question-route-list">
-        <li>낮·밤·비 오는 날의 신호가 같은가?</li>
-        <li>대체 후보를 남겨 협상 여지가 있는가?</li>
-        <li>좋아 보이는 이유보다 포기할 기준이 선명한가?</li>
-      </ul>
-      <a href="/radar/">사례 글로 더 보기 →</a>
-    </article>
-  </div>
-</section>
+{commercial_check_tool_block()}
 <section class="grid three situation-grid" aria-label="오늘 볼 후보지 유형">
   <article class="card accent-blue situation-card">
     <span class="tag">집 보러 가기 전</span>
@@ -3032,6 +2853,7 @@ def home_body(deals: list[dict], radar: list[dict]) -> str:
   <div class="section-title"><h2>사례로 더 보기</h2><p>도구에서 걸린 신호를 실제 현장 질문으로 바꾼 글입니다.</p></div>
   {radar_html}
 </section>
+<script src="/assets/commercial-check.js?v={asset_version(COMMERCIAL_TOOL_JS)}" defer></script>
 '''
 
 def deals_body(deals: list[dict]) -> str:
@@ -3042,7 +2864,7 @@ def deals_body(deals: list[dict]) -> str:
     <h1>필요한 제품만 빠르게 비교</h1>
     <p class="lead">생활가전·책상 장비·음향기기를 가격대, 사용 장면, 관리 부담 기준으로 짧게 정리합니다. 오늘 살 만한 후보만 먼저 보고, 자세한 가격은 상품 페이지에서 다시 확인하세요.</p>
     <div class="hero-actions compact-actions">
-      <a class="button primary" href="#shopping-room">방에서 상품 후보 보기</a>
+      <a class="button primary" href="#today-best">오늘 추천 보기</a>
       <a class="button" href="#deal-search">상품 검색하기</a>
     </div>
     <div class="deal-flow" aria-label="쇼핑픽 이용 순서">
@@ -3468,215 +3290,99 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .product-hero h1 { max-width: 920px; font-size: clamp(32px, 4.7vw, 54px); margin-bottom: 12px; }
 .product-hero .lead { max-width: 760px; font-size: clamp(17px, 1.8vw, 21px); }
 .product-hero .hero-actions { margin-top: 18px; }
-.contract-question-start {
-  margin: 20px 0 48px;
-  padding: clamp(22px, 4vw, 36px);
-  border: 1px solid rgba(234, 223, 212, .95);
-  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,247,239,.9));
-  box-shadow: 0 18px 50px rgba(58, 37, 20, .08);
-}
-.contract-question-start .compact-title { margin-bottom: 18px; }
-.contract-question-start .compact-title h2 { margin: 4px 0 6px; font-size: clamp(26px, 3.8vw, 42px); }
-.contract-question-start .compact-title p:last-child { max-width: 720px; color: var(--muted); font-weight: 750; }
-.question-route-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.question-route-card {
-  display: flex; flex-direction: column; gap: 12px;
-  min-height: 280px; padding: 22px; border-radius: 28px;
-  border: 1px solid rgba(234, 223, 212, .9); background: #fff;
-  box-shadow: 0 14px 36px rgba(58, 37, 20, .07);
-}
-.question-route-card h3 { margin: 0; font-size: clamp(22px, 2.5vw, 30px); letter-spacing: -.045em; }
-.question-route-card a { margin-top: auto; font-weight: 950; color: var(--orange-dark); }
-.question-route-kicker { width: max-content; padding: 7px 10px; border-radius: 999px; background: #fff2e8; color: var(--orange-dark); font-size: 12px; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
-.question-route-list { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: #5f5652; font-weight: 750; line-height: 1.55; }
-.question-route-list li::marker { color: var(--orange); }
-@media (max-width: 980px) { .question-route-grid { grid-template-columns: 1fr; } .question-route-card { min-height: auto; } }
-@media (max-width: 720px) { .contract-question-start { margin-top: 12px; padding: 18px; border-radius: 26px; } .question-route-card { padding: 18px; border-radius: 22px; } }
 .seoul-density-panel {
   position: relative; scroll-margin-top: 92px;
-  display: grid; grid-template-columns: minmax(0, 1fr);
-  min-height: clamp(820px, 78vh, 980px); margin: 18px 0 54px; padding: 0;
-  border: 1px solid rgba(15,23,42,.16); border-radius: 34px;
-  background: #07111f; color: #f8fafc;
-  box-shadow: 0 34px 86px rgba(15,23,42,.24), inset 0 1px 0 rgba(255,255,255,.08);
+  display: grid; grid-template-columns: minmax(0, 1.16fr) minmax(340px, .84fr); gap: clamp(16px, 2.5vw, 26px);
+  align-items: stretch; margin: 12px 0 40px; padding: clamp(18px, 3.1vw, 32px);
+  border: 1px solid rgba(234, 223, 212, .95); border-radius: 36px;
+  background: rgba(255,255,255,.86);
+  box-shadow: 0 30px 80px rgba(58,37,20,.12), inset 0 1px 0 rgba(255,255,255,.86);
   overflow: hidden; isolation: isolate;
 }
-.seoul-density-panel::before { content: ""; position: absolute; inset: 0; z-index: 0; background:
-  radial-gradient(circle at 22% 18%, rgba(59,130,246,.20), transparent 34%),
-  radial-gradient(circle at 76% 50%, rgba(251,146,60,.15), transparent 30%),
-  linear-gradient(180deg, rgba(7,17,31,.32), rgba(2,6,23,.86)); pointer-events: none; }
-.seoul-density-panel::after { content: ""; position: absolute; inset: 0; z-index: 1; background-image:
-  linear-gradient(rgba(148,163,184,.055) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(148,163,184,.055) 1px, transparent 1px); background-size: 72px 72px; mask-image: linear-gradient(90deg, rgba(0,0,0,.8), rgba(0,0,0,.25) 36%, rgba(0,0,0,.18) 64%, rgba(0,0,0,.74)); pointer-events: none; }
+.seoul-density-panel::before { content: ""; position: absolute; right: -140px; top: -160px; z-index: -1; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(255,90,31,.22), transparent 66%); }
+.seoul-density-panel::after { content: ""; position: absolute; left: -160px; bottom: -200px; z-index: -1; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12), transparent 68%); }
 .seoul-tool-copy, .seoul-map-card, .station-inspector, .density-result-card, .density-compare-card { min-width: 0; }
-.seoul-tool-copy { position: absolute; z-index: 20; top: 18px; left: 18px; width: min(258px, calc(100% - 36px)); display: grid; gap: 4px; padding: 10px 12px; border-radius: 18px; background: rgba(248,250,252,.93); color: #0f172a; border: 1px solid rgba(255,255,255,.72); box-shadow: 0 20px 48px rgba(2,6,23,.22); backdrop-filter: blur(18px); }
-.seoul-tool-copy .eyebrow { margin: 0; color: #2563eb; font-size: 11px; font-weight: 950; letter-spacing: .12em; }
-.seoul-tool-copy h2 { max-width: 240px; margin: 0; color: #0f172a; font-size: clamp(18px, 1.55vw, 22px); line-height: 1.02; letter-spacing: -.058em; text-wrap: balance; }
-.seoul-tool-copy p { display: none; max-width: none; margin: 0; color: #475569; font-size: 12px; line-height: 1.38; font-weight: 800; }
-.tool-badges { display: none; flex-wrap: wrap; gap: 6px; margin-top: 1px; }
-.tool-badges span { display: inline-flex; align-items: center; justify-content: center; min-height: 26px; padding: 0 8px; border-radius: 999px; background: #eef6ff; border: 1px solid #dbeafe; color: #1e3a8a; font-size: 10.5px; font-weight: 950; white-space: nowrap; }
-.tool-badges span:nth-child(n+3) { display: none; }
-.tool-risk-list li:nth-child(n+3) { display: none; }
-.seoul-map-card { grid-column: 1 / -1; position: absolute; inset: 0; z-index: 2; display: block; min-height: 100%; padding: 0; border-radius: inherit; background: #07111f; color: #fff; box-shadow: none; overflow: hidden; }
-.seoul-map-card::before { content: ""; position: absolute; inset: 0; z-index: 2; background: radial-gradient(circle at 54% 48%, transparent 0 46%, rgba(2,6,23,.14) 65%, rgba(2,6,23,.55) 100%); pointer-events: none; }
-.map-card-head { position: absolute; z-index: 18; top: 18px; left: 296px; right: 292px; display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; padding: 10px 12px; border-radius: 16px; background: rgba(2,6,23,.48); border: 1px solid rgba(255,255,255,.11); box-shadow: 0 10px 26px rgba(2,6,23,.18); backdrop-filter: blur(16px); }
+.seoul-tool-copy { grid-column: 1 / -1; max-width: 900px; padding: 2px 4px 0; }
+.seoul-tool-copy h2 { max-width: 760px; margin: 6px 0 10px; font-size: clamp(34px, 5.1vw, 60px); line-height: 1.02; letter-spacing: -0.058em; }
+.seoul-tool-copy p { max-width: 720px; margin: 0; color: #5f5652; font-size: clamp(15px, 1.45vw, 18px); line-height: 1.62; font-weight: 750; }
+.tool-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tool-badges span { display: inline-flex; align-items: center; min-height: 32px; padding: 0 11px; border-radius: 999px; background: #fff; border: 1px solid rgba(234,223,212,.96); font-size: 12px; font-weight: 950; color: #594e49; box-shadow: 0 8px 18px rgba(58,37,20,.045); }
+.seoul-map-card { position: relative; align-self: stretch; display: flex; flex-direction: column; padding: clamp(18px, 2.2vw, 24px); border-radius: 32px; background: linear-gradient(180deg, #111827 0%, #0b1020 100%); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 24px 54px rgba(15,23,42,.22); overflow: hidden; }
+.seoul-map-card::before { content: ""; position: absolute; inset: -30% -20% auto 34%; height: 310px; background: radial-gradient(circle, rgba(96,165,250,.22), transparent 64%); pointer-events: none; }
+.map-card-head { position: relative; z-index: 2; display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 14px; }
 .map-card-head strong, .map-card-head span { display: block; }
-.map-card-head span { color: #93c5fd; font-size: 10.5px; font-weight: 950; letter-spacing: .15em; }
-.map-card-head strong { margin-top: 1px; color: #fff; font-size: clamp(17px, 1.45vw, 22px); line-height: 1.04; letter-spacing: -.052em; }
-.map-card-head small { max-width: 230px; color: #cbd5e1; font-size: 10.5px; line-height: 1.42; font-weight: 850; text-align: right; }
-.density-layer-tabs { position: absolute; z-index: 18; top: 72px; left: 296px; right: 292px; display: flex; flex-wrap: nowrap; gap: 7px; margin: 0; padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.map-card-head span { color: #93a4bd; font-size: 11px; font-weight: 950; letter-spacing: .16em; }
+.map-card-head strong { margin-top: 3px; color: #fff; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.08; letter-spacing: -.045em; }
+.map-card-head small { max-width: 260px; color: #cbd5e1; font-size: 12px; line-height: 1.45; font-weight: 850; text-align: right; }
+.density-layer-tabs { position: relative; z-index: 4; display: flex; flex-wrap: nowrap; gap: 8px; margin: 0 -2px 14px; padding: 0 2px 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .density-layer-tabs::-webkit-scrollbar { display: none; }
-.density-layer-tabs button { flex: 0 0 auto; min-height: 30px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 0 11px; background: rgba(15,23,42,.50); color: #dbeafe; font: inherit; font-size: 12px; font-weight: 950; cursor: pointer; box-shadow: 0 10px 22px rgba(2,6,23,.16); backdrop-filter: blur(14px); transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
-.density-layer-tabs button:hover { transform: translateY(-1px); border-color: rgba(191,219,254,.64); }
-.density-layer-tabs button[aria-pressed="true"] { background: #f8fafc; border-color: rgba(255,255,255,.92); color: #0f172a; box-shadow: 0 14px 30px rgba(248,250,252,.18); }
-.seoul-map-canvas { position: absolute; inset: 0; z-index: 1; min-height: 100%; border-radius: inherit; overflow: hidden; background:
-  radial-gradient(circle at 48% 46%, rgba(30,64,175,.22), transparent 34%),
-  radial-gradient(circle at 55% 56%, rgba(14,165,233,.13), transparent 31%),
-  linear-gradient(145deg, #0b1627, #07101c 62%, #020617); border: 0; isolation: isolate; }
-.seoul-map-canvas::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image:
-  linear-gradient(rgba(255,255,255,.030) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(255,255,255,.030) 1px, transparent 1px); background-size: 38px 38px; mask-image: radial-gradient(circle at 56% 52%, #000 0 66%, transparent 100%); }
-.seoul-map-viewport { position: absolute; inset: -5% -3% -4% -4%; z-index: 1; transform-origin: var(--focus-x, 50%) var(--focus-y, 50%); transform: scale(var(--map-zoom, 1.35)); transition: transform .18s ease; will-change: transform; }
-.map-toolbar { position: absolute; z-index: 19; top: 94px; left: 18px; right: auto; width: min(258px, calc(100% - 36px)); display: grid; gap: 9px; align-items: stretch; justify-content: stretch; pointer-events: auto; }
-.district-picker-row { display: none; gap: 6px; padding: 10px; border-radius: 20px; background: rgba(248,250,252,.92); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 18px 44px rgba(2,6,23,.20); backdrop-filter: blur(18px); }
-.district-picker-row label { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 8px; min-height: 36px; padding: 0; color: #334155; font-size: 12px; font-weight: 950; white-space: nowrap; }
-.district-picker-row select { width: 100%; min-height: 36px; max-width: none; border: 1px solid #cbd5e1; border-radius: 12px; padding: 0 34px 0 11px; background: #fff; color: #0f172a; font: inherit; font-size: 12px; font-weight: 950; }
-.district-picker-row select option { color: #111827; background: #fff; }
-.district-picker-row span { display: none; }
-.map-layer-toggles, .map-zoom-controls { display: flex; align-items: center; gap: 5px; padding: 4px; border-radius: 999px; background: rgba(248,250,252,.82); border: 1px solid rgba(255,255,255,.55); box-shadow: 0 10px 24px rgba(2,6,23,.13); backdrop-filter: blur(18px); }
-.map-layer-toggles button, .map-zoom-controls button { min-width: 30px; min-height: 30px; border: 1px solid #dbeafe; border-radius: 999px; background: #fff; color: #334155; font: inherit; font-size: 11px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease, opacity .16s ease; }
-.map-layer-toggles button { flex: 1 1 0; padding: 0 8px; white-space: nowrap; }
-.map-zoom-controls button:hover, .map-layer-toggles button:hover { transform: translateY(-1px); border-color: #93c5fd; }
-.map-layer-toggles button[aria-pressed="true"] { background: #172033; border-color: #172033; color: #fff; box-shadow: 0 6px 12px rgba(15,23,42,.12); }
-.map-layer-toggles button[aria-pressed="false"] { color: #94a3b8; opacity: .74; }
-.map-zoom-controls { display: none; }
-.map-zoom-controls strong { flex: 1 1 auto; min-width: 48px; color: #0f172a; font-size: 11px; line-height: 1; font-weight: 950; text-align: center; }
-.map-zoom-controls button:disabled { opacity: .35; cursor: default; transform: none; }
-/* Reference-grade subway map layer: real OSM geometry stays dense, labels stay selective. */
-.seoul-districts, .seoul-map-labels, .seoul-subway-layer, .seoul-subway-stations, .seoul-subway-labels, .station-dot { transition: opacity .16s ease; }
-.seoul-map-canvas[data-districts-visible="false"] .seoul-districts, .seoul-map-canvas[data-districts-visible="false"] .seoul-map-labels { opacity: 0; pointer-events: none; }
-.seoul-map-canvas[data-subway-visible="false"] .seoul-subway-layer, .seoul-map-canvas[data-subway-visible="false"] .seoul-subway-stations { opacity: 0; pointer-events: none; }
-.seoul-map-canvas[data-labels-visible="false"] .seoul-subway-labels { opacity: 0; pointer-events: none; }
-.seoul-map-canvas[data-districts-visible="false"] [data-map-chip="districts"], .seoul-map-canvas[data-subway-visible="false"] [data-map-chip="subway"], .seoul-map-canvas[data-labels-visible="false"] [data-map-chip="labels"] { opacity: .38; }
-.seoul-real-map { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; opacity: .96; filter: drop-shadow(0 30px 54px rgba(0,0,0,.28)); }
-.seoul-district { fill: rgba(15,23,42,.30); stroke: rgba(226,232,240,.28); stroke-width: 1.35; vector-effect: non-scaling-stroke; cursor: pointer; pointer-events: visiblePainted; transition: fill .16s ease, stroke .16s ease, opacity .16s ease; }
-.seoul-district:nth-child(3n) { fill: rgba(37,99,235,.08); }
-.seoul-district:nth-child(4n) { fill: rgba(15,118,110,.08); }
-.seoul-district:hover, .seoul-district:focus-visible { fill: rgba(96,165,250,.18); stroke: rgba(191,219,254,.88); }
-.seoul-district[data-district-hidden="true"] { opacity: .20; }
-.seoul-district[data-selected="true"] { fill: rgba(248,250,252,.20); stroke: rgba(255,255,255,.98); stroke-width: 3.1; filter: url(#seoulMapGlow); opacity: 1; }
-.seoul-district[data-active="true"] { fill: rgba(251,146,60,.18); stroke: rgba(253,186,116,.92); stroke-width: 2.6; filter: url(#seoulMapGlow); }
-.seoul-district[data-has-candidates="false"] { opacity: .34; }
-.seoul-river { fill: none; stroke: rgba(56,189,248,.58); stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .82; filter: drop-shadow(0 0 14px rgba(56,189,248,.26)); }
-.seoul-map-labels { font-size: 12px; font-weight: 950; letter-spacing: -.05em; fill: rgba(226,232,240,.32); text-anchor: middle; paint-order: stroke; stroke: rgba(2,6,23,.78); stroke-width: 4px; stroke-linejoin: round; }
-.seoul-map-canvas[data-cluster-mode="cluster"] .seoul-map-labels { opacity: .18; }
-.seoul-subway-map { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.seoul-subway-line-halo { fill: none; stroke: rgba(2,6,23,.78); stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .62; }
-.seoul-subway-line { fill: none; stroke: var(--line-color, #60a5fa); stroke-width: 1.45; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .27; filter: drop-shadow(0 0 7px color-mix(in srgb, var(--line-color) 34%, transparent)); }
-.seoul-subway-stations { opacity: .20; }
-.seoul-station-node { fill: #e2e8f0; stroke: rgba(15,23,42,.92); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .58; }
-.transfer-station-node { fill: #fff; stroke: rgba(226,232,240,.94); stroke-width: 1.5; filter: drop-shadow(0 0 4px rgba(255,255,255,.20)); opacity: .76; }
-.major-station-node { fill: #fff; stroke: rgba(251,146,60,.72); stroke-width: 1.4; filter: none; opacity: .42; }
-.seoul-subway-labels { opacity: .28; }
-.subway-station-label { font-size: 11.5px; font-weight: 950; letter-spacing: -.04em; fill: #fff; paint-order: stroke; stroke: rgba(2,6,23,.92); stroke-width: 4.8px; stroke-linejoin: round; }
-.subway-station-label[data-label-level="transfer"] { font-size: 12.5px; }
-.subway-station-label .label-line { fill: #bfdbfe; font-size: 9px; letter-spacing: 0; }
-.subway-label-leader { stroke: rgba(226,232,240,.50); stroke-width: 1.1; vector-effect: non-scaling-stroke; stroke-dasharray: 3 4; }
-.subway-line-key { display: none; position: absolute; z-index: 12; left: 382px; top: 132px; right: 326px; flex-wrap: wrap; gap: 6px; pointer-events: none; }
-.subway-line-key span { display: inline-flex; align-items: center; gap: 5px; min-height: 23px; padding: 0 8px; border-radius: 999px; background: rgba(2,6,23,.68); border: 1px solid rgba(255,255,255,.13); color: #e2e8f0; font-size: 10px; font-weight: 950; backdrop-filter: blur(12px); }
-.subway-line-key i { width: 13px; height: 4px; border-radius: 999px; background: var(--line-color); box-shadow: 0 0 10px color-mix(in srgb, var(--line-color) 52%, transparent); }
-.map-data-chips { display: none; position: absolute; z-index: 6; left: 382px; top: 162px; right: 326px; flex-wrap: wrap; gap: 7px; pointer-events: none; }
-.map-data-chips span { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 999px; background: rgba(15,23,42,.68); border: 1px solid rgba(255,255,255,.13); color: #dbeafe; font-size: 11px; font-weight: 950; backdrop-filter: blur(12px); }
-.map-reading-guide { display: none; position: absolute; z-index: 15; left: 18px; bottom: 60px; width: min(258px, calc(100% - 36px)); padding: 12px; border-radius: 18px; background: rgba(2,6,23,.66); border: 1px solid rgba(255,255,255,.12); color: #dbeafe; backdrop-filter: blur(14px); }
-.map-reading-guide strong { display: block; color: #fff; font-size: 12px; font-weight: 950; }
-.map-reading-guide ol { grid-template-columns: 1fr; gap: 6px; }
-.map-reading-guide ol { grid-template-columns: 1fr; gap: 6px; display: grid; margin: 8px 0 0; padding-left: 18px; }
-.map-reading-guide li { color: #cbd5e1; font-size: 11.5px; line-height: 1.35; font-weight: 800; }
-.map-cluster-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
-.map-cluster-dot { --heat: .5; --size: clamp(62px, calc(48px + var(--heat) * 78px), 126px); position: absolute; left: var(--x); top: var(--y); width: var(--size); height: var(--size); transform: translate(-50%, -50%); display: grid; place-items: center; border: 1px solid rgba(251,191,36,.36); border-radius: 999px; background: radial-gradient(circle at 50% 50%, rgba(251,146,60, calc(.20 + var(--heat) * .26)) 0 24%, rgba(249,115,22, calc(.12 + var(--heat) * .14)) 44%, rgba(249,115,22,.02) 72%); color: #fff; cursor: pointer; pointer-events: auto; box-shadow: 0 0 calc(28px + var(--heat) * 34px) rgba(251,146,60,.20); transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease; }
-.map-cluster-dot:hover, .map-cluster-dot:focus-visible { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 calc(44px + var(--heat) * 56px) rgba(251,146,60,.32); }
-.map-cluster-dot b, .map-cluster-dot small { position: relative; z-index: 1; display: block; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,.48); }
-.map-cluster-dot b { font-size: clamp(15px, calc(12px + var(--heat) * 9px), 25px); line-height: 1; font-weight: 950; letter-spacing: -.05em; }
-.map-cluster-dot small { margin-top: 3px; max-width: 92px; color: #ffedd5; font-size: 9.5px; line-height: 1.05; font-weight: 950; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.seoul-map-canvas[data-cluster-mode="cluster"] .station-dot { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(.68); }
-.seoul-map-canvas[data-cluster-mode="mixed"] .station-dot { opacity: .62; }
-.station-dot[data-district-hidden="true"] { opacity: .10; pointer-events: none; }
-.station-dot { --heat: .5; --size: clamp(15px, calc(12px + var(--heat) * 11px), 27px); position: absolute; z-index: 8; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: block; width: var(--size); height: var(--size); border: 2px solid rgba(255,255,255,.96); border-radius: 999px; background: #f97316; color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(12px + var(--heat) * 28px) rgba(249,115,22, calc(.055 + var(--heat) * .095)), 0 14px 30px rgba(0,0,0,.28); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease, opacity .16s ease; }
-.station-dot::before { content: ""; position: absolute; inset: calc(-12px - var(--heat) * 10px); z-index: -1; border-radius: 999px; border: 1px solid rgba(251,146,60, calc(.18 + var(--heat) * .22)); background: radial-gradient(circle, rgba(251,146,60, calc(.16 + var(--heat) * .18)), transparent 66%); }
-.station-dot i { position: absolute; inset: 4px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 4px rgba(249,115,22,.55); }
-.station-dot:hover, .station-dot:focus-visible, .station-dot[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.12); z-index: 10; box-shadow: 0 0 0 calc(18px + var(--heat) * 32px) rgba(249,115,22,.13), 0 26px 50px rgba(0,0,0,.36); }
-.station-dot b { position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%); max-width: 142px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 5px 10px; border-radius: 999px; background: rgba(248,250,252,.96); color: #0f172a; font-size: 12px; font-weight: 950; opacity: 0; pointer-events: none; transition: opacity .14s ease; box-shadow: 0 10px 22px rgba(0,0,0,.18); }
+.density-layer-tabs button { flex: 0 0 auto; min-height: 40px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 0 13px; background: rgba(255,255,255,.075); color: #e5e7eb; font: inherit; font-size: 13px; font-weight: 950; cursor: pointer; transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+.density-layer-tabs button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.34); }
+.density-layer-tabs button[aria-pressed="true"] { background: #ff5a1f; border-color: #ff5a1f; color: #fff; box-shadow: 0 12px 24px rgba(255,90,31,.24); }
+.seoul-map-canvas { position: relative; flex: 1 1 auto; min-height: clamp(430px, 40vw, 540px); border-radius: 28px; overflow: hidden; background: radial-gradient(circle at 54% 38%, rgba(96,165,250,.24), transparent 25%), linear-gradient(145deg, #111827, #0b1020 76%); border: 1px solid rgba(255,255,255,.12); isolation: isolate; }
+.seoul-map-canvas::before { content: ""; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(circle at 50% 50%, #000 0 72%, transparent 100%); }
+.seoul-real-map { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 22px 42px rgba(0,0,0,.22)); opacity: .98; }
+.seoul-district { fill: rgba(30,41,59,.68); stroke: rgba(226,232,240,.34); stroke-width: 2.4; vector-effect: non-scaling-stroke; transition: fill .16s ease, stroke .16s ease, opacity .16s ease; }
+.seoul-district:nth-child(3n) { fill: rgba(37,99,235,.17); }
+.seoul-district:nth-child(4n) { fill: rgba(15,118,110,.16); }
+.seoul-district[data-active="true"] { fill: rgba(255,90,31,.32); stroke: rgba(255,237,213,.94); stroke-width: 3.5; filter: url(#seoulMapGlow); }
+.seoul-river { fill: none; stroke: rgba(125,211,252,.80); stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .82; filter: drop-shadow(0 0 18px rgba(56,189,248,.25)); }
+.seoul-map-labels { font-size: 18px; font-weight: 950; letter-spacing: -.05em; fill: rgba(226,232,240,.62); text-anchor: middle; paint-order: stroke; stroke: rgba(15,23,42,.80); stroke-width: 4px; stroke-linejoin: round; }
+.map-data-chips { position: absolute; z-index: 5; left: 16px; top: 16px; right: 16px; display: flex; flex-wrap: wrap; gap: 7px; pointer-events: none; }
+.map-data-chips span { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 999px; background: rgba(15,23,42,.62); border: 1px solid rgba(255,255,255,.13); color: #dbeafe; font-size: 11px; font-weight: 950; backdrop-filter: blur(12px); }
+.station-dot { --heat: .5; --size: clamp(30px, calc(24px + var(--heat) * 30px), 60px); position: absolute; z-index: 4; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: var(--size); height: var(--size); border: 2px solid rgba(255,255,255,.94); border-radius: 999px; background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.98) 0 10%, rgba(255,90,31,.96) 11% 67%, rgba(154,52,18,.98) 100%); color: #fff; cursor: pointer; box-shadow: 0 0 0 calc(4px + var(--heat) * 11px) rgba(255,90,31, calc(.05 + var(--heat) * .11)), 0 14px 26px rgba(0,0,0,.34); transition: transform .16s ease, box-shadow .16s ease, width .16s ease, height .16s ease; }
+.station-dot i { position: absolute; left: 24%; top: 22%; width: 18%; height: 18%; border-radius: 999px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.22); }
+.station-dot:hover, .station-dot:focus-visible, .station-dot[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.12); z-index: 8; box-shadow: 0 0 0 calc(8px + var(--heat) * 13px) rgba(255,90,31,.17), 0 22px 42px rgba(0,0,0,.42); }
+.station-dot b { position: absolute; left: 50%; top: calc(100% + 6px); transform: translateX(-50%); max-width: 124px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 9px; border-radius: 999px; background: rgba(15,23,42,.90); color: #fff; font-size: 12px; font-weight: 950; opacity: 0; pointer-events: none; transition: opacity .14s ease; box-shadow: 0 10px 22px rgba(0,0,0,.22); }
 .station-dot[aria-pressed="true"] b, .station-dot:focus-visible b, .station-dot:hover b { opacity: 1; }
-.station-dot small { position: absolute; left: calc(100% + 6px); top: 50%; transform: translateY(-50%); min-width: 34px; padding: 4px 7px; opacity: 0; border-radius: 999px; background: rgba(2,6,23,.84); color: #fff; border: 1px solid rgba(255,255,255,.14); font-size: 10.5px; line-height: 1; font-weight: 950; text-shadow: 0 1px 3px rgba(0,0,0,.42); }
-.station-dot[aria-pressed="true"] small, .station-dot:hover small, .station-dot:focus-visible small { opacity: 1; }
-.map-legend-card { position: absolute; z-index: 15; left: 340px; right: 304px; bottom: 18px; display: none; flex-wrap: wrap; gap: 7px; width: auto; padding: 9px 11px; border-radius: 999px; background: rgba(2,6,23,.68); border: 1px solid rgba(255,255,255,.14); color: #dbeafe; backdrop-filter: blur(16px); box-shadow: 0 18px 40px rgba(0,0,0,.20); }
-.map-legend-card span { display: flex; align-items: center; gap: 7px; font-size: 10.5px; line-height: 1.2; font-weight: 900; }
-.map-legend-card i { flex: 0 0 7px; width: 7px; height: 7px; border-radius: 999px; background: #f97316; box-shadow: 0 0 0 4px rgba(249,115,22,.18); }
-.map-focus-card { display: none !important; position: absolute; z-index: 15; left: 340px; right: 304px; bottom: 18px; width: auto; min-height: 54px; align-items: baseline; gap: 12px; padding: 12px 16px; border-radius: 18px; background: rgba(248,250,252,.94); border: 1px solid rgba(255,255,255,.72); color: #0f172a; backdrop-filter: blur(18px); box-shadow: 0 18px 42px rgba(0,0,0,.22); }
-.map-focus-card span, .map-focus-card small { display: block; color: #64748b; font-size: 11px; font-weight: 900; }
-.map-focus-card strong { display: block; margin: 0; color: #0f172a; font-size: clamp(20px, 2.1vw, 28px); line-height: 1.05; letter-spacing: -.045em; }
-.map-source-note { display: none; position: absolute; z-index: 18; left: 18px; bottom: 68px; width: min(302px, calc(100% - 36px)); margin: 0; padding: 9px 11px; border-radius: 16px; background: rgba(2,6,23,.58); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; font-size: 11px; line-height: 1.4; font-weight: 750; backdrop-filter: blur(14px); }
-.density-data-note { position: absolute; z-index: 18; left: 18px; bottom: 18px; width: min(258px, calc(100% - 36px)); margin: 0; border: 1px solid rgba(255,255,255,.12); border-radius: 16px; background: rgba(2,6,23,.66); color: #dbeafe; overflow: hidden; backdrop-filter: blur(14px); }
-.density-data-note summary { min-height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 13px; color: #fff; cursor: pointer; font-size: 12px; font-weight: 950; list-style: none; }
-.density-data-note summary::-webkit-details-marker { display: none; }
-.density-data-note summary::after { content: "+"; margin-left: auto; color: #93c5fd; font-size: 16px; line-height: 1; }
-.density-data-note[open] summary::after { content: "−"; }
-.density-data-note ul { display: grid; gap: 6px; margin: 0; padding: 0 14px 14px 32px; }
-.density-data-note li { color: #cbd5e1; font-size: 12px; line-height: 1.45; font-weight: 800; }
-.station-inspector { position: absolute; z-index: 20; top: 18px; right: 18px; bottom: 18px; width: min(272px, calc(100% - 36px)); display: grid; grid-template-columns: 1fr; align-content: start; gap: 10px; overflow: auto; padding-right: 2px; scrollbar-width: thin; }
-.seoul-selector-form { display: grid; grid-template-columns: 1fr; gap: 7px; padding: 12px; border-radius: 22px; background: rgba(248,250,252,.86); border: 1px solid rgba(255,255,255,.58); box-shadow: 0 12px 28px rgba(2,6,23,.14); backdrop-filter: blur(18px); }
-.seoul-selector-form label { display: grid; gap: 5px; color: #475569; font-size: 11px; font-weight: 950; }
-.seoul-selector-form select { width: 100%; min-height: 36px; border: 1px solid #cbd5e1; border-radius: 12px; padding: 0 9px; background: #fff; color: #0f172a; font: inherit; font-size: 11px; font-weight: 850; }
-.seoul-selector-form select option { color: #111827; background: #fff; }
-.density-result-card { padding: 13px; border-radius: 22px; background: rgba(248,250,252,.88); border: 1px solid rgba(255,255,255,.58); box-shadow: 0 14px 34px rgba(2,6,23,.16); backdrop-filter: blur(18px); }
-.density-title-row { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-.density-title-row h3 { margin: 4px 0 5px; color: #0f172a; font-size: clamp(18px, 1.7vw, 23px); line-height: 1.1; letter-spacing: -.045em; }
-.density-title-row > strong { flex: 0 0 auto; padding: 6px 9px; border-radius: 999px; background: #fbbf24; color: #211922; font-size: 11px; box-shadow: 0 6px 14px rgba(251,191,36,.12); }
+.station-dot small { position: relative; z-index: 1; font-size: clamp(10px, calc(8px + var(--heat) * 4px), 15px); font-weight: 950; letter-spacing: -.03em; text-shadow: 0 2px 8px rgba(0,0,0,.38); }
+.map-legend-card { position: absolute; z-index: 5; right: 16px; bottom: 16px; display: grid; gap: 7px; width: min(244px, 44%); padding: 13px 14px; border-radius: 20px; background: rgba(15,23,42,.68); border: 1px solid rgba(255,255,255,.14); color: #dbeafe; backdrop-filter: blur(16px); box-shadow: 0 18px 40px rgba(0,0,0,.20); }
+.map-legend-card span { display: flex; align-items: center; gap: 8px; font-size: 11px; line-height: 1.25; font-weight: 900; }
+.map-legend-card i { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 999px; background: #ff5a1f; box-shadow: 0 0 0 4px rgba(255,90,31,.16); }
+.map-focus-card { position: absolute; z-index: 6; left: 16px; bottom: 16px; width: min(268px, calc(100% - 32px)); padding: 14px 16px; border-radius: 22px; background: rgba(15,23,42,.78); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(18px); box-shadow: 0 18px 42px rgba(0,0,0,.26); }
+.map-focus-card span, .map-focus-card small { display: block; color: #cbd5e1; font-size: 12px; font-weight: 900; }
+.map-focus-card strong { display: block; margin: 2px 0 3px; color: #fff; font-size: 25px; line-height: 1.05; letter-spacing: -.045em; }
+.map-source-note { position: relative; z-index: 2; margin: 12px 2px 0; color: #cbd5e1; font-size: 12px; line-height: 1.45; font-weight: 750; }
+.station-inspector { display: grid; align-content: start; gap: 14px; }
+.seoul-selector-form { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 18px; border-radius: 26px; background: rgba(255,255,255,.94); border: 1px solid rgba(234,223,212,.95); box-shadow: 0 14px 34px rgba(58,37,20,.06); }
+.seoul-selector-form label { display: grid; gap: 6px; color: #514641; font-size: 13px; font-weight: 950; }
+.seoul-selector-form select { width: 100%; min-height: 46px; border: 1px solid #e4d5c7; border-radius: 15px; padding: 0 12px; background: #fffaf4; color: var(--ink); font: inherit; font-weight: 850; }
+.density-result-card { padding: 20px; border-radius: 28px; background: #fff; border: 1px solid rgba(234,223,212,.95); box-shadow: 0 14px 36px rgba(58,37,20,.065); }
+.density-title-row { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.density-title-row h3 { margin: 7px 0 6px; font-size: clamp(23px, 2.4vw, 31px); line-height: 1.1; letter-spacing: -.045em; }
+.density-title-row > strong { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; background: #fbbf24; color: #211922; font-size: 13px; box-shadow: 0 8px 18px rgba(251,191,36,.18); }
 [data-grade="good"] .density-title-row > strong { background: #bbf7d0; color: #14532d; }
 [data-grade="hold"] .density-title-row > strong { background: #fecaca; color: #7f1d1d; }
-.density-result-card p { margin: 0 0 8px; color: #475569; font-size: 12px; line-height: 1.48; font-weight: 760; }
-.decision-question-card { display: grid; gap: 4px; margin: 0 0 9px; padding: 10px 11px; border-radius: 16px; background: rgba(241,245,249,.92); color: #172033; border: 1px solid #e2e8f0; box-shadow: none; }
-.decision-question-card span { display: inline-flex; width: fit-content; min-height: 22px; align-items: center; padding: 0 8px; border-radius: 999px; background: #dbeafe; color: #1e3a8a; font-size: 10px; font-weight: 950; letter-spacing: .07em; }
-.decision-question-card strong { color: #172033; font-size: 13.2px; line-height: 1.35; letter-spacing: -.025em; }
-.decision-question-card small { display: none; color: #bfdbfe; font-size: 12px; line-height: 1.45; font-weight: 850; }
-.density-score-grid { display: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 9px 0; }
-.density-score-grid div { min-width: 0; padding: 9px 7px; border-radius: 16px; background: linear-gradient(180deg, #fff7ed, #fff); border: 1px solid #f7d8c4; }
-.density-score-grid span, .density-score-grid small { display: block; color: #7c2d12; font-size: 10.5px; font-weight: 950; }
-.density-score-grid strong { display: block; margin: 2px 0; color: #0f172a; font-size: clamp(19px, 2.5vw, 25px); line-height: 1; letter-spacing: -.055em; }
-.density-bars { display: none; gap: 6px; margin: 9px 0 10px; }
-.density-bar { display: grid; grid-template-columns: 72px 1fr 38px; gap: 7px; align-items: center; font-size: 11.5px; font-weight: 950; color: #334155; }
-.density-bar span:nth-child(2) { height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
-.density-bar span:nth-child(2)::before { content: ""; display: block; width: var(--value); height: 100%; border-radius: inherit; background: linear-gradient(90deg, #60a5fa, #f97316); }
-.tool-risk-list { counter-reset: risk; display: none; gap: 7px; margin: 0; padding: 0; list-style: none; }
-.tool-risk-list li { position: relative; padding: 8px 8px 8px 32px; border-radius: 14px; background: #fffaf4; color: #3f3733; font-size: 12.5px; line-height: 1.44; font-weight: 850; }
-.tool-risk-list li::before { counter-increment: risk; content: counter(risk); position: absolute; left: 10px; top: 10px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 10px; font-weight: 950; }
-.field-visit-plan { display: none; margin-top: 12px; padding: 12px; border-radius: 18px; background: #f8fafc; border: 1px solid #e2e8f0; }
-.field-visit-plan > span { display: inline-flex; min-height: 24px; align-items: center; padding: 0 8px; border-radius: 999px; background: #e0f2fe; color: #075985; font-size: 10.5px; font-weight: 950; letter-spacing: .04em; }
-.field-visit-plan strong { display: block; margin-top: 7px; color: #172033; font-size: 14px; line-height: 1.35; letter-spacing: -.025em; }
-.field-visit-plan ul { display: grid; gap: 5px; margin: 8px 0 0; padding-left: 17px; }
-.field-visit-plan li { color: #475569; font-size: 12.5px; line-height: 1.42; font-weight: 850; }
-.candidate-memo-card { display: none; margin-top: 11px; padding: 13px 14px; border-radius: 18px; background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fed7aa; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
-.candidate-memo-card > span { display: inline-flex; min-height: 24px; align-items: center; padding: 0 8px; border-radius: 999px; background: #ffedd5; color: #9a3412; font-size: 10.5px; font-weight: 950; letter-spacing: .04em; }
-.candidate-memo-card strong { display: block; margin-top: 7px; color: #7c2d12; font-size: 14px; line-height: 1.35; letter-spacing: -.025em; }
-.candidate-memo-card small { display: block; margin-top: 5px; color: #9a3412; font-size: 12px; line-height: 1.45; font-weight: 850; }
-.tool-link-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
-.tool-link-row a { display: inline-flex; min-height: 34px; align-items: center; padding: 0 11px; border-radius: 999px; background: rgba(238,246,255,.82); color: #1d4ed8; font-size: 12.3px; font-weight: 950; }
-.tool-link-row a:nth-child(n+2) { display: none; }
-.density-compare-card { display: none; padding: 15px; border-radius: 22px; background: rgba(15,23,42,.82); color: #fff; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 44px rgba(2,6,23,.20); backdrop-filter: blur(18px); }
-.density-compare-card > span { display: inline-flex; min-height: 25px; align-items: center; padding: 0 9px; border-radius: 999px; background: rgba(255,255,255,.10); color: #cbd5e1; font-size: 10.5px; font-weight: 950; letter-spacing: .08em; }
-.density-compare-card > strong { display: block; margin: 8px 0 9px; color: #fff; font-size: clamp(18px, 1.8vw, 22px); line-height: 1.18; letter-spacing: -.04em; }
-.compare-metric-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin: 9px 0 11px; }
-.compare-metric-row div { min-width: 0; padding: 9px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); }
+.density-result-card p { margin: 0 0 13px; color: #5f5652; font-weight: 750; }
+.density-score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.density-score-grid div { min-width: 0; padding: 12px 10px; border-radius: 18px; background: linear-gradient(180deg, #fff7ed, #fff); border: 1px solid #f7d8c4; }
+.density-score-grid span, .density-score-grid small { display: block; color: #7c2d12; font-size: 11px; font-weight: 950; }
+.density-score-grid strong { display: block; margin: 2px 0; font-size: clamp(25px, 4vw, 38px); line-height: 1; letter-spacing: -.055em; }
+.density-bars { display: grid; gap: 8px; margin: 12px 0 15px; }
+.density-bar { display: grid; grid-template-columns: 78px 1fr 42px; gap: 8px; align-items: center; font-size: 12px; font-weight: 950; color: #514641; }
+.density-bar span:nth-child(2) { height: 9px; border-radius: 999px; background: #f3e3d8; overflow: hidden; }
+.density-bar span:nth-child(2)::before { content: ""; display: block; width: var(--value); height: 100%; border-radius: inherit; background: linear-gradient(90deg, #60a5fa, #ff5a1f); }
+.tool-risk-list { counter-reset: risk; display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.tool-risk-list li { position: relative; padding: 10px 10px 10px 38px; border-radius: 16px; background: #fffaf4; color: #3f3733; font-size: 13.5px; line-height: 1.48; font-weight: 850; }
+.tool-risk-list li::before { counter-increment: risk; content: counter(risk); position: absolute; left: 11px; top: 11px; display: grid; place-items: center; width: 19px; height: 19px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 950; }
+.field-visit-plan { margin-top: 14px; padding: 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; }
+.field-visit-plan > span { display: inline-flex; min-height: 26px; align-items: center; padding: 0 9px; border-radius: 999px; background: #e0f2fe; color: #075985; font-size: 11px; font-weight: 950; letter-spacing: .04em; }
+.field-visit-plan strong { display: block; margin-top: 8px; color: #172033; font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
+.field-visit-plan ul { display: grid; gap: 6px; margin: 9px 0 0; padding-left: 18px; }
+.field-visit-plan li { color: #475569; font-size: 13px; line-height: 1.45; font-weight: 850; }
+.tool-link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.tool-link-row a { display: inline-flex; min-height: 38px; align-items: center; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; font-size: 13px; font-weight: 950; }
+.density-compare-card { padding: 18px; border-radius: 26px; background: linear-gradient(180deg, #101828, #0b1020); color: #fff; border: 1px solid rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 14px 34px rgba(15,23,42,.14); }
+.density-compare-card > span { display: inline-flex; min-height: 28px; align-items: center; padding: 0 10px; border-radius: 999px; background: rgba(255,255,255,.10); color: #cbd5e1; font-size: 11px; font-weight: 950; letter-spacing: .08em; }
+.density-compare-card > strong { display: block; margin: 9px 0 10px; font-size: clamp(20px, 2.1vw, 25px); line-height: 1.18; letter-spacing: -.04em; }
+.compare-metric-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 12px; }
+.compare-metric-row div { min-width: 0; padding: 10px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); }
 .compare-metric-row span, .compare-metric-row strong { display: block; }
-.compare-metric-row span { color: #cbd5e1; font-size: 10.5px; font-weight: 950; }
-.compare-metric-row strong { margin-top: 2px; font-size: 19px; line-height: 1; letter-spacing: -.045em; color: #fff; }
+.compare-metric-row span { color: #cbd5e1; font-size: 11px; font-weight: 950; }
+.compare-metric-row strong { margin-top: 2px; font-size: 21px; line-height: 1; letter-spacing: -.045em; color: #fff; }
 .compare-metric-row .compare-up strong { color: #fde68a; }
 .compare-metric-row .compare-down strong { color: #bfdbfe; }
-.density-compare-card p { margin: 0; color: #dbeafe; font-size: 12.5px; line-height: 1.46; font-weight: 800; }
-.compare-verdict { display: grid; gap: 4px; margin: 0 0 9px !important; padding: 10px 11px; border-radius: 16px; background: #eff6ff; border: 1px solid #bfdbfe; }
-.compare-verdict span { display: inline-flex; width: fit-content; min-height: 22px; align-items: center; padding: 0 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 10px; font-weight: 950; letter-spacing: .06em; }
-.compare-verdict strong { color: #172033; font-size: 13.5px; line-height: 1.35; letter-spacing: -.02em; }
-.compare-verdict small { color: #475569; font-size: 12px; line-height: 1.42; font-weight: 850; }
+.density-compare-card p { margin: 0; color: #dbeafe; font-size: 13px; line-height: 1.48; font-weight: 800; }
 .situation-grid { margin-top: 18px; }
 .situation-card { min-height: 236px; }
 .case-study-list { margin-top: 34px; }
@@ -3822,9 +3528,9 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .text-link { color: var(--orange-dark); font-weight: 950; display: inline-flex; align-items: center; min-height: 44px; }
 .deals-site { background: #f6f5f4; }
 .deals-site .site-header { background: rgba(255,255,255,.96); border-bottom-color: rgba(0,0,0,.08); }
-.deals-site main { width: min(1320px, calc(100% - 32px)); }
+.deals-site main { width: min(1240px, calc(100% - 32px)); }
 .deal-landing-hero {
-  display: grid; grid-template-columns: minmax(300px, .66fr) minmax(460px, 1.34fr); gap: clamp(16px, 2.2vw, 26px);
+  display: grid; grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr); gap: clamp(18px, 2.6vw, 28px);
   align-items: stretch;
   margin: clamp(20px, 3.2vw, 36px) 0 12px;
   padding: clamp(22px, 3.4vw, 34px);
@@ -3838,8 +3544,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   min-width: 0; max-width: 100%; box-sizing: border-box;
 }
 .deal-hero-copy { align-self: start; padding: clamp(4px, .9vw, 10px) 0 0; background: transparent; border: 0; box-shadow: none; }
-.deal-hero-copy h1 { max-width: 520px; margin-top: 8px; margin-bottom: 12px; font-size: clamp(34px, 3.7vw, 48px); letter-spacing: -.055em; }
-.deal-hero-copy .lead { max-width: 500px; color: #4b5563; font-size: clamp(15px, 1.32vw, 17px); line-height: 1.6; }
+.deal-hero-copy h1 { max-width: 600px; margin-top: 8px; margin-bottom: 12px; font-size: clamp(37px, 4.15vw, 52px); letter-spacing: -.055em; }
+.deal-hero-copy .lead { max-width: 590px; color: #4b5563; font-size: clamp(15.5px, 1.45vw, 18px); line-height: 1.62; }
 .compact-actions { margin-top: 18px; }
 .compact-actions .button { min-height: 44px; border-radius: 14px; }
 .deal-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 560px; margin-top: 16px; }
@@ -3855,7 +3561,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-hero-panel .microcopy { margin: 14px 0 0; color: #5f5652; font-size: 14px; line-height: 1.6; font-weight: 850; }
 .playful-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .playful-badges span { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 13px; font-weight: 950; }
-.shopping-room-card { align-self: stretch; min-width: 0; scroll-margin-top: 96px; padding: clamp(14px, 1.9vw, 18px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
+.shopping-room-card { align-self: stretch; min-width: 0; padding: clamp(14px, 1.9vw, 18px); border-radius: 28px; background: linear-gradient(145deg, #fffaf4, #fff 58%, #f7fbff); border: 1px solid rgba(234,223,212,.95); box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 18px 42px rgba(58,37,20,.08); }
 .room-card-head { display: grid; gap: 7px; }
 .room-card-head > strong { display: block; color: #111827; font-size: clamp(21px, 2.1vw, 26px); line-height: 1.15; letter-spacing: -.035em; }
 .room-card-head p, .room-empty p { margin: 0; color: #6b625f; font-size: 13px; line-height: 1.5; font-weight: 750; }
@@ -3865,12 +3571,12 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-page { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 11px; border-radius: 999px; color: #6b625f; font-size: 12px; font-weight: 950; cursor: pointer; white-space: nowrap; transition: background .16s ease, color .16s ease, box-shadow .16s ease; }
 .room-page:hover { background: rgba(255,255,255,.86); color: #2f2724; }
 .room-toggle.scene-living:checked ~ .room-carousel-nav .scene-living, .room-toggle.scene-kitchen:checked ~ .room-carousel-nav .scene-kitchen, .room-toggle.scene-care:checked ~ .room-carousel-nav .scene-care { background: #111827; color: #fff; box-shadow: 0 8px 16px rgba(17,24,39,.12); }
-.room-visual-stack { position: relative; min-height: clamp(430px, 39vw, 540px); }
-.room-visual { display: none; position: relative; min-height: clamp(430px, 39vw, 540px); overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.room-visual-stack { position: relative; min-height: clamp(390px, 36vw, 470px); }
+.room-visual { display: none; position: relative; min-height: clamp(390px, 36vw, 470px); overflow: hidden; border-radius: 28px; background: #f3ebe2; border: 1px solid rgba(219,205,192,.9); isolation: isolate; box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
 .room-toggle.scene-living:checked ~ .room-visual-stack .scene-living, .room-toggle.scene-kitchen:checked ~ .room-visual-stack .scene-kitchen, .room-toggle.scene-care:checked ~ .room-visual-stack .scene-care { display: block; }
 .room-photo { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.96) contrast(.98); transform: scale(1.01); }
 .room-visual::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(17,24,39,.10)), radial-gradient(circle at 50% 50%, transparent 0 62%, rgba(255,255,255,.26) 100%); }
-.room-product { position: absolute; z-index: 9; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 999px; cursor: pointer; outline: none; transform: translate(-50%, -50%); }
+.room-product { position: absolute; z-index: 9; display: grid; place-items: center; width: 66px; height: 66px; border-radius: 999px; cursor: pointer; outline: none; transform: translate(-50%, -50%); }
 .room-product.pos-1 { left: 18%; top: 64%; }
 .room-product.pos-2 { left: 56%; top: 45%; }
 .room-product.pos-3 { left: 47%; top: 80%; }
@@ -3884,17 +3590,17 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .room-scene.scene-living .room-product.kind-daily { left: 66%; top: 67%; }
 .room-scene.scene-kitchen .room-product.kind-kitchen { left: 55%; top: 57%; }
 .room-scene.scene-care .room-product.kind-care { left: 44%; top: 70%; }
-.room-hit-area { position: absolute; inset: 9px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.62); box-shadow: 0 6px 14px rgba(17,24,39,.10), inset 0 1px 0 rgba(255,255,255,.62); opacity: .66; transform: scale(.82); transition: opacity .16s ease, transform .16s ease, border-color .16s ease, background .16s ease; }
-.room-pulse { position: absolute; width: 31px; height: 31px; border-radius: 999px; background: rgba(255,90,31,.08); border: 1px solid rgba(255,90,31,.28); box-shadow: 0 0 0 0 rgba(255,90,31,.12); transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
-.room-pin { position: relative; z-index: 2; width: 11px; height: 11px; border-radius: 999px; background: #ff5a1f; border: 2px solid #fff; box-shadow: 0 5px 12px rgba(17,24,39,.20); transition: transform .16s ease; }
-.room-label { position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 4; min-width: 104px; max-width: 152px; transform: translateX(-50%) translateY(6px); padding: 8px 10px; border-radius: 14px; background: rgba(17,24,39,.94); color: #fff; box-shadow: 0 14px 28px rgba(17,24,39,.22); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
+.room-hit-area { position: absolute; inset: 4px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 12px 24px rgba(17,24,39,.13), inset 0 1px 0 rgba(255,255,255,.72); opacity: .78; transform: scale(.74); transition: opacity .16s ease, transform .16s ease, border-color .16s ease, background .16s ease; }
+.room-pulse { position: absolute; width: 38px; height: 38px; border-radius: 999px; background: rgba(255,90,31,.12); border: 1px solid rgba(255,90,31,.38); box-shadow: 0 0 0 0 rgba(255,90,31,.18); transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.room-pin { position: relative; z-index: 2; width: 15px; height: 15px; border-radius: 999px; background: #ff5a1f; border: 3px solid #fff; box-shadow: 0 8px 18px rgba(17,24,39,.24); transition: transform .16s ease; }
+.room-label { position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 4; min-width: 144px; max-width: 190px; transform: translateX(-50%) translateY(6px); padding: 9px 10px; border-radius: 14px; background: rgba(17,24,39,.94); color: #fff; box-shadow: 0 14px 28px rgba(17,24,39,.22); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
 .room-label strong, .room-label small { display: block; }
-.room-label strong { font-size: 13px; line-height: 1.2; word-break: keep-all; }
+.room-label strong { font-size: 12.5px; line-height: 1.25; word-break: keep-all; }
 .room-label small { margin-top: 3px; color: #fed7aa; font-size: 11px; font-weight: 900; }
 .room-product:hover .room-label, .room-product:focus .room-label, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-label, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-label, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-label, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-label, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-label, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-label { opacity: 1; transform: translateX(-50%) translateY(0); }
-.room-product:hover .room-hit-area, .room-product:focus .room-hit-area, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-hit-area, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-hit-area, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-hit-area, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-hit-area, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-hit-area, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-hit-area { opacity: .92; transform: scale(1); border-color: rgba(255,90,31,.52); background: rgba(255,255,255,.28); }
-#shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-pulse, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-pulse, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-pulse, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-pulse, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-pulse, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-pulse { background: rgba(255,90,31,.16); border-color: rgba(255,90,31,.58); box-shadow: 0 0 0 5px rgba(255,90,31,.08); }
-#shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-pin, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-pin, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-pin, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-pin, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-pin, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-pin { transform: scale(1.12); }
+.room-product:hover .room-hit-area, .room-product:focus .room-hit-area, #shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-hit-area, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-hit-area, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-hit-area, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-hit-area, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-hit-area, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-hit-area { opacity: 1; transform: scale(1); border-color: rgba(255,90,31,.64); background: rgba(255,255,255,.24); }
+#shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-pulse, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-pulse, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-pulse, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-pulse, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-pulse, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-pulse { background: rgba(255,90,31,.24); border-color: rgba(255,90,31,.78); box-shadow: 0 0 0 8px rgba(255,90,31,.10); }
+#shopping-room-pick-1:checked ~ .room-visual-stack .pos-1 .room-pin, #shopping-room-pick-2:checked ~ .room-visual-stack .pos-2 .room-pin, #shopping-room-pick-3:checked ~ .room-visual-stack .pos-3 .room-pin, #shopping-room-pick-4:checked ~ .room-visual-stack .pos-4 .room-pin, #shopping-room-pick-5:checked ~ .room-visual-stack .pos-5 .room-pin, #shopping-room-pick-6:checked ~ .room-visual-stack .pos-6 .room-pin { transform: scale(1.18); }
 .room-previews { margin-top: 10px; }
 .room-preview { display: none; padding: 14px 15px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 10px 24px rgba(58,37,20,.06); }
 #shopping-room-pick-1:checked ~ .room-previews .preview-1, #shopping-room-pick-2:checked ~ .room-previews .preview-2, #shopping-room-pick-3:checked ~ .room-previews .preview-3, #shopping-room-pick-4:checked ~ .room-previews .preview-4, #shopping-room-pick-5:checked ~ .room-previews .preview-5, #shopping-room-pick-6:checked ~ .room-previews .preview-6 { display: block; }
@@ -4210,65 +3916,36 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 }
 .muted { color: var(--muted); font-size: 14px; }
 @media (max-width: 1120px) and (min-width: 861px) {
-  .seoul-density-panel { grid-template-columns: 1fr; }
-  .seoul-tool-copy { grid-template-columns: 1fr; }
-  .tool-badges { justify-content: flex-start; }
-  .seoul-map-card { grid-column: 1 / -1; min-height: 690px; }
-  .seoul-map-canvas { min-height: 560px; }
-  .station-inspector { grid-column: 1 / -1; grid-template-columns: minmax(280px, .62fr) minmax(0, 1fr); align-items: start; }
+  .seoul-density-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .station-inspector { grid-column: 1 / -1; grid-template-columns: minmax(260px, .72fr) minmax(0, 1fr); align-items: start; }
   .station-inspector .density-compare-card { grid-column: 1 / -1; }
 }
 @media (max-width: 860px) {
-  .seoul-density-panel { grid-template-columns: 1fr; min-height: 1620px; padding: 0; border-radius: 28px; gap: 0; }
-  .seoul-map-card { bottom: auto; height: 820px; min-height: 820px; padding: 0; border-radius: 28px; }
-  .seoul-tool-copy { top: 14px; left: 14px; width: min(244px, calc(100% - 28px)); grid-template-columns: 1fr; gap: 4px; padding: 10px 12px; }
-  .tool-badges { justify-content: flex-start; }
+  .seoul-density-panel { grid-template-columns: 1fr; padding: 16px; border-radius: 28px; gap: 15px; }
   .station-inspector { grid-template-columns: 1fr; }
   .station-inspector .density-compare-card { grid-column: auto; }
-  .seoul-tool-copy h2 { font-size: clamp(18px, 5.1vw, 22px); }
-  .seoul-map-card { padding: 0; border-radius: 28px; }
-  .map-card-head { display: none; }
+  .seoul-tool-copy h2 { font-size: clamp(31px, 8.6vw, 44px); }
+  .seoul-map-card { padding: 16px; border-radius: 28px; }
+  .map-card-head { display: grid; gap: 5px; }
   .map-card-head small { max-width: none; text-align: left; }
-  .density-layer-tabs { left: 14px; right: 14px; top: 72px; display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden; padding: 0 0 2px; margin: 0; }
-  .density-layer-tabs button { width: auto; min-width: max-content; min-height: 34px; padding: 0 10px; font-size: 11.5px; letter-spacing: -.04em; }
-  .seoul-map-canvas { min-height: 100%; border-radius: 28px; }
-  .map-toolbar { left: 14px; right: auto; top: 116px; width: min(206px, calc(100% - 28px)); display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; justify-content: flex-start; }
-  .district-picker-row { order: 1; flex: 1 1 100%; max-width: none; border-radius: 18px; gap: 6px; padding: 4px; }
-  .district-picker-row label { min-height: 30px; padding-left: 7px; font-size: 10px; }
-  .district-picker-row select { max-width: 112px; min-height: 28px; font-size: 10px; }
-  .district-picker-row span { font-size: 10px; }
-  .map-layer-toggles { order: 2; flex-wrap: nowrap; max-width: none; gap: 3px; padding: 3px; border-radius: 999px; background: rgba(2,6,23,.58); }
-  .map-zoom-controls { order: 3; display: none; }
-  .map-zoom-controls strong { min-width: 30px; font-size: 10px; }
-  .map-layer-toggles button, .map-zoom-controls button { min-width: 30px; min-height: 30px; padding: 0 7px; letter-spacing: -.04em; font-size: 10px; }
+  .density-layer-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; overflow: visible; padding: 0; margin: 0 0 12px; }
+  .density-layer-tabs button { width: 100%; min-height: 38px; padding: 0 6px; font-size: 12px; letter-spacing: -.04em; }
+  .seoul-map-canvas { min-height: min(112vw, 492px); border-radius: 24px; }
   .seoul-real-map { inset: 0; width: 100%; height: 100%; }
-  .seoul-subway-line-halo { stroke-width: 3.2; opacity: .10; }
-  .seoul-subway-line { stroke-width: 1.15; opacity: .18; }
-  .seoul-station-node { stroke-width: .75; opacity: .20; }
-  .seoul-subway-stations { opacity: .10; }
-  .seoul-subway-labels { display: none; }
-  .subway-station-label { font-size: 9px; stroke-width: 3.6px; }
-  .subway-line-key { display: none; }
-  .seoul-map-labels { font-size: 12px; opacity: .42; }
-  .seoul-map-canvas[data-cluster-mode="cluster"] .seoul-map-labels { opacity: .18; }
+  .seoul-map-labels { font-size: 13px; opacity: .74; }
   .seoul-river { stroke-width: 15; }
-  .map-data-chips { display: none; }
+  .map-data-chips { left: 10px; top: 10px; right: 10px; gap: 5px; }
   .map-data-chips span { min-height: 24px; padding: 0 7px; font-size: 9.5px; }
-  .map-cluster-dot { --size: clamp(48px, calc(38px + var(--heat) * 42px), 86px); border-width: 2px; }
-  .map-cluster-dot b { font-size: clamp(12px, calc(10px + var(--heat) * 5px), 17px); }
-  .map-cluster-dot small { max-width: 68px; font-size: 9px; }
-  .station-dot { width: clamp(34px, calc(24px + var(--heat) * 34px), 58px); height: clamp(34px, calc(24px + var(--heat) * 34px), 58px); border-width: 2.4px; box-shadow: 0 0 0 calc(5px + var(--heat) * 9px) rgba(255,90,31, calc(.06 + var(--heat) * .10)), 0 12px 24px rgba(0,0,0,.32); }
-  .station-dot:not([aria-pressed="true"]) { opacity: .58; }
-  .station-dot:not([aria-pressed="true"]) small { font-size: clamp(10px, calc(8px + var(--heat) * 6px), 16px); }
+  .station-dot { width: clamp(30px, calc(24px + var(--heat) * 20px), 48px); height: clamp(30px, calc(24px + var(--heat) * 20px), 48px); border-width: 1.8px; box-shadow: 0 0 0 calc(3px + var(--heat) * 7px) rgba(255,90,31, calc(.04 + var(--heat) * .08)), 0 10px 20px rgba(0,0,0,.30); }
+  .station-dot:not([aria-pressed="true"]) { opacity: .78; }
+  .station-dot:not([aria-pressed="true"]) small { width: 8px; height: 8px; border-radius: 999px; background: #fff; font-size: 0; box-shadow: 0 2px 7px rgba(0,0,0,.24); }
   .station-dot[aria-pressed="true"] { opacity: 1; }
-  .station-dot b { top: calc(100% + 5px); max-width: 104px; font-size: 10.5px; }
-  .station-dot small { font-size: clamp(11px, calc(8px + var(--heat) * 6px), 17px); }
-  .station-inspector { top: 840px; left: 14px; right: 14px; bottom: auto; width: auto; max-height: none; overflow: visible; padding-right: 0; }
-  .map-focus-card { left: 10px; right: 10px; bottom: 10px; width: auto; padding: 8px 10px; border-radius: 16px; display: none; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 8px; }
+  .station-dot b { top: calc(100% + 4px); max-width: 96px; font-size: 10px; }
+  .station-dot small { font-size: clamp(10px, calc(8px + var(--heat) * 4px), 14px); }
+  .map-focus-card { left: 10px; right: 10px; bottom: 10px; width: auto; padding: 10px 12px; border-radius: 17px; }
   .map-legend-card { display: none; }
-  .map-focus-card span { font-size: 10px; }
-  .map-focus-card small { display: none; }
-  .map-focus-card strong { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .map-focus-card span, .map-focus-card small { font-size: 10.5px; }
+  .map-focus-card strong { font-size: 19px; }
   .density-title-row h3 { font-size: clamp(21px, 6.3vw, 27px); }
   .density-score-grid, .compare-metric-row { grid-template-columns: 1fr; }
   .density-bar { grid-template-columns: 72px 1fr 38px; }
@@ -4473,61 +4150,22 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const popLabelEl = root.querySelector('[data-pop-label]');
   const riskListEl = root.querySelector('[data-risk-list]');
   const barsEl = root.querySelector('[data-density-bars]');
-  const decisionQuestionEl = root.querySelector('[data-decision-question]');
   const visitPlanEl = root.querySelector('[data-visit-plan]');
-  const candidateMemoEl = root.querySelector('[data-candidate-memo]');
   const linksEl = root.querySelector('[data-recommend-links]');
   const comparePanel = root.querySelector('[data-compare-panel]');
   const compareTitleEl = root.querySelector('[data-compare-title]');
   const compareMetricsEl = root.querySelector('[data-compare-metrics]');
-  const compareVerdictEl = root.querySelector('[data-compare-verdict]');
   const compareNoteEl = root.querySelector('[data-compare-note]');
   const sourceNoteEl = root.querySelector('[data-source-note]');
   const layerButtons = Array.from(root.querySelectorAll('[data-density-layer]'));
   const stationButtons = Array.from(root.querySelectorAll('[data-station-map]'));
   const districtPaths = Array.from(root.querySelectorAll('[data-map-district]'));
-  const mapCanvas = root.querySelector('[data-map-canvas]');
-  const mapViewport = root.querySelector('[data-map-viewport]');
-  const mapZoomButtons = Array.from(root.querySelectorAll('[data-map-zoom]'));
-  const mapZoomValue = root.querySelector('[data-map-zoom-value]');
-  const mapLayerToggleButtons = Array.from(root.querySelectorAll('[data-map-toggle]'));
-  const districtFilter = root.querySelector('[data-district-filter]');
-  const districtSummary = root.querySelector('[data-district-summary]');
-  const clusterLayer = root.querySelector('[data-map-clusters]');
   if (!stationSelect || !compareSelect || !industrySelect || !purposeSelect || !stationTitle || !riskListEl || !barsEl) return;
 
   const esc = (value) => String(value || '').replace(/[&<>"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   const link = (href, label) => `<a href="${href}">${esc(label)}</a>`;
   const categoryOrder = ['cafe', 'food', 'convenience', 'beauty', 'clinic', 'academy', 'retail'];
   let payload = null;
-  let mapZoom = 1.02;
-  let selectedDistrict = 'all';
-
-  const setMapZoom = (nextZoom) => {
-    mapZoom = Math.max(.85, Math.min(2.25, Number(nextZoom) || 1));
-    if (mapViewport) mapViewport.style.setProperty('--map-zoom', mapZoom.toFixed(2));
-    if (mapCanvas) {
-      mapCanvas.dataset.zoomLevel = mapZoom.toFixed(2);
-      mapCanvas.dataset.mapZoomLevel = mapZoom.toFixed(2);
-    }
-    if (mapZoomValue) mapZoomValue.textContent = `${mapZoom.toFixed(1)}×`;
-    mapZoomButtons.forEach((button) => {
-      const action = button.dataset.mapZoom;
-      button.disabled = (action === 'out' && mapZoom <= .86) || (action === 'in' && mapZoom >= 2.24);
-    });
-    if (mapCanvas) mapCanvas.dataset.clusterMode = mapZoom < 1.08 ? 'cluster' : mapZoom < 1.32 ? 'mixed' : 'station';
-    renderClusters();
-  };
-  const setMapLayerVisibility = (layer, visible) => {
-    if (!mapCanvas || !layer) return;
-    const isVisible = Boolean(visible);
-    if (layer === 'districts') mapCanvas.dataset.districtsVisible = String(isVisible);
-    if (layer === 'subway') mapCanvas.dataset.subwayVisible = String(isVisible);
-    if (layer === 'labels') mapCanvas.dataset.labelsVisible = String(isVisible);
-    mapLayerToggleButtons
-      .filter((button) => button.dataset.mapToggle === layer)
-      .forEach((button) => button.setAttribute('aria-pressed', String(isVisible)));
-  };
 
   const categoryLabel = (key) => (payload?.categories?.[key] || ({population: '인구밀도'}[key]) || key);
   const maxFor = (key) => {
@@ -4548,133 +4186,7 @@ COMMERCIAL_TOOL_JS = '''(() => {
     }
     return compare;
   };
-  const pctNumber = (value, fallback = 50) => {
-    const parsed = Number(String(value || '').replace('%', '').trim());
-    return Number.isFinite(parsed) ? parsed : fallback;
-  };
-  const stationButtonFor = (id) => stationButtons.find((button) => button.dataset.stationMap === id);
-  const stationsForDistrict = (district) => {
-    const stations = payload?.stations || [];
-    return district && district !== 'all' ? stations.filter((station) => station.district === district) : stations;
-  };
-  const selectedStationSet = () => stationsForDistrict(selectedDistrict);
-  const clusterValueFor = (station, industry) => industry === 'population'
-    ? Number(station.population_density_index || 0)
-    : Number(station.counts?.[industry] || 0);
-  const districtRegion = {
-    '강서구': '서남권', '마포구': '서북권', '서대문구': '서북권', '영등포구': '서남권',
-    '종로구': '도심권', '성동구': '동북권', '광진구': '동북권',
-    '동작구': '동남권', '관악구': '서남권', '강남구': '동남권', '송파구': '동남권'
-  };
-  const regionForStation = (station, x, y) => districtRegion[station.district] || (x < 42 ? (y > 52 ? '서남권' : '서북권') : x > 64 ? '동남권' : '도심권');
-  const setSelectedDistrict = (district, options = {}) => {
-    const next = district && district !== 'all' ? String(district) : 'all';
-    selectedDistrict = next;
-    root.dataset.selectedDistrict = next;
-    if (mapCanvas) mapCanvas.dataset.selectedDistrict = next;
-    if (districtFilter) {
-      const hasOption = Array.from(districtFilter.options || []).some((option) => option.value === next);
-      districtFilter.value = hasOption ? next : 'all';
-    }
-    const candidates = stationsForDistrict(next);
-    if (next !== 'all' && options.syncStation !== false && candidates.length && !candidates.some((station) => station.id === stationSelect.value)) {
-      stationSelect.value = candidates[0].id;
-    }
-    stationButtons.forEach((button) => {
-      button.setAttribute('data-district-hidden', next !== 'all' && button.dataset.district !== next ? 'true' : 'false');
-    });
-    districtPaths.forEach((path) => {
-      const isSelected = next !== 'all' && path.dataset.mapDistrict === next;
-      path.dataset.selected = String(isSelected);
-      path.setAttribute('data-district-hidden', next !== 'all' && path.dataset.mapDistrict !== next ? 'true' : 'false');
-      path.setAttribute('aria-pressed', String(isSelected));
-    });
-    if (districtSummary) {
-      const total = candidates.length;
-      districtSummary.textContent = next === 'all'
-        ? `서울 전체 ${total}개 후보 · 노선망 위에서 후보역/구 밀도를 같이 보는 중`
-        : `${next} 후보 ${total}개 · 선택 구만 강조해서 보는 중`;
-    }
-    renderClusters();
-  };
-  const renderClusters = () => {
-    if (!clusterLayer || !payload?.stations?.length) return;
-    const industry = industrySelect.value || 'cafe';
-    const mode = mapCanvas?.dataset.clusterMode || (mapZoom < 1.18 ? 'cluster' : mapZoom < 1.72 ? 'mixed' : 'station');
-    if (mode === 'station') {
-      clusterLayer.innerHTML = '';
-      return;
-    }
-    const groups = new Map();
-    selectedStationSet().forEach((station) => {
-      const button = stationButtonFor(station.id);
-      const x = pctNumber(button?.style.getPropertyValue('--x'), 50);
-      const y = pctNumber(button?.style.getPropertyValue('--y'), 50);
-      const key = mode === 'cluster' && selectedDistrict === 'all'
-        ? regionForStation(station, x, y)
-        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.id : (station.district || station.id));
-      const label = mode === 'cluster' && selectedDistrict === 'all'
-        ? key
-        : (mode === 'mixed' && selectedDistrict !== 'all' ? station.name : (station.district || station.name));
-      const district = mode === 'cluster' && selectedDistrict === 'all' ? '' : (station.district || '');
-      const current = groups.get(key) || {key, label, district, stations: [], x: 0, y: 0, value: 0};
-      current.stations.push(station);
-      current.x += x;
-      current.y += y;
-      current.value += clusterValueFor(station, industry);
-      groups.set(key, current);
-    });
-    const clusters = Array.from(groups.values()).map((group) => ({
-      ...group,
-      x: group.x / Math.max(1, group.stations.length),
-      y: group.y / Math.max(1, group.stations.length),
-      stationId: group.stations.length === 1 ? group.stations[0].id : ''
-    }));
-    const maxValue = Math.max(1, ...clusters.map((cluster) => cluster.value));
-    clusterLayer.innerHTML = clusters.map((cluster) => {
-      const heat = Math.max(.18, Math.min(1, cluster.value / maxValue));
-      const label = cluster.label.endsWith('구') ? cluster.label.slice(0, -1) : cluster.label;
-      const aria = `${cluster.label} ${categoryLabel(industry)} ${cluster.value} · ${cluster.stations.length}개 후보`;
-      return `<button type="button" class="map-cluster-dot" data-cluster-bubble data-district="${esc(cluster.district)}" data-station-id="${esc(cluster.stationId)}" style="--x:${cluster.x.toFixed(2)}%;--y:${cluster.y.toFixed(2)}%;--heat:${heat.toFixed(2)}" aria-label="${esc(aria)}"><b>${esc(cluster.value)}</b><small>${esc(label)} ${cluster.stations.length}곳</small></button>`;
-    }).join('');
-    Array.from(clusterLayer.querySelectorAll('[data-cluster-bubble]')).forEach((button) => {
-      button.addEventListener('click', () => {
-        if (button.dataset.district) {
-          setSelectedDistrict(button.dataset.district || 'all');
-        } else {
-          setMapZoom(Math.max(mapZoom, 1.25));
-        }
-        if (button.dataset.stationId) stationSelect.value = button.dataset.stationId;
-        evaluate();
-      });
-    });
-  };
-  const compareVerdictFor = (station, compare, industry, purpose) => {
-    const stationGrade = gradeFor(station, industry);
-    const compareGrade = gradeFor(compare, industry);
-    const stationPressure = Number(station.rent_pressure_index || 0) + (purpose === 'home' ? Number(station.population_density_index || 0) * .45 : 0);
-    const comparePressure = Number(compare.rent_pressure_index || 0) + (purpose === 'home' ? Number(compare.population_density_index || 0) * .45 : 0);
-    const first = purpose === 'home'
-      ? (stationPressure <= comparePressure ? station : compare)
-      : (stationGrade.score >= compareGrade.score ? station : compare);
-    const other = first.id === station.id ? compare : station;
-    const firstGrade = first.id === station.id ? stationGrade : compareGrade;
-    if (purpose === 'home') {
-      return {
-        title: `${first.name}부터 걷고, ${other.name}은 월 고정비로 재비교`,
-        detail: `${first.name}은 비교 후보 중 생활 피로 압력이 낮은 쪽입니다. 그래도 밤길·소음·관리비 답이 없으면 보류하세요.`
-      };
-    }
-    const label = categoryLabel(industry);
-    const count = valueFor(first, industry);
-    return {
-      title: `${first.name} 먼저 보기 · ${firstGrade.label} ${firstGrade.score}`,
-      detail: industry === 'population'
-        ? `인구밀도 ${count} 기준입니다. 실제 구매 동선과 임대료 회수기간 답이 없으면 ${other.name}도 같이 보류하세요.`
-        : `${label} ${count}개 기준입니다. 경쟁점과 다른 재방문 이유가 없으면 ${other.name}보다 좋아 보여도 보류하세요.`
-    };
-  };
-  const renderCompare = (station, compare, industry, purpose) => {
+  const renderCompare = (station, compare, industry) => {
     if (!comparePanel || !compareTitleEl || !compareMetricsEl || !compareNoteEl) return;
     const selectedDelta = valueFor(station, industry) - valueFor(compare, industry);
     const popDelta = Number(station.population_density_index || 0) - Number(compare.population_density_index || 0);
@@ -4682,10 +4194,6 @@ COMMERCIAL_TOOL_JS = '''(() => {
     const metric = (label, value) => `<div class="${value > 0 ? 'compare-up' : value < 0 ? 'compare-down' : 'compare-same'}"><span>${esc(label)}</span><strong>${signed(value)}</strong></div>`;
     compareTitleEl.textContent = `${station.name} ↔ ${compare.name}`;
     compareMetricsEl.innerHTML = [metric(categoryLabel(industry), selectedDelta), metric('인구밀도', popDelta), metric('임대압력', rentDelta)].join('');
-    if (compareVerdictEl) {
-      const verdict = compareVerdictFor(station, compare, industry, purpose);
-      compareVerdictEl.innerHTML = `<span>먼저 볼 후보</span><strong>${esc(verdict.title)}</strong><small>${esc(verdict.detail)}</small>`;
-    }
     compareNoteEl.textContent = rentDelta > 7
       ? `${station.name}은 ${compare.name}보다 임대 압력이 높습니다. 권리금·고정비 회수 기간을 더 보수적으로 잡으세요.`
       : rentDelta < -7
@@ -4741,71 +4249,6 @@ COMMERCIAL_TOOL_JS = '''(() => {
       ]
     };
   };
-  const candidateMemoFor = (station, industry, purpose, count, grade) => {
-    const label = categoryLabel(industry);
-    const mode = purpose === 'home' ? '주거 후보' : '상가 후보';
-    const metric = industry === 'population' ? `인구밀도 ${count}` : `${label} ${count}개`;
-    const blocker = purpose === 'home'
-      ? '밤길·소음·월 고정비 답이 없으면 보류'
-      : '권리금·임대료 회수기간 답이 없으면 보류';
-    return {
-      title: `${station.name} · ${mode} · ${metric} · ${grade.label} ${grade.score}`,
-      detail: `${station.district} ${station.dong} / 상권 ${station.commercial_density_label}, 인구 ${station.population_density_label} / ${blocker}`
-    };
-  };
-  const decisionQuestionFor = (station, industry, purpose) => {
-    const label = categoryLabel(industry);
-    const selectedCount = valueFor(station, industry);
-    const denseThreshold = maxFor(industry) * .72;
-    const thinThreshold = maxFor(industry) * .16;
-    if (purpose === 'home') {
-      if (Number(station.population_density_index || 0) >= 80) {
-        return {
-          label: '주거 1순위 질문',
-          question: `${station.name} 밤 10시 귀가길과 창문 밖 소음을 실제로 감당할 수 있나요?`,
-          reason: '인구밀도가 높을수록 낮의 편의가 밤의 피로로 바뀔 수 있습니다.'
-        };
-      }
-      if (Number(station.rent_pressure_index || 0) >= 80) {
-        return {
-          label: '주거 1순위 질문',
-          question: `${station.name} 월세·관리비·교통비 총액이 같은 예산 다른 역보다 낫나요?`,
-          reason: '임대 압력이 높으면 집값보다 매달 빠지는 총액을 먼저 봐야 합니다.'
-        };
-      }
-      return {
-        label: '주거 1순위 질문',
-        question: `${station.name} 역에서 현관까지 마지막 도보가 매일 반복 가능할까요?`,
-        reason: '숫자 점수보다 매일 걷는 마지막 7분이 계약 만족도를 가릅니다.'
-      };
-    }
-    if (industry !== 'population' && selectedCount >= denseThreshold) {
-      return {
-        label: '상가 1순위 질문',
-        question: `${station.name} 반경 안 ${label} ${selectedCount}개와 다른 재방문 이유가 있나요?`,
-        reason: '밀도가 높으면 유동인구보다 직접 경쟁과 반복 구매 이유가 먼저입니다.'
-      };
-    }
-    if (Number(station.rent_pressure_index || 0) >= 85) {
-      return {
-        label: '상가 1순위 질문',
-        question: `${station.name} 권리금·임대료 회수 기간을 보수적으로 잡아도 버틸 수 있나요?`,
-        reason: '임대 압력이 높은 후보는 매출 기대보다 고정비 회수 질문부터 봐야 합니다.'
-      };
-    }
-    if (industry !== 'population' && selectedCount <= thinThreshold) {
-      return {
-        label: '상가 1순위 질문',
-        question: `${station.name}에 일부러 찾아올 앵커 동선이나 목적 방문 이유가 있나요?`,
-        reason: '밀도가 낮은 후보는 한산함이 장점인지 수요 부족인지 나눠야 합니다.'
-      };
-    }
-    return {
-      label: '상가 1순위 질문',
-      question: `${station.name} 평일 점심·퇴근·주말에 실제 결제 고객을 몇 명 셀 수 있나요?`,
-      reason: '사람 수가 아니라 구매 순간을 세어야 상권 착시를 줄일 수 있습니다.'
-    };
-  };
   const updateMapHeat = (industry) => {
     const max = maxFor(industry);
     stationButtons.forEach((button) => {
@@ -4817,7 +4260,6 @@ COMMERCIAL_TOOL_JS = '''(() => {
       const small = button.querySelector('small');
       if (small) small.textContent = industry === 'population' ? `${station.population_density_index}` : `${raw}`;
       button.title = `${station.name} · ${industry === 'population' ? '인구밀도' : categoryLabel(industry)} ${raw}`;
-      button.setAttribute('data-district-hidden', selectedDistrict !== 'all' && station.district !== selectedDistrict ? 'true' : 'false');
       button.setAttribute('aria-pressed', station.id === stationSelect.value ? 'true' : 'false');
     });
     layerButtons.forEach((button) => button.setAttribute('aria-pressed', button.dataset.densityLayer === industry ? 'true' : 'false'));
@@ -4834,9 +4276,6 @@ COMMERCIAL_TOOL_JS = '''(() => {
   const evaluate = () => {
     if (!payload?.stations?.length) return;
     const station = stationById(stationSelect.value) || payload.stations[0];
-    if (station?.district && selectedDistrict !== 'all' && station.district !== selectedDistrict) {
-      setSelectedDistrict(station.district, {syncStation: false});
-    }
     const industry = industrySelect.value || 'cafe';
     const purpose = purposeSelect.value || 'commercial';
     const count = valueFor(station, industry);
@@ -4850,11 +4289,6 @@ COMMERCIAL_TOOL_JS = '''(() => {
     stationTitle.textContent = `${station.name} ${layerLabel}`;
     mapFocusName && (mapFocusName.textContent = station.name);
     mapFocusMeta && (mapFocusMeta.textContent = `${station.district} ${station.dong} · ${focusMetric}`);
-    const selectedMapButton = stationButtons.find((button) => button.dataset.stationMap === station.id);
-    if (selectedMapButton && mapViewport) {
-      mapViewport.style.setProperty('--focus-x', selectedMapButton.style.getPropertyValue('--x') || '50%');
-      mapViewport.style.setProperty('--focus-y', selectedMapButton.style.getPropertyValue('--y') || '50%');
-    }
     gradeEl && (gradeEl.textContent = `${grade.label} ${grade.score}`);
     countEl && (countEl.textContent = String(count));
     countLabelEl && (countLabelEl.textContent = categoryLabel(industry));
@@ -4862,18 +4296,10 @@ COMMERCIAL_TOOL_JS = '''(() => {
     popDensityEl && (popDensityEl.textContent = String(station.population_density_index || 0));
     popLabelEl && (popLabelEl.textContent = station.population_density_label || '지수');
     summaryEl && (summaryEl.textContent = `${station.name}은 상권 밀도 ${station.commercial_density_label}, 인구밀도 ${station.population_density_label} 구간입니다. ${station.default_take || ''}`);
-    if (decisionQuestionEl) {
-      const decision = decisionQuestionFor(station, industry, purpose);
-      decisionQuestionEl.innerHTML = `<span>${esc(decision.label)}</span><strong>${esc(decision.question)}</strong><small>${esc(decision.reason)}</small>`;
-    }
     riskListEl.innerHTML = questionsFor(station, industry, purpose).map((item) => `<li>${esc(item)}</li>`).join('');
     if (visitPlanEl) {
       const plan = visitPlanFor(station, industry, purpose);
       visitPlanEl.innerHTML = `<span>현장 확인 시간</span><strong>${esc(plan.title)}</strong><ul>${plan.items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
-    }
-    if (candidateMemoEl) {
-      const memo = candidateMemoFor(station, industry, purpose, count, grade);
-      candidateMemoEl.innerHTML = `<span>후보 메모</span><strong>${esc(memo.title)}</strong><small>${esc(memo.detail)}</small>`;
     }
     linksEl && (linksEl.innerHTML = purpose === 'home'
       ? [link('/topics/jeonwolse-contract-check/', '전월세 체크 글 목록'), link('/search/?q=%EB%B0%A4%EA%B8%B8%20%EC%86%8C%EC%9D%8C%20%EC%B2%B4%ED%81%AC', '밤길·소음 검색'), link('/search/?q=%EA%B4%80%EB%A6%AC%EB%B9%84%20%EC%B2%B4%ED%81%AC', '관리비 검색')].join('')
@@ -4881,57 +4307,21 @@ COMMERCIAL_TOOL_JS = '''(() => {
     sourceNoteEl && (sourceNoteEl.textContent = payload.source_summary || station.source_note || sourceNoteEl.textContent);
     districtPaths.forEach((path) => { path.dataset.active = path.dataset.mapDistrict === station.district ? 'true' : 'false'; });
     renderBars(station);
-    renderCompare(station, compare, industry, purpose);
+    renderCompare(station, compare, industry);
     updateMapHeat(industry);
-    renderClusters();
   };
 
   const hydrate = (data) => {
     payload = data;
     if (payload?.source_summary && sourceNoteEl) sourceNoteEl.textContent = payload.source_summary;
-    setSelectedDistrict(selectedDistrict, {syncStation: false});
     evaluate();
   };
   layerButtons.forEach((button) => button.addEventListener('click', () => { industrySelect.value = button.dataset.densityLayer || 'cafe'; evaluate(); }));
-  stationButtons.forEach((button) => button.addEventListener('click', () => {
-    stationSelect.value = button.dataset.stationMap || stationSelect.value;
-    setSelectedDistrict(button.dataset.district || 'all', {syncStation: false});
-    evaluate();
-  }));
-  if (districtFilter) districtFilter.addEventListener('change', () => { setSelectedDistrict(districtFilter.value || 'all'); evaluate(); });
-  districtPaths.forEach((path) => {
-    const choose = () => { setSelectedDistrict(path.dataset.mapDistrict || 'all'); evaluate(); };
-    path.addEventListener('click', choose);
-    path.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        choose();
-      }
-    });
-  });
-  mapZoomButtons.forEach((button) => button.addEventListener('click', () => {
-    const action = button.dataset.mapZoom;
-    if (action === 'in') setMapZoom(mapZoom + .25);
-    if (action === 'out') setMapZoom(mapZoom - .25);
-    if (action === 'reset') setMapZoom(1.02);
-  }));
-  mapLayerToggleButtons.forEach((button) => button.addEventListener('click', () => {
-    const layer = button.dataset.mapToggle || '';
-    const visible = button.getAttribute('aria-pressed') !== 'true';
-    setMapLayerVisibility(layer, visible);
-  }));
-  stationSelect.addEventListener('change', () => {
-    const station = stationById(stationSelect.value);
-    if (station?.district) setSelectedDistrict(station.district, {syncStation: false});
-    evaluate();
-  });
+  stationButtons.forEach((button) => button.addEventListener('click', () => { stationSelect.value = button.dataset.stationMap || stationSelect.value; evaluate(); }));
+  stationSelect.addEventListener('change', evaluate);
   compareSelect.addEventListener('change', evaluate);
   industrySelect.addEventListener('change', evaluate);
   purposeSelect.addEventListener('change', evaluate);
-  setMapZoom(1.02);
-  setMapLayerVisibility('districts', mapCanvas?.dataset.districtsVisible !== 'false');
-  setMapLayerVisibility('subway', mapCanvas?.dataset.subwayVisible !== 'false');
-  setMapLayerVisibility('labels', mapCanvas?.dataset.labelsVisible !== 'false');
 
   fetch(root.dataset.densitySrc || '/data/seoul-commercial-areas.json', {cache: 'no-store'})
     .then((res) => res.ok ? res.json() : Promise.reject(new Error(`density data ${res.status}`)))
@@ -5087,8 +4477,6 @@ def build() -> None:
     write("data/seoul-commercial-areas.json", json.dumps(SEOUL_COMMERCIAL_AREAS, ensure_ascii=False, indent=2) + "\n")
     if SEOUL_MAP_OUTLINE:
         write("data/seoul-map-outline.json", json.dumps(SEOUL_MAP_OUTLINE, ensure_ascii=False, indent=2) + "\n")
-    if SEOUL_SUBWAY_NETWORK:
-        write("data/seoul-subway-network.json", json.dumps(SEOUL_SUBWAY_NETWORK, ensure_ascii=False, indent=2) + "\n")
     write("data/search-index.json", json.dumps(build_search_index(deals, radar), ensure_ascii=False, indent=2) + "\n")
     write(".nojekyll", "")
     write("robots.txt", f'''User-agent: *

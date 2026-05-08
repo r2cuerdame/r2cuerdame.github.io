@@ -47,7 +47,6 @@ PUBLIC_ADD_PATHS = [
     "build-info.json",
     "data/seoul-commercial-areas.json",
     "data/seoul-map-outline.json",
-    "data/seoul-subway-network.json",
     "data/search-index.json",
     "llms.txt",
     "ai.txt",
@@ -158,6 +157,59 @@ def short_description(raw_html: str, fallback: str = "") -> str:
     return text[:164].rstrip() + "…"
 
 
+FIELD_VISUAL_RE = re.compile(r'<figure\b[^>]*class=["\'][^"\']*\bfield-visual\b[^"\']*["\'][^>]*>[\s\S]*?</figure>\s*', re.I)
+SVG_FIGURE_RE = re.compile(r'<figure\b(?=[^>]*>)(?=[\s\S]*?<svg\b)[\s\S]*?</figure>\s*', re.I)
+INLINE_SVG_RE = re.compile(r'<svg\b[\s\S]*?</svg>\s*', re.I)
+
+
+def strip_pictogram_visuals(raw_html: str) -> str:
+    """Remove old SVG/pictogram article visuals; rendered AI-photo field_examples are the visual source."""
+    body = FIELD_VISUAL_RE.sub("", raw_html or "")
+    body = SVG_FIGURE_RE.sub("", body)
+    body = INLINE_SVG_RE.sub("", body)
+    return re.sub(r"\n{3,}", "\n\n", body).strip()
+
+
+def first_existing_thumbnail(slug: str) -> str:
+    path = ROOT / "assets" / "radar" / "thumbs" / f"{slug}.webp"
+    if path.exists():
+        return f"/assets/radar/thumbs/{slug}.webp"
+    for path in sorted((ROOT / "assets" / "radar" / "thumbs").glob(f"{slug}-*.webp")):
+        if path.exists():
+            return f"/assets/radar/thumbs/{path.name}"
+    return ""
+
+
+def resolved_media(meta: dict[str, Any], slug: str) -> tuple[str, list[dict[str, Any]]]:
+    image_url = str(meta.get("image_url") or meta.get("thumbnail_url") or first_existing_thumbnail(slug)).strip()
+    examples = meta.get("field_examples") if isinstance(meta.get("field_examples"), list) else []
+    return image_url, examples
+
+
+def radar_media_blockers(meta: dict[str, Any], slug: str) -> list[str]:
+    image_url, examples = resolved_media(meta, slug)
+    blockers: list[str] = []
+    if not image_url:
+        blockers.append("ai_thumbnail_missing")
+    elif not image_url.startswith("/assets/radar/thumbs/") or not image_url.endswith(".webp") or not (ROOT / image_url.lstrip("/")).exists():
+        blockers.append("ai_thumbnail_must_be_repo_webp")
+    valid_examples: list[str] = []
+    for item in examples:
+        if not isinstance(item, dict):
+            continue
+        example_url = str(item.get("image_url") or "").strip()
+        if (
+            example_url.startswith(f"/assets/radar/{slug}/examples/")
+            and example_url.endswith(".webp")
+            and "/thumbs/" not in example_url
+            and (ROOT / example_url.lstrip("/")).exists()
+        ):
+            valid_examples.append(example_url)
+    if len(set(valid_examples)) < 3:
+        blockers.append("three_ai_field_example_webps_required")
+    return blockers
+
+
 def meta_path_for(final_path: Path) -> Path:
     return final_path.parent / "metadata.json"
 
@@ -182,7 +234,8 @@ def reviewed_candidates() -> tuple[dict[str, Any], dict[str, Any], list[dict[str
             or str(meta.get("status") or "") == "published_to_pages"
             or bool(meta.get("pages_published_at"))
         )
-        eligible = review_ready and target_fit and not hard and not soft and not published
+        media_blockers = radar_media_blockers(meta, slug)
+        eligible = review_ready and target_fit and not hard and not soft and not published and not media_blockers
         sort_dt = (
             parse_dt(meta.get("mature_started_at"))
             or parse_dt(meta.get("created_at"))
@@ -202,6 +255,7 @@ def reviewed_candidates() -> tuple[dict[str, Any], dict[str, Any], list[dict[str
                 "eligible": eligible,
                 "hard_issues": hard,
                 "soft_issues": soft,
+                "media_blockers": media_blockers,
                 "visible_prose_chars": item.get("visible_prose_chars"),
                 "reader_visual_count": item.get("reader_visual_count"),
                 "sort_key": sort_dt.isoformat(),
@@ -240,6 +294,7 @@ def decide(args: argparse.Namespace, candidates: list[dict[str, Any]], at: dt.da
 
     ready_clean = [c for c in candidates if c["review_ready"] and c["target_fit"] and not c["hard_issues"] and not c["soft_issues"]]
     ready_unpublished = [c for c in ready_clean if not c["published"]]
+    media_blocked = [c for c in ready_unpublished if c.get("media_blockers")]
     eligible = [c for c in candidates if c["eligible"]]
     day_limit = args.max_per_day if args.mode == "adaptive" else min(args.max_per_day, 1)
     day_open = published_today < day_limit
@@ -257,6 +312,8 @@ def decide(args: argparse.Namespace, candidates: list[dict[str, Any]], at: dt.da
     reasons: list[str] = []
     if not eligible:
         reasons.append("no_eligible_unpublished_candidate")
+    if media_blocked:
+        reasons.append("media_guard:ai_webp_thumbnail_and_3_field_examples_required")
     if not queue_open:
         reasons.append(queue_reason)
     if not day_open:
@@ -309,15 +366,10 @@ def extract_article_body(final_html: str) -> str:
     if re.search(r"<\s*script\b", body, re.I):
         raise RuntimeError("script_tag_present_in_publish_body")
     body = re.sub(r"<style\b[^>]*>[\s\S]*?</style>", "", body, flags=re.I).strip()
+    body = strip_pictogram_visuals(body)
+    if re.search(r"<\s*svg\b", body, re.I) or "field-visual" in body or re.search(r"\.svg(?:[\"'?#\s>]|$)", body, re.I):
+        raise RuntimeError("radar_pictogram_svg_visual_present_in_publish_body")
     return body
-
-
-def first_existing_thumbnail(slug: str) -> str:
-    for ext in ("webp", "svg", "png", "jpg", "jpeg"):
-        path = ROOT / "assets" / "radar" / "thumbs" / f"{slug}.{ext}"
-        if path.exists():
-            return f"/assets/radar/thumbs/{slug}.{ext}"
-    return ""
 
 
 def article_json_for(selected: dict[str, Any], published_at: str) -> dict[str, Any]:

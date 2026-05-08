@@ -2,9 +2,9 @@
   "slug": "elevator-front-home-check",
   "title": "엘리베이터 앞 집, 편한 동선인지 시끄러운 대기실인지 보는 12분",
   "description": "엘리베이터 가까움이 편의인지 대기 소리와 시선 피로인지 계약 전 현장에서 나누는 체크 글입니다.",
-  "status": "published_to_pages",
+  "status": "release_candidate_ready",
   "created_at": "2026-05-05T19:37:36+09:00",
-  "updated_at": "2026-05-06T00:53:34+09:00",
+  "updated_at": "2026-05-05T19:46:12+09:00",
   "mature_started_at": "2026-05-05T19:37:36+09:00",
   "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
   "tags": [
@@ -14,33 +14,6 @@
     "소음",
     "현장 확인",
     "전월세 계약"
-  ],
-  "image_url": "/assets/radar/thumbs/elevator-front-home-check.svg",
-  "field_examples": [
-    {
-      "label": "아침 대기 홀 장면",
-      "title": "출근 전 엘리베이터 대기 방향",
-      "badge": "아침 8시",
-      "description": "버튼을 누른 사람이 내 현관을 바라보고 서는지, 대기 위치가 엘리베이터 문 쪽으로 모이는지 먼저 봅니다.",
-      "image_url": "/assets/radar/elevator-front-home-check/examples/elevator-front-home-check-hall-waiting.svg",
-      "alt": "아침 8시 엘리베이터 앞 홀에서 대기 방향과 현관 시선을 확인하는 AI 현장 예시 장면"
-    },
-    {
-      "label": "밤 소리 장면",
-      "title": "밤 10시 문 열림 알림과 발걸음",
-      "badge": "밤 10시",
-      "description": "엘리베이터 문 열림 알림, 발걸음, 짧은 대화가 현관 밖에서 끝나는지 방 안으로 들어오는지 나눕니다.",
-      "image_url": "/assets/radar/elevator-front-home-check/examples/elevator-front-home-check-night-door-sound.svg",
-      "alt": "밤 10시 엘리베이터 문 열림 소리와 현관 앞 발걸음을 듣는 AI 현장 예시 장면"
-    },
-    {
-      "label": "택배 머무름 장면",
-      "title": "배달·택배가 현관 앞을 막는 순간",
-      "badge": "저녁 7시",
-      "description": "상자와 배달 동선이 엘리베이터 앞에 잠깐 머물 때 내 문 앞 시선과 통로가 막히는지 확인합니다.",
-      "image_url": "/assets/radar/elevator-front-home-check/examples/elevator-front-home-check-parcel-flow.svg",
-      "alt": "저녁 엘리베이터 앞 택배와 배달 동선이 현관 앞에 머무는 AI 현장 예시 장면"
-    }
   ],
   "radar_suspicion": "엘리베이터 앞 집은 동선이 짧지만, 대기 소리와 시선이 현관 앞에 반복되면 집 안의 휴식 리듬을 흔듭니다.",
   "field_mission": "평일 출근 전, 퇴근 후, 밤 10시에 엘리베이터 앞 12분을 서서 사람 흐름·문 닫힘 소리·현관 시선을 같이 확인합니다.",
@@ -52,13 +25,12 @@
     "soft_issues": 0,
     "target_fit_required": true,
     "created_by_hourly_replenishment": "2026-05-05T19:37:36+09:00",
-    "visible_prose_chars": 4693,
-    "reader_visual_count": 8,
+    "visible_prose_chars": 5115,
+    "reader_visual_count": 9,
     "target_fit": true,
-    "reviewed_at": "2026-05-05T19:46:12+09:00",
-    "hourly_replenishment_status": "new_clean_candidate"
+    "reviewed_at": "2026-05-05T23:46:57+09:00",
+    "hourly_replenishment_status": "new_clean_candidate",
+    "last_hourly_polish": "2026-05-05T23:46:57+09:00 — added public comparison visual/table separating elevator-front waiting noise from corridor-end sightline and shared-entrance flow"
   },
-  "last_review": "ready=4 hard=0 soft=0; this candidate chars=4693 visuals=8 target_fit=True",
-  "pages_published_at": "2026-05-06T00:53:34+09:00",
-  "pages_url": "https://r2cuerdame.github.io/radar/elevator-front-home-check/"
+  "last_review": "ready=5 hard=0 soft=0; this candidate chars=5115 visuals=9 target_fit=True"
 }
