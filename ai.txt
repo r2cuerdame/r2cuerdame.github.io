@@ -20,6 +20,7 @@ Topic Page: https://r2cuerdame.github.io/topics/cafe-commercial-lease-risk/ — 
 Topic Page: https://r2cuerdame.github.io/topics/rainy-season-home-appliances/ — 장마철 생활가전 비교 — 제습기·공기청정기 먼저 고르기
 Topic Page: https://r2cuerdame.github.io/topics/work-from-home-desk-setup/ — 재택근무 책상 장비 비교 — 의자·모니터암·조명·키보드
 Topic Page: https://r2cuerdame.github.io/topics/sound-gaming-gadgets/ — 음향·게임 장비 비교 — 헤드셋·스피커·ANC 헤드폰
+Radar Article: https://r2cuerdame.github.io/radar/parcel-mailbox-front-home-check/ — 택배함·우편함 옆 집, 계속 볼지 보류할지 보는 10분
 Radar Article: https://r2cuerdame.github.io/radar/corridor-end-home-check/ — 복도 끝 집, 조용함인지 사각지대인지 보는 밤 12분
 Radar Article: https://r2cuerdame.github.io/radar/one-block-inside-main-road-check/ — 대로변 한 블록 안쪽 집, 조용함인지 고립감인지 보는 밤 12분
 Radar Article: https://r2cuerdame.github.io/radar/elevator-front-home-check/ — 엘리베이터 앞 집, 편한 동선인지 시끄러운 대기실인지 보는 12분
@@ -31,10 +32,9 @@ Radar Article: https://r2cuerdame.github.io/radar/stair-only-fourth-floor-villa-
 Radar Article: https://r2cuerdame.github.io/radar/morning-routine-neighborhood-check/ — 아침 8시, 등교·수거·출근 동선이 겹치는 동네 체크
 Radar Article: https://r2cuerdame.github.io/radar/night-noise-walk-check/ — 밤 10시, 살 동네 소음을 확인하는 15분 산책
 Radar Article: https://r2cuerdame.github.io/radar/rainy-day-viewing-neighborhood-signals/ — 비 오는 날 집 보러 갈 때 놓치는 동네 신호
-Radar Article: https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/ — 지도앱 35분은 반쪽입니다: 출근길 피로 15분 체크
 Separate Deals Article: https://r2cuerdame.github.io/deals/2026-무선-이어폰-추천-top-5-가격대-장단점-비교-874e0f15/ — 2026 무선 이어폰 추천 TOP 5 가격대·장단점 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/wireless-stick-vacuum-top4-2026/ — 무선청소기·스틱청소기 4종 비교, 자동 먼지 비움부터 흡입력까지 구매가이드
 Separate Deals Article: https://r2cuerdame.github.io/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/ — 2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교
 Separate Deals Article: https://r2cuerdame.github.io/deals/beauty-personal-care-gadgets-top5/ — 잘 팔리는 뷰티·퍼스널케어 가전 5선, 선물용으로도 좋은 제품 추천 비교
 Language: ko-KR
-Updated: 2026-05-08T16:59:23+09:00
+Updated: 2026-05-09T00:49:35+09:00

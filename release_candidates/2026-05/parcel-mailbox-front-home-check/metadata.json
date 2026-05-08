@@ -1,0 +1,69 @@
+{
+  "slug": "parcel-mailbox-front-home-check",
+  "title": "택배함·우편함 옆 집, 계속 볼지 보류할지 보는 10분",
+  "description": "택배함·우편함 옆 집의 편리함이 문 앞 반복 장면으로 바뀌는지, 서울·수도권 25~39세 전월세·이사 독자가 10분 현장에서 확인하는 글입니다.",
+  "image_url": "/assets/radar/thumbs/parcel-mailbox-front-home-check-v1.webp",
+  "status": "published_to_pages",
+  "created_at": "2026-05-06T03:36:58+09:00",
+  "updated_at": "2026-05-09T00:47:22+09:00",
+  "mature_started_at": "2026-05-06T03:36:58+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "택배함 옆 집",
+    "우편함 옆 집",
+    "공용부",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "택배함·우편함 가까움은 편리하지만 내 현관 앞이 짧은 대기 지점이 되면 소리·시선·생활 리듬 피로가 남을 수 있습니다.",
+  "field_mission": "입구에서 택배함·우편함을 지나 내 현관까지 10분 동안 위치·소리·시야·문 앞 머무름·좋은 반례를 확인합니다.",
+  "editorial_positioning": "공용부 편리함과 문 앞 대기 피로를 독자가 현장에서 나누게 만드는 동네 레이더 글",
+  "field_examples": [
+    {
+      "label": "예시 장면 1",
+      "title": "우편함 벽 앞 택배 흐름",
+      "description": "택배함·우편함 주변에서 사람이 멈추는 위치가 내 현관 앞까지 이어지는지 봅니다.",
+      "badge": "AI 현장 예시",
+      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-mailbox-grid-v1.webp",
+      "alt": "택배함과 우편함 벽 앞에 박스와 동선이 보이는 AI 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 2",
+      "title": "문 앞 대기 지점",
+      "description": "문 앞에 잠깐 머무는 장면이 반복될 때 방 안 생활 자리까지 소리·시선이 들어오는지 나눕니다.",
+      "badge": "AI 현장 예시",
+      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-door-threshold-v1.webp",
+      "alt": "현관문 앞 택배 대기 지점과 생활 동선을 보여 주는 AI 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 3",
+      "title": "복도 소리 방향",
+      "description": "엘리베이터·입구·우편함에서 난 소리가 현관 안쪽으로 어떻게 넘어오는지 시간대별로 확인합니다.",
+      "badge": "AI 현장 예시",
+      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-hallway-sound-v1.webp",
+      "alt": "택배함 옆 복도에서 문 안쪽으로 소리 방향을 확인하는 AI 현장 예시 이미지"
+    }
+  ],
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-06T03:36:58+09:00",
+    "visible_prose_chars": 7000,
+    "reader_visual_count": 15,
+    "target_fit": true,
+    "reviewed_at": "2026-05-07T23:49:17+09:00",
+    "hourly_replenishment_status": "normal_polish_use_pattern_and_meta_refresh",
+    "hourly_polish_2026_05_07_0937": "added co-decision confirmation-request section, reader-facing visual, and decision table so 감상 turns into time/place/living-seat checks",
+    "hourly_polish_2026_05_07_1950": "tightened meta description around 문 앞 반복 장면 and changed the 방 안 소리 paragraph from generic 해석 to explicit 사용법 without adding visible bloat",
+    "hourly_polish_2026_05_07_2349": "tightened the record-safety section so field notes exclude unit, face, name, waybill, phone-number, and person-identifying clues; keep only time/place/direction/repetition/living-seat signals",
+    "hourly_media_guard_fix_2026_05_08_1445": "added repo-local WebP thumbnail plus three distinct field-example WebP assets so the dedicated GitHub Pages publisher media guard can select this clean candidate when the slot opens",
+    "hourly_privacy_record_polish_2026_05_08_1643": "changed the record example from counting a person to describing a short scene, so field notes stay on time/place/repetition and avoid resident/delivery-person tracking"
+  },
+  "last_review": "ready=True target_fit=True chars=7000 visuals=15 hard=0 soft=0 at 2026-05-08T16:43:52+09:00",
+  "pages_published_at": "2026-05-09T00:47:22+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/parcel-mailbox-front-home-check/"
+}
