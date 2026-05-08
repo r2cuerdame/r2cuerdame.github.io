@@ -416,7 +416,7 @@ def audit_html(path: str, page_html: str) -> list[str]:
             flags=re.I,
         )
         article_body_html = article_body_match.group(1) if article_body_match else ""
-        if "field-visual" in article_body_html or re.search(r"<\s*svg\b", article_body_html, flags=re.I) or re.search(r"\.svg(?:[\"'?#\s>]|$)", article_body_html, flags=re.I):
+        if re.search(r"\b(?:field-visual|visual-figure)\b", article_body_html, flags=re.I) or re.search(r"<\s*svg\b", article_body_html, flags=re.I) or re.search(r"\.svg(?:[\"'?#\s>]|$)", article_body_html, flags=re.I):
             failures.append(f"{path}:radar_body_pictogram_svg_visual_regression")
         has_gallery = 'class="radar-example-gallery"' in page_html
         if not has_gallery:

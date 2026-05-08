@@ -214,6 +214,7 @@ def test_radar_articles_have_content_matched_webp_thumbnails():
         image_url = str(data.get("image_url") or "")
         body_html = str(data.get("body_html") or "")
         assert "field-visual" not in body_html, f"radar body must not keep pictogram field-visual blocks: {path.name}"
+        assert "visual-figure" not in body_html, f"radar body must not keep pictogram visual-figure blocks: {path.name}"
         assert "<svg" not in body_html.lower(), f"radar body must not keep inline svg pictograms: {path.name}"
         assert ".svg" not in body_html.lower(), f"radar body must not reference svg pictograms: {path.name}"
         assert image_url.startswith("/assets/radar/thumbs/"), path.name

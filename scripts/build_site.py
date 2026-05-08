@@ -506,7 +506,7 @@ def validate_article(section: str, data: dict, path: Path) -> dict:
         raise BuildError(f"{path}: script tags are forbidden in article bodies")
     if section == "radar" and (
         re.search(r"<\s*svg\b", body, flags=re.I)
-        or "field-visual" in body
+        or re.search(r"\b(?:field-visual|visual-figure)\b", body, flags=re.I)
         or re.search(r"\.svg(?:[\"'?#\s>]|$)", body, flags=re.I)
     ):
         raise BuildError(f"{path}: radar pictogram/svg visuals forbidden; use AI-photo field_examples webp assets")

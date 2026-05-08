@@ -157,14 +157,14 @@ def short_description(raw_html: str, fallback: str = "") -> str:
     return text[:164].rstrip() + "…"
 
 
-FIELD_VISUAL_RE = re.compile(r'<figure\b[^>]*class=["\'][^"\']*\bfield-visual\b[^"\']*["\'][^>]*>[\s\S]*?</figure>\s*', re.I)
+PICTOGRAM_VISUAL_RE = re.compile(r'<figure\b[^>]*class=["\'][^"\']*\b(?:field-visual|visual-figure)\b[^"\']*["\'][^>]*>[\s\S]*?</figure>\s*', re.I)
 SVG_FIGURE_RE = re.compile(r'<figure\b(?=[^>]*>)(?=[\s\S]*?<svg\b)[\s\S]*?</figure>\s*', re.I)
 INLINE_SVG_RE = re.compile(r'<svg\b[\s\S]*?</svg>\s*', re.I)
 
 
 def strip_pictogram_visuals(raw_html: str) -> str:
     """Remove old SVG/pictogram article visuals; rendered AI-photo field_examples are the visual source."""
-    body = FIELD_VISUAL_RE.sub("", raw_html or "")
+    body = PICTOGRAM_VISUAL_RE.sub("", raw_html or "")
     body = SVG_FIGURE_RE.sub("", body)
     body = INLINE_SVG_RE.sub("", body)
     return re.sub(r"\n{3,}", "\n\n", body).strip()
@@ -367,7 +367,7 @@ def extract_article_body(final_html: str) -> str:
         raise RuntimeError("script_tag_present_in_publish_body")
     body = re.sub(r"<style\b[^>]*>[\s\S]*?</style>", "", body, flags=re.I).strip()
     body = strip_pictogram_visuals(body)
-    if re.search(r"<\s*svg\b", body, re.I) or "field-visual" in body or re.search(r"\.svg(?:[\"'?#\s>]|$)", body, re.I):
+    if re.search(r"<\s*svg\b", body, re.I) or re.search(r"\b(?:field-visual|visual-figure)\b", body, re.I) or re.search(r"\.svg(?:[\"'?#\s>]|$)", body, re.I):
         raise RuntimeError("radar_pictogram_svg_visual_present_in_publish_body")
     return body
 
