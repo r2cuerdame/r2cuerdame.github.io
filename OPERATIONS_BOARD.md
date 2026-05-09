@@ -1,10 +1,10 @@
 # 동네 레이더 OPERATIONS BOARD
 
-_Last updated: 2026-05-08T12:37:42+09:00 KST_
+_Last updated: 2026-05-09T10:13:20+09:00 KST_
 
 ## Scope
 
-- `recuerdame / #naver` 전용.
+- `동네 레이더` GitHub Pages `/radar/` 전용.
 - 다른 프로젝트/채널 상태는 조회·비교·보고하지 않는다.
 - Tistory 발행·브라우저 자동화·수동 복붙 패키지는 폐기했다. 외부 로그인·권한·카테고리·스킨·광고 설정은 hourly에서 수행하지 않는다.
 
@@ -17,10 +17,11 @@ _Last updated: 2026-05-08T12:37:42+09:00 KST_
 - 공개 cadence: **매일 1개는 기본 floor**다. 하루 1개 cap은 폐기하고, dedicated publisher desk만 GitHub Pages `/radar/`에 공개한다. backlog가 목표 7개를 넘으면 adaptive 발행부가 하루 최대 4개·최소 2시간 간격으로 추가 공개한다.
 - 매일 포스팅 조건: 각 글의 타겟이 명확하고 본문 품질·시각자료·금칙어·hard/soft issue 기준을 모두 충족하면 발행을 미루지 않는다.
 - 첫 KPI: 품질 통과 release candidate 수가 아니라 **타겟에 맞는 발행 큐의 선명도**다.
-- 생산 기준: 품질 통과 미발행 후보 최소 3개, 목표 7개, 상한 10개. 2026-05-08 12:37 기준 최신 deterministic review/publisher 표면은 review-surface published 5개·미발행 clean 3개(X/Y/Z)다. 이번 턴은 Z `parking-line-under-window-check`에 주차 편리함과 휴식 피로를 생활 조건별로 따로 비교하는 섹션/표/시각자료를 추가했고, 새 후보 양산은 하지 않았다. X/Y/Z는 `품질통과 선발행 후보`로 보관하며, 7일/168시간 대기 문구를 쓰지 않는다.
-- 현재 deterministic review 표면: 이 checkout에서 review 가능한 `release_candidates/**/final.html`은 8개, 그중 review-surface published 5개·미발행 clean 3개다. 최신 verification review는 `ready=8/8 hard=0 soft=0`; X=`chars=7000 visuals=15`, Y=`chars=6969 visuals=16`, Z=`chars=6310 visuals=14`, 셋 모두 `target_fit=True`다. 최신 adaptive dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, spacing open)로 실제 공개/commit/push 없음. 과거 board의 `ready=19` 문구는 historical/public metadata 성격이며 현재 발행부 선별 기준으로 쓰지 않는다.
+- 생산 기준: 품질 통과 미발행 후보 최소 3개, 목표 7개, 상한 10개. 2026-05-09 10:13 기준 최신 deterministic review/publisher 표면은 review-surface published 6개·미발행 clean 3개(Y/Z/AA)다. 이번 턴은 새 후보를 만들지 않고 `IDEA_BANK.md`와 queue handoff를 Y/Z/AA 기준으로 재정렬했다. 현행 clean queue는 Y/Z/AA로 유지한다. Y/Z/AA는 `품질통과 선발행 후보`로 보관하며, 7일/168시간 대기 문구를 쓰지 않는다.
+- 현재 deterministic review 표면: 이 checkout에서 review 가능한 `release_candidates/**/final.html`은 9개, 그중 review-surface published 6개·미발행 clean 3개다. 최종 verification review(`2026-05-09T10:13:01+09:00`)는 `ready=9/9 hard=0 soft=0`; Y=`chars=6748 visuals=32 media_blockers=0 photo_cards=16 links=9`, Z=`chars=6902 visuals=30 media_blockers=0 photo_cards=15 links=3`, AA=`laundry-drying-route-home-check chars=4784 visuals=24 target_fit=True media_blockers=0 photo_cards=12 links=3`, 셋 모두 `target_fit=True`이고 adaptive publisher summary에서는 `eligible=True`다. Y/Z/AA final HTML의 `field-visual`/`visual-figure`/`<svg`/`.svg` residue scan은 0이다. 최종 adaptive dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, `spacing_open=True`, `hours_since_last=9.416`, selected none)로 이번 턴 실제 공개/commit/push 없음. 최신 hourly smoke는 pass(`warnings=0`, `2026-05-09T10:13:01+09:00`)이며 build/local quality audit도 pass(`static_pages=7`, `failures=[]`)다. 과거 board의 `ready=19` 문구는 historical/public metadata 성격이며 현재 발행부 선별 기준으로 쓰지 않는다.
 - 7일/168시간은 buffer tracking metadata일 뿐, clean 후보 발행 차단 사유가 아니다.
-- 본문 4,500자 이상, 독자용 시각자료 8개 이상, visible 금칙어 0건, hard/soft issue 0건이면 `검사 충분`으로 보고 선발행 후보 기준을 통과한다. 충분히 검사된 후보는 추가 숙성/완벽주의로 묶어두지 않고 baseline/adaptive 슬롯이 열리면 공개한다.
+- 본문 4,500자 이상, 독자용 시각자료 8개 이상, AI 실사 WebP 썸네일 1장+field_examples 3장, visible 금칙어 0건, hard/soft issue 0건이면 `검사 충분`으로 보고 선발행 후보 기준을 통과한다. 충분히 검사된 후보는 추가 숙성/완벽주의로 묶어두지 않고 baseline/adaptive 슬롯이 열리면 공개한다.
+- media blocker는 hard issue다. 픽토그램/도표형 썸네일, inline SVG, `.svg`, `.png`, 외부 이미지 URL, `/thumbs/` 재사용 field example, AI 실사 WebP 누락이 보이면 새 글/발행 준비를 멈추고 이미지 생성·연결부터 고친다.
 
 ## Queue
 
@@ -427,10 +428,10 @@ _Last updated: 2026-05-08T12:37:42+09:00 KST_
 
 ### X. 택배함·우편함 옆 집, 계속 볼지 보류할지 보는 10분
 
-- 상태: `release_candidate_ready` / ready_unpublished가 최신 publisher 기준 2개로 내려간 상태를 보정하기 위해 신규 replenish 후보를 00-topic→70-final-html까지 완성한 뒤, 제목/H1/meta와 공개 `/radar/` 다음 클릭 표를 보강했다. 2026-05-06 18:39 hourly normal 턴에서는 관리 답변을 증거가 아니라 재확인 조건으로 바꾸는 섹션·검증 카드·표를 추가했다. 2026-05-07 03:36 턴에서는 새 후보 양산 없이 검색어를 장단점 목록이 아니라 현장 질문·기록 한 줄로 바꾸는 섹션·reader visual·표를 추가해 `택배함 옆 집/우편함 옆 원룸/현관 앞 택배 소음` 유입을 문 앞 머무름·반복 시간·방 안 소리 체크로 전환했다. 2026-05-07 06:38 턴에서는 새 후보 양산 없이 방 안 소리를 현관 안쪽·책상/침대 자리·다시 볼 시간대로 나누는 섹션·reader visual·표를 추가해 `문 앞에서 들림`과 `생활 피로`를 분리했다. 2026-05-07 09:37 턴에서는 같이 결정하는 사람에게 감상 대신 시간·위치·방 안 생활 자리 확인 요청으로 말하는 섹션·reader visual·표를 추가했다. 2026-05-07 15:18 턴에서는 사람·주소 단서를 남기지 않고 시간·위치·반복 장면만 기록하는 안전 메모 섹션·reader visual·표를 추가하고 본문을 7,000자로 압축해 editorial observation을 제거했다. 2026-05-07 19:50 턴에서는 meta description을 `문 앞 반복 장면` 중심으로 좁히고 방 안 소리 단락의 일반 해석 문장을 독자 사용법 문장으로 바꿔 검색 스니펫과 본문 사용 흐름을 맞췄다. 2026-05-07 23:49 턴에서는 새 후보 양산 없이 안전 기록 섹션을 `송장 말고 장면만`으로 좁혀 호수·얼굴·송장번호·이름·전화번호 같은 식별 단서를 빼고 방향·폭·시간·방 안 전달 여부만 남기게 했다. review 통과 (`ready=7 hard=0 soft=0`, 해당 후보 chars=7000 visuals=15, target_fit=True, observations=0). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
+- 상태: `published_to_pages` / ready_unpublished가 최신 publisher 기준 2개로 내려간 상태를 보정하기 위해 신규 replenish 후보를 00-topic→70-final-html까지 완성한 뒤, 제목/H1/meta와 공개 `/radar/` 다음 클릭 표를 보강했다. 2026-05-06 18:39 hourly normal 턴에서는 관리 답변을 증거가 아니라 재확인 조건으로 바꾸는 섹션·검증 카드·표를 추가했다. 2026-05-07 03:36 턴에서는 새 후보 양산 없이 검색어를 장단점 목록이 아니라 현장 질문·기록 한 줄로 바꾸는 섹션·reader visual·표를 추가해 `택배함 옆 집/우편함 옆 원룸/현관 앞 택배 소음` 유입을 문 앞 머무름·반복 시간·방 안 소리 체크로 전환했다. 2026-05-07 06:38 턴에서는 새 후보 양산 없이 방 안 소리를 현관 안쪽·책상/침대 자리·다시 볼 시간대로 나누는 섹션·reader visual·표를 추가해 `문 앞에서 들림`과 `생활 피로`를 분리했다. 2026-05-07 09:37 턴에서는 같이 결정하는 사람에게 감상 대신 시간·위치·방 안 생활 자리 확인 요청으로 말하는 섹션·reader visual·표를 추가했다. 2026-05-07 15:18 턴에서는 사람·주소 단서를 남기지 않고 시간·위치·반복 장면만 기록하는 안전 메모 섹션·reader visual·표를 추가하고 본문을 7,000자로 압축해 editorial observation을 제거했다. 2026-05-07 19:50 턴에서는 meta description을 `문 앞 반복 장면` 중심으로 좁히고 방 안 소리 단락의 일반 해석 문장을 독자 사용법 문장으로 바꿔 검색 스니펫과 본문 사용 흐름을 맞췄다. 2026-05-07 23:49 턴에서는 새 후보 양산 없이 안전 기록 섹션을 `송장 말고 장면만`으로 좁혀 호수·얼굴·송장번호·이름·전화번호 같은 식별 단서를 빼고 방향·폭·시간·방 안 전달 여부만 남기게 했다. 2026-05-08 14:47 턴에서는 publish guard를 막던 thumbnail/field-example media blocker를 repo-local WebP 4개와 metadata field_examples 3개로 해소했다. 2026-05-08 16:43 턴에서는 기록 예시의 `보관함 앞 1명`을 `보관함 앞 짧은 머무름`으로 바꿔 사람 수·주민/배송 추적처럼 읽힐 여지를 제거했다. 2026-05-09 00:47에 GitHub Pages `/radar/parcel-mailbox-front-home-check/` content source로 공개되었고, 최신 review에서도 published=True/ready=True로 보존한다. 품질 통과 기록은 keep하고 다음 후보는 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
 - 최종본: `release_candidates/2026-05/parcel-mailbox-front-home-check/final.html`
 - 메타: `release_candidates/2026-05/parcel-mailbox-front-home-check/metadata.json`
-- 검증: `reports/cron-review-latest.md`; hourly smoke pass (`ready=7 hard=0 soft=0`, warning-only live deployment drift 1건); publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, spacing_open=True, published_today=1/4)라 실제 공개/푸시 없음. 2026-05-07 23:49 기준 X는 chars=7000 visuals=15 target_fit=True.
+- 검증: `reports/cron-review-latest.md`; hourly smoke pass(`ready=9 hard=0 soft=0`, warnings=0). 2026-05-09 01:11 기준 X는 published=True/ready=True, chars=7000 visuals=15 target_fit=True observations=0 media_blockers=0 internal_links=9이며, privacy terms는 `남기지 않음` 안전 문맥이다. 최신 publisher dry-run은 신규 미발행 3개 기준 `slot_closed`라 이번 턴 추가 공개/푸시 없음.
 - Stage notes:
   - [x] 00-topic: `articles/2026-05/parcel-mailbox-front-home-check/00-topic.md`
   - [x] 10-source: `articles/2026-05/parcel-mailbox-front-home-check/10-source.md`
@@ -445,10 +446,10 @@ _Last updated: 2026-05-08T12:37:42+09:00 KST_
 
 ### Y. 최상층 집, 전망보다 먼저 볼 여름·누수·소리 체크 12분
 
-- 상태: `release_candidate_ready` / publisher 기준 ready_unpublished가 최소 3개에서 흔들리지 않도록 신규 replenish 후보를 00-topic→70-final-html까지 완성했다. 최상층 집의 전망 장점을 바로 결론으로 두지 않고, 서울·수도권 25~39세 전월세·이사 독자가 여름 열기·비 흔적·옥상/기계실/계단실 소리를 12분 현장 질문으로 바꿔 계속 볼지/보류할지 판단하게 했다. 1차 review의 `body_below_target` soft issue를 reader-facing 문단 보강으로 해소했고, 2026-05-07 01:45 턴에는 다음 클릭 선택 섹션·내부링크 3개·visual 1개를 추가했다. 2026-05-07 02:37 턴에는 검색어를 계약 전 현장 질문으로 바꾸는 섹션·visual·표를 추가해 `최상층 덥다/누수/소리` 검색 의도를 시간·위치·반복 여부 질문으로 낮췄다. 2026-05-07 05:38 턴에는 `확신이 아니라 계절별 빈칸 하나를 남깁니다` 섹션·visual·표를 추가하고 visual 캡션 순서를 정리해 여름·장마·밤 중 남은 확인 행동 하나로 좁혔다. 2026-05-07 07:37 턴에는 `중개인에게는 감상 대신 확인 문장으로 말합니다` 섹션·visual·표를 추가해 전망 인상을 시간·위치·반복 조건이 붙은 연락/설명 문장으로 바꿨다. 2026-05-07 10:36 턴에는 `다음 후보와 비교할 때는 층수가 아니라 피로 종류로 붙입니다` 섹션·visual·표를 추가해 최상층에서 남은 빈칸을 엘리베이터 앞·대로 한 블록 안쪽·버스정류장 앞 후보의 반복 피로와 하나씩 비교하게 했다. 2026-05-07 16:41 턴에는 다음 후보와 비교할 빈칸 하나만 남기는 reader-facing visual을 추가해 마지막 메모를 과잉 체크리스트가 아니라 후속 클릭 한 축으로 줄였다. 2026-05-07 18:59 턴에는 가족/동거인에게 전망 인상보다 남은 현장 질문 하나만 공유하는 reader-facing visual을 추가해 마지막 설명을 행동 문장으로 낮췄다. 2026-05-07 20:41 턴에는 meta description과 closing-note를 `전망 인상`이 아니라 같이 결정할 사람에게 보낼 확인 질문 하나로 좁혔다. 2026-05-07 22:42 턴에는 비 온 뒤 흔적 문단에 source/calc caveat를 보강해 건물별 누수 확률·민원 순위·한 번 방문 확정을 쓰지 않는 한계를 명시하고, 창틀 위 실리콘/커튼박스/벽 모서리·복도 끝/옥상 출입문·관리사무소 답변의 구체성으로 확인하게 했다. 최종 review 통과 (`ready=7 hard=0 soft=0`, 해당 후보 chars=6969 visuals=16, target_fit=True). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
+- 상태: `release_candidate_ready` / publisher 기준 ready_unpublished가 최소 3개에서 흔들리지 않도록 신규 replenish 후보를 00-topic→70-final-html까지 완성했다. 최상층 집의 전망 장점을 바로 결론으로 두지 않고, 서울·수도권 25~39세 전월세·이사 독자가 여름 열기·비 흔적·옥상/기계실/계단실 소리를 12분 현장 질문으로 바꿔 계속 볼지/보류할지 판단하게 했다. 1차 review의 `body_below_target` soft issue를 reader-facing 문단 보강으로 해소했고, 이후 검색어 전환·계절별 빈칸·중개인 확인 문장·후속 후보 비교·동거인 공유·source/calc caveat를 단계적으로 보강했다. 2026-05-09 07:41 턴에는 inline SVG/`field-visual` visual을 repo-local AI 실사 WebP photo cards로 교체했고, 2026-05-09 08:46 턴에는 section 9 `재방문은 많이 하는 것이 아니라 빈칸 하나를 채우는 일입니다`를 압축해 열기·비 흔적·소리 중 아직 비어 있는 조건 하나만 재확인하게 했다. 최종 review 통과(`ready=True hard=0 soft=0`, chars=6748 visuals=32 target_fit=True media_blockers=0). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
 - 최종본: `release_candidates/2026-05/top-floor-heat-leak-noise-check/final.html`
 - 메타: `release_candidates/2026-05/top-floor-heat-leak-noise-check/metadata.json`
-- 검증: `reports/cron-review-latest.md`; hourly smoke pass (`ready=7 hard=0 soft=0`, warning-only live deployment drift 1건); publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, spacing_open=True, published_today=1/4)라 실제 공개/푸시 없음. 2026-05-07 22:49 기준 Y는 chars=6969 visuals=16 target_fit=True.
+- 검증: `reports/cron-review-latest.md`; hourly smoke pass(`ready=9 hard=0 soft=0`, warnings=0); latest publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, `spacing_open=True`, `hours_since_last=8.085`)라 이번 턴 실제 공개/푸시 없음. 2026-05-09 08:52 기준 Y는 chars=6748 visuals=32 target_fit=True hard=0 soft=0 observations=0 media_blockers=0 eligible=True internal_links=9이며, source/ranking terms는 caveat 문맥이다.
 - Stage notes:
   - [x] 00-topic: `articles/2026-05/top-floor-heat-leak-noise-check/00-topic.md`
   - [x] 10-source: `articles/2026-05/top-floor-heat-leak-noise-check/10-source.md`
@@ -463,10 +464,10 @@ _Last updated: 2026-05-08T12:37:42+09:00 KST_
 
 ### Z. 창문 아래 주차선 집, 계속 볼지 보류할지 보는 밤 10분
 
-- 상태: `release_candidate_ready` / 2026-05-08 01:45 replenish 후보로 00-topic→70-final-html까지 완성했으나 1차 deterministic review에서 `body_below_target:4365<4500` soft issue가 나왔다. 2026-05-08 02:37 턴에서 검색 유입 독자가 다음 방문 시간 하나와 방 안 자리 하나를 정하게 하는 reader-facing 문단을 추가해 soft issue를 해소했다. 2026-05-08 03:45 턴에서는 새 후보 양산 없이 후속 클릭을 공개된 밤 소음·1층집·복도 끝 글 중 하나로 좁히는 문단·표·figure를 추가해 내부 탐색 과밀을 줄였다. 2026-05-08 04:46 턴에서는 지도·로드뷰는 방향 확인, 현장 메모는 비식별 장면 기록, 관리 답변은 재확인 조건으로만 쓰는 자료/사생활 경계 문단·표를 추가했다. 2026-05-08 05:36 턴에서는 마지막 한 줄 메모 템플릿을 추가해 좋은 반례·보류 질문·재방문 조건을 시간·방향·방 안 자리·다음 확인으로 끝내게 했다. 2026-05-08 10:47 턴에서는 숫자형 오독을 줄이기 위해 주차선 수·차량 수·소리 크기를 세지 않고 시간대·방향·방 안 전달 여부/생활 자리 단위로 낮추는 섹션·표·reader visual을 추가했다. 2026-05-08 12:37 턴에서는 차를 자주 쓰는 독자도 바로 보류하지 않도록 주차 편리함과 쉬는 시간 피로를 `내 이동 시간 / 쉬는 시간 / 재확인`으로 나누는 섹션·표·reader visual을 추가했다. 최종 review 통과 (`ready=8 hard=0 soft=0`, 해당 후보 chars=6310 visuals=14 target_fit=True). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
+- 상태: `release_candidate_ready` / 2026-05-08 01:45 replenish 후보로 00-topic→70-final-html까지 완성했으나 1차 deterministic review에서 `body_below_target:4365<4500` soft issue가 나왔다. 2026-05-08 02:37 턴에서 검색 유입 독자가 다음 방문 시간 하나와 방 안 자리 하나를 정하게 하는 reader-facing 문단을 추가해 soft issue를 해소했다. 2026-05-08 03:45 턴에서는 새 후보 양산 없이 후속 클릭을 공개된 밤 소음·1층집·복도 끝 글 중 하나로 좁히는 문단·표·figure를 추가해 내부 탐색 과밀을 줄였다. 2026-05-08 04:46 턴에서는 지도·로드뷰는 방향 확인, 현장 메모는 비식별 장면 기록, 관리 답변은 재확인 조건으로만 쓰는 자료/사생활 경계 문단·표를 추가했다. 2026-05-08 05:36 턴에서는 마지막 한 줄 메모 템플릿을 추가해 좋은 반례·보류 질문·재방문 조건을 시간·방향·방 안 자리·다음 확인으로 끝내게 했다. 2026-05-08 10:47 턴에서는 숫자형 오독을 줄이기 위해 주차선 수·차량 수·소리 크기를 세지 않고 시간대·방향·방 안 전달 여부/생활 자리 단위로 낮추는 섹션·표·reader visual을 추가했다. 2026-05-08 12:37 턴에서는 차를 자주 쓰는 독자도 바로 보류하지 않도록 주차 편리함과 쉬는 시간 피로를 `내 이동 시간 / 쉬는 시간 / 재확인`으로 나누는 섹션·표·reader visual을 추가했다. 2026-05-08 13:43 턴에서는 다음 방문 예약을 `시간 하나 / 방 안 자리 하나 / 같이 말할 문장 하나`로 끝내는 섹션·표·reader visual을 추가해 재확인 행동을 더 좁혔다. 2026-05-08 14:47 턴에서는 publish guard를 막던 thumbnail/field-example media blocker를 repo-local WebP 4개와 metadata field_examples 3개로 해소했다. 2026-05-08 15:42 턴에서는 기준월·표본 없는 주차 민원/소음 설명을 순위처럼 쓰지 않고 다음 방문 시간·방향·방 안 자리 빈칸으로만 남기는 source/basis caveat를 자료 경계 문단에 추가했다. 2026-05-08 17:39 턴에서는 비 온 뒤·겨울철 창문 닫힘·여름 환기처럼 계절/날씨가 바뀌는 조건을 확정값이 아니라 다시 볼 질문으로만 두는 caveat를 추가했다. 최종 review 통과 (`ready=True hard=0 soft=0`, 해당 후보 chars=6902 visuals=30 photo_cards=15 target_fit=True media_blockers=0 eligible=True). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
 - 최종본: `release_candidates/2026-05/parking-line-under-window-check/final.html`
 - 메타: `release_candidates/2026-05/parking-line-under-window-check/metadata.json`
-- 검증: `reports/cron-review-latest.md`; publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, spacing_open=True, published_today=1/4)라 실제 공개/푸시 없음. 2026-05-08 12:37 기준 Z는 chars=6310 visuals=14 target_fit=True. Hourly smoke pass(warning-only live deployment drift 1건).
+- 검증: `reports/cron-review-latest.md`; latest publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, `spacing_open=True`, `hours_since_last=8.085`)라 이번 턴 실제 공개/푸시 없음. 2026-05-09 08:52 기준 Z는 chars=6902 visuals=30 photo_cards=15 target_fit=True observations=0 hard=0 soft=0 media_blockers=0 eligible=True internal_links=3. Hourly smoke pass(warnings=0). Z는 다음 안전 작업 시 internal-link density review 우선이다.
 - Stage notes:
   - [x] 00-topic: `articles/2026-05/parking-line-under-window-check/00-topic.md`
   - [x] 10-source: `articles/2026-05/parking-line-under-window-check/10-source.md`
@@ -479,18 +480,36 @@ _Last updated: 2026-05-08T12:37:42+09:00 KST_
   - [x] 70-publish note: `articles/2026-05/parking-line-under-window-check/70-publish-note.md`
   - [x] 80-growth: `articles/2026-05/parking-line-under-window-check/80-growth.md`
 
+### AA. 빨래 건조대 자리 없는 집, 계속 볼지 보류할지 보는 12분
+
+- 상태: `release_candidate_ready` / 2026-05-09 00:58 hourly replenish 후보로 00-topic→70-final-html까지 완성했다. 독자는 서울·수도권 25~39세 전월세·이사 후보 비교자이며, 결정상황은 방 크기 인상이 아니라 젖은 옷을 옮기고 건조대를 펼치고 통로와 환기를 유지할 수 있는지 12분 현장 관찰로 계속 볼지/보류할지 고르는 일이다. 1차 review의 `body_below_target:3668<4500` soft issue는 생활 리듬별 보류선, 후속 내부링크 결정 섹션, 마지막 확인 문장 보강으로 해소했다. 2026-05-09 03:36 턴에서는 새 후보를 만들지 않고 첫 화면 lead에 `바닥 한 칸에 건조대를 펼친다고 가정하고 세탁하는 날 현관-책상-창문 길이 살아 있는지 먼저 적기` 문장을 추가해 다음 방문 사용법을 더 직접적으로 만들었다. 2026-05-09 04:40 턴에서는 `환기 잘 된다` 같은 흐린 관리 답변을 결론이 아니라 `창문 5분/책상 길/욕실 문 앞 습기` 재확인 질문으로 낮추는 source-caveat 문장을 보강했다. 2026-05-09 05:49 턴에서는 독자-visible 후속 클릭 문단/표에서 미공개 최상층 후보 직접 링크를 제거하고, 공개 완료된 `/radar/rainy-day-viewing-neighborhood-signals/`로 비·습기 흔적 경로를 연결했다. 2026-05-09 06:39 턴에서는 후속 클릭 선택 카드를 추가해 남은 불안을 창문·습기·문 앞 중 하나로만 고르게 했다. 2026-05-09 07:41 턴에서는 inline SVG/`field-visual` visual을 repo-local AI 실사 WebP photo cards로 교체해 AA final.html의 photo cards를 12개로 정렬했고 SVG/field-visual residue는 0이다. 외부 통계·건물별 습도 확률·계절별 확정값·순위형 결론은 쓰지 않고, 욕실 문 앞/창문 방향/건조대 펼친 뒤 통로/빨래 바구니 자리/다음 재방문 시간처럼 관찰 가능한 기준으로 낮췄다. 최종 review 통과(`ready=True target_fit=True chars=4784 visuals=24 hard=0 soft=0 media_blockers=0 eligible=True`). 품질 통과 글은 keep하고 dedicated publisher desk의 adaptive 슬롯·정책에 맡긴다.
+- 최종본: `release_candidates/2026-05/laundry-drying-route-home-check/final.html`
+- 메타: `release_candidates/2026-05/laundry-drying-route-home-check/metadata.json`
+- 검증: `reports/cron-review-latest.md`; latest adaptive dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, `spacing_open=True`, `hours_since_last=8.085`)라 이번 턴 실제 공개/푸시 없음. 2026-05-09 08:52 기준 AA는 chars=4784 visuals=24 photo_cards=12 target_fit=True hard=0 soft=0 media_blockers=0 eligible=True. Hourly smoke pass(warnings=0, 2026-05-09T08:52:29+09:00). 다음 성장 작업은 공개 후 `세탁실 없음/원룸 빨래 건조/습기 냄새` 검색 의도를 창문·습기·문 앞 중 하나로 좁힌 뒤 공개 완료된 후속 내부링크로만 분기하는 것이다.
+- Stage notes:
+  - [x] 00-topic: `articles/2026-05/laundry-drying-route-home-check/00-topic.md`
+  - [x] 10-source: `articles/2026-05/laundry-drying-route-home-check/10-source.md`
+  - [x] 20-data-qa: `articles/2026-05/laundry-drying-route-home-check/20-data-qa.md`
+  - [x] 30-story: `articles/2026-05/laundry-drying-route-home-check/30-story.md`
+  - [x] 40-visual: `articles/2026-05/laundry-drying-route-home-check/40-visual-plan.md`
+  - [x] 50-copy: `articles/2026-05/laundry-drying-route-home-check/50-copy.md`
+  - [x] 60-reader-qa: `articles/2026-05/laundry-drying-route-home-check/60-reader-qa.md`
+  - [x] 70-final-html: `articles/2026-05/laundry-drying-route-home-check/70-final-html.md`
+  - [x] 70-publish note: `articles/2026-05/laundry-drying-route-home-check/70-publish-note.md`
+  - [x] 80-growth: `articles/2026-05/laundry-drying-route-home-check/80-growth.md`
+
 ## Department handoff
 
-- 출판관리부: 최신 deterministic review/publisher 기준 candidates=8 / ready=8 / review-surface published=5 / ready_unpublished=3 / published_today=1/4. X/Y/Z는 `품질통과 선발행 후보`로 keep한다. 3개 minimum은 유지 중이라 새 후보 양산은 막고 기존 후보 품질 보강 모드로 운영했다.
-- 기획부: 가장 약한 후보는 계속 Z `parking-line-under-window-check`로 본다. X/Y/Z 중 visible prose/visual margin이 가장 낮고, 차를 쓰는 독자가 주차 편리함을 바로 포기하는 글로 오독할 수 있어 제목·독자·결정상황을 `서울·수도권 25~39세 전월세/이사 독자가 밤 10분에 계속 볼지/보류할지 나누는 글`로 재확인했다.
-- 자료수집부: 새 외부자료·차량 수·민원 수치·건물별 단정은 추가하지 않았다. Z의 자료 기준은 지도/로드뷰=방향·완충 확인, 현장 메모=비식별 장면 기록, 관리 답변=재확인 조건이며 차량 번호·얼굴·호수 단서는 남기지 않는다.
-- 데이터검증부: Z에 주차 편리함과 휴식 피로를 같은 점수로 합산하지 않고 `내 이동 시간 / 쉬는 시간 / 재확인` 단위로 나누는 판단표를 추가했다. 건물별 확률·민원 순위·한 번 방문 확정 언어는 금지한다.
-- 편집부: Z final.html에 `주차 편리함은 내 이동 시간과 따로 비교합니다` 섹션을 직접 보강했다. 좋은 반례/한계는 유지하고, 판단 문장은 편리함을 지우는 결론이 아니라 계속 볼 이유와 보류 질문을 분리하는 흐름으로 끝나게 했다.
-- 그래픽부: Z reader-facing visual을 13→14개로 보강했다. X/Y/Z visual count는 각각 15/16/14개로 gate(8개)를 넘고, 새 visual은 모바일에서 생활 조건 비교 카드 역할을 한다.
-- 카피부: Z 도입/메타의 서울·수도권 25~39세 전월세/이사 독자 promise는 유지하고, copy/body flow 문서에 주차 편리함과 휴식 피로를 생활 조건별로 따로 비교하는 흐름을 반영했다.
-- 검수부: py_compile + review + adaptive dry-run + hourly smoke 재실행 완료. review=`ready=8/8 hard=0 soft=0`; Z=`6310 chars/14 visuals target_fit=True`; hourly smoke pass, warning은 live deployment drift 1건만 남았다.
-- 발행부: adaptive publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, spacing_open=True)라 실제 GitHub Pages 공개/commit/push는 실행하지 않았다. daily 1개는 floor일 뿐 상한이 아니지만 queue guard가 닫혔다.
-- 성장분석부: 다음 슬롯이 열리면 publisher 정렬상 가장 오래된 clean 미발행 X `parcel-mailbox-front-home-check`가 Y/Z보다 먼저 선발된다. Z의 검색가설은 `창문 앞 주차장 소음/1층 주차장 불빛/주차 편한 빌라` 유입을 주차선·차량 수가 아니라 시간·방향·방 안 자리와 내 이동 시간 비교 질문으로 전환하는 것이다. 다음 턴은 X/Y/Z 발행순서·검색가설·source/privacy caveat 또는 중복 제거만 보강한다.
+- 출판관리부: 10:13 deterministic review/publisher 기준 candidates=9 / ready=9 / review-surface published=6 / ready_unpublished=3 / eligible_unpublished=3 / published_today=1/4. 모드는 `normal/minimum-buffer`이며 새 후보 양산이나 backlog_reduction이 아니라 queue-order·품질 선명도 유지 턴이다.
+- 기획부: 이번 턴은 타겟 실패나 분량 부족이 아니라 handoff freshness 정리였다. Y/Z/AA 모두 서울·수도권 25~39세 전월세·이사 독자와 계속 볼지/보류할지 결정상황은 통과했다.
+- 자료수집부: Y/Z/AA 모두 repo-local AI 실사 WebP field examples를 사용한다. 새 외부 확률·민원 순위·건물별 단정·주소/개인 식별·차량/사람 추적 근거를 추가하지 않았다.
+- 데이터검증부: Y/Z/AA는 점수·확률·지역 순위·일괄 추천을 만들지 않는다. 최신 dry-run의 blocker는 콘텐츠 불합격이 아니라 queue guard(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`)다.
+- 편집부: 새 본문/새 후보를 만들지 않고 `IDEA_BANK.md`의 최신 buffer read와 next-use rule을 Y/Z/AA 기준으로 정렬했다. filler prose를 추가하지 않았다.
+- 그래픽부: Y/Z/AA inline SVG/`field-visual` residue는 계속 0이다. photo cards는 Y=16, Z=15, AA=12이고 `field-visual`/`visual-figure`/`<svg`/`.svg` residue는 0이다.
+- 카피부: Y/Z/AA 첫 화면 target markers는 통과한다. 다음 보강은 Z/AA 내부링크 밀도와 검색가설을 독자 행동 질문으로 더 좁히는 것이다.
+- 검수부: py_compile + review + build + local quality audit + adaptive dry-run + hourly smoke 재실행 완료. review=`ready=9/9 hard=0 soft=0`; Y=`6748 chars/32 visuals`, Z=`6902/30`, AA=`4784/24`; 모두 target_fit=True, media_blockers=0. Hourly smoke pass, warnings=0.
+- 발행부: adaptive publisher dry-run은 `slot_closed`(`ready_unpublished=3<=ready_target=7`, `daily_floor_open=False`, `published_today=1/4`, `spacing_open=True`, `hours_since_last=9.416`, selected none)라 실제 GitHub Pages 공개/commit/push는 실행하지 않았다. daily 1개는 floor일 뿐 상한이 아니지만 이번 슬롯은 queue guard가 닫혔다.
+- 성장분석부: clean queue는 Y→Z→AA로 유지한다. 다음 학습은 Y=`열기/비 흔적/소리 중 재확인 빈칸 하나`(links=9), Z=`다음 방문 시간·방향·방 안 자리`(links=3), AA=`젖은 옷 이동·환기·건조대 통로·창문/습기/문 앞 후속 선택`(links=3)로 검색 유입이 실제 행동으로 내려가는지 확인하는 것이다.
 
 ## Blockers
 

@@ -1,10 +1,10 @@
 # 동네 레이더 Article Template
 
-_Last updated: 2026-05-02T12:31:00+09:00 KST_
+_Last updated: 2026-05-09T07:30:00+09:00 KST_
 
 ## Scope
 
-- `recuerdame / #naver` 동네 레이더 매거진 전용.
+- `동네 레이더` GitHub Pages `/radar/` 매거진 전용.
 - 공개 원본은 GitHub Pages `/radar/` 기준이며, 이 템플릿은 완성형 공개 매거진 글을 만들기 위한 내부 작성 기준이다.
 - 외부 publish, 로그인, 권한, 카테고리, 스킨, 광고 설정은 이 템플릿의 실행 범위가 아니다.
 
@@ -40,6 +40,7 @@ closing: 이번 주 바로 쓸 한 문장 행동
 
 - visible body length: 4,500자 이상, 목표 4,500~7,000자.
 - reader-facing visuals: 최소 8개. `figure`, 표, 카드, 매트릭스, 체크리스트, 흐름도 중 주제에 맞게 구성한다. 단, 표는 보조자료이며 글+표만 반복되면 실패다.
+- AI 실사 사진: 썸네일 1장(`/assets/radar/thumbs/<slug>*.webp`) + 본문 field examples 3장(`/assets/radar/<slug>/examples/*.webp`)을 `image_gen`으로 새로 만들고 repo-local WebP로 연결한다. `/thumbs/` 재사용, `.svg`, `.png`, 외부 URL, 픽토그램/도표형 이미지는 실패다.
 - 필수 신호: 반례, 한계, 현장, 질문, 사용법, 해석.
 - 첫 300자: 1차 독자와 결정 상황이 보여야 한다.
 - 단순 순위표나 데이터 나열은 실패다. 반드시 “그래서 무엇을 물어보고 무엇을 보류할지”로 바꾸고, 상단 요약카드·지도형/루프형 시각화·중간 callout으로 읽는 리듬을 만든다.
@@ -52,6 +53,7 @@ closing: 이번 주 바로 쓸 한 문장 행동
 - 내부 stage명, QA 점수, 검증 명령, 운영 상태값.
 - 외부 계정·권한·스킨·광고 설정 이야기.
 - 출처 없는 계산값, 확정 순위, 미래 방향 단정.
+- `field-visual`, `visual-figure`, inline `<svg>`, `.svg` 참조, CSS scene-art, 픽토그램/placeholder 썸네일.
 
 ## Stage output checklist
 
@@ -59,7 +61,7 @@ closing: 이번 주 바로 쓸 한 문장 행동
 - `10-source.md`: 공개 출처, 기준월, 단위, 수집 가능성, 누락 위험.
 - `20-data-qa.md`: 산식, 기간, 지역 단위, 과장 방지.
 - `30-story.md`: 발견 → 해석 → 반례/한계 → 현장 질문 → 사용법.
-- `40-visual-plan.md`: 최소 8개 독자용 figure 설계 + visual rhythm 계획(상단 루프, 요약카드, 중간 callout, 표 연속 방지).
+- `40-visual-plan.md`: 최소 8개 독자용 figure 설계 + visual rhythm 계획(상단 루프, 요약카드, 중간 callout, 표 연속 방지) + AI 실사 WebP 4장(썸네일 1, field examples 3) 생성/저장 경로.
 - `50-copy.md`: 제목, 첫 300자, 메타 설명, 본문 흐름.
 - `60-reader-qa.md`: scorecard, 정적 가드, hard/soft issue.
 - `70-final-html.md`: `release_candidates/YYYY-MM/<slug>/final.html` 생성과 검증 결과.

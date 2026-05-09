@@ -98,6 +98,32 @@ def attr_value(tag: str, attr: str) -> str:
     return html.unescape(match.group(2)) if match else ""
 
 
+def public_path_from_src(src: str) -> str:
+    parsed = urlparse(str(src or "").strip())
+    path = parsed.path if parsed.scheme or parsed.netloc else str(src or "").split("?", 1)[0].split("#", 1)[0]
+    if not path.startswith("/"):
+        path = "/" + path
+    return path
+
+
+def radar_thumb_webp_src(src: str) -> bool:
+    path = public_path_from_src(src)
+    return path.startswith("/assets/radar/thumbs/") and path.endswith(".webp")
+
+
+def radar_example_webp_src(src: str) -> bool:
+    path = public_path_from_src(src)
+    return path.startswith("/assets/radar/") and "/examples/" in path and "/thumbs/" not in path and path.endswith(".webp")
+
+
+def img_tags_with_class(page_html: str, class_name: str) -> list[str]:
+    return [
+        tag
+        for tag in re.findall(r"<img\b[^>]*>", page_html, flags=re.I | re.S)
+        if class_name in attr_value(tag, "class").split()
+    ]
+
+
 def anchor_tags(page_html: str) -> list[str]:
     return re.findall(r"<a\b[^>]*>", page_html, flags=re.I | re.S)
 
@@ -403,8 +429,13 @@ def audit_html(path: str, page_html: str) -> list[str]:
         failures.append(f"{path}:taxonomy_category_links_too_few:{category_chip_links}")
     if kind in {"home", "radar"} and 'class="radar-card-visual has-css-thumb' in page_html:
         failures.append(f"{path}:radar_card_ai_thumbnail_missing")
-    if kind in {"home", "radar"} and 'class="radar-card-image"' not in page_html:
+    radar_card_images = img_tags_with_class(page_html, "radar-card-image")
+    if kind in {"home", "radar"} and not radar_card_images:
         failures.append(f"{path}:radar_card_ai_thumbnail_image_missing")
+    if kind in {"home", "radar"}:
+        bad_card_images = [attr_value(tag, "src") for tag in radar_card_images if not radar_thumb_webp_src(attr_value(tag, "src"))]
+        if bad_card_images:
+            failures.append(f"{path}:radar_card_thumbnail_must_be_repo_webp")
     if kind in {"radar_article", "deal_article"}:
         if tag_links < 2:
             failures.append(f"{path}:taxonomy_tag_links_too_few:{tag_links}")
@@ -426,10 +457,11 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:radar_example_gallery_missing")
         else:
             example_cards = page_html.count('class="example-scene-card')
-            scene_photo_tags = re.findall(r"<img\b[^>]*class=[\"'][^\"']*\bscene-photo\b[^\"']*[\"'][^>]*>", page_html, flags=re.I | re.S)
+            scene_photo_tags = img_tags_with_class(page_html, "scene-photo")
             scene_photos = len(scene_photo_tags)
             scene_photo_srcs = [attr_value(tag, "src") for tag in scene_photo_tags]
             unique_scene_photo_srcs = {src for src in scene_photo_srcs if src}
+            invalid_scene_photo_srcs = [src for src in scene_photo_srcs if not radar_example_webp_src(src)]
             for marker in ['class="radar-situation-strip"', "예시 장면", "현장 질문"]:
                 if marker not in page_html:
                     failures.append(f"{path}:radar_example_visual_marker_missing:{marker}")
@@ -439,10 +471,16 @@ def audit_html(path: str, page_html: str) -> list[str]:
                 failures.append(f"{path}:radar_example_ai_scene_photos_too_few:{scene_photos}")
             if len(unique_scene_photo_srcs) < 3:
                 failures.append(f"{path}:radar_example_scene_photos_not_distinct:{len(unique_scene_photo_srcs)}")
+            if invalid_scene_photo_srcs:
+                failures.append(f"{path}:radar_example_scene_photos_must_be_repo_webp")
             if any("/thumbs/" in src for src in scene_photo_srcs):
                 failures.append(f"{path}:radar_example_reuses_thumbnail_asset")
-        if 'class="radar-map photo-scan' not in page_html or 'class="scan-photo"' not in page_html:
+        scan_photo_tags = img_tags_with_class(page_html, "scan-photo")
+        scan_photo_srcs = [attr_value(tag, "src") for tag in scan_photo_tags]
+        if 'class="radar-map photo-scan' not in page_html or not scan_photo_tags:
             failures.append(f"{path}:radar_visual_scan_ai_photo_missing")
+        elif any(not radar_example_webp_src(src) for src in scan_photo_srcs):
+            failures.append(f"{path}:radar_visual_scan_photo_must_be_webp")
         if 'scene-skyline' in page_html or 'scene-route' in page_html or '<svg class="map-route"' in page_html:
             failures.append(f"{path}:radar_abstract_placeholder_visual_regression")
     if kind == "deal_article":

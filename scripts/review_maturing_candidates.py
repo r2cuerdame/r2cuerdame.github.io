@@ -107,6 +107,36 @@ def load_json(path: Path) -> dict:
         return {}
 
 
+def radar_repo_webp_exists(public_url: str) -> bool:
+    url = str(public_url or "").strip()
+    return bool(url.startswith("/assets/radar/") and url.endswith(".webp") and (ROOT / url.lstrip("/")).exists())
+
+
+def radar_media_blockers(meta: dict, slug: str) -> list[str]:
+    image_url = str(meta.get("image_url") or meta.get("thumbnail_url") or "").strip()
+    blockers: list[str] = []
+    if not image_url:
+        blockers.append("ai_thumbnail_missing")
+    elif not (image_url.startswith("/assets/radar/thumbs/") and radar_repo_webp_exists(image_url)):
+        blockers.append("ai_thumbnail_must_be_repo_webp")
+
+    examples = meta.get("field_examples") if isinstance(meta.get("field_examples"), list) else []
+    valid_examples: list[str] = []
+    for item in examples:
+        if not isinstance(item, dict):
+            continue
+        example_url = str(item.get("image_url") or "").strip()
+        if (
+            example_url.startswith(f"/assets/radar/{slug}/examples/")
+            and "/thumbs/" not in example_url
+            and radar_repo_webp_exists(example_url)
+        ):
+            valid_examples.append(example_url)
+    if len(set(valid_examples)) < 3:
+        blockers.append("three_ai_field_example_webps_required")
+    return blockers
+
+
 def review_file(path: Path, now: str, content_slugs: set[str] | None = None) -> dict:
     raw = path.read_text(encoding="utf-8", errors="replace")
     parser = VisibleTextParser()
@@ -120,6 +150,7 @@ def review_file(path: Path, now: str, content_slugs: set[str] | None = None) -> 
     slug = str(meta.get("slug") or path.parent.name)
     content_slugs = content_slugs or set()
     published = slug in content_slugs or str(meta.get("status") or "") == "published_to_pages" or bool(meta.get("pages_published_at"))
+    media_blockers = radar_media_blockers(meta, slug)
 
     hard: list[str] = []
     soft: list[str] = []
@@ -127,6 +158,23 @@ def review_file(path: Path, now: str, content_slugs: set[str] | None = None) -> 
 
     if re.search(r"<\s*script\b", raw, re.IGNORECASE):
         hard.append("script_tag_present")
+    pictogram_svg_present = bool(
+        re.search(r"\b(?:field-visual|visual-figure)\b", raw, re.IGNORECASE)
+        or re.search(r"<\s*svg\b", raw, re.IGNORECASE)
+        or re.search(r"\.svg(?:[\"'?#\s>]|$)", raw, re.IGNORECASE)
+    )
+    if pictogram_svg_present:
+        issue = "pictogram_svg_visual_present"
+        if published:
+            observations.append(issue)
+        else:
+            hard.append(issue)
+    if media_blockers:
+        issue = "media_blockers:" + ",".join(media_blockers)
+        if published:
+            observations.append(issue)
+        else:
+            hard.append(issue)
     if chars < 3200:
         hard.append(f"body_too_short:{chars}<3200")
     elif chars < 4500:
@@ -198,6 +246,7 @@ def review_file(path: Path, now: str, content_slugs: set[str] | None = None) -> 
         "published": published,
         "hard_issues": hard,
         "soft_issues": soft,
+        "media_blockers": media_blockers,
         "observations": observations,
         "ready": not hard and not soft,
     }
@@ -243,8 +292,10 @@ def main() -> int:
     for item in results:
         lines.append(
             f"- `{item['path']}` — ready={item['ready']} published={item.get('published')} target_fit={item.get('target_fit')} chars={item['visible_prose_chars']} "
-            f"visuals={item['reader_visual_count']} hard={len(item['hard_issues'])} soft={len(item['soft_issues'])}"
+            f"visuals={item['reader_visual_count']} hard={len(item['hard_issues'])} soft={len(item['soft_issues'])} media_blockers={len(item.get('media_blockers') or [])}"
         )
+        if item.get("media_blockers"):
+            lines.append("  - media_blockers: " + "; ".join(item["media_blockers"]))
         if item["hard_issues"]:
             lines.append("  - hard: " + "; ".join(item["hard_issues"]))
         if item["soft_issues"]:

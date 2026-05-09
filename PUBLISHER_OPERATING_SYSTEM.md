@@ -4,7 +4,7 @@ _Last updated: 2026-05-02T18:05:01+09:00 KST_
 
 ## 범위
 
-- 전용 범위: `recuerdame / #naver`의 동네 레이더 매거진 운영.
+- 전용 범위: `동네 레이더` GitHub Pages `/radar/` 매거진 운영.
 - 외부 프로젝트, 다른 채널, 제휴형 글, 계정/결제/권한 상태는 이 문서의 운영 보고 범위 밖이다.
 - 현재 실행 환경은 GitHub Pages 공개 허브와 로컬 release candidate 저장소다. 실제 공개 발행은 전용 publisher desk(daily/adaptive)만 처리한다.
 - Tistory/외부 블로그 발행 루트는 폐기했고, 공개 원본은 GitHub Pages `/radar/`로 통일한다.
@@ -26,6 +26,7 @@ _Last updated: 2026-05-02T18:05:01+09:00 KST_
 
 - 본문 길이: 3,200자 미만 발행 차단, 4,500자 미만 보강, 목표 4,500~7,000자.
 - 독자용 시각자료: 최소 6개, 목표 8개 이상.
+- AI 실사 WebP 가드: 공개 가능한 후보는 repo-local WebP 썸네일 1장(`/assets/radar/thumbs/<slug>*.webp`)과 distinct field_examples 3장(`/assets/radar/<slug>/examples/*.webp`)이 있어야 한다. 픽토그램, inline SVG, `.svg`, `.png`, 외부 URL, `/thumbs/` 재사용은 hard blocker다.
 - 기사 구조: 발견 → 해석 → 반례/한계 → 현장 질문 → 사용법.
 - 금칙: 공개 본문에 가격/결제/구독/유료/paywall/내부 제작어/쿠팡·파트너스/구매 유도/광고 설정 문구를 넣지 않는다.
 - 원칙: 숫자를 나열하지 말고, 독자가 이번 주에 무엇을 확인할지 알려준다.
@@ -38,7 +39,7 @@ _Last updated: 2026-05-02T18:05:01+09:00 KST_
 3. 자료수집부 — 출처·기준월·누락 데이터 확인.
 4. 데이터검증부 — 산식·단위·과장 결론 검증.
 5. 편집부 — 해석·반례·한계·현장 질문·사용법 보강.
-6. 그래픽부 — 시각자료 개수와 모바일 가독성 보강.
+6. 그래픽부 — 시각자료 개수와 모바일 가독성 보강. 새 글/보강 글은 `image_gen`으로 AI 실사 WebP 썸네일 1장과 field examples 3장을 만들고 metadata에 연결한다.
 7. 카피부 — 제목·첫 문단·메타·문장 흐름 정리.
 8. 검수부 — Reader QA와 정적 금칙어/안전 가드, 로컬 desktop/390px 레이아웃 검증.
 9. 발행부 — 선발행 가능 여부와 blocker 기록. 슬롯이 열리면 `--mode adaptive`로 GitHub Pages 실제 공개까지 수행하고, live desktop/390px QA 영수증까지 남긴다.

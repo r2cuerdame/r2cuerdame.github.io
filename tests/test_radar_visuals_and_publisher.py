@@ -282,3 +282,71 @@ def test_radar_example_gallery_adds_scene_map_and_comparison_markers():
     assert "현장 질문" in html
     assert "scene-skyline" not in html
     assert "scene-route" not in html
+
+
+def test_review_rejects_release_candidate_without_repo_local_ai_webps(tmp_path, monkeypatch):
+    review = load_module(ROOT / "scripts" / "review_maturing_candidates.py", "radar_review_ai_photo_gate")
+    monkeypatch.setattr(review, "ROOT", tmp_path)
+    slug = "no-ai-photo-candidate"
+    candidate_dir = tmp_path / "release_candidates" / "2026-05" / slug
+    candidate_dir.mkdir(parents=True)
+    (candidate_dir / "metadata.json").write_text(
+        json.dumps(
+            {
+                "slug": slug,
+                "title": "AI 사진 없는 후보",
+                "image_url": "/assets/radar/thumbs/no-ai-photo-candidate.svg",
+                "field_examples": [
+                    {"label": "A", "title": "PNG", "description": "bad", "image_url": f"/assets/radar/{slug}/examples/a.png"},
+                    {"label": "B", "title": "Thumb", "description": "bad", "image_url": "/assets/radar/thumbs/no-ai-photo-candidate.webp"},
+                    {"label": "C", "title": "External", "description": "bad", "image_url": "https://example.com/c.webp"},
+                ],
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    opening = "서울 수도권 25~39 직장인 전월세 이사 후보를 비교하며 계속 볼지 보류할지 현장 질문으로 확인합니다. "
+    body = opening + ("반례 한계 현장 질문 사용법 해석 비교 지도 동선 체크리스트 보류 좋은 신호 위험한 반례 예시 장면 직접 본 기록. " * 180)
+    visuals = "".join(f"<figure><p>예시 장면 {idx}</p></figure>" for idx in range(8))
+    (candidate_dir / "final.html").write_text(
+        f"<!doctype html><html><body><main><h1>AI 사진 없는 후보</h1><p>{body}</p>{visuals}</main></body></html>",
+        encoding="utf-8",
+    )
+
+    result = review.review_file(candidate_dir / "final.html", "2026-05-09T07:30:00+09:00", set())
+
+    assert "ai_thumbnail_must_be_repo_webp" in result["media_blockers"]
+    assert "three_ai_field_example_webps_required" in result["media_blockers"]
+    assert "media_blockers:ai_thumbnail_must_be_repo_webp,three_ai_field_example_webps_required" in result["hard_issues"]
+    assert result["ready"] is False
+
+
+def test_radar_example_gallery_rejects_non_webp_or_non_example_images():
+    build_site = load_module(ROOT / "scripts" / "build_site.py", "build_site_gallery_ai_photo_gate")
+    article = {
+        "slug": "bad-gallery-images",
+        "title": "잘못된 이미지 후보",
+        "image_url": "/assets/radar/thumbs/bad-gallery-images.webp",
+        "field_examples": [
+            {"label": "A", "title": "PNG", "description": "bad", "image_url": "/assets/radar/bad-gallery-images/examples/a.png"},
+            {"label": "B", "title": "SVG", "description": "bad", "image_url": "/assets/radar/bad-gallery-images/examples/b.svg"},
+            {"label": "C", "title": "Thumb reuse", "description": "bad", "image_url": "/assets/radar/thumbs/bad-gallery-images.webp"},
+            {"label": "D", "title": "Other folder", "description": "bad", "image_url": "/assets/radar/other/examples/d.webp"},
+        ],
+    }
+
+    assert build_site.radar_example_gallery(article) == ""
+    assert "scene-photo" not in build_site.radar_experience_block(article)
+
+
+def test_public_audit_rejects_radar_article_non_webp_scene_photos():
+    audit = load_module(ROOT / "scripts" / "audit_public_site_quality.py", "audit_radar_ai_photo_gate")
+    long_text = "서울 수도권 25~39 전월세 이사 후보를 비교하며 계약 전 확인 질문과 보류 기준을 정합니다. " * 90
+    html = f'''<!doctype html><html><head><title>AI 사진 검증 레이더 글</title><meta name="description" content="서울 수도권 전월세 이사 후보의 현장 질문과 보류 기준을 확인하는 글입니다."><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/main.css?v=test"></head><body><main><h1>AI 사진 검증 레이더 글</h1><a class="tag" href="/topics/a/">전월세</a><a class="tag" href="/topics/b/">현장확인</a><a class="meta-link" href="/topics/a/">동네 레이더</a><a class="search-chip" href="/search/?q=a">검색 A</a><a class="search-chip" href="/search/?q=b">검색 B</a><section class="radar-example-gallery"><article class="example-scene-card"><img class="scene-photo" src="/assets/radar/bad/examples/a.png" alt="A"></article><article class="example-scene-card"><img class="scene-photo" src="/assets/radar/bad/examples/b.webp" alt="B"></article><article class="example-scene-card"><img class="scene-photo" src="/assets/radar/bad/examples/c.svg" alt="C"></article><div class="radar-situation-strip"><p>예시 장면</p><p>현장 질문</p></div></section><div class="radar-map photo-scan"><img class="scan-photo" src="/assets/radar/bad/examples/a.png" alt="scan"></div><section id="article-body" class="article-content"><p>{long_text} 반례 한계 현장 질문 사용법 해석 확인 계약 전 비교 보류.</p><div class="callout"></div><div class="checklist"></div><div class="comparison"></div><div class="quick-take"></div></section></main></body></html>'''
+
+    failures = audit.audit_html("/radar/bad-gallery-images/", html)
+
+    assert "/radar/bad-gallery-images/:radar_example_scene_photos_must_be_repo_webp" in failures
+    assert "/radar/bad-gallery-images/:radar_visual_scan_photo_must_be_webp" in failures

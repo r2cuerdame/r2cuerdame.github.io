@@ -496,6 +496,55 @@ def article_path(section: str, slug: str) -> str:
     return f"/{section}/{slug}/"
 
 
+def radar_repo_webp_exists(public_url: str) -> bool:
+    url = str(public_url or "").strip()
+    return bool(url.startswith("/assets/radar/") and url.endswith(".webp") and (ROOT / url.lstrip("/")).exists())
+
+
+def radar_thumbnail_webp_url(public_url: str) -> bool:
+    url = str(public_url or "").strip()
+    return bool(url.startswith("/assets/radar/thumbs/") and radar_repo_webp_exists(url))
+
+
+def radar_example_webp_url(slug: str, public_url: str) -> bool:
+    url = str(public_url or "").strip()
+    return bool(
+        url.startswith(f"/assets/radar/{slug}/examples/")
+        and "/thumbs/" not in url
+        and radar_repo_webp_exists(url)
+    )
+
+
+def radar_valid_field_examples(article: dict) -> list[dict[str, Any]]:
+    slug = str(article.get("slug") or (article.get("path") or "").strip("/").split("/")[-1])
+    thumbnail_photo = str(article.get("image_url") or "")
+    examples: list[dict[str, Any]] = []
+    seen_images: set[str] = set()
+    raw_examples = article.get("field_examples") if isinstance(article.get("field_examples"), list) else []
+    for item in raw_examples:
+        if not isinstance(item, dict):
+            continue
+        image_url = str(item.get("image_url") or "").strip()
+        if not radar_example_webp_url(slug, image_url):
+            continue
+        if image_url == thumbnail_photo or image_url in seen_images:
+            continue
+        seen_images.add(image_url)
+        examples.append(item)
+    return examples
+
+
+def radar_media_blockers(data: dict, slug: str, image_url: str) -> list[str]:
+    blockers: list[str] = []
+    if not image_url:
+        blockers.append("ai_thumbnail_missing")
+    elif not radar_thumbnail_webp_url(image_url):
+        blockers.append("ai_thumbnail_must_be_repo_webp")
+    if len(radar_valid_field_examples({**data, "slug": slug, "image_url": image_url})) < 3:
+        blockers.append("three_ai_field_example_webps_required")
+    return blockers
+
+
 def validate_article(section: str, data: dict, path: Path) -> dict:
     slug = str(data.get("slug") or path.stem).strip().strip("/")
     title = str(data.get("title") or "").strip()
@@ -513,6 +562,11 @@ def validate_article(section: str, data: dict, path: Path) -> dict:
     description = str(data.get("description") or short_text(body, 170)).strip()
     date = str(data.get("date") or data.get("published_at") or TODAY)
     dt = parse_dt(date)
+    image_url = str(data.get("image_url") or data.get("thumbnail_url") or data.get("hero_image") or image_from_body(body)).strip()
+    if section == "radar":
+        media_blockers = radar_media_blockers(data, slug, image_url)
+        if media_blockers:
+            raise BuildError(f"{path}: radar AI photo WebP assets required: {','.join(media_blockers)}")
     tags = data.get("tags") or []
     if isinstance(tags, str):
         tags = [t.strip() for t in tags.split(",") if t.strip()]
@@ -530,7 +584,7 @@ def validate_article(section: str, data: dict, path: Path) -> dict:
             "date_obj": dt,
             "category": str(data.get("category") or ("파트너스 픽" if section == "deals" else "동네 레이더")),
             "tags": tags,
-            "image_url": str(data.get("image_url") or data.get("thumbnail_url") or data.get("hero_image") or image_from_body(body)),
+            "image_url": image_url,
             "primary_deal_url": str(data.get("primary_deal_url") or data.get("deal_url") or coupang_url_from_body(body)),
             "price_hint": str(data.get("price_hint") or price_hint_from_body(body)),
             "item_count_hint": str(data.get("item_count_hint") or item_count_hint(title, body)),
@@ -964,12 +1018,11 @@ def radar_article_card(a: dict) -> str:
     theme = visual["theme"]
     scene = visual["scene"]
     chips = visual["chips"]
-    thumb = a.get("image_url") or visual.get("image_url") or visual.get("image") or ""
-    thumb_class = "has-ai-thumb" if thumb else "has-css-thumb"
+    thumb_candidate = a.get("image_url") or visual.get("image_url") or visual.get("image") or ""
+    thumb = str(thumb_candidate or "").strip() if radar_thumbnail_webp_url(str(thumb_candidate or "")) else ""
+    thumb_class = "has-ai-thumb" if thumb else "missing-ai-thumb"
     thumb_img = f'<img class="radar-card-image" src="{esc(thumb)}" alt="" loading="eager" decoding="async" aria-hidden="true" />' if thumb else ""
-    thumb_art = "" if thumb else f'''<span class="radar-thumb-art" aria-hidden="true">
-      {radar_scene_markup(scene, chips)}
-    </span>'''
+    thumb_art = ""
     hook = f'<p class="radar-card-hook">오늘의 의심 · {esc(suspicion)}</p>' if suspicion else ""
     return f'''<article class="list-card radar-card {theme}">
   <a class="radar-card-visual {thumb_class} scene-{esc(scene)}" href="{esc(a['path'])}" aria-label="{esc(a['title'])}">
@@ -1014,10 +1067,10 @@ def _radar_joined_text(article: dict) -> str:
 
 
 def _radar_primary_photo(article: dict) -> str:
-    for item in article.get("field_examples") or []:
-        if isinstance(item, dict) and item.get("image_url"):
-            return str(item.get("image_url"))
-    return str(article.get("image_url") or "")
+    examples = radar_valid_field_examples(article)
+    if examples:
+        return str(examples[0].get("image_url") or "")
+    return ""
 
 
 def _radar_scene_profile(article: dict) -> dict[str, object]:
@@ -1164,17 +1217,9 @@ def radar_experience_block(article: dict) -> str:
 
 def radar_example_gallery(article: dict) -> str:
     profile = _radar_scene_profile(article)
-    thumbnail_photo = str(article.get("image_url") or "")
-    raw_examples = article.get("field_examples") or []
     examples: list[dict[str, str]] = []
-    seen_images: set[str] = set()
-    for item in raw_examples:
-        if not isinstance(item, dict):
-            continue
+    for item in radar_valid_field_examples(article):
         image_url = str(item.get("image_url") or "")
-        if not image_url or image_url == thumbnail_photo or "/thumbs/" in image_url or image_url in seen_images:
-            continue
-        seen_images.add(image_url)
         examples.append({
             "label": str(item.get("label") or f"AI 현장 {chr(65 + len(examples))}"),
             "description": str(item.get("description") or "현장에서 먼저 떠올릴 반복 장면입니다."),

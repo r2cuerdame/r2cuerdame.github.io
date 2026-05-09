@@ -1,10 +1,10 @@
 # Hourly Department Turns — 동네 레이더
 
-_Last updated: 2026-05-02T12:00:43+09:00 KST_
+_Last updated: 2026-05-09T08:52:29+09:00 KST_
 
 ## 이 job의 약속
 
-- #naver/동네 레이더만 다룬다.
+- `동네 레이더` GitHub Pages `/radar/`만 다룬다.
 - `deliver: local` 전제이므로 최종 응답은 `[SILENT]`다.
 - `terminal(background=true)`와 `notify_on_complete=true`는 금지한다.
 - 매시간 review script와 publisher 상태를 확인한다. 발행부 턴은 clean backlog가 목표치를 초과하고 슬롯이 열리면 `scripts/publish_next_radar_candidate.py --mode adaptive`로 GitHub Pages 공개까지 수행한다.
@@ -21,9 +21,13 @@ _Last updated: 2026-05-02T12:00:43+09:00 KST_
 
 1. hard issue가 있는 후보를 먼저 고친다.
 2. target fit issue는 분량/시각자료보다 우선한다. 도입 600자 안에 1차 독자·결정상황·현장 행동이 안 보이면 발행 후보가 아니다.
-3. 미발행 ready 후보가 10개를 넘으면 새 후보/새 글을 만들지 않는다. 기존 후보의 타겟 적합도, 중복, 제목, 도입, 시각자료, 내부링크를 다듬고 발행부가 adaptive 슬롯으로 backlog를 소화한다.
-4. ready 후보가 3개 미만이면 새 후보 보강을 허용하되, 아래 전략 게이트를 통과한 주제만 `00-topic`에 넣는다.
-5. ready 후보가 3~10개면 새 후보보다 기존 후보의 타겟 선명도와 발행 순서를 정리한다. 7개 초과면 발행부는 하루 최대 4개·최소 2시간 간격 가드 안에서 추가 공개할 수 있다.
+3. media blocker는 hard issue로 본다. 새 후보/보강 후보는 `image_gen`으로 AI 실사 WebP 썸네일 1장 + field_examples 3장을 만들고 metadata에 연결해야 하며, 픽토그램/inline SVG/`.svg`/`.png`/외부 URL/썸네일 재사용은 공개 금지다. 기존 clean 후보에서 inline SVG/`field-visual` residue가 보이면 새 후보를 만들지 말고 repo-local AI 실사 WebP photo cards로 교체한 뒤 review/build/audit/dry-run/smoke를 재검증한다.
+4. 미발행 ready 후보가 10개를 넘으면 새 후보/새 글을 만들지 않는다. 기존 후보의 타겟 적합도, 중복, 제목, 도입, 시각자료, 내부링크를 다듬고 발행부가 adaptive 슬롯으로 backlog를 소화한다.
+5. ready 후보가 3개 미만이면 새 후보 보강을 허용하되, 아래 전략 게이트를 통과한 주제만 `00-topic`에 넣는다.
+6. ready 후보가 3~10개면 새 후보보다 기존 후보의 타겟 선명도와 발행 순서를 정리한다. 7개 초과면 발행부는 하루 최대 4개·최소 2시간 간격 가드 안에서 추가 공개할 수 있다.
+   - ready_unpublished가 정확히 `3`이면 최소 버퍼는 충족된 상태다. 새 후보를 만들기보다 clean queue 순서, 첫 화면 행동 문구, 내부링크 밀도, source/privacy caveat, 공개 후 검색가설을 갱신한다.
+   - 후속 클릭/내부링크는 공개 완료된 `/radar/` 글만 독자-visible 본문에 넣는다. 미공개 clean 후보는 queue handoff에는 남길 수 있지만 final.html의 직접 링크로 노출하지 않는다.
+   - clean 후보의 본문은 hard/soft/target failure가 없으면 filler로 늘리지 않는다. 재오픈 시에는 `다음 방문 질문` 같은 사용법 선명도 1개만 보강한다.
 6. 순위형 글은 데이터 출처와 산식이 검증되기 전까지 최종 순위를 쓰지 않는다.
 
 ## 한 턴 타겟 품질 작업
