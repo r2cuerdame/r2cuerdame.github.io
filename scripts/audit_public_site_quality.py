@@ -331,7 +331,7 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:forbidden_public_copy:{marker}")
     if 'traffic-badge' in page_html:
         failures.append(f"{path}:public_view_count_badge_rendered")
-    if '조회 데이터' in page_html or '조회수' in text:
+    if '조회 데이터' in page_html or '조회수' in text or '최근 조회' in text:
         failures.append(f"{path}:public_view_count_copy_rendered")
     if re.search(r"최근\s*30일\s*[0-9,]+\s*회", text):
         failures.append(f"{path}:public_view_count_number_rendered")

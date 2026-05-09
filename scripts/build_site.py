@@ -2331,7 +2331,7 @@ def deals_body(deals: list[dict]) -> str:
 </section>
 {coupang_event_strip()}
 <section id="today-best" class="landing-section above-fold-section">
-  <div class="section-title"><p class="eyebrow">오늘 추천</p><h2>지금 볼 만한 쇼핑픽</h2><p>최근 조회와 발행일을 함께 보고, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
+  <div class="section-title"><p class="eyebrow">오늘 추천</p><h2>지금 볼 만한 쇼핑픽</h2><p>발행일과 카테고리를 기준으로, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
   <div class="deal-grid best-grid">{best_deal_cards(deals)}</div>
 </section>
 <section id="deal-search" class="panel soft search-panel lower-search">
