@@ -2,7 +2,7 @@
   "slug": "parcel-mailbox-front-home-check",
   "title": "택배함·우편함 옆 집, 계속 볼지 보류할지 보는 10분",
   "description": "택배함·우편함 옆 집의 편리함이 문 앞 반복 장면으로 바뀌는지, 서울·수도권 25~39세 전월세·이사 독자가 10분 현장에서 확인하는 글입니다.",
-  "image_url": "/assets/radar/thumbs/parcel-mailbox-front-home-check-v1.webp",
+  "image_url": "/assets/radar/thumbs/parcel-mailbox-front-home-check-v2.webp",
   "status": "published_to_pages",
   "created_at": "2026-05-06T03:36:58+09:00",
   "updated_at": "2026-05-09T00:47:22+09:00",
@@ -25,7 +25,7 @@
       "title": "우편함 벽 앞 택배 흐름",
       "description": "택배함·우편함 주변에서 사람이 멈추는 위치가 내 현관 앞까지 이어지는지 봅니다.",
       "badge": "AI 현장 예시",
-      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-mailbox-grid-v1.webp",
+      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-mailbox-grid-v2.webp",
       "alt": "택배함과 우편함 벽 앞에 박스와 동선이 보이는 AI 현장 예시 이미지"
     },
     {
@@ -33,7 +33,7 @@
       "title": "문 앞 대기 지점",
       "description": "문 앞에 잠깐 머무는 장면이 반복될 때 방 안 생활 자리까지 소리·시선이 들어오는지 나눕니다.",
       "badge": "AI 현장 예시",
-      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-door-threshold-v1.webp",
+      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-door-threshold-v2.webp",
       "alt": "현관문 앞 택배 대기 지점과 생활 동선을 보여 주는 AI 현장 예시 이미지"
     },
     {
@@ -41,7 +41,7 @@
       "title": "복도 소리 방향",
       "description": "엘리베이터·입구·우편함에서 난 소리가 현관 안쪽으로 어떻게 넘어오는지 시간대별로 확인합니다.",
       "badge": "AI 현장 예시",
-      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-hallway-sound-v1.webp",
+      "image_url": "/assets/radar/parcel-mailbox-front-home-check/examples/parcel-mailbox-front-home-check-hallway-sound-v2.webp",
       "alt": "택배함 옆 복도에서 문 안쪽으로 소리 방향을 확인하는 AI 현장 예시 이미지"
     }
   ],
