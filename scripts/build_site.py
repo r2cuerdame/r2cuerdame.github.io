@@ -88,13 +88,10 @@ def format_count(value: Any) -> str:
 
 
 def traffic_badge(path: str, label: str = "최근 30일") -> str:
-    metric = metric_for(path)
-    views = format_count(metric.get("views") or metric.get("screenPageViews") or metric.get("page_views"))
-    if not views:
-        return ""
-    users = format_count(metric.get("active_users") or metric.get("activeUsers") or metric.get("users"))
-    suffix = f" · 방문 {users}" if users else ""
-    return f'<span class="traffic-badge" title="{esc(label)} 조회 데이터">👁 {esc(label)} {esc(views)}회{esc(suffix)}</span>'
+    # Page-view numbers are intentionally not rendered on public pages.
+    # Keep GA/search metrics available for internal prioritization only; visible
+    # cards and article heroes should not expose tiny early-stage counters.
+    return ""
 
 
 def configured_analytics_id() -> str:
@@ -1891,14 +1888,13 @@ def deal_intent_hubs(deals: list[dict]) -> str:
 def popular_deal_list(deals: list[dict]) -> str:
     rows = []
     for index, article in enumerate(deals_by_growth_priority(deals)[:5], start=1):
-        views = article_views(article)
-        metric = f"최근 30일 {views}회" if views else "신규/색인 대기"
+        metric = "반응 기준 추천" if article_views(article) else "신규/색인 대기"
         rows.append(f'''<li>
   <span class="rank">{index}</span>
   <a href="{esc(article['path'])}">{esc(article['title'])}</a>
   <small>{esc(metric)} · {esc(deal_category_chip_label(str(article.get('category') or '')))}</small>
 </li>''')
-    return "\n".join(rows) or '<li class="muted">조회 데이터 수집 중</li>'
+    return "\n".join(rows) or '<li class="muted">추천 글 준비중</li>'
 
 
 def deal_category_hubs(deals: list[dict]) -> str:
@@ -2592,7 +2588,6 @@ def article_body(article: dict, related_articles: list[dict] | None = None) -> s
 
 
 def search_index_item(article: dict) -> dict[str, Any]:
-    metric = metric_for(article["path"])
     return {
         "title": article["title"],
         "description": short_text(article.get("description") or article.get("body_html") or "", 180),
@@ -2604,7 +2599,7 @@ def search_index_item(article: dict) -> dict[str, Any]:
         "image_url": article.get("image_url") or "",
         "price_hint": article.get("price_hint") or "",
         "item_count_hint": article.get("item_count_hint") or "",
-        "views": metric.get("views") or metric.get("screenPageViews") or metric.get("page_views") or 0,
+        "views": 0,
         "text": short_text(" ".join([
             article.get("title") or "",
             article.get("description") or "",
