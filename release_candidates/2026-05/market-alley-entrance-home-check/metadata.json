@@ -1,0 +1,65 @@
+{
+  "slug": "market-alley-entrance-home-check",
+  "title": "시장골목 입구 집, 편의보다 먼저 볼 새벽·냄새·소리 체크 12분",
+  "description": "서울·수도권 25~39세 전월세·이사 독자가 시장골목 입구 집의 편리함을 새벽 반입·냄새·소리 질문으로 나눠 계속 볼지 보류할지 판단하는 글입니다.",
+  "image_url": "/assets/radar/thumbs/market-alley-entrance-home-check-v1.webp",
+  "status": "published_to_pages",
+  "created_at": "2026-05-09T13:49:20+09:00",
+  "updated_at": "2026-05-18T18:31:48+09:00",
+  "mature_started_at": "2026-05-09T13:49:20+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "시장골목",
+    "새벽 반입",
+    "냄새",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "시장골목 입구 집은 편의와 활기가 장점이지만 새벽 반입·냄새 길·방 안 소리가 생활 리듬과 겹치면 반복 피로가 커질 수 있습니다.",
+  "field_mission": "골목 입구, 창문 방향, 현관 안쪽, 새벽 반입·냄새·소리 질문을 12분 동안 같은 순서로 확인합니다.",
+  "editorial_positioning": "시장 가까움의 편리함을 새벽 반입·냄새·소리의 계약 전 확인 질문으로 바꾸는 동네 레이더 글",
+  "field_examples": [
+    {
+      "label": "예시 장면 1",
+      "title": "새벽 반입 방향",
+      "description": "손수레와 상자가 어느 방향으로 지나가고 어디서 멈추는지 봅니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/market-alley-entrance-home-check/examples/market-alley-entrance-home-check-delivery-crates-v1.webp",
+      "alt": "시장골목 새벽 반입 동선과 적재 위치를 확인하는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 2",
+      "title": "창문과 골목 방향",
+      "description": "창문이 냄새와 소리 길을 정면으로 받는지 확인합니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/market-alley-entrance-home-check/examples/market-alley-entrance-home-check-window-route-v1.webp",
+      "alt": "방 안 창문에서 시장골목 방향을 확인하는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 3",
+      "title": "현관 안쪽 소리와 냄새",
+      "description": "주거 현관이 시장 흐름과 분리되는지 확인합니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/market-alley-entrance-home-check/examples/market-alley-entrance-home-check-hallway-vent-v1.webp",
+      "alt": "시장골목 입구 건물 현관 안쪽 환기와 소리 방향을 보는 AI 실사 현장 예시 이미지"
+    }
+  ],
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-09T13:49:20+09:00",
+    "last_verified_visible_prose_chars": 4762,
+    "last_verified_reader_visual_count": 8,
+    "media_blockers": 0,
+    "photo_cards": 4,
+    "svg_or_field_visual_residue": 0,
+    "hourly_polish": "2026-05-09T20:37:46+09:00 added good-counterexample/remaining-question decision table"
+  },
+  "last_review": "deterministic review passed at 2026-05-09T20:37:46+09:00 after good-counterexample/remaining-question decision table polish",
+  "pages_published_at": "2026-05-18T18:31:48+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/market-alley-entrance-home-check/"
+}

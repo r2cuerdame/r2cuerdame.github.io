@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-05-17T11:09:58+09:00
+Last updated: 2026-05-18T18:31:48+09:00
 
 ## Primary sections
 
@@ -28,6 +28,7 @@ Last updated: 2026-05-17T11:09:58+09:00
 
 ## Dongne Radar articles
 
+- 시장골목 입구 집, 편의보다 먼저 볼 새벽·냄새·소리 체크 12분: https://r2cuerdame.github.io/radar/market-alley-entrance-home-check/
 - 최상층 집, 전망보다 먼저 볼 여름·누수·소리 체크 12분: https://r2cuerdame.github.io/radar/top-floor-heat-leak-noise-check/
 - 택배함·우편함 옆 집, 계속 볼지 보류할지 보는 10분: https://r2cuerdame.github.io/radar/parcel-mailbox-front-home-check/
 - 복도 끝 집, 조용함인지 사각지대인지 보는 밤 12분: https://r2cuerdame.github.io/radar/corridor-end-home-check/
