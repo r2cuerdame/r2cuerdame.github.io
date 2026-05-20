@@ -1,0 +1,68 @@
+{
+  "slug": "parking-line-under-window-check",
+  "title": "창문 아래 주차선 집, 계속 볼지 보류할지 보는 밤 10분",
+  "description": "서울·수도권 25~39세 전월세·이사 독자가 창문 아래 주차선 집을 빛·소리·동선 질문으로 나눠 계속 볼지 보류할지 판단하는 글입니다.",
+  "image_url": "/assets/radar/thumbs/parking-line-under-window-check-v1.webp",
+  "status": "published_to_pages",
+  "created_at": "2026-05-10T00:47:28+09:00",
+  "updated_at": "2026-05-20T23:05:23+09:00",
+  "mature_started_at": "2026-05-10T00:47:28+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "주차선 집",
+    "창문 아래 주차",
+    "밤 소리",
+    "현장 확인",
+    "전월세 계약"
+  ],
+  "radar_suspicion": "창문 아래 주차선은 주차 편의처럼 보이지만 밤 불빛·문 닫힘·시동 대기·보행 머무름이 방 안 생활 자리와 반복해서 겹칠 수 있습니다.",
+  "field_mission": "낮에는 창문과 주차선 사이 완충을 보고, 밤에는 빛 방향·문 소리·머무름 위치를 10분 동안 같은 순서로 확인합니다.",
+  "editorial_positioning": "창문 아래 주차 편의를 빛·소리·동선 질문으로 바꿔 계속 볼지 보류할지 나누게 만드는 동네 레이더 글",
+  "field_examples": [
+    {
+      "label": "예시 장면 1",
+      "title": "창문과 주차선 사이 완충 거리",
+      "description": "창문 바로 아래 바퀴가 붙는지, 턱·화단·보행 폭이 끊어 주는지 확인합니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/parking-line-under-window-check/examples/parking-line-under-window-check-window-distance-v1.webp",
+      "alt": "창문과 주차선 사이 좁은 완충 거리를 보는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 2",
+      "title": "밤 불빛과 방 안 전달",
+      "description": "차 불빛이 벽에서 끊기는지, 침실·책상 자리까지 반복해서 들어오는지 봅니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/parking-line-under-window-check/examples/parking-line-under-window-check-night-light-v1.webp",
+      "alt": "밤에 창문 가까운 주차 위치와 빛 방향을 보는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 3",
+      "title": "보행 동선과 머무름 자리",
+      "description": "주차선 옆 통로가 지나가는 길인지, 짐 정리·대기 위치가 되는지 나눠 봅니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/parking-line-under-window-check/examples/parking-line-under-window-check-walkway-route-v1.webp",
+      "alt": "주차선 옆 좁은 보행 동선과 창문 거리를 보는 AI 실사 현장 예시 이미지"
+    }
+  ],
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "reader_visual_count_min": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-10T00:47:28+09:00",
+    "visible_prose_chars": 4920,
+    "reader_visual_count": 8,
+    "target_fit": true,
+    "reviewed_at": "2026-05-10T15:36:36+09:00",
+    "media_blockers": 0,
+    "photo_cards": 4,
+    "svg_or_field_visual_residue": 0,
+    "hourly_replenishment_2026_05_10_0051": "created clean candidate with repo-local AI 실사 WebP photo cards after top-floor publication reduced ready_unpublished below the minimum buffer",
+    "hourly_editorial_polish_2026_05_10_1536": "added co-resident/family explanation and hold-condition table so the parking-line candidate is no longer just above the 4500-character floor"
+  },
+  "last_review": "ready=True hard=0 soft=0 target_fit=True chars=4920 visuals=8 media_blockers=0; reviewed_at=2026-05-10T15:36:36+09:00; svg_or_field_visual_residue=0",
+  "pages_published_at": "2026-05-20T23:05:23+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/parking-line-under-window-check/"
+}

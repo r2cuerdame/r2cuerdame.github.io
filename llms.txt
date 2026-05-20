@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-05-18T18:31:48+09:00
+Last updated: 2026-05-20T23:05:23+09:00
 
 ## Primary sections
 
@@ -28,6 +28,7 @@ Last updated: 2026-05-18T18:31:48+09:00
 
 ## Dongne Radar articles
 
+- 창문 아래 주차선 집, 계속 볼지 보류할지 보는 밤 10분: https://r2cuerdame.github.io/radar/parking-line-under-window-check/
 - 시장골목 입구 집, 편의보다 먼저 볼 새벽·냄새·소리 체크 12분: https://r2cuerdame.github.io/radar/market-alley-entrance-home-check/
 - 최상층 집, 전망보다 먼저 볼 여름·누수·소리 체크 12분: https://r2cuerdame.github.io/radar/top-floor-heat-leak-noise-check/
 - 택배함·우편함 옆 집, 계속 볼지 보류할지 보는 10분: https://r2cuerdame.github.io/radar/parcel-mailbox-front-home-check/
@@ -47,7 +48,6 @@ Last updated: 2026-05-18T18:31:48+09:00
 - 월세는 싼데 관리비가 흐리다? ‘관리비 블랙박스’ 보류법: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/
 - 월세 5만 원 싼 집이 더 비쌀 때: 계약 전 5개 질문: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/
 - 동네 후보를 줄이는 5개 신호: 월세·전세 계약 전 레이더: https://r2cuerdame.github.io/radar/dongne-signal-framework/
-- 사람 많은 상권이 꼭 좋은 자리는 아닙니다: 카페 계약 전 5개 의심: https://r2cuerdame.github.io/radar/cafe-contract-risk/
 
 ## Topic hubs
 
