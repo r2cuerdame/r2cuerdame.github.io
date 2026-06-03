@@ -1,0 +1,67 @@
+{
+  "slug": "construction-notice-building-check",
+  "title": "공사 안내문 붙은 건물, 계속 볼지 보류할지 보는 12분",
+  "description": "서울·수도권 25~39세 전월세·이사 독자가 공사 안내문이 붙은 건물을 소음·먼지·관리 답변 질문으로 나눠 계속 볼지 보류할지 판단하는 글입니다.",
+  "image_url": "/assets/radar/thumbs/construction-notice-building-check-v1.webp",
+  "status": "published_to_pages",
+  "created_at": "2026-05-09T13:49:20+09:00",
+  "updated_at": "2026-05-11T00:26:04+09:00",
+  "mature_started_at": "2026-05-09T13:49:20+09:00",
+  "target_audience": "서울·수도권에서 3~12개월 안에 이사·전월세 계약·거주지 비교를 해야 하는 25~39세 직장인/1인가구/신혼·예비신혼",
+  "tags": [
+    "동네 레이더",
+    "공사 안내문",
+    "공용부",
+    "현장 확인",
+    "전월세 계약",
+    "이사 준비"
+  ],
+  "radar_suspicion": "공사 안내문은 관리 루틴의 좋은 신호일 수도 있지만 작업 시간·먼지·통행 동선이 비면 입주 직후 생활 피로가 커질 수 있습니다.",
+  "field_mission": "안내문, 공용부 먼지, 계단·엘리베이터 동선, 관리 답변을 12분 동안 같은 순서로 확인합니다.",
+  "editorial_positioning": "공사 안내문을 불안 감상이 아니라 계약 전 현장 질문과 보류 조건으로 바꾸는 동네 레이더 글",
+  "field_examples": [
+    {
+      "label": "예시 장면 1",
+      "title": "복도 보수와 통행 폭",
+      "description": "공사 범위가 내 현관 앞 통행 폭과 얼마나 겹치는지 확인합니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/construction-notice-building-check/examples/construction-notice-building-check-repair-corridor-v1.webp",
+      "alt": "공용 복도 보수 흔적과 통행 폭을 보는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 2",
+      "title": "계단실 안내문과 우회 동선",
+      "description": "출근·귀가 때 실제로 우회할 구간과 시간대를 나눕니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/construction-notice-building-check/examples/construction-notice-building-check-stair-notice-v1.webp",
+      "alt": "계단실 공사 안내문과 통행 동선을 확인하는 AI 실사 현장 예시 이미지"
+    },
+    {
+      "label": "예시 장면 3",
+      "title": "보수 흔적과 정리 경로",
+      "description": "보수 흔적이 관리 루틴인지, 반복 먼지 경로인지 분리합니다.",
+      "badge": "AI 실사 예시",
+      "image_url": "/assets/radar/construction-notice-building-check/examples/construction-notice-building-check-patch-trace-v1.webp",
+      "alt": "공용부 벽 보수 흔적과 바닥 먼지 경로를 살피는 AI 실사 현장 예시 이미지"
+    }
+  ],
+  "quality_snapshot": {
+    "visible_prose_chars_min": 4500,
+    "visible_prose_chars_actual": 4918,
+    "reader_visual_count_min": 8,
+    "reader_visual_count_actual": 8,
+    "hard_issues": 0,
+    "soft_issues": 0,
+    "target_fit_required": true,
+    "created_by_hourly_replenishment": "2026-05-09T13:49:20+09:00",
+    "last_hourly_polish": "2026-05-09T14:44:45+09:00",
+    "last_polish_focus": "source/privacy caveat plus published-only internal-link routing",
+    "media_blockers": 0,
+    "photo_cards": 4,
+    "published_only_internal_links_added": 3,
+    "svg_or_field_visual_residue": 0
+  },
+  "last_review": "2026-05-09T14:51:31+09:00 review pass: ready=true, chars=4918, visuals=8, target_fit=true, hard=0, soft=0, media_blockers=0",
+  "pages_published_at": "2026-05-11T00:26:04+09:00",
+  "pages_url": "https://r2cuerdame.github.io/radar/construction-notice-building-check/"
+}
