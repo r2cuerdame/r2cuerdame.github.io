@@ -32,9 +32,9 @@ Radar Article: https://r2cuerdame.github.io/radar/station-to-home-night-route-ch
 Radar Article: https://r2cuerdame.github.io/radar/shared-entrance-management-signals/ — 공동현관 앞 30초, 살 동네의 관리 신호를 읽는 법
 Radar Article: https://r2cuerdame.github.io/radar/ground-floor-home-check/ — 반지하가 아닌 1층집, 계속 볼지 보류할지 보는 14분
 Radar Article: https://r2cuerdame.github.io/radar/stair-only-fourth-floor-villa-check/ — 엘리베이터 없는 4층 빌라, 계속 볼지 보류할지 보는 12분
+Separate Deals Article: https://r2cuerdame.github.io/deals/여행-출근용-충전템-best-3-충전기와-보조배터리-실속-조합-b89be2fd/ — 여행·출근용 충전템 BEST 3, 충전기와 보조배터리 실속 조합
 Separate Deals Article: https://r2cuerdame.github.io/deals/여름-전-실속-생활템-best-3-집에서도-밖에서도-바로-쓰는-모델-3309a8c2/ — 여름 전 실속 생활템 BEST 3, 집에서도 밖에서도 바로 쓰는 모델
 Separate Deals Article: https://r2cuerdame.github.io/deals/반려동물-자동급식기-정수기-드라이룸-추천-5종-집-비울-때-안심되는-펫가전-0138326b/ — 반려동물 자동급식기·정수기·드라이룸 추천 5종, 집 비울 때 안심되는 펫가전
 Separate Deals Article: https://r2cuerdame.github.io/deals/2026-무선-이어폰-추천-top-5-가격대-장단점-비교-874e0f15/ — 2026 무선 이어폰 추천 TOP 5 가격대·장단점 비교
-Separate Deals Article: https://r2cuerdame.github.io/deals/wireless-stick-vacuum-top4-2026/ — 무선청소기·스틱청소기 4종 비교, 자동 먼지 비움부터 흡입력까지 구매가이드
 Language: ko-KR
-Updated: 2026-05-20T23:05:23+09:00
+Updated: 2026-06-03T09:10:16+09:00

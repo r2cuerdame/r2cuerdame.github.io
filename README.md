@@ -15,7 +15,7 @@ Public site for Dongne Radar, guides, and a clearly separated deals section.
 ## Current content
 
 - Dongne Radar articles: 21
-- Shopping pick articles: 20
+- Shopping pick articles: 21
 - Search intent hubs: 9
 
 ## Search/AI files
