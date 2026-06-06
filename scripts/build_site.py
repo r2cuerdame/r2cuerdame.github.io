@@ -1916,6 +1916,67 @@ def deal_category_hubs(deals: list[dict]) -> str:
     return "\n".join(cards)
 
 
+
+def first_matching_deal(deals: list[dict], terms: list[str]) -> dict | None:
+    for article in deals_by_growth_priority(deals):
+        if matches_deal_intent(article, terms):
+            return article
+    prioritized = deals_by_growth_priority(deals)
+    return prioritized[0] if prioritized else None
+
+
+def deal_lane_card(label: str, title: str, pain: str, terms: list[str], deals: list[dict]) -> str:
+    article = first_matching_deal(deals, terms)
+    if not article:
+        return f'''<article class="deal-conversion-lane empty">
+  <span class="tag pale">{esc(label)}</span>
+  <h2>{esc(title)}</h2>
+  <p>{esc(pain)}</p>
+  <strong>비교글 준비중</strong>
+</article>'''
+    product_url = str(article.get("primary_deal_url") or "").strip()
+    product = ""
+    if product_url:
+        product = f'<a class="lane-product-link" data-affiliate-surface="deals_problem_lane" href="{esc(product_url)}" target="_blank" rel="sponsored nofollow noopener">상품 페이지</a>'
+    return f'''<article class="deal-conversion-lane">
+  <span class="tag pale">{esc(label)}</span>
+  <h2>{esc(title)}</h2>
+  <p>{esc(pain)}</p>
+  <a class="lane-article-link" href="{esc(article['path'])}">{esc(shopping_room_title(article))}</a>
+  <div class="lane-actions">{product}<a class="text-link" href="{esc(article['path'])}">비교 기준 보기 →</a></div>
+</article>'''
+
+
+def deal_problem_lanes(deals: list[dict]) -> str:
+    lanes = [
+        ("습기·공기", "원룸 냄새와 장마가 먼저 걱정될 때", "제습기·공기청정기는 방 크기, 물통 비우기, 필터비부터 보면 실패가 줄어듭니다.", ["제습기", "공기청정기", "장마", "습기", "필터"]),
+        ("책상·자세", "재택 책상이 몸을 망가뜨릴 때", "의자·모니터암·조명은 예쁨보다 허리, 눈 피로, 책상 공간을 먼저 고릅니다.", ["모니터", "의자", "키보드", "재택", "책상", "조명"]),
+        ("소리·이동", "회의·출퇴근·캠핑 소리가 애매할 때", "이어폰·헤드폰·스피커는 장소가 다르면 정답도 달라집니다. 쓰는 순간부터 고릅니다.", ["헤드폰", "헤드셋", "스피커", "ANC", "블루투스", "이어폰"]),
+    ]
+    return "\n".join(deal_lane_card(*lane, deals=deals) for lane in lanes)
+
+
+def deal_money_path(deals: list[dict]) -> str:
+    featured = deals_by_growth_priority(deals)[:3]
+    links = "".join(
+        f'<li><a href="{esc(a["path"])}">{esc(short_text(a.get("title") or "", 38))}</a></li>'
+        for a in featured
+    ) or '<li class="muted">추천 비교글 준비중</li>'
+    return f'''<section class="deal-money-path" aria-label="쇼핑픽 빠른 구매 동선">
+  <div class="money-path-copy">
+    <p class="eyebrow">3초 구매 동선</p>
+    <h2>글 목록을 뒤지지 말고, 지금 불편한 장면에서 시작하세요</h2>
+    <p>쇼핑픽은 “제품명 검색 → 긴 순위표”보다 “내가 실패하기 싫은 조건 → 비교글 → 상품 확인” 순서로 바꿨습니다.</p>
+  </div>
+  <ol class="money-path-list">
+    <li><strong>01</strong><span>불편한 장면 선택</span><small>습기, 책상, 소리, 청소처럼 실제 문제부터</small></li>
+    <li><strong>02</strong><span>비교 기준 확인</span><small>가격보다 실패 조건과 관리 부담 먼저</small></li>
+    <li><strong>03</strong><span>상품 페이지 이동</span><small>옵션·배송·최근 후기는 쿠팡에서 재확인</small></li>
+  </ol>
+  <ul class="money-path-featured">{links}</ul>
+</section>'''
+
+
 def topic_page_metas() -> list[dict]:
     pages: list[dict] = []
     for topic in TOPIC_HUBS:
@@ -2309,21 +2370,27 @@ def deals_body(deals: list[dict]) -> str:
     return f'''
 <section class="deal-landing-hero">
   <div class="deal-hero-copy">
-    <p class="eyebrow">쇼핑픽 · 구매 후보 지도</p>
-    <h1>필요한 제품만 빠르게 비교</h1>
-    <p class="lead">생활가전·책상 장비·음향기기를 가격대, 사용 장면, 관리 부담 기준으로 짧게 정리합니다. 오늘 살 만한 후보만 먼저 보고, 자세한 가격은 상품 페이지에서 다시 확인하세요.</p>
+    <p class="eyebrow">쇼핑픽 · 전환형 구매 입구</p>
+    <h1>제품명보다 “지금 불편한 장면”부터 고르세요</h1>
+    <p class="lead">제습기, 책상 장비, 이어폰처럼 검색하면 후보가 너무 많은 제품을 실제 사용 장면·실패 조건·관리 부담 기준으로 좁힙니다. 비교글에서 기준을 확인하고, 상품 페이지는 마지막에 확인하세요.</p>
     <div class="hero-actions compact-actions">
-      <a class="button primary" href="#today-best">오늘 추천 보기</a>
-      <a class="button" href="#deal-search">상품 검색하기</a>
+      <a class="button primary" href="#problem-lanes">내 상황에서 고르기</a>
+      <a class="button" href="#today-best">오늘 추천 보기</a>
+      <a class="button" href="#deal-search">상품 검색</a>
     </div>
     <div class="deal-flow" aria-label="쇼핑픽 이용 순서">
-      <span><strong>1</strong> 용도 정하기</span>
-      <span><strong>2</strong> 후보 비교</span>
+      <span><strong>1</strong> 장면 선택</span>
+      <span><strong>2</strong> 실패조건 제거</span>
       <span><strong>3</strong> 상품 확인</span>
     </div>
     <p class="affiliate-inline"><strong>제휴 고지</strong> 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p>
   </div>
   {shopping_room_scene(deals)}
+</section>
+{deal_money_path(deals)}
+<section id="problem-lanes" class="landing-section problem-lane-section">
+  <div class="section-title"><p class="eyebrow">상황별 바로 선택</p><h2>검색어보다 실패하기 싫은 장면으로 들어가기</h2><p>방문자가 바로 살 이유를 찾도록, 가장 돈 되는 구매 상황 3개를 첫 화면 아래에 고정했습니다.</p></div>
+  <div class="deal-problem-lanes">{deal_problem_lanes(deals)}</div>
 </section>
 <section class="deal-category-rail" aria-label="카테고리 빠른 이동">
   <strong>바로가기</strong>
@@ -2908,6 +2975,29 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-flow strong { display: grid; place-items: center; flex: 0 0 auto; width: 22px; height: 22px; border-radius: 999px; background: #111827; color: #fff; font-size: 12px; line-height: 1; }
 .affiliate-inline { max-width: 590px; margin: 14px 0 0; color: #6b7280; font-size: 12.5px; line-height: 1.5; font-weight: 750; }
 .affiliate-inline strong { color: #9a3412; margin-right: 6px; }
+.deal-money-path { display: grid; grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr); gap: 16px; align-items: stretch; margin: 14px 0 24px; padding: clamp(18px, 2.6vw, 26px); border-radius: 30px; background: #111827; color: #fff; box-shadow: 0 18px 42px rgba(17,24,39,.12); }
+.money-path-copy h2 { margin: 6px 0 8px; font-size: clamp(24px, 3vw, 34px); line-height: 1.14; letter-spacing: -.045em; }
+.money-path-copy p:not(.eyebrow) { margin: 0; color: #d1d5db; line-height: 1.62; font-weight: 760; }
+.deal-money-path .eyebrow { color: #fed7aa; margin: 0; }
+.money-path-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.money-path-list li { min-width: 0; padding: 14px; border-radius: 20px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); }
+.money-path-list strong, .money-path-list span, .money-path-list small { display: block; }
+.money-path-list strong { color: #fb923c; font-size: 12px; letter-spacing: .08em; }
+.money-path-list span { margin-top: 6px; font-weight: 950; line-height: 1.25; }
+.money-path-list small { margin-top: 5px; color: #cbd5e1; line-height: 1.45; font-weight: 760; }
+.money-path-featured { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.money-path-featured a { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border-radius: 999px; background: #fff; color: #111827; font-size: 13px; font-weight: 950; text-decoration: none; }
+.money-path-featured a:hover { color: #9a3412; background: #fff7ed; }
+.problem-lane-section { margin-top: 22px; }
+.deal-problem-lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.deal-conversion-lane { display: flex; flex-direction: column; min-width: 0; min-height: 100%; padding: 22px; border-radius: 26px; background: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 12px 30px rgba(15,23,42,.055); }
+.deal-conversion-lane h2 { margin: 10px 0 8px; font-size: clamp(22px, 2.45vw, 30px); line-height: 1.16; }
+.deal-conversion-lane p { margin: 0; color: #5f5652; line-height: 1.6; font-weight: 760; }
+.lane-article-link { margin-top: 16px; padding: 13px 14px; border-radius: 18px; background: #f9fafb; border: 1px solid #e5e7eb; color: #111827; font-weight: 950; line-height: 1.35; text-decoration: none; }
+.lane-article-link:hover { background: #fff7ed; border-color: #fed7aa; color: var(--orange-dark); }
+.lane-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: auto; padding-top: 14px; }
+.lane-product-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 15px; border-radius: 999px; background: #ff5a1f; color: #fff; border: 1px solid #ff5a1f; text-decoration: none; font-size: 13px; font-weight: 950; box-shadow: 0 10px 18px rgba(255,90,31,.14); }
+.lane-product-link:hover { color: #fff; background: #ea580c; border-color: #ea580c; }
 .deal-hero-panel { align-self: stretch; display: flex; flex-direction: column; justify-content: flex-start; padding: clamp(18px, 2.6vw, 24px); background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: none; }
 .deal-hero-panel > .tag { margin-bottom: 12px; }
 .deal-hero-panel > strong { display: block; font-size: clamp(21px, 2.2vw, 25px); line-height: 1.2; letter-spacing: -.035em; margin-bottom: 8px; }
@@ -3292,6 +3382,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 18px; margin-top: 18px; padding: 22px; }
+  .deal-money-path, .deal-problem-lanes, .money-path-list { grid-template-columns: 1fr; }
+  .money-path-featured { display: grid; grid-template-columns: 1fr; }
   .shopping-room-card { border-radius: 24px; }
   .room-visual { min-height: 330px; }
   .deal-category-rail { align-items: flex-start; flex-direction: column; gap: 10px; }

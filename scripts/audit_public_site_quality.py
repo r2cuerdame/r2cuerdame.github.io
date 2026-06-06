@@ -277,6 +277,9 @@ def audit_css(css: str) -> list[str]:
     for marker in [".coupang-event-strip", ".coupang-event-card", ".coupang-event-link", ".event-disclosure"]:
         if marker not in css:
             failures.append(f"coupang_event_css_missing:{marker}")
+    for marker in [".deal-money-path", ".money-path-list", ".deal-problem-lanes", ".deal-conversion-lane", ".lane-product-link"]:
+        if marker not in css:
+            failures.append(f"deal_conversion_css_missing:{marker}")
     if "grid-template-columns: minmax(330px, .78fr) minmax(430px, 1.22fr)" not in css:
         failures.append("shopping_room_desktop_width_weight_guard_missing")
     if "min-height: clamp(390px, 36vw, 470px)" not in css:
@@ -403,6 +406,14 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:shopping_room_products_too_few:{room_products}")
         if 'shopping-room-pick-1' not in page_html or 'room-previews' not in page_html:
             failures.append(f"{path}:shopping_room_toggle_preview_missing")
+        if 'class="deal-money-path"' not in page_html or 'id="problem-lanes"' not in page_html:
+            failures.append(f"{path}:deal_conversion_path_missing")
+        lane_cards = page_html.count('class="deal-conversion-lane')
+        lane_product_links = anchor_class_count(page_html, "lane-product-link")
+        if lane_cards < 3:
+            failures.append(f"{path}:deal_conversion_lanes_too_few:{lane_cards}")
+        if lane_product_links < 2:
+            failures.append(f"{path}:deal_conversion_product_links_too_few:{lane_product_links}")
         if room_product_links < min(4, room_products):
             failures.append(f"{path}:shopping_room_product_links_too_few:{room_product_links}")
         if coupang_links and "affiliate_click" not in page_html:

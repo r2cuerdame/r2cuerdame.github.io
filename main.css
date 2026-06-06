@@ -256,6 +256,29 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .deal-flow strong { display: grid; place-items: center; flex: 0 0 auto; width: 22px; height: 22px; border-radius: 999px; background: #111827; color: #fff; font-size: 12px; line-height: 1; }
 .affiliate-inline { max-width: 590px; margin: 14px 0 0; color: #6b7280; font-size: 12.5px; line-height: 1.5; font-weight: 750; }
 .affiliate-inline strong { color: #9a3412; margin-right: 6px; }
+.deal-money-path { display: grid; grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr); gap: 16px; align-items: stretch; margin: 14px 0 24px; padding: clamp(18px, 2.6vw, 26px); border-radius: 30px; background: #111827; color: #fff; box-shadow: 0 18px 42px rgba(17,24,39,.12); }
+.money-path-copy h2 { margin: 6px 0 8px; font-size: clamp(24px, 3vw, 34px); line-height: 1.14; letter-spacing: -.045em; }
+.money-path-copy p:not(.eyebrow) { margin: 0; color: #d1d5db; line-height: 1.62; font-weight: 760; }
+.deal-money-path .eyebrow { color: #fed7aa; margin: 0; }
+.money-path-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.money-path-list li { min-width: 0; padding: 14px; border-radius: 20px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); }
+.money-path-list strong, .money-path-list span, .money-path-list small { display: block; }
+.money-path-list strong { color: #fb923c; font-size: 12px; letter-spacing: .08em; }
+.money-path-list span { margin-top: 6px; font-weight: 950; line-height: 1.25; }
+.money-path-list small { margin-top: 5px; color: #cbd5e1; line-height: 1.45; font-weight: 760; }
+.money-path-featured { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.money-path-featured a { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border-radius: 999px; background: #fff; color: #111827; font-size: 13px; font-weight: 950; text-decoration: none; }
+.money-path-featured a:hover { color: #9a3412; background: #fff7ed; }
+.problem-lane-section { margin-top: 22px; }
+.deal-problem-lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.deal-conversion-lane { display: flex; flex-direction: column; min-width: 0; min-height: 100%; padding: 22px; border-radius: 26px; background: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 12px 30px rgba(15,23,42,.055); }
+.deal-conversion-lane h2 { margin: 10px 0 8px; font-size: clamp(22px, 2.45vw, 30px); line-height: 1.16; }
+.deal-conversion-lane p { margin: 0; color: #5f5652; line-height: 1.6; font-weight: 760; }
+.lane-article-link { margin-top: 16px; padding: 13px 14px; border-radius: 18px; background: #f9fafb; border: 1px solid #e5e7eb; color: #111827; font-weight: 950; line-height: 1.35; text-decoration: none; }
+.lane-article-link:hover { background: #fff7ed; border-color: #fed7aa; color: var(--orange-dark); }
+.lane-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: auto; padding-top: 14px; }
+.lane-product-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 15px; border-radius: 999px; background: #ff5a1f; color: #fff; border: 1px solid #ff5a1f; text-decoration: none; font-size: 13px; font-weight: 950; box-shadow: 0 10px 18px rgba(255,90,31,.14); }
+.lane-product-link:hover { color: #fff; background: #ea580c; border-color: #ea580c; }
 .deal-hero-panel { align-self: stretch; display: flex; flex-direction: column; justify-content: flex-start; padding: clamp(18px, 2.6vw, 24px); background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: none; }
 .deal-hero-panel > .tag { margin-bottom: 12px; }
 .deal-hero-panel > strong { display: block; font-size: clamp(21px, 2.2vw, 25px); line-height: 1.2; letter-spacing: -.035em; margin-bottom: 8px; }
@@ -640,6 +663,8 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 18px; margin-top: 18px; padding: 22px; }
+  .deal-money-path, .deal-problem-lanes, .money-path-list { grid-template-columns: 1fr; }
+  .money-path-featured { display: grid; grid-template-columns: 1fr; }
   .shopping-room-card { border-radius: 24px; }
   .room-visual { min-height: 330px; }
   .deal-category-rail { align-items: flex-start; flex-direction: column; gap: 10px; }
