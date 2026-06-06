@@ -32,9 +32,9 @@ Radar Article: https://r2cuerdame.github.io/radar/bus-stop-front-home-check/ —
 Radar Article: https://r2cuerdame.github.io/radar/station-to-home-night-route-check/ — 역에서 집까지 마지막 7분, 밤길을 다시 보는 법
 Radar Article: https://r2cuerdame.github.io/radar/shared-entrance-management-signals/ — 공동현관 앞 30초, 살 동네의 관리 신호를 읽는 법
 Radar Article: https://r2cuerdame.github.io/radar/ground-floor-home-check/ — 반지하가 아닌 1층집, 계속 볼지 보류할지 보는 14분
+Separate Deals Article: https://r2cuerdame.github.io/deals/one-room-monsoon-humidity-smell-kit-2026/ — 원룸 장마 습기·냄새 잡는 현실 조합 4개
 Separate Deals Article: https://r2cuerdame.github.io/deals/여행-출근용-충전템-best-3-충전기와-보조배터리-실속-조합-b89be2fd/ — 여행·출근용 충전템 BEST 3, 충전기와 보조배터리 실속 조합
 Separate Deals Article: https://r2cuerdame.github.io/deals/여름-전-실속-생활템-best-3-집에서도-밖에서도-바로-쓰는-모델-3309a8c2/ — 여름 전 실속 생활템 BEST 3, 집에서도 밖에서도 바로 쓰는 모델
 Separate Deals Article: https://r2cuerdame.github.io/deals/반려동물-자동급식기-정수기-드라이룸-추천-5종-집-비울-때-안심되는-펫가전-0138326b/ — 반려동물 자동급식기·정수기·드라이룸 추천 5종, 집 비울 때 안심되는 펫가전
-Separate Deals Article: https://r2cuerdame.github.io/deals/2026-무선-이어폰-추천-top-5-가격대-장단점-비교-874e0f15/ — 2026 무선 이어폰 추천 TOP 5 가격대·장단점 비교
 Language: ko-KR
-Updated: 2026-06-06T10:01:18+09:00
+Updated: 2026-06-07T00:40:11+09:00
