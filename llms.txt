@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-06-13T11:08:13+09:00
+Last updated: 2026-06-15T09:06:45+09:00
 
 ## Primary sections
 
@@ -28,6 +28,7 @@ Last updated: 2026-06-13T11:08:13+09:00
 
 ## Dongne Radar articles
 
+- 밤에 조용한 골목 집, 계속 볼지 보류할지 보는 15분: https://r2cuerdame.github.io/radar/night-side-street-home-check/
 - 창문 아래 주차선 집, 계속 볼지 보류할지 보는 밤 10분: https://r2cuerdame.github.io/radar/parking-line-under-window-check/
 - 시장골목 입구 집, 편의보다 먼저 볼 새벽·냄새·소리 체크 12분: https://r2cuerdame.github.io/radar/market-alley-entrance-home-check/
 - 공사 안내문 붙은 건물, 계속 볼지 보류할지 보는 12분: https://r2cuerdame.github.io/radar/construction-notice-building-check/
@@ -47,7 +48,6 @@ Last updated: 2026-06-13T11:08:13+09:00
 - 지도앱 35분은 반쪽입니다: 출근길 피로 15분 체크: https://r2cuerdame.github.io/radar/commute-fatigue-neighborhood-check/
 - 낮에 본 집은 반쪽입니다: 퇴근 후 20분 동네 수사: https://r2cuerdame.github.io/radar/after-work-neighborhood-check/
 - 월세는 싼데 관리비가 흐리다? ‘관리비 블랙박스’ 보류법: https://r2cuerdame.github.io/radar/maintenance-fee-opaque-rent/
-- 월세 5만 원 싼 집이 더 비쌀 때: 계약 전 5개 질문: https://r2cuerdame.github.io/radar/monthly-rent-pressure-questions/
 
 ## Topic hubs
 
@@ -63,6 +63,7 @@ Last updated: 2026-06-13T11:08:13+09:00
 
 ## Separate deals articles
 
+- 여름밤 모기퇴치템 BEST 3, 전기모기채·모기퇴치기·홈매트 실속 조합: https://r2cuerdame.github.io/deals/여름밤-모기퇴치템-best-3-전기모기채-모기퇴치기-홈매트-실속-조합-325574c0/
 - 차량용 앞유리 햇빛가리개 추천 BEST 3, 여름 야외주차 열기 줄이는 우산형 차양막: https://r2cuerdame.github.io/deals/차량용-앞유리-햇빛가리개-추천-best-3-여름-야외주차-열기-줄이는-우산형-차양막-725748d2/
 - 원룸 장마 습기·냄새 잡는 현실 조합 4개: https://r2cuerdame.github.io/deals/one-room-monsoon-humidity-smell-kit-2026/
 - 여행·출근용 충전템 BEST 3, 충전기와 보조배터리 실속 조합: https://r2cuerdame.github.io/deals/여행-출근용-충전템-best-3-충전기와-보조배터리-실속-조합-b89be2fd/
@@ -70,7 +71,6 @@ Last updated: 2026-06-13T11:08:13+09:00
 - 반려동물 자동급식기·정수기·드라이룸 추천 5종, 집 비울 때 안심되는 펫가전: https://r2cuerdame.github.io/deals/반려동물-자동급식기-정수기-드라이룸-추천-5종-집-비울-때-안심되는-펫가전-0138326b/
 - 2026 무선 이어폰 추천 TOP 5 가격대·장단점 비교: https://r2cuerdame.github.io/deals/2026-무선-이어폰-추천-top-5-가격대-장단점-비교-874e0f15/
 - 무선청소기·스틱청소기 4종 비교, 자동 먼지 비움부터 흡입력까지 구매가이드: https://r2cuerdame.github.io/deals/wireless-stick-vacuum-top4-2026/
-- 2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교: https://r2cuerdame.github.io/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/
 
 ## Crawl hints
 
