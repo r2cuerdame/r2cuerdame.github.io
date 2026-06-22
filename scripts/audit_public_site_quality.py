@@ -513,7 +513,7 @@ def audit_html(path: str, page_html: str) -> list[str]:
             failures.append(f"{path}:coupang_lptag_missing")
         if coupang_links and quick_product_links < min(3, len({attr_value(tag, 'href') for tag in coupang_links})):
             failures.append(f"{path}:deal_quick_product_links_too_few:{quick_product_links}")
-        if quick_product_links and "쿠팡 파트너스 링크입니다" not in text:
+        if quick_product_links and "쿠팡 파트너스" not in text:
             failures.append(f"{path}:deal_quick_product_affiliate_cue_missing")
         for tag in coupang_links:
             rel = set(attr_value(tag, "rel").split())

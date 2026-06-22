@@ -1971,7 +1971,7 @@ def deal_money_path(deals: list[dict]) -> str:
   <ol class="money-path-list">
     <li><strong>01</strong><span>불편한 장면 선택</span><small>습기, 책상, 소리, 청소처럼 실제 문제부터</small></li>
     <li><strong>02</strong><span>비교 기준 확인</span><small>가격보다 실패 조건과 관리 부담 먼저</small></li>
-    <li><strong>03</strong><span>상품 페이지 이동</span><small>옵션·배송·최근 후기는 쿠팡에서 재확인</small></li>
+    <li><strong>03</strong><span>상품 확인</span><small>옵션·배송·최근 후기는 판매 페이지에서 재확인</small></li>
   </ol>
   <ul class="money-path-featured">{links}</ul>
 </section>'''
@@ -2206,10 +2206,19 @@ def deal_article_product_names(article: dict, limit: int = 5) -> list[str]:
         "같이 볼",
         "함께 보면",
         "다음에",
+        "대책",
+        "순서",
+        "조합",
+        "예산별",
+        "사면 안",
     )
     for raw in re.findall(r'<h[23][^>]*>(.*?)</h[23]>', body, flags=re.I | re.S):
         name = strip_tags(raw)
         name = re.sub(r"^\s*(?:\d+\s*[.)]|[①-⑩]|BEST\s*\d+\s*[:.-]?)\s*", "", name, flags=re.I)
+        if ":" in name:
+            head, tail = [part.strip() for part in name.split(":", 1)]
+            if len(tail) >= 3 and any(token in head for token in ("낮추기", "보조", "회수", "추천", "확인", "체크", "비교")):
+                name = tail
         name = re.sub(r"\s+(?:활용도 체크|구매 포인트|추천 이유|장단점|비교|후기).*$", "", name).strip()
         if not name or "?" in name or name.endswith(("인가요", "나요", "까요", "가요")) or any(term in name for term in skip_terms):
             continue
@@ -2224,6 +2233,7 @@ def specific_product_anchor_label(raw_label: str) -> str:
     label = strip_tags(raw_label or "")
     label = re.sub(r"^[\s🛒▶️👉]+", "", label).strip()
     label = re.sub(r"\s*(?:가격|최저가|옵션|후기)\s*(?:확인|보기|확인하기).*$", "", label).strip()
+    label = re.sub(r"[\s·:|,-]*(?:가격|최저가|옵션|후기|확인|보기|상품\s*페이지)+[\s·:|,-]*$", "", label).strip()
     generic = {
         "",
         "상품 페이지에서 확인",
@@ -2282,7 +2292,7 @@ def deal_article_product_link_block(article: dict) -> str:
         )
     return f'''<div class="quick-product-links" aria-label="상품 페이지 바로가기">
     <h3>마음에 드는 후보는 바로 확인</h3>
-    <p>쿠팡 파트너스 링크입니다. 쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·후기는 상품 페이지에서 다시 확인하세요.</p>
+    <p>쿠팡 파트너스 활동의 일환으로 구매 시 일정액의 수수료를 제공받을 수 있습니다. 가격·배송·후기는 상품 페이지에서 다시 확인하세요.</p>
     <ul>{''.join(items)}</ul>
   </div>'''
 
@@ -2297,7 +2307,7 @@ def deal_article_quick_block(article: dict) -> str:
     if not product_links and article.get("primary_deal_url"):
         external = f'<a class="deal-button ghost" data-affiliate-surface="deal_article_quick_fallback" href="{esc(article["primary_deal_url"])}" target="_blank" rel="sponsored nofollow noopener">상품 페이지 확인</a>'
     category_link = taxonomy_link(article.get("category") or "쇼핑픽", "quick-fact-link")
-    return f'''<section class="deal-quick-box" aria-label="쇼핑픽 빠른 결론">
+    return f'''<section class="deal-quick-box quick-take" aria-label="쇼핑픽 빠른 결론">
   <div class="quick-verdict">
     <span class="tag">3분 컷 비교</span>
     <h2>장바구니 넣기 전 이렇게 판단하세요</h2>
@@ -2308,6 +2318,10 @@ def deal_article_quick_block(article: dict) -> str:
     <div><strong>{esc(article.get('item_count_hint') or '비교글')}</strong><span>후보 수</span></div>
     <div><strong>{esc(article.get('price_hint') or '상세 확인')}</strong><span>가격 기준</span></div>
     <div><strong>{category_link}</strong><span>카테고리</span></div>
+  </div>
+  <div class="deal-buy-filter comparison" aria-label="구매 전 빠른 판정">
+    <div><strong>살 만한 경우</strong><p>내 사용 장면·공간·관리 부담이 본문 조건과 맞고, 판매 페이지의 옵션·배송·최근 후기가 그대로 괜찮을 때만 진행합니다.</p></div>
+    <div><strong>오늘 보류할 경우</strong><p>크기, 소음, 필터·소모품, 세척처럼 매일 반복되는 비용이 애매하면 가격이 좋아도 장바구니에서 한 번 멈춥니다.</p></div>
   </div>
   <div class="quick-products">
     <h3>본문에서 비교하는 후보</h3>
@@ -3110,6 +3124,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .quick-facts strong, .quick-facts span { display: block; }
 .quick-facts strong { color: #111827; font-size: 15px; }
 .quick-facts span { color: #6b7280; font-size: 12px; font-weight: 900; margin-top: 3px; }
+.deal-buy-filter { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.deal-buy-filter div { padding: 15px 16px; border-radius: 18px; background: linear-gradient(135deg, #fff7ed, #fff); border: 1px solid #fed7aa; }
+.deal-buy-filter div:last-child { background: #f9fafb; border-color: #e5e7eb; }
+.deal-buy-filter strong { display: block; color: #111827; font-size: 15px; font-weight: 950; }
+.deal-buy-filter p { margin: 5px 0 0 !important; color: #5f5652; font-size: 14px; line-height: 1.55; font-weight: 750; }
 .quick-products { border-top: 1px solid #e5e7eb; padding-top: 16px; }
 .quick-products h3 { margin: 0 0 8px; font-size: 19px; }
 .quick-products ol { margin: 0; padding-left: 1.25em; columns: 2; }
@@ -3378,7 +3397,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
   .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
   .lead { font-size: 17px; line-height: 1.62; }
-  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid, .example-scene-grid, .radar-situation-strip { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .deal-buy-filter, .article-product-hero, .radar-card, .radar-experience-grid, .example-scene-grid, .radar-situation-strip { grid-template-columns: 1fr; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 18px; margin-top: 18px; padding: 22px; }

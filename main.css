@@ -391,6 +391,11 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
 .quick-facts strong, .quick-facts span { display: block; }
 .quick-facts strong { color: #111827; font-size: 15px; }
 .quick-facts span { color: #6b7280; font-size: 12px; font-weight: 900; margin-top: 3px; }
+.deal-buy-filter { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.deal-buy-filter div { padding: 15px 16px; border-radius: 18px; background: linear-gradient(135deg, #fff7ed, #fff); border: 1px solid #fed7aa; }
+.deal-buy-filter div:last-child { background: #f9fafb; border-color: #e5e7eb; }
+.deal-buy-filter strong { display: block; color: #111827; font-size: 15px; font-weight: 950; }
+.deal-buy-filter p { margin: 5px 0 0 !important; color: #5f5652; font-size: 14px; line-height: 1.55; font-weight: 750; }
 .quick-products { border-top: 1px solid #e5e7eb; padding-top: 16px; }
 .quick-products h3 { margin: 0 0 8px; font-size: 19px; }
 .quick-products ol { margin: 0; padding-left: 1.25em; columns: 2; }
@@ -659,7 +664,7 @@ h2 { letter-spacing: -0.035em; line-height: 1.18; }
   .compact h1, .article-hero h1 { font-size: clamp(29px, 8.2vw, 42px); line-height: 1.12; }
   .hero, .page-hero, .shop-hero, .article-hero { padding-top: 30px; }
   .lead { font-size: 17px; line-height: 1.62; }
-  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .article-product-hero, .radar-card, .radar-experience-grid, .example-scene-grid, .radar-situation-strip { grid-template-columns: 1fr; }
+  .grid.three, .grid.two, .status-strip, .shop-summary, .shop-hero, .deal-landing-hero, .site-bridge-strip, .quick-facts, .deal-buy-filter, .article-product-hero, .radar-card, .radar-experience-grid, .example-scene-grid, .radar-situation-strip { grid-template-columns: 1fr; }
   .bridge-actions { justify-content: flex-start; }
   .shop-hero { gap: 16px; padding-bottom: 16px; }
   .deal-landing-hero { gap: 18px; margin-top: 18px; padding: 22px; }
