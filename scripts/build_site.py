@@ -102,7 +102,12 @@ def configured_analytics_id() -> str:
     config_env = os.environ.get("DEALS_ANALYTICS_CONFIG")
     paths = ([Path(config_env)] if config_env else []) + ANALYTICS_CONFIG_PATHS
     for path in paths:
-        if not path or not path.exists():
+        try:
+            if not path or not path.exists():
+                continue
+        except OSError:
+            # A hermes-only path (e.g. /root/.hermes/secrets/...) is unreadable for the non-root
+            # GitHub Actions runner and raises PermissionError; skip it and fall through to repo config.
             continue
         try:
             data = json.loads(path.read_text(encoding="utf-8-sig"))
