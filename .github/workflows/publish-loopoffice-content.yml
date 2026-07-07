@@ -1,0 +1,60 @@
+name: Publish LoopOffice Site Content
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Validate candidate only. Keep true until LoopOffice readiness proof is complete."
+        required: true
+        default: true
+        type: boolean
+      no_push:
+        description: "Build and commit locally but skip push when dry_run is false."
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loopoffice-publisher
+  cancel-in-progress: false
+
+jobs:
+  publish-shopping-pick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Configure git identity
+        run: |
+          git config user.name "LoopOffice Publisher"
+          git config user.email "publisher@loopoffice.local"
+
+      - name: Publish or dry-run shopping pick
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+          if [[ "${{ inputs.no_push }}" == "true" ]]; then
+            args+=(--no-push)
+          fi
+          python scripts/publish_next_blog_autopost_deal.py "${args[@]}" | tee publisher-result.json
+
+      - name: Upload publisher result
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-result
+          path: publisher-result.json

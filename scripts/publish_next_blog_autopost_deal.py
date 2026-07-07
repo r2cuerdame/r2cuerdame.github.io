@@ -21,6 +21,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOG_ROOT = Path('/mnt/c/Users/recue/.openclaw/workspace/blog-autopost')
+REPO_CANDIDATES_PATH = ROOT / 'data' / 'publisher' / 'deal_candidates.json'
 KST = timezone(timedelta(hours=9))
 BASE = 'https://r2cuerdame.github.io'
 
@@ -89,10 +90,13 @@ def run(cmd: list[str], cwd: Path = ROOT, check: bool = True) -> subprocess.Comp
 
 
 def windows_git(args: list[str], check: bool = True) -> subprocess.CompletedProcess:
-    """Run Windows Git inside the repo so the scheduled job can use Windows credentials."""
+    """Run Git through the local bridge when present, otherwise use portable git."""
+    bridge = Path('/mnt/c/Windows/System32/cmd.exe')
+    if not bridge.exists():
+        return run(['git', *args], check=check)
     win_root = str(ROOT).replace('/mnt/c/', 'C:\\').replace('/', '\\')
     return subprocess.run(
-        ['/mnt/c/Windows/System32/cmd.exe', '/c', 'cd', '/d', win_root, '&&', 'git', *args],
+        [str(bridge), '/c', 'cd', '/d', win_root, '&&', 'git', *args],
         cwd=str(ROOT),
         text=True,
         stdout=subprocess.PIPE,
@@ -269,6 +273,150 @@ def load_review_candidates() -> list[dict[str, Any]]:
     return out
 
 
+def product_anchor(url: str, label: str) -> str:
+    return (
+        f'<a href="{html.escape(url, quote=True)}" target="_blank" '
+        f'rel="noopener sponsored nofollow">{html.escape(label)}</a>'
+    )
+
+
+def repo_candidate_body(candidate: dict[str, Any]) -> str:
+    products = candidate.get('products') if isinstance(candidate.get('products'), list) else []
+    if len(products) < 3:
+        raise ValueError('repo_candidate_requires_at_least_3_products')
+    title = str(candidate.get('title') or '').strip()
+    intro = str(candidate.get('intro') or '').strip()
+    use_case = str(candidate.get('use_case') or '').strip()
+    rows = []
+    sections = []
+    for index, product in enumerate(products, start=1):
+        if not isinstance(product, dict):
+            raise ValueError('repo_candidate_product_object_required')
+        name = str(product.get('name') or '').strip()
+        url = str(product.get('url') or '').strip()
+        price_hint = str(product.get('price_hint') or '상품 페이지에서 확인').strip()
+        fit = str(product.get('fit') or '').strip()
+        strengths = product.get('strengths') if isinstance(product.get('strengths'), list) else []
+        checks = product.get('checks') if isinstance(product.get('checks'), list) else []
+        if not name or 'coupang.com' not in url.lower() or 'lptag=' not in url.lower():
+            raise ValueError('repo_candidate_product_tracked_coupang_url_required')
+        strength_text = ', '.join(str(x).strip() for x in strengths if str(x).strip())
+        check_items = ''.join(f'<li>{html.escape(str(x).strip())}</li>' for x in checks if str(x).strip())
+        rows.append(
+            '<tr>'
+            f'<td>{html.escape(name)}</td>'
+            f'<td>{html.escape(strength_text or fit)}</td>'
+            f'<td>{html.escape(price_hint)}</td>'
+            f'<td>{html.escape(fit)}</td>'
+            '</tr>'
+        )
+        sections.append(
+            f'<h3>{index}. {html.escape(name)}</h3>'
+            f'<p><strong>{html.escape(name)}</strong>은 {html.escape(fit)} 상황에서 먼저 볼 만한 후보입니다. '
+            f'가격과 배송 조건은 자주 바뀌므로 결제 전 판매 페이지에서 옵션, 재고, 최근 후기를 다시 확인해야 합니다.</p>'
+            f'<p>체크 포인트는 {html.escape(strength_text or "사용 환경과 관리 부담")}입니다. '
+            '습기 제거, 보관 위치, 사용 시간처럼 매일 반복되는 조건이 맞지 않으면 가격이 좋아도 보류하는 편이 안전합니다.</p>'
+            '<p>이 후보를 볼 때는 "빨리 마르는가"만 보지 말고, 젖은 신발을 넣고 빼는 과정이 귀찮지 않은지, '
+            '보관할 때 전원선이 걸리적거리지 않는지, 같은 신발을 며칠 연속 관리해도 부담이 없는지를 같이 봐야 합니다. '
+            '신발 건조기는 한 번 사면 장마철마다 꺼내 쓰는 물건이라 첫 주 만족도보다 반복 사용 편의성이 더 중요합니다.</p>'
+            '<p>반대로 냄새가 심하게 밴 신발을 한 번에 새것처럼 만들 기대라면 보류가 낫습니다. '
+            '건조기는 습기를 줄이는 보조 도구이고, 세탁·통풍·깔창 교체와 같이 써야 체감이 납니다. '
+            '그래서 상품 상세에서는 살균·탈취 문구보다 실제 건조 시간, 타이머, 과열 방지, 보관 크기를 우선 확인하세요.</p>'
+            f'<ul>{check_items}</ul>'
+            f'<p>{product_anchor(url, name + " 상품 페이지 확인하기")}</p>'
+        )
+    table = (
+        '<h2>한눈에 비교</h2>'
+        '<table><thead><tr><th>후보</th><th>볼 포인트</th><th>가격 기준</th><th>맞는 상황</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table>'
+    )
+    faq = (
+        '<h2>구매 전 마지막 확인</h2>'
+        '<ul>'
+        '<li><strong>옵션명:</strong> 같은 대표명이라도 구성품과 세부 모델이 다를 수 있습니다.</li>'
+        '<li><strong>배송 조건:</strong> 도착 예정일, 묶음배송, 반품비는 결제 직전에 다시 확인하세요.</li>'
+        '<li><strong>최근 후기:</strong> 별점 평균보다 최근 한 달 불만 패턴을 먼저 봅니다.</li>'
+        '<li><strong>사용 공간:</strong> 콘센트 위치, 보관 공간, 소음 허용 범위를 먼저 정하면 실패가 줄어듭니다.</li>'
+        '</ul>'
+    )
+    disclosure = (
+        '<p style="font-size:12px;color:#888;margin-top:30px;">'
+        '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다. '
+        '가격, 재고, 배송, 옵션 정보는 작성 시점 이후 변경될 수 있으니 구매 전 실제 상품 페이지에서 확인하세요.'
+        '</p>'
+    )
+    return (
+        '<div class="juiz-mobile-body">'
+        f'<h2>서론</h2><p>{html.escape(intro)}</p>'
+        f'<p>{html.escape(use_case)}</p>'
+        '<h2>빠른 결론</h2>'
+        f'<p>{html.escape(title)}은 하나의 정답을 고르는 글이 아니라, 사용 장면별로 실패 조건을 줄이는 비교입니다. '
+        '젖은 신발을 얼마나 자주 말리는지, 보관 공간이 있는지, 소음과 타이머가 필요한지를 먼저 보고 후보를 줄이세요.</p>'
+        '<h2>먼저 정할 기준</h2>'
+        '<p>첫 번째 기준은 사용 빈도입니다. 비 오는 날 한두 번 쓰는 정도라면 작은 휴대형이 편하지만, 아이 운동화나 작업화를 거의 매주 말려야 한다면 타이머와 발열 안정성을 더 봐야 합니다. '
+        '가격이 낮아도 매번 꺼내기 불편하면 결국 방치되고, 반대로 큰 제품은 보관 장소가 없으면 만족도가 떨어집니다.</p>'
+        '<p>두 번째 기준은 신발 종류입니다. 운동화처럼 입구가 넓은 신발은 대체로 쓰기 쉽지만, 부츠나 작업화는 건조봉 길이와 공기 흐름이 맞아야 합니다. '
+        '신발 안쪽까지 열이 닿지 않으면 겉만 마르고 안쪽 냄새가 남을 수 있으니 상세 사진과 후기를 같이 보는 편이 좋습니다.</p>'
+        '<p>세 번째 기준은 집 안 동선입니다. 현관 콘센트가 멀거나 신발장 앞 공간이 좁으면 매번 멀티탭을 꺼내야 해서 사용 빈도가 떨어집니다. '
+        '구매 전에 실제로 어디에 놓고 쓸지 정하고, 전원선 길이와 보관 크기를 확인하면 실패 확률을 줄일 수 있습니다.</p>'
+        '<p>마지막 기준은 기대치입니다. 신발 건조기는 냄새를 완전히 없애는 만능 가전이 아니라 젖은 시간을 줄여 냄새가 생길 조건을 낮추는 도구에 가깝습니다. '
+        '세탁이 필요한 신발, 이미 냄새가 밴 깔창, 통풍이 안 되는 신발장은 별도 관리가 필요합니다.</p>'
+        '<p>비교할 때는 후보를 세 등급으로 나누면 편합니다. 첫째는 가끔 쓰는 입문형, 둘째는 장마철 반복 사용형, 셋째는 부츠·작업화처럼 깊은 신발까지 보는 형태입니다. '
+        '이 구분 없이 가격만 낮은 순서로 보면 배송비를 더한 실제 결제 금액, 보관 부피, 건조 시간이 뒤늦게 보입니다. '
+        '특히 판매 페이지의 대표 사진은 작아 보여도 실제 신발장 앞에서 차지하는 공간은 다를 수 있으니, 상세 크기와 전원선 위치를 꼭 확인하세요.</p>'
+        '<p>후보를 고른 뒤에는 바로 결제하지 말고 집의 사용 장면에 대입해 보세요. 비 오는 날 현관에서 바로 말릴지, 베란다 콘센트 옆에서 쓸지, 밤에도 켜둘지에 따라 필요한 조건이 달라집니다. '
+        '또 가족이 함께 쓰면 한 켤레 전용보다 건조 순서를 나눌 수 있는지가 중요하고, 혼자 쓰면 보관과 꺼내는 속도가 더 중요합니다.</p>'
+        '<p>전기 제품이므로 젖은 손으로 플러그를 만지지 않을 위치도 중요합니다. 물기가 떨어지는 현관 바닥에 그대로 두기보다 받침이나 신발 트레이를 함께 쓰고, 사용 뒤에는 충분히 식힌 다음 보관하는 쪽이 안전합니다. 작은 습관 차이가 오래 씁니다.</p>'
+        '<h2>제품별 핵심 포인트</h2>'
+        f'{"".join(sections)}'
+        f'{table}{faq}'
+        '<h2>정리</h2>'
+        '<p>가끔 쓰는 장마철 보조템이면 작고 보관 쉬운 후보가 낫고, 매일 운동화나 작업화를 말린다면 타이머와 건조 시간을 더 꼼꼼히 보세요. '
+        '상품 페이지에서는 옵션명, 배송비, 반품비, 최근 후기를 마지막으로 확인한 뒤 결정하는 순서가 가장 안전합니다.</p>'
+        f'{disclosure}'
+        '</div>'
+    )
+
+
+def load_repo_local_candidates() -> list[dict[str, Any]]:
+    if not REPO_CANDIDATES_PATH.exists():
+        return []
+    data = json.loads(REPO_CANDIDATES_PATH.read_text(encoding='utf-8-sig'))
+    raw_candidates = data.get('candidates') if isinstance(data, dict) else []
+    out: list[dict[str, Any]] = []
+    for raw in raw_candidates if isinstance(raw_candidates, list) else []:
+        if not isinstance(raw, dict) or raw.get('ready') is not True:
+            continue
+        source_post_file = str(raw.get('source_post_file') or f"repo-local/{raw.get('id') or 'candidate'}.json").replace('\\', '/')
+        post = {
+            'title': str(raw.get('title') or '').strip(),
+            'html': repo_candidate_body(raw),
+            'category': str(raw.get('category') or '쇼핑픽').strip(),
+            'tags': raw.get('tags') or [],
+            'visibility': 'public',
+            'products_pool': raw.get('products_pool'),
+            'date': raw.get('date'),
+            'image_url': raw.get('image_url'),
+            'price_hint': raw.get('price_hint'),
+            'primary_deal_url': raw.get('primary_deal_url'),
+            'item_count_hint': f"{len(raw.get('products') or [])}개 후보 비교",
+        }
+        out.append({
+            'post_file': source_post_file,
+            'title': post['title'],
+            'score': float(raw.get('publication_score') or 91),
+            'waiting_blockers': [],
+            'post': post,
+            'source': 'repo-local',
+        })
+    out.sort(key=lambda x: x['post_file'])
+    return out
+
+
+def load_all_candidates() -> list[dict[str, Any]]:
+    return load_review_candidates() + load_repo_local_candidates()
+
+
 def parse_post_date(post_file: str) -> str:
     name = Path(post_file).stem
     m = re.match(r'(\d{8})-(\d{6})', name)
@@ -320,16 +468,19 @@ def article_from_post(post: dict[str, Any], post_file: str, score: float) -> dic
         'slug': slug,
         'title': title,
         'description': short(body, 180),
-        'date': parse_post_date(post_file),
+        'date': str(post.get('date') or parse_post_date(post_file)),
         'category': category,
         'tags': tags[:10],
         'is_affiliate': True,
-        'source': 'blog-autopost-daily',
+        'source': str(post.get('source') or 'blog-autopost-daily'),
         'source_post_file': post_file,
         'publication_score': score,
         'products_pool': post.get('products_pool'),
         'body_html': body,
     }
+    for key in ('image_url', 'price_hint', 'primary_deal_url', 'item_count_hint'):
+        if post.get(key):
+            article[key] = post.get(key)
     article['product_signature'] = product_signature(article)
     return article
 
@@ -337,18 +488,21 @@ def article_from_post(post: dict[str, Any], post_file: str, score: float) -> dic
 def import_next(dry_run: bool = False) -> dict[str, Any]:
     by_title, by_source = existing_keys()
     existing_articles = load_existing_deal_articles()
-    candidates = load_review_candidates()
+    candidates = load_all_candidates()
     skipped = []
     for c in candidates:
         post_file = c['post_file']
         if post_file in by_source:
             skipped.append({'post_file': post_file, 'reason': 'already_imported_source'})
             continue
-        post_path = BLOG_ROOT / post_file
-        if not post_path.exists():
-            skipped.append({'post_file': post_file, 'reason': 'missing_post_file'})
-            continue
-        post = json.loads(post_path.read_text(encoding='utf-8-sig'))
+        if c.get('post'):
+            post = dict(c['post'])
+        else:
+            post_path = BLOG_ROOT / post_file
+            if not post_path.exists():
+                skipped.append({'post_file': post_file, 'reason': 'missing_post_file'})
+                continue
+            post = json.loads(post_path.read_text(encoding='utf-8-sig'))
         title = str(post.get('title') or c.get('title') or '').strip()
         if title in by_title:
             skipped.append({'post_file': post_file, 'reason': 'already_imported_title', 'title': title})
