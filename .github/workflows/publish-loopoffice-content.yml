@@ -51,10 +51,24 @@ jobs:
           if [[ "${{ inputs.no_push }}" == "true" ]]; then
             args+=(--no-push)
           fi
-          python scripts/publish_next_blog_autopost_deal.py "${args[@]}" | tee publisher-result.json
+          python scripts/publish_next_blog_autopost_deal.py "${args[@]}" | tee publisher-shopping-result.json
+          python scripts/publish_next_shorts_shopping_pick.py "${args[@]}" | tee publisher-shorts-result.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out = {
+              "shopping": json.loads(Path("publisher-shopping-result.json").read_text(encoding="utf-8")),
+              "shorts": json.loads(Path("publisher-shorts-result.json").read_text(encoding="utf-8")),
+          }
+          Path("publisher-result.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(out, ensure_ascii=False, indent=2))
+          PY
 
       - name: Upload publisher result
         uses: actions/upload-artifact@v4
         with:
           name: publisher-result
-          path: publisher-result.json
+          path: |
+            publisher-result.json
+            publisher-shopping-result.json
+            publisher-shorts-result.json
