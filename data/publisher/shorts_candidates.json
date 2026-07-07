@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-08T03:05:00+09:00",
+  "updated_at": "2026-07-08T03:33:45+09:00",
   "source": "repo_local_loopoffice_shorts_seed",
   "notes": "LoopOffice shorts shopping-pick dry-run input. 쿠키, 세션, 비밀번호, API 키는 저장하지 않는다.",
   "candidates": [
@@ -31,10 +31,10 @@
           "caution": "여러 켤레를 동시에 말려야 하면 용량 확인"
         },
         {
-          "name": "디어마 가정용 신발건조기 화이트",
-          "url": "https://www.coupang.com/vp/products/6174910118?lptag=AF3961595",
-          "one_liner": "운동화와 구두를 번갈아 관리할 보조 가전 후보",
-          "caution": "배송 조건과 실제 판매 상태 확인"
+          "name": "Detao 신발 건조기 화이트 그레이",
+          "url": "https://www.coupang.com/vp/products/7164935048?lptag=AF3961595",
+          "one_liner": "상품평이 있는 입문형 신발 건조기 후보",
+          "caution": "할인율과 무료배송 조건은 상품 페이지에서 다시 확인"
         },
         {
           "name": "휴대용 신발건조기 살균 탈취 장마철 부츠 운동화 건조기",
