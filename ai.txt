@@ -32,9 +32,9 @@ Radar Article: https://r2cuerdame.github.io/radar/parcel-mailbox-front-home-chec
 Radar Article: https://r2cuerdame.github.io/radar/corridor-end-home-check/ — 복도 끝 집, 조용함인지 사각지대인지 보는 밤 12분
 Radar Article: https://r2cuerdame.github.io/radar/one-block-inside-main-road-check/ — 대로변 한 블록 안쪽 집, 조용함인지 고립감인지 보는 밤 12분
 Radar Article: https://r2cuerdame.github.io/radar/elevator-front-home-check/ — 엘리베이터 앞 집, 편한 동선인지 시끄러운 대기실인지 보는 12분
+Separate Deals Article: https://r2cuerdame.github.io/deals/숏츠-쇼핑픽-장마철-신발-건조기-30초-안에-볼-3가지-797afc4f/ — 숏츠 쇼핑픽 — 장마철 신발 건조기, 30초 안에 볼 3가지
 Separate Deals Article: https://r2cuerdame.github.io/deals/장마철-신발-건조기-쇼핑픽-젖은-운동화-작업화-말릴-때-볼-후보-3개-95d059a7/ — 장마철 신발 건조기 쇼핑픽 — 젖은 운동화·작업화 말릴 때 볼 후보 3개
 Separate Deals Article: https://r2cuerdame.github.io/deals/usb-c-mini-fan-quick-check-2026/ — 숏츠 쇼핑픽 — USB-C 미니 선풍기, 60초 안에 확인할 3가지
 Separate Deals Article: https://r2cuerdame.github.io/deals/summer-portable-fan-buying-guide-2026/ — 여름 휴대용 선풍기 쇼핑픽 — 넥밴드·핸디·미니탁상, 뭘 기준으로 고를까
-Separate Deals Article: https://r2cuerdame.github.io/deals/여름밤-모기퇴치템-best-3-전기모기채-모기퇴치기-홈매트-실속-조합-325574c0/ — 여름밤 모기퇴치템 BEST 3, 전기모기채·모기퇴치기·홈매트 실속 조합
 Language: ko-KR
-Updated: 2026-07-08T03:38:14+09:00
+Updated: 2026-07-08T03:38:19+09:00
