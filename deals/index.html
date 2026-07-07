@@ -30,8 +30,39 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#101828" />
   <link rel="stylesheet" href="/main.css?v=66d6f4d698" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://r2cuerdame.github.io/#website","name":"Recuerdame Lab","url":"https://r2cuerdame.github.io/","inLanguage":"ko-KR","description":"이사·월세·전세·상가 계약 전, 동네와 상권 리스크를 먼저 걸러내는 Dongne Radar 공개 노트입니다.","publisher":{"@id":"https://r2cuerdame.github.io/#publisher"},"potentialAction":{"@type":"SearchAction","target":"https://r2cuerdame.github.io/search/?q={search_term_string}","query-input":"required name=search_term_string"}},{"@type":["Organization","Person"],"@id":"https://r2cuerdame.github.io/#publisher","name":"r2cuerdame / Recuerdame Lab","url":"https://r2cuerdame.github.io/"},{"@type":"SiteNavigationElement","name":["동네 레이더","쇼핑픽","검색"],"url":["https://r2cuerdame.github.io/radar/","https://r2cuerdame.github.io/deals/","https://r2cuerdame.github.io/search/"]},{"@type":"BreadcrumbList","@id":"https://r2cuerdame.github.io/deals/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://r2cuerdame.github.io/"},{"@type":"ListItem","position":2,"name":"쇼핑픽","item":"https://r2cuerdame.github.io/deals/"}]},{"@type":"CollectionPage","@id":"https://r2cuerdame.github.io/deals/#webpage","url":"https://r2cuerdame.github.io/deals/","name":"쇼핑픽 구매가이드 — 생활가전·재택근무 비교","description":"생활가전, 책상 장비, 음향기기처럼 구매 직전 비교가 필요한 상품을 오늘의 추천, 카테고리, 검색으로 빠르게 찾는 쇼핑픽 랜딩입니다.","isPartOf":{"@id":"https://r2cuerdame.github.io/#website"},"inLanguage":"ko-KR","datePublished":"2026-04-29T21:00:00+09:00","dateModified":"2026-07-07T10:10:43+09:00"}]}</script>
+    document.addEventListener('click', function(event) {
+      var link = event.target && event.target.closest ? event.target.closest('a[href*="coupang.com"]') : null;
+      if (!link || typeof gtag !== 'function') return;
+      try {
+        var url = new URL(link.href, window.location.href);
+        var surface = link.getAttribute('data-affiliate-surface') || '';
+        if (!surface) {
+          if (link.classList.contains('room-product-link')) surface = 'deals_showroom_preview';
+          else if (link.classList.contains('quick-product-link')) surface = 'deal_article_quick_product';
+          else if (link.classList.contains('deal-price-link')) surface = 'deals_card_price';
+          else if (link.classList.contains('coupang-event-link')) surface = 'deals_event_slot';
+          else if (link.closest('.article-content')) surface = 'deal_article_body';
+          else surface = 'coupang_anchor';
+        }
+        var linkText = (link.getAttribute('aria-label') || link.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+        gtag('event', 'affiliate_click', {
+          event_category: 'outbound',
+          outbound_domain: url.hostname,
+          link_url: url.origin + url.pathname,
+          link_surface: surface,
+          link_text: linkText,
+          has_lptag: url.href.toLowerCase().indexOf('lptag=') !== -1 || url.hostname === 'link.coupang.com',
+          page_path: window.location.pathname,
+          transport_type: 'beacon'
+        });
+      } catch (error) {}
+    }, true);
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://r2cuerdame.github.io/#website","name":"Recuerdame Lab","url":"https://r2cuerdame.github.io/","inLanguage":"ko-KR","description":"이사·월세·전세·상가 계약 전, 동네와 상권 리스크를 먼저 걸러내는 Dongne Radar 공개 노트입니다.","publisher":{"@id":"https://r2cuerdame.github.io/#publisher"},"potentialAction":{"@type":"SearchAction","target":"https://r2cuerdame.github.io/search/?q={search_term_string}","query-input":"required name=search_term_string"}},{"@type":["Organization","Person"],"@id":"https://r2cuerdame.github.io/#publisher","name":"r2cuerdame / Recuerdame Lab","url":"https://r2cuerdame.github.io/"},{"@type":"SiteNavigationElement","name":["동네 레이더","쇼핑픽","검색"],"url":["https://r2cuerdame.github.io/radar/","https://r2cuerdame.github.io/deals/","https://r2cuerdame.github.io/search/"]},{"@type":"BreadcrumbList","@id":"https://r2cuerdame.github.io/deals/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://r2cuerdame.github.io/"},{"@type":"ListItem","position":2,"name":"쇼핑픽","item":"https://r2cuerdame.github.io/deals/"}]},{"@type":"CollectionPage","@id":"https://r2cuerdame.github.io/deals/#webpage","url":"https://r2cuerdame.github.io/deals/","name":"쇼핑픽 구매가이드 — 생활가전·재택근무 비교","description":"생활가전, 책상 장비, 음향기기처럼 구매 직전 비교가 필요한 상품을 오늘의 추천, 카테고리, 검색으로 빠르게 찾는 쇼핑픽 랜딩입니다.","isPartOf":{"@id":"https://r2cuerdame.github.io/#website"},"inLanguage":"ko-KR","datePublished":"2026-04-29T21:00:00+09:00","dateModified":"2026-07-07T19:27:01+09:00"}]}</script>
 </head>
 <body class="deals-site">
   <a class="skip-link" href="#content">본문 바로가기</a>
@@ -196,7 +227,7 @@
   <div class="section-title"><p class="eyebrow">오늘 추천</p><h2>지금 볼 만한 쇼핑픽</h2><p>발행일과 카테고리를 기준으로, 바로 비교하기 좋은 글부터 보여줍니다.</p></div>
   <div class="deal-grid best-grid"><article class="deal-card ranked">
   <a class="deal-thumb" href="/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/" aria-label="2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교">
-    <img src="https://www.jbl.com.ar/dw/image/v2/AAUJ_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwdac021cb/1_JBL_FLIP6_HERO_WHITE_29399_x1.png?sw=400&amp;sh=400&amp;sm=fit&amp;sfrm=png" alt="2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교 대표 상품 이미지" loading="lazy" decoding="async" />
+    <img src="/assets/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/rehost-2-73a75d63.jpg" alt="2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교 대표 상품 이미지" loading="lazy" decoding="async" />
     <span class="deal-count">5개 후보 비교</span>
     <span class="deal-rank">추천 1</span>
   </a>
@@ -576,7 +607,7 @@
 </article>
 <article class="deal-card">
   <a class="deal-thumb" href="/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/" aria-label="2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교">
-    <img src="https://www.jbl.com.ar/dw/image/v2/AAUJ_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwdac021cb/1_JBL_FLIP6_HERO_WHITE_29399_x1.png?sw=400&amp;sh=400&amp;sm=fit&amp;sfrm=png" alt="2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교 대표 상품 이미지" loading="lazy" decoding="async" />
+    <img src="/assets/deals/2026-블루투스-스피커-추천-top-5-jbl-보스-마샬-실사용-비교-5aa2cfcf/rehost-2-73a75d63.jpg" alt="2026 블루투스 스피커 추천 TOP 5 JBL·보스·마샬 실사용 비교 대표 상품 이미지" loading="lazy" decoding="async" />
     <span class="deal-count">5개 후보 비교</span>
 
   </a>
@@ -836,7 +867,7 @@
   <footer class="footer">
     <p><strong>Recuerdame Lab</strong> — 이사·월세·전세·상가 계약 전, 동네 리스크를 먼저 거르는 공개 노트.</p>
     <p class="muted">/radar/는 동네 레이더, /deals/는 별도 쇼핑픽으로 분리해 운영합니다.</p>
-    <p class="muted">마지막 업데이트: <time datetime="2026-07-07T10:10:43+09:00">2026-07-07 10:10 KST</time></p>
+    <p class="muted">마지막 업데이트: <time datetime="2026-07-07T19:27:01+09:00">2026-07-07 19:27 KST</time></p>
   </footer>
 </body>
 </html>

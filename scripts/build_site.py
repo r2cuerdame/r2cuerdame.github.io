@@ -128,16 +128,19 @@ ANALYTICS_ID = configured_analytics_id()
 
 
 def analytics_snippet(enhanced_affiliate: bool = False) -> str:
-    if not ANALYTICS_ID:
+    if not ANALYTICS_ID and not enhanced_affiliate:
         return ""
     mid = esc(ANALYTICS_ID)
+    loader = f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
+''' if mid else ""
+    config = f'''    gtag('js', new Date());
+    gtag('config', '{mid}', {{ anonymize_ip: true }});
+''' if mid else ""
     if not enhanced_affiliate:
-        return f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
-  <script>
+        return f'''{loader}  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){{dataLayer.push(arguments);}}
-    gtag('js', new Date());
-    gtag('config', '{mid}', {{ anonymize_ip: true }});
+{config.rstrip()}
     document.addEventListener('click', function(event) {{
       var link = event.target && event.target.closest ? event.target.closest('a[href*="coupang.com"]') : null;
       if (!link || typeof gtag !== 'function') return;
@@ -153,12 +156,10 @@ def analytics_snippet(enhanced_affiliate: bool = False) -> str:
       }} catch (error) {{}}
     }}, true);
   </script>'''
-    return f'''  <script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>
-  <script>
+    return f'''{loader}  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){{dataLayer.push(arguments);}}
-    gtag('js', new Date());
-    gtag('config', '{mid}', {{ anonymize_ip: true }});
+{config.rstrip()}
     document.addEventListener('click', function(event) {{
       var link = event.target && event.target.closest ? event.target.closest('a[href*="coupang.com"]') : null;
       if (!link || typeof gtag !== 'function') return;
