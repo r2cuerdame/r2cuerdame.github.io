@@ -1,4 +1,5 @@
 name: Publish LoopOffice Site Content
+run-name: Publish LoopOffice Site Content dry=${{ inputs.dry_run }} no_push=${{ inputs.no_push }}
 
 on:
   workflow_dispatch:
@@ -13,6 +14,11 @@ on:
         required: true
         default: false
         type: boolean
+      proof_branch:
+        description: "Branch that receives no-push readiness proof output. Ignored for dry-run and live publish."
+        required: true
+        default: "loopoffice-publisher-proof"
+        type: string
 
 permissions:
   contents: write
@@ -72,3 +78,21 @@ jobs:
             publisher-result.json
             publisher-shopping-result.json
             publisher-shorts-result.json
+
+      - name: Push no-push readiness proof branch
+        if: ${{ inputs.dry_run == false && inputs.no_push == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          proof_branch="${{ inputs.proof_branch }}"
+          if [[ ! "$proof_branch" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "Unsafe proof branch: $proof_branch" >&2
+            exit 2
+          fi
+          if [[ "$proof_branch" == "main" || "$proof_branch" == "master" ]]; then
+            echo "Refusing to use protected publish branch as proof branch: $proof_branch" >&2
+            exit 2
+          fi
+          git status --short
+          git rev-parse HEAD > publisher-proof-head.txt
+          git push --force-with-lease origin "HEAD:refs/heads/${proof_branch}"
