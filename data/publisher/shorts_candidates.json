@@ -1,46 +1,46 @@
 {
   "version": 1,
-  "updated_at": "2026-07-08T03:33:45+09:00",
+  "updated_at": "2026-07-09T09:05:00+09:00",
   "source": "repo_local_loopoffice_shorts_seed",
-  "notes": "LoopOffice shorts shopping-pick dry-run input. 쿠키, 세션, 비밀번호, API 키는 저장하지 않는다.",
+  "notes": "LoopOffice shorts shopping-pick input. 쿠키, 세션, 비밀번호, API 키는 저장하지 않는다.",
   "candidates": [
     {
-      "id": "rainy-shoe-dryer-30sec-2026",
+      "id": "sink-drain-filter-30sec-2026",
       "ready": true,
-      "source_post_file": "repo-local/shorts-20260708-rainy-shoe-dryer-30sec.json",
-      "title": "숏츠 쇼핑픽 — 장마철 신발 건조기, 30초 안에 볼 3가지",
-      "description": "젖은 운동화와 작업화 때문에 냄새가 남을 때 신발 건조기를 보기 전 사용 빈도, 보관 위치, 신발 종류만 빠르게 체크합니다.",
-      "date": "2026-07-08T03:05:00+09:00",
-      "tags": ["숏츠 쇼핑픽", "신발건조기", "장마", "운동화관리", "30초체크"],
-      "products_pool": "repo_local_shoe_dryer_shorts_202607.json",
-      "publication_score": 91.5,
-      "price_hint": "1만~4만원대 후보는 상품 페이지에서 확인",
-      "primary_deal_url": "https://www.coupang.com/vp/products/9430594107?lptag=AF3961595",
-      "hook": "비 온 뒤 운동화가 하루 넘게 눅눅하면 냄새가 빨리 올라옵니다. 신발 건조기는 큰 가전보다 작지만, 아무거나 사면 보관이 귀찮아져서 잘 안 쓰게 됩니다.",
-      "verdict": "30초 안에는 사용 빈도, 보관 위치, 신발 종류만 보면 됩니다. 이 셋이 맞으면 상품 페이지로 넘어가고, 하나라도 애매하면 오늘은 보류하세요.",
+      "source_post_file": "repo-local/shorts-20260709-sink-drain-filter-30sec.json",
+      "title": "숏츠 쇼핑픽 — 싱크대 배수구 거름망, 30초 안에 볼 3가지",
+      "description": "여름 주방 냄새와 음식물 찌꺼기가 신경 쓰일 때 싱크대 거름망을 보기 전 수량, 물빠짐, 배수구 크기만 빠르게 체크합니다.",
+      "date": "2026-07-09T09:15:00+09:00",
+      "tags": ["숏츠 쇼핑픽", "싱크대거름망", "주방소모품", "배수구관리", "30초체크"],
+      "products_pool": "repo_local_sink_drain_filter_shorts_202607.json",
+      "publication_score": 91.7,
+      "price_hint": "5천~1만원대 후보는 상품 페이지에서 확인",
+      "primary_deal_url": "https://www.coupang.com/vp/products/6403395461?lptag=AF3961595",
+      "hook": "장마철에는 싱크대 배수구 냄새와 음식물 찌꺼기가 평소보다 빨리 거슬립니다. 거름망은 비싼 제품보다 우리 집 배수구 크기와 교체 습관이 먼저 맞아야 합니다. 자주 갈 수 없거나 물빠짐이 답답하면 결국 다시 청소 부담으로 돌아옵니다.",
+      "verdict": "30초 안에는 수량, 물빠짐, 배수구 크기만 보면 됩니다. 이 셋이 맞으면 상품 페이지로 넘어가고, 하나라도 애매하면 오늘은 보류하세요. 특히 대용량은 싸 보여도 보관할 곳이 없으면 불편하고, 단품 덮개는 호환이 안 맞으면 바로 실패합니다.",
       "checks": [
-        "매주 쓰는지, 장마철에만 가끔 쓰는지 먼저 정합니다.",
-        "현관이나 베란다 콘센트 옆에 실제로 놓을 자리가 있는지 봅니다.",
-        "운동화만 말릴지, 부츠·작업화처럼 깊은 신발도 말릴지 확인합니다."
+        "매일 갈아도 부담 없는 수량인지 보고, 가족 주방이면 100매와 500개의 실제 교체 주기를 나눠 봅니다.",
+        "물빠짐이 느려 설거지 때 고이지 않을 구조인지 확인하고, 음식물 찌꺼기가 많은 집은 망 두께와 찢어짐 후기를 같이 봅니다.",
+        "현재 배수구 바스켓 크기와 덮개 방식에 맞는지 확인합니다. 중간덮개는 지름이 맞지 않으면 뜨거나 물길을 막을 수 있습니다."
       ],
       "products": [
         {
-          "name": "늘바론 신발건조기 SMC-FX202",
-          "url": "https://www.coupang.com/vp/products/9430594107?lptag=AF3961595",
-          "one_liner": "가끔 젖는 운동화 한 켤레를 작게 말릴 때 보기 좋은 입문형 후보",
-          "caution": "여러 켤레를 동시에 말려야 하면 용량 확인"
+          "name": "코멧 싱크대 배수구 거름망 500개",
+          "url": "https://www.coupang.com/vp/products/6403395461?lptag=AF3961595",
+          "one_liner": "가족 주방에서 자주 갈아 쓰기 좋은 대용량 후보",
+          "caution": "보관 공간과 배수구 크기 확인"
         },
         {
-          "name": "Detao 신발 건조기 화이트 그레이",
-          "url": "https://www.coupang.com/vp/products/7164935048?lptag=AF3961595",
-          "one_liner": "상품평이 있는 입문형 신발 건조기 후보",
-          "caution": "할인율과 무료배송 조건은 상품 페이지에서 다시 확인"
+          "name": "아비앙 주방 싱크대 배수구 중간덮개",
+          "url": "https://www.coupang.com/vp/products/1439135355?lptag=AF3961595",
+          "one_liner": "배수구 안쪽 노출을 줄이고 싶은 집에서 볼 보조 후보",
+          "caution": "기존 배수구 지름과 물빠짐 확인"
         },
         {
-          "name": "휴대용 신발건조기 살균 탈취 장마철 부츠 운동화 건조기",
-          "url": "https://www.coupang.com/vp/products/9568420416?lptag=AF3961595",
-          "one_liner": "부츠와 운동화를 가볍게 번갈아 말리고 싶은 사람용 후보",
-          "caution": "살균·탈취 문구보다 건조 시간과 후기 확인"
+          "name": "주방 싱크대 거름망 100매",
+          "url": "https://www.coupang.com/vp/products/8908638899?lptag=AF3961595",
+          "one_liner": "처음 써보는 집이 크기와 교체감을 테스트하기 좋은 후보",
+          "caution": "배송비 포함 단가와 망 두께 확인"
         }
       ]
     }
