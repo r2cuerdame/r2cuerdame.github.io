@@ -5,7 +5,7 @@
 Base URL: https://r2cuerdame.github.io/
 Primary scope: Dongne Radar — 이사, 전월세 계약, 통근, 생활권, 현장 확인, 상가 임대차, 권리금 리스크.
 Language: ko-KR
-Last updated: 2026-07-08T09:15:04+09:00
+Last updated: 2026-07-09T09:00:27+09:00
 
 ## Primary sections
 
@@ -63,6 +63,7 @@ Last updated: 2026-07-08T09:15:04+09:00
 
 ## Separate deals articles
 
+- 싱크대 배수구 거름망 쇼핑픽 — 장마철 냄새와 음식물 찌꺼기 줄일 때 볼 후보 3개: https://r2cuerdame.github.io/deals/싱크대-배수구-거름망-쇼핑픽-장마철-냄새와-음식물-찌꺼기-줄일-때-볼-후보-3개-36cd3af8/
 - 숏츠 쇼핑픽 — 장마철 신발 건조기, 30초 안에 볼 3가지: https://r2cuerdame.github.io/deals/숏츠-쇼핑픽-장마철-신발-건조기-30초-안에-볼-3가지-797afc4f/
 - 장마철 신발 건조기 쇼핑픽 — 젖은 운동화·작업화 말릴 때 볼 후보 3개: https://r2cuerdame.github.io/deals/장마철-신발-건조기-쇼핑픽-젖은-운동화-작업화-말릴-때-볼-후보-3개-95d059a7/
 - 숏츠 쇼핑픽 — USB-C 미니 선풍기, 60초 안에 확인할 3가지: https://r2cuerdame.github.io/deals/usb-c-mini-fan-quick-check-2026/
@@ -70,7 +71,6 @@ Last updated: 2026-07-08T09:15:04+09:00
 - 여름밤 모기퇴치템 BEST 3, 전기모기채·모기퇴치기·홈매트 실속 조합: https://r2cuerdame.github.io/deals/여름밤-모기퇴치템-best-3-전기모기채-모기퇴치기-홈매트-실속-조합-325574c0/
 - 차량용 앞유리 햇빛가리개 추천 BEST 3, 여름 야외주차 열기 줄이는 우산형 차양막: https://r2cuerdame.github.io/deals/차량용-앞유리-햇빛가리개-추천-best-3-여름-야외주차-열기-줄이는-우산형-차양막-725748d2/
 - 원룸 장마 습기·냄새 잡는 현실 조합 4개: https://r2cuerdame.github.io/deals/one-room-monsoon-humidity-smell-kit-2026/
-- 여행·출근용 충전템 BEST 3, 충전기와 보조배터리 실속 조합: https://r2cuerdame.github.io/deals/여행-출근용-충전템-best-3-충전기와-보조배터리-실속-조합-b89be2fd/
 
 ## Crawl hints
 
