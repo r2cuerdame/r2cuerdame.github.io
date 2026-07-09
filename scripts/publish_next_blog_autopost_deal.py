@@ -340,7 +340,7 @@ def repo_candidate_body(candidate: dict[str, Any]) -> str:
         '<li><strong>옵션명:</strong> 같은 대표명이라도 구성품과 세부 모델이 다를 수 있습니다.</li>'
         '<li><strong>배송 조건:</strong> 도착 예정일, 묶음배송, 반품비는 결제 직전에 다시 확인하세요.</li>'
         '<li><strong>최근 후기:</strong> 별점 평균보다 최근 한 달 불만 패턴을 먼저 봅니다.</li>'
-        '<li><strong>사용 공간:</strong> 콘센트 위치, 보관 공간, 소음 허용 범위를 먼저 정하면 실패가 줄어듭니다.</li>'
+        '<li><strong>사용 공간:</strong> 설치·보관 공간, 교체 동선, 관리 부담을 먼저 정하면 실패가 줄어듭니다.</li>'
         '</ul>'
     )
     disclosure = (
@@ -354,7 +354,7 @@ def repo_candidate_body(candidate: dict[str, Any]) -> str:
         f'<h2>서론</h2><p>{html.escape(intro)}</p>'
         f'<p>{html.escape(use_case)}</p>'
         '<h2>빠른 결론</h2>'
-        f'<p>{html.escape(title)}은 하나의 정답을 고르는 글이 아니라, 사용 장면별로 실패 조건을 줄이는 비교입니다. '
+        '<p>이 쇼핑픽은 하나의 정답을 고르는 글이 아니라, 사용 장면별로 실패 조건을 줄이는 비교입니다. '
         f'{html.escape(criteria_text)}를 먼저 보고 후보를 줄이세요.</p>'
         '<h2>먼저 정할 기준</h2>'
         f'<p>첫 번째 기준은 {html.escape(criteria[0] if len(criteria) > 0 else "사용 빈도")}입니다. 매일 쓰는 물건인지, 계절이나 특정 상황에만 쓰는 물건인지에 따라 필요한 구성과 가격대가 달라집니다. '
